@@ -76,7 +76,7 @@
 			if (input)
 			{
                 var xml:XML = <a/>;
-                xml.replace(0, s);
+                xml.replace(0, input);
                 return String(xml);
             }
 			return "";
