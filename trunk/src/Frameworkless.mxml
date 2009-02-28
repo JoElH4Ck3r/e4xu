@@ -1,6 +1,8 @@
-<?xml version="1.0"?>
-<mx:Application 
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Frameworkless -->
+<fl:Sprite 
 	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:fl="flash.display.*"
 	xmlns:e4xu="http://e4xu.googlecode.com">
 	<mx:Script>
 		<![CDATA[
@@ -18,4 +20,4 @@
 			</mx:XML>
 		</e4xu:map>
 	</e4xu:InteractiveModel>
-</mx:Application>
+</fl:Sprite>

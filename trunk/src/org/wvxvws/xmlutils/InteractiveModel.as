@@ -1,6 +1,7 @@
 ﻿package org.wvxvws.xmlutils
 {
 	import flash.errors.IllegalOperationError;
+	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
 	import flash.utils.Proxy;
@@ -15,7 +16,8 @@
 	* @langVersion 3.0
 	* @playerVersion 10.0.12.36
 	*/
-	public class InteractiveModel extends Proxy implements IEventDispatcher, IMXMLObject
+	public dynamic class InteractiveModel extends Proxy implements IEventDispatcher, 
+																	IMXMLObject
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -29,7 +31,29 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		protected var _map:XML;
+		//------------------------------------
+		//  Public property map
+		//------------------------------------
+		
+		private var _map:XML = <map/>;
+		
+		[Bindable("imchange")]
+		
+		/**
+		 * ...
+		 * This property can be used as the source for data binding. 
+		 * When this property is modified, it dispatches the <code>mapChange</code> event.
+		 */
+		public function get map():XML { return _map; }
+		
+		public function set map(value:XML):void 
+		{
+			if (_map == value) return;
+			var old:XML = _map.copy();
+			_map = value;
+			trace("dispatching");
+			dispatchEvent(new IMEvent(IMEvent.IMCHANGE, "", old, _map));
+		}
 		protected var _dispatcher:EventDispatcher;
 		
 		//--------------------------------------------------------------------------
@@ -88,6 +112,10 @@
 		public function initialized(document:Object, id:String):void
 		{
 			trace(document, id);
+			for (var p:String in document)
+			{
+				trace(p, document[p]);
+			}
 		}
 		
 		//--------------------------------------------------------------------------
