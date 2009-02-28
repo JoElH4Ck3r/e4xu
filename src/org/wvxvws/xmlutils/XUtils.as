@@ -8,7 +8,7 @@
 	* @langVersion 3.0
 	* @playerVersion 10.0.12.36
 	*/
-	public class XMLUtils 
+	public class XUtils 
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -45,7 +45,7 @@
 		 * All of the methods of this class are static, there's no need 
 		 * to instantiate it.
 		 */
-		public function XMLUtils() { super(); }
+		public function XUtils() { super(); }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -127,7 +127,7 @@
 		 * 
 		 * @return	XMLList. The collection of nodes contained within the passed array.
 		 * 
-		 * @see		<a href="#multyArrayToList()">multyArrayToList()</a>
+		 * @see		#multyArrayToList()
 		 */
 		public static function arrayToList(array:Array, keepReferences:Boolean = true):XMLList
 		{
@@ -154,7 +154,7 @@
 		 * 
 		 * @return	XMLList. The XMLList representing the given array.
 		 * 
-		 * @see		<a href="#arrayToList()">arrayToList()</a>
+		 * @see		#arrayToList()
 		 */
 		public static function multyArrayToList(array:Array):XMLList
 		{
@@ -327,7 +327,7 @@
 		 * 
 		 * @return	Object. The object containing tokens for the generated node names.
 		 * 
-		 * @see		<a href="#reverseBatchRename()">reverseBatchRename()</a>
+		 * @see		#reverseBatchRename()
 		 */
 		public static function batchRename(xml:XML):Object
 		{

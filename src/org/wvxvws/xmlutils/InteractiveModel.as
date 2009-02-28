@@ -249,8 +249,8 @@
 		
 		flash_proxy override function setProperty(name:*, value:*):void 
 		{
-			var checkName:XML = XMLUtils.objectToXML(name);
-			var checkValue:XML = XMLUtils.objectToXML(value);
+			var checkName:XML = XUtils.objectToXML(name);
+			var checkValue:XML = XUtils.objectToXML(value);
 			if (checkName.hasSimpleContent() && !checkName.@ * .length() && 
 					checkValue.hasSimpleContent() && !checkValue.@ * .length())
 			{
