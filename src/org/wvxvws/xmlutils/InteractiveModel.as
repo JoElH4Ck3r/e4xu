@@ -29,7 +29,7 @@
 		//  Public property map
 		//------------------------------------
 		
-		private var _map:XML = <map/>;
+		private var _map:XML = <InteractiveModel/>;
 		
 		[Bindable("imchange")]
 		
@@ -249,6 +249,9 @@
 		
 		flash_proxy override function setProperty(name:*, value:*):void 
 		{
+			trace(flash_proxy::isAttribute(name));
+			trace(isXMLName(name));
+			trace(XMLUtils.objectToXML(name).toXMLString());
 			if (_map[name].length() > 1) 
 				throw new IllegalOperationError("Cannot assign value to multiple targets");
 			_map[name] = value;

@@ -132,15 +132,15 @@
 		public static function arrayToList(array:Array, keepReferences:Boolean = true):XMLList
 		{
 			var cloneArray:Array = array.slice();
-			var list:XMLList = keepReferences ? XMLList(cloneArray.unshift()) :
-								XMLList(cloneArray.unshift().copy());
+			var list:XMLList = keepReferences ? XMLList(cloneArray.shift()) :
+								XMLList(cloneArray.shift().copy());
 			if (keepReferences)
 			{
-				while (cloneArray.length) list += XML(cloneArray.unshift());
+				while (cloneArray.length) list += XML(cloneArray.shift());
 			}
 			else
 			{
-				while (cloneArray.length) list += XML(cloneArray.unshift().copy());
+				while (cloneArray.length) list += XML(cloneArray.shift().copy());
 			}
 			return list;
 		}
@@ -177,12 +177,14 @@
 		 */
 		public static function objectToXML(object:Object, nodeName:String = "node"):XML
 		{
-			if (object is XML) return object;
+			if (object is XML) return XML(object);
+			if (isXMLName(object)) object = QName(object).localName;
 			var xml:XML = <{nodeName}/>;
 			var check:XML;
 			for (var p:String in object)
 			{
-				check = objectToXML(p, object[p]);
+				trace(p, object[p]);
+				check = objectToXML(object[p], p);
 				if (check.hasSimpleContent() && !check.@*.length()) xml.@[p] = object[p];
 				else xml.appendChild(check);
 			}
@@ -331,10 +333,7 @@
 		{
 			_hash = { };
 			var newHash:Object = { };
-			if (_hash[xml.name()])
-			{
-				inxml.setName(_hash[xml.name()]);
-			}
+			if (_hash[xml.name()]) xml.setName(_hash[xml.name()]);
 			else xml.setName(generateUID(xml.name()));
 			xml.*.(batchRename(valueOf()));
 			for (var p:String in _hash) newHash[p] = _hash[p];
