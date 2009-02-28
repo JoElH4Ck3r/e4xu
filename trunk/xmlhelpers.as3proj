@@ -34,7 +34,7 @@
     <option verboseStackTraces="False" />
     <option linkReport="" />
     <option loadExterns="" />
-    <option additional="-compiler.namespaces.namespace http://e4xu.googlecode.com c:\www\projects\xmlhelpers\run\manifest.xml" />
+    <option additional="-compiler.namespaces.namespace http://e4xu.googlecode.com c:\www\projects\xmlhelpers\run\manifest.xml&#xA;-keep" />
     <option customSDK="" />
   </build>
   <!-- SWC Include Libraries -->
