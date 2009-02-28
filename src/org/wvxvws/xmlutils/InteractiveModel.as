@@ -25,12 +25,6 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		//--------------------------------------------------------------------------
-		//
-		//  Protected properties
-		//
-		//--------------------------------------------------------------------------
-		
 		//------------------------------------
 		//  Public property map
 		//------------------------------------
@@ -54,6 +48,13 @@
 			trace("dispatching");
 			dispatchEvent(new IMEvent(IMEvent.IMCHANGE, "", old, _map));
 		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected properties
+		//
+		//--------------------------------------------------------------------------
+		
 		protected var _dispatcher:EventDispatcher;
 		
 		//--------------------------------------------------------------------------
@@ -62,15 +63,20 @@
 		//
 		//--------------------------------------------------------------------------
 		
+		private static var _instanceCounter:int;
+		private var _root:InteractiveModel;
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Cunstructor
 		//
 		//--------------------------------------------------------------------------
 		
-		public function InteractiveModel() 
+		public function InteractiveModel(xml:XML = null, root:InteractiveModel = null) 
 		{
 			super();
+			_map = xml == null ? _map : xml;
+			_root = root ? root : this;
 			_dispatcher = new EventDispatcher(this);
 		}
 		
@@ -111,12 +117,15 @@
 		
 		public function initialized(document:Object, id:String):void
 		{
-			trace(document, id);
-			for (var p:String in document)
-			{
-				trace(p, document[p]);
-			}
+			_map.@id = id;
 		}
+		
+		public function toString():String
+		{
+			return _map.toXMLString();
+		}
+		
+		public function root():InteractiveModel { return _root; }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -196,12 +205,8 @@
 					return _map.setNamespace(rest[0]);
 				case "text":
 					return _map.text();
-				case "toString":
-					return _map.toString();
 				case "toXMLString":
 					return _map.toXMLString();
-				case "valueOf":
-					return _map.valueOf();
 				default:
 					throw new IllegalOperationError("No method " + 
 								name + " on LocalizationManager");
@@ -254,6 +259,16 @@
 		//  Private methods
 		//
 		//--------------------------------------------------------------------------
+		
+		private static function buildMap(xml:XML):InteractiveModel
+		{
+			return new InteractiveModel(xml);
+		}
+		
+		private static function idGenerator():String
+		{
+			return "InteractiveModel" + (++_instanceCounter);
+		}
 	}
 	
 }
