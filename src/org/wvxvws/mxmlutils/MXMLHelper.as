@@ -47,7 +47,11 @@
 														eventType:String):Function
 		{
 			if (!dispatcher.hasEventListener(eventType)) return null;
-			var re:RegExp = new RegExp("_" + eventType + "$", "g");
+			
+			var id:String = "_" + getQualifiedClassName(dispatcher) + "_" +
+				getQualifiedSuperclassName(dispatcher).match(/[^:]+$/g)[0];
+			var re:RegExp = 
+				new RegExp("__" + id + "\\d+" + "_" + eventType + "$", "g");
 			var listeners:XMLList = 
 				describeType(dispatcher).method.(String(@name).match(re).length);
 			var f:Function = Object(dispatcher)[listeners[0].@name];
