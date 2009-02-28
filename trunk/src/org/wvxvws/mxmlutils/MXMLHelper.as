@@ -1,6 +1,7 @@
 ﻿package org.wvxvws.mxmlutils 
 {
 	import flash.events.IEventDispatcher;
+	import flash.utils.describeType;
 	import flash.utils.getQualifiedClassName;
 	import flash.utils.getQualifiedSuperclassName;
 	
@@ -46,13 +47,10 @@
 														eventType:String):Function
 		{
 			if (!dispatcher.hasEventListener(eventType)) return null;
-			var id:String = "_" + getQualifiedClassName(dispatcher) + "_" +
-				getQualifiedSuperclassName(dispatcher).match(/[^:]+$/g)[0];
-			var i:int;
-			while (!Object(dispatcher).hasOwnProperty(["__" + id + i.toString() +
-															"_" + eventType])) i++;
-			var f:Function = Object(dispatcher)["__" + id + i.toString() + "_" + 
-							eventType];
+			var re:RegExp = new RegExp("_" + eventType + "$", "g");
+			var listeners:XMLList = 
+				describeType(dispatcher).method.(String(@name).match(re).length);
+			var f:Function = Object(dispatcher)[listeners[0].@name];
 			return f;
 		}
 		
