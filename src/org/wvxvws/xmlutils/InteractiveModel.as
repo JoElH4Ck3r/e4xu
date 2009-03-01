@@ -7,6 +7,7 @@
 	import flash.utils.Proxy;
 	import flash.utils.flash_proxy;
 	import mx.core.IMXMLObject;
+	import org.wvxvws.xmlutils.xmlutils_internal;
 	
 	[Event(name="imchange", type="org.wvxvws.xmlutils.IMEvent")]
 	
@@ -24,6 +25,14 @@
 		//  Public properties
 		//
 		//--------------------------------------------------------------------------
+		
+		public static const ELEMENT:String = "element";
+		public static const ATTRIBUTE:String = "attribute";
+		public static const TEXT:String = "text";
+		public static const COMMENT:String = "comment";
+		public static const PI:String = "processing-instruction";
+		public static const CDATA:String = "CData";
+		
 		//------------------------------------
 		//  Public property source
 		//------------------------------------
@@ -56,9 +65,9 @@
 			}
 			_source = value.copy();
 			_children = new InteractiveList(_root, value.*);
-			_attributes = new InteractiveList(_root, value.@*);
+			_attributes = new InteractiveList(_root, value.@ * );
+			if (_map === null) _map = <map/>;
 			_map.setChildren(_source);
-			trace(toXMLString());
 			dispatchEvent(new IMEvent(IMEvent.IMCHANGE, path, old, _map));
 		}
 		
@@ -83,6 +92,9 @@
 		private var _map:XML;
 		private var _children:InteractiveList;
 		private var _attributes:InteractiveList;
+		private var _type:String = ELEMENT;
+		private var _name:QName;
+		private var _text:String;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -96,38 +108,33 @@
 			_root = root ? root : this;
 			if (xml)
 			{
-				//trace("InteractiveModel xml:", xml.toXMLString());
-				if (xml.nodeKind() == "element")
+				switch (xml.nodeKind())
 				{
-					_children = new InteractiveList(_root, xml.*);
+					case ATTRIBUTE:
+						_type = ATTRIBUTE;
+						_text = xml.toXMLString();
+						break;
+					case COMMENT:
+						_type = COMMENT;
+						_text = xml.toString();
+						break;
+					case ELEMENT:
+						_type = ELEMENT;
+						_name = xml.name();
+						_text = xml.text().toXMLString();
+						_children = new InteractiveList(_root, xml.children());
+						_attributes = new InteractiveList(_root, xml.attributes());
+						break;
+					case PI:
+						_type = PI;
+						break;
+					case TEXT:
+						if (xmlutils_internal::isCData(xml)) _type = CDATA;
+						else _type = TEXT;
+						_text = xml.text().toXMLString();
+						break;
 				}
-				else
-				{
-					_children = new InteractiveList(_root, null);
-				}
-				//trace("InteractiveModel setting attributes to:", xml.@*.toXMLString());
-				_attributes = new InteractiveList(_root, xml.@*);
-				_source = xml.copy();
-				_map = xml.parent();
 			}
-			else
-			{
-				_children = new InteractiveList(_root, null);
-				_attributes = new InteractiveList(_root, null);
-				_source = <source/>;
-				_map = <map/>;
-			}
-			if (_source[0].nodeKind() == "element")
-			{
-				_map.setChildren(_source);
-				//_children = new InteractiveList(_root, xml.*);
-			}
-			else 
-			{
-				//_attributes = new InteractiveList(_root, xml.@*);
-			}
-			//if (_children) trace("InteractiveModel _children", _children.toXMLString());
-			//if (_attributes) trace("InteractiveModel _attributes", _attributes.toXMLString());
 			_dispatcher = new EventDispatcher(this);
 		}
 		
@@ -172,13 +179,32 @@
 		}
 		
 		public function initialized(document:Object, id:String):void
-		{ 
+		{
+			_name = new QName(id);
 			_map.setName(id);
 		}
 		
 		public function toString():String { return _map.toString(); }
 		
-		public function toXMLString():String { return _map.toXMLString(); }
+		public function toXMLString():String
+		{
+			switch (_type)
+			{
+				case ATTRIBUTE:
+				case COMMENT:
+				case CDATA:
+				case TEXT:
+					return _text;
+				case ELEMENT:
+					return(
+					<{_name} {generateAttributeString(_attributes)}>
+						{generateChildrenList(_children)}</{_name}>.toXMLString()
+					);
+				case PI:
+					return "<?" + _name + "?>";
+			}
+			return "";
+		}
 		
 		public function root():InteractiveModel { return _root; }
 		
@@ -189,6 +215,15 @@
 		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
+		
+		xmlutils_internal function isCData(node:XML):Boolean
+		{
+			if (node.toXMLString().match(/^<!\[CDATA\[[^(\]\]>)]*\]\]>$/).length)
+			{
+				return true;
+			}
+			return false;
+		}
 		
 		flash_proxy override function callProperty(name:*, ...rest):* 
 		{
@@ -318,7 +353,7 @@
 			try
 			{
 				checkXML = XML(value);
-				isValidAttr = (checkXML.nodeKind() == "attribute");
+				isValidAttr = (checkXML.nodeKind() == "text");
 				isValidXML = true;
 			}
 			catch (error:Error) { isValidAttr = false; }
@@ -329,7 +364,18 @@
 				{
 					old = _source.attribute(name).length() ? 
 									_source.attribute(name)[0].copy() : null;
-					_source.@[name] = value;
+					if (flash_proxy::isAttribute(name))
+					{
+						_source[name] = value;
+						_map[_source.name()][name] = value;
+						trace("isAttribute", _map[_source.name()].toXMLString());
+						trace("isAttribute", _map.toXMLString());
+					}
+					else
+					{
+						_source.@[name] = value;
+						_map[_source.name()].@[name] = value;
+					}
 					dispatchEvent(new IMEvent(IMEvent.IMCHANGE, "", old, value));
 					return;
 				}
@@ -345,6 +391,27 @@
 		//  Private methods
 		//
 		//--------------------------------------------------------------------------
+		
+		private static function generateAttributeString(list:InteractiveList):String
+		{
+			var rs:String = "";
+			for each(var p:InteractiveModel in list)
+			{
+				rs += p.name() + "=\"" + p.toString() + "\" ";
+			}
+			return rs;
+		}
+		
+		private static function generateChildrenList(list:InteractiveList):XMLList
+		{
+			var rl:XMLList;
+			for each(var p:InteractiveModel in list)
+			{
+				if (rl) rl += XML(p.toXMLString());
+				else rl = XMLList(p.toXMLString());
+			}
+			return rl;
+		}
 		
 		private static function idGenerator():String
 		{

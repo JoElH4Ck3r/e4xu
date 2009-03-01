@@ -72,6 +72,24 @@
 			return findMatch(String(name));
 		}
 		
+		flash_proxy override function nextName(index:int):String 
+		{
+			return _nodes[index - 1].name();
+		}
+		
+		flash_proxy override function nextNameIndex(index:int):int 
+		{
+			if (index < _nodes.length) return index + 1;
+			return 0;
+		}
+		
+		flash_proxy override function nextValue(index:int):* 
+		{
+			trace("nextValue", _nodes.length, index);
+			trace("nextValue", _nodes[index]);
+			return _nodes[index - 1];
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Private methods
