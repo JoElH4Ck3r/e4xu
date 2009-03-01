@@ -24,29 +24,41 @@
 		//  Public properties
 		//
 		//--------------------------------------------------------------------------
-		
 		//------------------------------------
-		//  Public property map
+		//  Public property source
 		//------------------------------------
 		
-		private var _map:XML = <InteractiveModel/>;
+		private var _source:XML = null;
 		
 		[Bindable("imchange")]
 		
 		/**
 		 * ...
 		 * This property can be used as the source for data binding. 
-		 * When this property is modified, it dispatches the <code>mapChange</code> event.
+		 * When this property is modified, it dispatches the <code>sourceChange</code> event.
 		 */
-		public function get map():XML { return _map; }
+		public function get source():XML { return _map; }
 		
-		public function set map(value:XML):void 
+		public function set source(value:XML):void 
 		{
-			if (_map == value) return;
-			var old:XML = _map.copy();
-			_map = value;
-			trace("dispatching");
-			dispatchEvent(new IMEvent(IMEvent.IMCHANGE, "", old, _map));
+			if (_source == value) return;
+			var old:XML = _map === null ? null : _map.copy();
+			var path:String = "";
+			var pt:Object = _source === null ? null : _source.parent();
+			if (pt) 
+			{
+				path = pt.name();
+				while (pt.parent())
+				{
+					path = path + "." + pt.name();
+					pt = pt.parent();
+				}
+			}
+			_source = value.copy();
+			_children = new InteractiveList(_root, value.*);
+			_attributes = new InteractiveList(_root, value.@*);
+			_map.setChildren(_source);
+			dispatchEvent(new IMEvent(IMEvent.IMCHANGE, path, old, _map));
 		}
 		
 		//--------------------------------------------------------------------------
@@ -55,8 +67,6 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		protected var _dispatcher:EventDispatcher;
-		
 		//--------------------------------------------------------------------------
 		//
 		//  Private properties
@@ -64,7 +74,14 @@
 		//--------------------------------------------------------------------------
 		
 		private static var _instanceCounter:int;
+		
+		
+		private var _dispatcher:EventDispatcher;
 		private var _root:InteractiveModel;
+		private var _id:String = idGenerator();
+		private var _map:XML;
+		private var _children:InteractiveList;
+		private var _attributes:InteractiveList;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -75,8 +92,20 @@
 		public function InteractiveModel(xml:XML = null, root:InteractiveModel = null) 
 		{
 			super();
-			_map = xml == null ? _map : xml;
 			_root = root ? root : this;
+			if (xml)
+			{
+				_children = new InteractiveList(_root, xml.*);
+				_attributes = new InteractiveList(_root, xml.@ * );
+				_source = xml.copy();
+				_map = xml.parent();
+			}
+			else
+			{
+				_source = <source/>;
+				_map = <map/>;
+			}
+			_map.setChildren(_source);
 			_dispatcher = new EventDispatcher(this);
 		}
 		
@@ -85,6 +114,11 @@
 		//  Public methods
 		//
 		//--------------------------------------------------------------------------
+		
+		public function imeChangeHandler(event:IMEvent):void
+		{
+			dispatchEvent(event.clone());
+		}
 		
 		public function addEventListener(type:String, listener:Function, 
 						useCapture:Boolean = false, priority:int = 0, 
@@ -116,16 +150,17 @@
 		}
 		
 		public function initialized(document:Object, id:String):void
-		{
-			_map.@id = id;
+		{ 
+			_map.setName(id);
 		}
 		
-		public function toString():String
-		{
-			return _map.toXMLString();
-		}
+		public function toString():String { return _map.toString(); }
+		
+		public function toXMLString():String { return _map.toXMLString(); }
 		
 		public function root():InteractiveModel { return _root; }
+		
+		public function toXML():XML { return XUtils.objectToXML(this); }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -138,126 +173,134 @@
 			switch (String(name))
 			{
 				case "addNamespace":
-					return _map.addNamespace(rest[0]);
+					return _source.addNamespace(rest[0]);
 				case "appendChild":
-					return _map.appendChild(rest[0]);
+					return _source.appendChild(rest[0]);
 				case "attribute":
-					return _map.attribute(rest[0]);
+					return _source.attribute(rest[0]);
 				case "attributes":
-					return _map.attributes();
+					return _source.attributes();
 				case "child":
-					return _map.child(rest[0]);
+					return _source.child(rest[0]);
 				case "childIndex":
-					return _map.childIndex();
+					return _source.childIndex();
 				case "children":
-					return _map.children();
+					return _source.children();
 				case "comments":
-					return _map.comments();
+					return _source.comments();
 				case "contains":
-					return _map.contains(rest[0]);
+					return _source.contains(rest[0]);
 				case "copy":
-					return _map.copy();
+					return _source.copy();
 				case "descendants":
-					return _map.descendants(rest[0]);
+					return _source.descendants(rest[0]);
 				case "elements":
-					return _map.elements(rest[0]);
+					return _source.elements(rest[0]);
 				case "hasComplexContent":
-					return _map.hasComplexContent();
+					return _source.hasComplexContent();
 				case "hasSimpleContent":
-					return _map.hasSimpleContent();
+					return _source.hasSimpleContent();
 				case "inScopeNamespaces":
-					return _map.inScopeNamespaces();
+					return _source.inScopeNamespaces();
 				case "insertChildAfter":
-					return _map.insertChildAfter(rest[0], rest[1]);
+					return _source.insertChildAfter(rest[0], rest[1]);
 				case "insertChildBefore":
-					return _map.insertChildBefore(rest[0], rest[1]);
+					return _source.insertChildBefore(rest[0], rest[1]);
 				case "length":
-					return _map.length();
+					return _source.length();
 				case "localName":
-					return _map.localName();
+					return _source.localName();
 				case "name":
-					return _map.name();
+					return _source.name();
 				case "namespace":
-					return _map.namespace(rest[0]);
+					return _source.namespace(rest[0]);
 				case "namespaceDeclarations":
-					return _map.namespaceDeclarations();
+					return _source.namespaceDeclarations();
 				case "nodeKind":
-					return _map.nodeKind();
+					return _source.nodeKind();
 				case "normalize":
-					return _map.normalize();
+					return _source.normalize();
 				case "parent":
-					return _map.parent();
+					return _source.parent();
 				case "prependChild":
-					return _map.prependChild(rest[0]);
+					return _source.prependChild(rest[0]);
 				case "processingInstructions":
-					return _map.processingInstructions(rest[0]);
+					return _source.processingInstructions(rest[0]);
 				case "removeNamespace":
-					return _map.removeNamespace(rest[0]);
+					return _source.removeNamespace(rest[0]);
 				case "replace":
-					return _map.replace(rest[0], rest[1]);
+					return _source.replace(rest[0], rest[1]);
 				case "setChildren":
-					return _map.setChildren(rest[0]);
+					return _source.setChildren(rest[0]);
 				case "setLocalName":
-					return _map.setLocalName(rest[0]);
+					return _source.setLocalName(rest[0]);
 				case "setName":
-					return _map.setName(rest[0]);
+					return _source.setName(rest[0]);
 				case "setNamespace":
-					return _map.setNamespace(rest[0]);
+					return _source.setNamespace(rest[0]);
 				case "text":
-					return _map.text();
+					return _source.text();
 				case "toXMLString":
-					return _map.toXMLString();
+					return _source.toXMLString();
 				default:
 					throw new IllegalOperationError("No method " + 
-								name + " on LocalizationManager");
+								name + " on " + _id);
 			}
 			return undefined;
 		}
 		
 		flash_proxy override function deleteProperty(name:*):Boolean 
 		{
-			_map.replace(name as Object, null);
+			_source.replace(name as Object, null);
 			return true;
 		}
 		
 		flash_proxy override function getProperty(name:*):* 
 		{
-			return _map[name];
+			trace("getProperty", name);
+			if (flash_proxy::isAttribute(name)) return _attributes[name];
+			return _children[name];
 		}
 		
 		flash_proxy override function hasProperty(name:*):Boolean 
 		{
-			if (_map[name].lenght()) return true;
+			if (_source[name].lenght()) return true;
 			return false;
 		}
 		
 		flash_proxy override function nextName(index:int):String 
 		{
-			return _map.*[index].name();
+			return _source.*[index].name();
 		}
 		
 		flash_proxy override function nextNameIndex(index:int):int 
 		{
-			if (index < _map.*.length()) return index + 1;
+			if (index < _source.*.length()) return index + 1;
 			return 0;
 		}
 		
 		flash_proxy override function nextValue(index:int):* 
 		{
-			return _map.*[index];
+			return _source.*[index];
 		}
 		
 		flash_proxy override function setProperty(name:*, value:*):void 
 		{
+			trace("setProperty", name, value);
+			var old:XML;
 			var checkName:XML = XUtils.objectToXML(name);
 			var checkValue:XML = XUtils.objectToXML(value);
 			if (checkName.hasSimpleContent() && !checkName.@ * .length() && 
 					checkValue.hasSimpleContent() && !checkValue.@ * .length())
 			{
-				_map.@[name] = value;
+				old = _source.@[name] ? _source.@[name].copy() : null;
+				_source.@[name] = value;
+				dispatchEvent(new IMEvent(IMEvent.IMCHANGE, "", old, value));
 				return;
 			}
-			_map[name] = value;
+			old = _source[name] ? _source[name].copy() : null;
+			_source[name] = value;
+			dispatchEvent(new IMEvent(IMEvent.IMCHANGE, "", old, value));
 		}
 		
 		//--------------------------------------------------------------------------
@@ -265,11 +308,6 @@
 		//  Private methods
 		//
 		//--------------------------------------------------------------------------
-		
-		private static function buildMap(xml:XML):InteractiveModel
-		{
-			return new InteractiveModel(xml);
-		}
 		
 		private static function idGenerator():String
 		{
