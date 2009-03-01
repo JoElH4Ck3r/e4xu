@@ -8,29 +8,41 @@
 	<mx:Script>
 		<![CDATA[
 			import flash.events.Event;
-			import flash.utils.Timer;
 			import org.wvxvws.mxmlutils.MXMLHelper;
+			import org.wvxvws.xmlutils.IMEvent;
 			
-			private var timer:Timer = new Timer(1000);
-			private function imchangeHandler(event:Event):void
+			private function imchangeHandler(event:IMEvent):void
 			{
-				trace(event);
+				trace("imchangeHandler", event.newValue);
+				trace("imchangeHandler", event.oldValue);
 			}
 			
 			private function enterFrameHandler(event:Event):void
 			{
 				var f:Function = MXMLHelper.nameForMXMLListener(this, Event.ENTER_FRAME);
 				removeEventListener(Event.ENTER_FRAME, f);
-				trace("!!!", this["someId"]);
-				trace(someId.attributes().toXMLString());
+				trace("!!!", this["someId"].toXMLString());
+				//trace(someId.attributes().toXMLString());
+				//trace("###", someId.toXMLString());
+				//someId.levelB = <moooo/>;
+				//someId.levelB.@moohaha = "skdjfhslk";
+				//trace(someId.toXMLString());
 			}
 		]]>
 	</mx:Script>
-	<e4xu:InteractiveModel id="someId" imchange="imchangeHandler(event)" foo="bar">
-		<!--<e4xu:map>
-			<mx:XML>
-				<foo/>
-			</mx:XML>
-		</e4xu:map>-->
+	<e4xu:InteractiveModel 
+		id="someId" 
+		imchange="imchangeHandler(event)">
+			
+			<e4xu:source>
+				<mx:XML>
+					<levelA bar="1234">
+						<levelB>
+							<levelC foo="blah" />
+						</levelB>
+					</levelA>
+				</mx:XML>
+			</e4xu:source>
+		
 	</e4xu:InteractiveModel>
 </fl:Sprite>
