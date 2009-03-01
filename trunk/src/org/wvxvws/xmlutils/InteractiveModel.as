@@ -312,16 +312,31 @@
 			var old:XML;
 			var checkName:XML = XUtils.objectToXML(name);
 			var checkValue:XML = XUtils.objectToXML(value);
-			if (checkName.hasSimpleContent() && !checkName.@ * .length() && 
-					checkValue.hasSimpleContent() && !checkValue.@ * .length())
+			var checkXML:XML;
+			var isValidXML:Boolean;
+			var isValidAttr:Boolean;
+			try
 			{
-				old = _source.@[name] ? _source.@[name].copy() : null;
-				_source.@[name] = value;
-				dispatchEvent(new IMEvent(IMEvent.IMCHANGE, "", old, value));
-				return;
+				checkXML = XML(value);
+				isValidAttr = (checkXML.nodeKind() == "attribute");
+				isValidXML = true;
 			}
-			old = _source[name] ? _source[name].copy() : null;
-			_source[name] = value;
+			catch (error:Error) { isValidAttr = false; }
+			if (checkName.hasSimpleContent() && !checkName.@*.length() && 
+					checkValue.hasSimpleContent() && !checkValue.@*.length())
+			{
+				if (isValidAttr)
+				{
+					old = _source.attribute(name).length() ? 
+									_source.attribute(name)[0].copy() : null;
+					_source.@[name] = value;
+					dispatchEvent(new IMEvent(IMEvent.IMCHANGE, "", old, value));
+					return;
+				}
+			}
+			old = _source[name] ? _source[name][0].copy() : null;
+			_source[name].setChildren(value);
+			_map[_source.name()][name].setChildren(value);
 			dispatchEvent(new IMEvent(IMEvent.IMCHANGE, "", old, value));
 		}
 		
