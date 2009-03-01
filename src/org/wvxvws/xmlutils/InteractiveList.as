@@ -36,6 +36,7 @@
 		//  Cunstructor
 		//
 		//--------------------------------------------------------------------------
+		
 		public function InteractiveList(root:InteractiveModel, nodes:XMLList) 
 		{
 			super();
@@ -55,10 +56,7 @@
 		{
 			var rstr:String = "";
 			var l:int = _nodes.length;
-			for (var i:int; i < l; i++)
-			{
-				rstr += XUtils.objectToXML(_nodes[i]).toString();
-			}
+			for (var i:int; i < l; i++) rstr += _nodes[i].toXMLString();
 			return rstr;
 		}
 		
@@ -70,7 +68,7 @@
 		
 		flash_proxy override function getProperty(name:*):* 
 		{
-			trace("getProperty", name);
+			trace("List getProperty", name);
 			return findMatch(String(name));
 		}
 		
@@ -85,7 +83,8 @@
 			var i:int = _nodes.length;
 			while (i--) 
 			{
-				trace("searching " + _nodes[i].name());
+				trace("searching " + _nodes[i].name(), name);
+				trace("searching " + _nodes[i].toXMLString());
 				if (_nodes[i].name() == name) return _nodes[i];
 			}
 			return null;
@@ -93,8 +92,23 @@
 		
 		private function populate(nodes:XMLList):void
 		{
-			nodes.(_nodes[_nodes.push(new InteractiveModel(valueOf(), 
+			if (nodes[0] === undefined) return;
+			trace("List\t", nodes[0]);
+			trace("List\t", nodes.toXMLString());
+			if (nodes[0].nodeKind() == "element")
+			{
+				nodes.(_nodes[_nodes.push(new InteractiveModel(valueOf(), 
 				_root)) - 1].addEventListener(IMEvent.IMCHANGE, _root.imeChangeHandler));
+			}
+			else
+			{
+				nodes.@*.(_nodes[_nodes.push(new InteractiveModel(valueOf(), 
+				_root)) - 1].addEventListener(IMEvent.IMCHANGE, _root.imeChangeHandler));
+			}
+			for each(var im:InteractiveModel in _nodes)
+			{
+				trace("populate", im.toXMLString());
+			}
 		}
 	}
 	
