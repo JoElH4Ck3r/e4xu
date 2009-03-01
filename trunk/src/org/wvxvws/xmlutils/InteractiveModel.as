@@ -58,6 +58,7 @@
 			_children = new InteractiveList(_root, value.*);
 			_attributes = new InteractiveList(_root, value.@*);
 			_map.setChildren(_source);
+			trace(toXMLString());
 			dispatchEvent(new IMEvent(IMEvent.IMCHANGE, path, old, _map));
 		}
 		
@@ -95,17 +96,38 @@
 			_root = root ? root : this;
 			if (xml)
 			{
-				_children = new InteractiveList(_root, xml.*);
-				_attributes = new InteractiveList(_root, xml.@ * );
+				//trace("InteractiveModel xml:", xml.toXMLString());
+				if (xml.nodeKind() == "element")
+				{
+					_children = new InteractiveList(_root, xml.*);
+				}
+				else
+				{
+					_children = new InteractiveList(_root, null);
+				}
+				//trace("InteractiveModel setting attributes to:", xml.@*.toXMLString());
+				_attributes = new InteractiveList(_root, xml.@*);
 				_source = xml.copy();
 				_map = xml.parent();
 			}
 			else
 			{
+				_children = new InteractiveList(_root, null);
+				_attributes = new InteractiveList(_root, null);
 				_source = <source/>;
 				_map = <map/>;
 			}
-			_map.setChildren(_source);
+			if (_source[0].nodeKind() == "element")
+			{
+				_map.setChildren(_source);
+				//_children = new InteractiveList(_root, xml.*);
+			}
+			else 
+			{
+				//_attributes = new InteractiveList(_root, xml.@*);
+			}
+			//if (_children) trace("InteractiveModel _children", _children.toXMLString());
+			//if (_attributes) trace("InteractiveModel _attributes", _attributes.toXMLString());
 			_dispatcher = new EventDispatcher(this);
 		}
 		
@@ -257,7 +279,7 @@
 		
 		flash_proxy override function getProperty(name:*):* 
 		{
-			trace("getProperty", name);
+			trace("InteractiveModel getProperty", name, toXMLString());
 			if (flash_proxy::isAttribute(name)) return _attributes[name];
 			return _children[name];
 		}
@@ -286,7 +308,7 @@
 		
 		flash_proxy override function setProperty(name:*, value:*):void 
 		{
-			trace("setProperty", name, value);
+			trace("InteractiveModel setProperty", name, value);
 			var old:XML;
 			var checkName:XML = XUtils.objectToXML(name);
 			var checkValue:XML = XUtils.objectToXML(value);
