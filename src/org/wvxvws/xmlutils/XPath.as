@@ -32,16 +32,36 @@
 		//  Cunstructor
 		//
 		//--------------------------------------------------------------------------
-		public function XPath() 
-		{
-			super();
-			
-		}
+		public function XPath() { super(); }
 		//--------------------------------------------------------------------------
 		//
 		//  Public methods
 		//
 		//--------------------------------------------------------------------------
+		
+		//------------ selectors -------------//
+		public static const ROOT:String = "/"; //  	Selects from the root node
+		public static const LIST:String = "//"; // 	Selects nodes in the document from the current node that match the selection no matter where they are
+		public static const CURRENT:String = "."; // 	Selects the current node
+		public static const PARENT:String = ".."; // 	Selects the parent of the current node
+		public static const ATTRIBUTES:String = "@"; // 	Selects attributes
+		
+		//------------ operators ---------------//
+		public static const PIPE:String = "|"; //  	Computes two node-sets  	 //book | //cd  	 Returns a node-set with all book and cd elements
+		public static const PLUS:String = "+"; // 	Addition 	6 + 4 	10
+		public static const MINUS:String = "-"; // 	Subtraction 	6 - 4 	2
+		public static const MULTIPLICATION:String = "*";  //	Multiplication 	6 * 424
+		public static const DIVISION:String = "div"; // 	Division 	8 div 4 	2
+		public static const EQUAL = "="; // 	Equal 	price = 9.80 	true if price is 9.80 false if price is 9.90
+		public static const NOT_EQUAL = "!="; // 	Not equal 	price != 9.80 	true if price is 9.90 false if price is 9.80
+		public static const LESS_THAN:String = "<"; // 	Less than 	price < 9.80 	true if price is 9.00 false if price is 9.80
+		public static const LESS_THAN_OR_EQUAL:String = "<="; // 	Less than or equal to 	price <= 9.80 	true if price is 9.00 false if price is 9.90
+		public static const GREATER_THAN:String = ">"; // 	Greater than 	price > 9.80 	true if price is 9.90 false if price is 9.80
+		public static const GREATER_THAN_OR_EQUAL = ">="; // 	Greater than or equal to 	price >= 9.80 	true if price is 9.90 false if price is 9.70
+		public static const OR:String =	"or"; // 	price = 9.80 or price = 9.70 	true if price is 9.80 false if price is 9.50
+		public static const AND:String = "and"; // 	price > 9.00 and price < 9.90 	true if price is 9.80 false if price is 8.50
+		public static const MODULUS:String = "mod"; // 	Modulus (division remainder) 	5 mod 2 	1
+		
 		
 		/**
 		 * Returns the node-name of the argument node
