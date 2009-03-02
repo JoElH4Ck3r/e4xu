@@ -21,12 +21,10 @@
 			{
 				var f:Function = MXMLHelper.nameForMXMLListener(this, Event.ENTER_FRAME);
 				removeEventListener(Event.ENTER_FRAME, f);
-				trace("!!!", this["someId"].toXMLString());
-				//trace(someId.attributes().toXMLString());
-				//trace("###", someId.toXMLString());
-				//someId.levelB = <moooo/>;
-				//someId.levelB.@moohaha = "skdjfhslk";
-				//trace(someId.toXMLString());
+				trace("Frameworkless\r", someId.toXMLString());
+				trace("Frameworkless\r", someId.levelB.levelC.@foo);
+				someId.levelB.levelC.@foo = "asdfgh";
+				trace("Frameworkless\r", someId.toXMLString());
 			}
 		]]>
 	</mx:Script>

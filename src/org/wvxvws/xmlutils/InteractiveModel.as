@@ -102,17 +102,21 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public function InteractiveModel(xml:XML = null, root:InteractiveModel = null) 
+		public function InteractiveModel(xml:XML = null, root:InteractiveModel = null, 
+													nodeIsAttribute:Boolean = false) 
 		{
 			super();
 			_root = root ? root : this;
-			if (xml)
+			var nodeKind:String
+			if (xml !== null)
 			{
-				switch (xml.nodeKind())
+				nodeKind = nodeIsAttribute ? ATTRIBUTE : xml.nodeKind();
+				switch (nodeKind)
 				{
 					case ATTRIBUTE:
 						_type = ATTRIBUTE;
 						_text = xml.toXMLString();
+						_name = QName(xml.name());
 						break;
 					case COMMENT:
 						_type = COMMENT;
@@ -127,6 +131,7 @@
 						break;
 					case PI:
 						_type = PI;
+						_name = QName(xml.name());
 						break;
 					case TEXT:
 						if (xmlutils_internal::isCData(xml)) _type = CDATA;
@@ -134,6 +139,7 @@
 						_text = xml.text().toXMLString();
 						break;
 				}
+				_map = XML(xml.copy());
 			}
 			_dispatcher = new EventDispatcher(this);
 		}
@@ -184,6 +190,12 @@
 			_map.setName(id);
 		}
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Public XML methods
+		//
+		//--------------------------------------------------------------------------
+		
 		public function toString():String { return _map.toString(); }
 		
 		public function toXMLString():String
@@ -206,9 +218,13 @@
 			return "";
 		}
 		
+		public function name():Object { return _name; }
+		
 		public function root():InteractiveModel { return _root; }
 		
 		public function toXML():XML { return XUtils.objectToXML(this); }
+		
+		public function nodeKind():String { return _type; }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -218,10 +234,7 @@
 		
 		xmlutils_internal function isCData(node:XML):Boolean
 		{
-			if (node.toXMLString().match(/^<!\[CDATA\[[^(\]\]>)]*\]\]>$/).length)
-			{
-				return true;
-			}
+			if (node.toXMLString().match(/^<!\[CDATA\[[^(\]\]>)]*\]\]>$/)) return true;
 			return false;
 		}
 		
@@ -267,14 +280,10 @@
 					return _source.length();
 				case "localName":
 					return _source.localName();
-				case "name":
-					return _source.name();
 				case "namespace":
 					return _source.namespace(rest[0]);
 				case "namespaceDeclarations":
 					return _source.namespaceDeclarations();
-				case "nodeKind":
-					return _source.nodeKind();
 				case "normalize":
 					return _source.normalize();
 				case "parent":
@@ -314,7 +323,6 @@
 		
 		flash_proxy override function getProperty(name:*):* 
 		{
-			trace("InteractiveModel getProperty", name, toXMLString());
 			if (flash_proxy::isAttribute(name)) return _attributes[name];
 			return _children[name];
 		}
@@ -343,46 +351,17 @@
 		
 		flash_proxy override function setProperty(name:*, value:*):void 
 		{
-			trace("InteractiveModel setProperty", name, value);
-			var old:XML;
-			var checkName:XML = XUtils.objectToXML(name);
-			var checkValue:XML = XUtils.objectToXML(value);
-			var checkXML:XML;
-			var isValidXML:Boolean;
-			var isValidAttr:Boolean;
-			try
+			var old:InteractiveModel;
+			if (flash_proxy::isAttribute(name))
 			{
-				checkXML = XML(value);
-				isValidAttr = (checkXML.nodeKind() == "text");
-				isValidXML = true;
+				old = _attributes[name];
+				_attributes[name] = value;
 			}
-			catch (error:Error) { isValidAttr = false; }
-			if (checkName.hasSimpleContent() && !checkName.@*.length() && 
-					checkValue.hasSimpleContent() && !checkValue.@*.length())
+			else
 			{
-				if (isValidAttr)
-				{
-					old = _source.attribute(name).length() ? 
-									_source.attribute(name)[0].copy() : null;
-					if (flash_proxy::isAttribute(name))
-					{
-						_source[name] = value;
-						_map[_source.name()][name] = value;
-						trace("isAttribute", _map[_source.name()].toXMLString());
-						trace("isAttribute", _map.toXMLString());
-					}
-					else
-					{
-						_source.@[name] = value;
-						_map[_source.name()].@[name] = value;
-					}
-					dispatchEvent(new IMEvent(IMEvent.IMCHANGE, "", old, value));
-					return;
-				}
+				old = _children[name];
+				_children[name] = value;
 			}
-			old = _source[name] ? _source[name][0].copy() : null;
-			_source[name].setChildren(value);
-			_map[_source.name()][name].setChildren(value);
 			dispatchEvent(new IMEvent(IMEvent.IMCHANGE, "", old, value));
 		}
 		
@@ -410,7 +389,7 @@
 				if (rl) rl += XML(p.toXMLString());
 				else rl = XMLList(p.toXMLString());
 			}
-			return rl;
+			return rl === null ? new XMLList() : rl;
 		}
 		
 		private static function idGenerator():String
