@@ -52,6 +52,8 @@
 		
 		public function root():InteractiveModel { return _root; }
 		
+		public function toString():String { return toXMLString(); }
+		
 		public function toXMLString():String
 		{
 			var rstr:String = "";
@@ -59,6 +61,8 @@
 			for (var i:int; i < l; i++) rstr += _nodes[i].toXMLString();
 			return rstr;
 		}
+		
+		public function length():int { return _nodes.length; }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -68,8 +72,24 @@
 		
 		flash_proxy override function getProperty(name:*):* 
 		{
-			trace("List getProperty", name);
 			return findMatch(String(name));
+		}
+		
+		flash_proxy override function setProperty(name:*, value:*):void 
+		{
+			var i:int = _nodes.length;
+			var nodeIsAttribute:Boolean;
+			var xml:XML;
+			while (i--) 
+			{
+				if (_nodes[i].name() == name)
+				{
+					nodeIsAttribute = _nodes[i].nodeKind() == InteractiveModel.ATTRIBUTE;
+					if (nodeIsAttribute) xml = <{name}>{value}</{name}>;
+					else xml = XML(value);
+					_nodes[i] = new InteractiveModel(xml, _root, nodeIsAttribute);
+				}
+			}
 		}
 		
 		flash_proxy override function nextName(index:int):String 
@@ -85,8 +105,6 @@
 		
 		flash_proxy override function nextValue(index:int):* 
 		{
-			trace("nextValue", _nodes.length, index);
-			trace("nextValue", _nodes[index]);
 			return _nodes[index - 1];
 		}
 		
@@ -99,34 +117,15 @@
 		private function findMatch(name:String):InteractiveModel
 		{
 			var i:int = _nodes.length;
-			while (i--) 
-			{
-				trace("searching " + _nodes[i].name(), name);
-				trace("searching " + _nodes[i].toXMLString());
-				if (_nodes[i].name() == name) return _nodes[i];
-			}
+			while (i--) if (_nodes[i].name() == name) return _nodes[i];
 			return null;
 		}
 		
 		private function populate(nodes:XMLList):void
 		{
 			if (nodes[0] === undefined) return;
-			trace("List\t", nodes[0]);
-			trace("List\t", nodes.toXMLString());
-			if (nodes[0].nodeKind() == "element")
-			{
-				nodes.(_nodes[_nodes.push(new InteractiveModel(valueOf(), 
+			nodes.(_nodes[_nodes.push(new InteractiveModel(valueOf(), 
 				_root)) - 1].addEventListener(IMEvent.IMCHANGE, _root.imeChangeHandler));
-			}
-			else
-			{
-				nodes.@*.(_nodes[_nodes.push(new InteractiveModel(valueOf(), 
-				_root)) - 1].addEventListener(IMEvent.IMCHANGE, _root.imeChangeHandler));
-			}
-			for each(var im:InteractiveModel in _nodes)
-			{
-				trace("populate", im.toXMLString());
-			}
 		}
 	}
 	
