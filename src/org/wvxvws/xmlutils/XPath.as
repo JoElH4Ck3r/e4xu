@@ -15,6 +15,46 @@
 		//
 		//--------------------------------------------------------------------------
 		
+		//------------ selectors -------------//
+		public static const ROOT:String = "/"; //  	Selects from the root node
+		public static const LIST:String = "//"; // 	Selects nodes in the document from the current node that match the selection no matter where they are
+		public static const CURRENT:String = "."; // 	Selects the current node
+		public static const UP:String = ".."; // 	Selects the parent of the current node
+		public static const ATTRIBUTES:String = "@"; // 	Selects attributes
+		
+		public static const ANCESTOR:String = "ancestor"; //  	Selects all ancestors (parent, grandparent, etc.) of the current node
+		public static const ANCESTOR_OR_SELF:String = "ancestor-or-self"; // 	Selects all ancestors (parent, grandparent, etc.) of the current node and the current node itself
+		public static const ATTRIBUTE:String = "attribute"; // 	Selects all attributes of the current node
+		public static const CHILD:String = "child"; // 	Selects all children of the current node
+		public static const DESCENDANT:String = "descendant"; // 	Selects all descendants (children, grandchildren, etc.) of the current node
+		public static const DESCENDANT_OR_SELF:String = "descendant-or-self"; // 	Selects all descendants (children, grandchildren, etc.) of the current node and the current node itself
+		public static const FOLLOWING:String = "following"; // 	Selects everything in the document after the closing tag of the current node
+		public static const FOLLOWING_SIBLING:String = "following-sibling"; // 	Selects all siblings after the current node
+		public static const NAMESPACE:String = "namespace"; // 	Selects all namespace nodes of the current node
+		public static const PARENT:String = "parent"; // 	Selects the parent of the current node
+		public static const PRECEDING:String = "preceding"; // 	Selects everything in the document that is before the start tag of the current node
+		public static const PRECEDING_SIBLING:String = "preceding-sibling"; // 	Selects all siblings before the current node
+		public static const SELF:String = "self"; // Selects the current node
+
+		
+		//------------ operators ---------------//
+		public static const PIPE:String = "|"; //  	Computes two node-sets  	 //book | //cd  	 Returns a node-set with all book and cd elements
+		public static const PLUS:String = "+"; // 	Addition 	6 + 4 	10
+		public static const MINUS:String = "-"; // 	Subtraction 	6 - 4 	2
+		public static const MULTIPLICATION:String = "*";  //	Multiplication 	6 * 424
+		public static const DIVISION:String = "div"; // 	Division 	8 div 4 	2
+		public static const EQUAL = "="; // 	Equal 	price = 9.80 	true if price is 9.80 false if price is 9.90
+		public static const NOT_EQUAL = "!="; // 	Not equal 	price != 9.80 	true if price is 9.90 false if price is 9.80
+		public static const LESS_THAN:String = "<"; // 	Less than 	price < 9.80 	true if price is 9.00 false if price is 9.80
+		public static const LESS_THAN_OR_EQUAL:String = "<="; // 	Less than or equal to 	price <= 9.80 	true if price is 9.00 false if price is 9.90
+		public static const GREATER_THAN:String = ">"; // 	Greater than 	price > 9.80 	true if price is 9.90 false if price is 9.80
+		public static const GREATER_THAN_OR_EQUAL = ">="; // 	Greater than or equal to 	price >= 9.80 	true if price is 9.90 false if price is 9.70
+		public static const OR:String =	"or"; // 	price = 9.80 or price = 9.70 	true if price is 9.80 false if price is 9.50
+		public static const AND:String = "and"; // 	price > 9.00 and price < 9.90 	true if price is 9.80 false if price is 8.50
+		public static const MODULUS:String = "mod"; // 	Modulus (division remainder) 	5 mod 2 	1
+		public static const SELECTOR:String = "::";
+		public static const FUNCTION:String = "fn:";
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
@@ -33,34 +73,54 @@
 		//
 		//--------------------------------------------------------------------------
 		public function XPath() { super(); }
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Mix-ins
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		 * Returns the value of the base-uri property of the current or specified node
+		 * @return	String.
+		 */
+		public static var baseURI:Function = function(node:InteractiveModel = null):String
+		{
+			if (node !== null) return node.namespace().uri;
+			return InteractiveModel(this).namespace().uri;
+		}
+		
+		/**
+		 * Returns the value of the document-uri property for the specified node
+		 * @param	node
+		 * @return
+		 */
+		public static var documentURI:Function = function(node:InteractiveModel = null):String
+		{
+			if (node !== null) return node.root().namespace().uri;
+			return InteractiveModel(this).root().namespace().uri;
+		}
+		
+		/**
+		 * Returns the length of the specified string. 
+		 * If there is no string argument it returns the length of 
+		 * the string value of the current node.
+		 * Example: string-length('Beatles')
+		 * Result: 7
+		 * @param	string
+		 * @return
+		 */
+		public static var stringLength:Function = function(string:String = null):int
+		{
+			if (string) return string.length;
+			return InteractiveModel(this).toXMLString().length;
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Public methods
 		//
 		//--------------------------------------------------------------------------
-		
-		//------------ selectors -------------//
-		public static const ROOT:String = "/"; //  	Selects from the root node
-		public static const LIST:String = "//"; // 	Selects nodes in the document from the current node that match the selection no matter where they are
-		public static const CURRENT:String = "."; // 	Selects the current node
-		public static const PARENT:String = ".."; // 	Selects the parent of the current node
-		public static const ATTRIBUTES:String = "@"; // 	Selects attributes
-		
-		//------------ operators ---------------//
-		public static const PIPE:String = "|"; //  	Computes two node-sets  	 //book | //cd  	 Returns a node-set with all book and cd elements
-		public static const PLUS:String = "+"; // 	Addition 	6 + 4 	10
-		public static const MINUS:String = "-"; // 	Subtraction 	6 - 4 	2
-		public static const MULTIPLICATION:String = "*";  //	Multiplication 	6 * 424
-		public static const DIVISION:String = "div"; // 	Division 	8 div 4 	2
-		public static const EQUAL = "="; // 	Equal 	price = 9.80 	true if price is 9.80 false if price is 9.90
-		public static const NOT_EQUAL = "!="; // 	Not equal 	price != 9.80 	true if price is 9.90 false if price is 9.80
-		public static const LESS_THAN:String = "<"; // 	Less than 	price < 9.80 	true if price is 9.00 false if price is 9.80
-		public static const LESS_THAN_OR_EQUAL:String = "<="; // 	Less than or equal to 	price <= 9.80 	true if price is 9.00 false if price is 9.90
-		public static const GREATER_THAN:String = ">"; // 	Greater than 	price > 9.80 	true if price is 9.90 false if price is 9.80
-		public static const GREATER_THAN_OR_EQUAL = ">="; // 	Greater than or equal to 	price >= 9.80 	true if price is 9.90 false if price is 9.70
-		public static const OR:String =	"or"; // 	price = 9.80 or price = 9.70 	true if price is 9.80 false if price is 9.50
-		public static const AND:String = "and"; // 	price > 9.00 and price < 9.90 	true if price is 9.80 false if price is 8.50
-		public static const MODULUS:String = "mod"; // 	Modulus (division remainder) 	5 mod 2 	1
 		
 		
 		/**
@@ -68,40 +128,43 @@
 		 * @param	node
 		 * @return	Object
 		 */
-		public static function nodeName(node:String):Object { }
+		public static function nodeName(node:InteractiveModel):Object { node.name(); }
 		
 		/**
 		 * Returns a Boolean value indicating whether the argument node is nilled
 		 * @param	node
 		 * @return	Boolean
 		 */
-		public static function nilled(node:String):Boolean { }
+		public static function nilled(node:InteractiveModel):Boolean
+		{
+			var declarations:Array = node.namespaceDeclarations();
+			for each(var ns:Namespace in declarations)
+			{
+				if (ns.prefix == "xsi" && node.ns::@nil == "true" && node.@ * .length() == 1)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
 		
 		/**
 		 * Takes a sequence of items and returns a sequence of atomic values
 		 * @param	...rest
-		 * @return	XMLList.
+		 * @return	InteractiveList.
 		 */
-		public static function data(...rest):XMLList { }
-		
-		/**
-		 * Returns the value of the base-uri property of the current or specified node
-		 * @return	String.
-		 */
-		public static function baseURI(node = null):String { }
-		
-		/**
-		 * Returns the value of the document-uri property for the specified node
-		 * @param	node
-		 * @return
-		 */
-		public static function documentURI(node:String):String { }
+		public static function data(...rest):InteractiveList
+		{
+			var list:XMLList = XMLList(rest.shift());
+			while (rest.length) list += XMLList(rest.shift());
+			var ilist:InteractiveList = new InteractiveList(null, list);
+		}
 		
 		/**
 		 * Example: error(fn:QName('http://example.com/test', 'err:toohigh'), 'Error: Price is too high')
 		 * Result: Returns http://example.com/test#toohigh and the string "Error: Price is too high" to the external processing environment
 		 */
-		public static function error(error:Error, description:String):void
+		public static function error(error:Error, description:String):void { }
 		
 		/**
 		 * Used to debug queries
@@ -109,7 +172,7 @@
 		 * @param	label
 		 * @return
 		 */
-		public static function trace(value:Object, label:String):void { }
+		public static function xtrace(value:Object, label:String):void { }
 		
 		/**
 		 * Returns the numeric value of the argument. The argument could be a boolean, string, or node-set.
@@ -118,7 +181,7 @@
 		 * @param	arg
 		 * @return	Number.
 		 */
-		public static function number(arg:Object):Number
+		public static function number(arg:Object):Number { return Number(arg); }
 
 		/**
 		 * Returns the absolute value of the argument
@@ -127,7 +190,7 @@
 		 * @param	num
 		 * @return	Number.
 		 */
-		public static function abs(num:Object):Number { }
+		public static function abs(num:Object):Number { return Math.abs(num); }
 		
 		/**
 		 * Returns the smallest integer that is greater than the number argument
@@ -136,7 +199,7 @@
 		 * @param	num
 		 * @return	Number.
 		 */
-		public static function ceiling(num:Object):Number { }
+		public static function ceiling(num:Object):Number { return Math.ceil(num); }
 		
 		/**
 		 * Returns the largest integer that is not greater than the number argument
@@ -145,14 +208,14 @@
 		 * @param	num
 		 * @return	Number.
 		 */
-		public static function floor(num:Object):Number { }
+		public static function floor(num:Object):Number { return Number(num) >> 0; }
 		
 		/**
 		 * Rounds the number argument to the nearest integer
 		 * Example: round(3.14)
 		 * Result: 3
 		 */
-		public static function round(num:Object):Number { }
+		public static function round(num:Object):Number { return Math.round(num); }
 
 		/**
 		 * Example: round-half-to-even(0.5)
@@ -164,7 +227,7 @@
 		 * @param	num
 		 * @return	Number.
 		 */
-		public static function roundHalfToEven(num:Object):Number { }
+		public static function roundHalfToEven(num:Object):Number { return ((Math.ceil(num) / 2) >> 0) * 2; }
 		
 		/**
 		 * Returns the string value of the argument. The argument could be a number, boolean, or node-set
@@ -173,7 +236,7 @@
 		 * @param	arg
 		 * @return	String.
 		 */
-		public static function string(arg:Object):String { }
+		public static function string(arg:Object):String { return arg.toString() }
 		
 		/**
 		 * Returns a string from a sequence of code points
@@ -182,7 +245,13 @@
 		 * @param	...rest
 		 * @return	String.
 		 */
-		public static function codepointsToString(...rest):String { }
+		public static function codepointsToString(...rest):String
+		{
+			var i:int = rest.length;
+			var rs:String = "";
+			while (i--) rs = String.fromCharCode(rest[i]) + rs;
+			return rs;
+		}
 		
 		/**
 		 * Returns a sequence of code points from a string
@@ -191,8 +260,15 @@
 		 * @param	string
 		 * @return	Array.
 		 */
-		public static function stringToCodepoints(string:String):Array { }
+		public static function stringToCodepoints(string:String):Array
+		{
+			var ra:Array = [];
+			var i:int = string.length;
+			while (i--) ra.unshift(string.charCodeAt(i));
+			return ra;
+		}
 		
+		// TODO: Figure out what's this :)
 		/**
 		 * Returns true if the value of comp1 is equal to the value of comp2, 
 		 * according to the Unicode code point collation 
@@ -202,8 +278,9 @@
 		 * @param comp2
 		 * @return Boolean.
 		 */
-		public static function codepointEqual(comp1:int, comp2:int):Boolean { }
+		public static function codepointEqual(comp1:int, comp2:int):Boolean { return false; }
 		
+		// TODO: Figure out what's this :)
 		/**
 		 * Returns -1 if comp1 is less than comp2, 0 if comp1 is equal to comp2,
 		 * or 1 if comp1 is greater than comp2 
@@ -215,7 +292,7 @@
 		 * @param	collation
 		 * @return
 		 */
-		public static function compare(comp1:int, comp2:int, collation:Boolean = false):int { }
+		public static function compare(comp1:int, comp2:int, collation:Boolean = false):int { return -1; }
 		
 		/**
 		 * Returns the concatenation of the strings.
@@ -224,7 +301,7 @@
 		 * @param	...strings
 		 * @return
 		 */
-		public static function concat(...strings):String { }
+		public static function concat(...strings):String { return strings.join(""); }
 		
 		/**
 		 * Returns a string created by concatenating the string arguments 
@@ -239,7 +316,10 @@
 		 * @param	...strings
 		 * @return	String.
 		 */
-		public static function stringJoin(sep:String, ...strings):String { }
+		public static function stringJoin(sep:String, ...strings):String
+		{
+			return strings.join(sep);
+		}
 		
 		/**
 		 * Example: substring('Beatles',1,4)
@@ -251,18 +331,10 @@
 		 * @param	len
 		 * @return
 		 */
-		public static function substring(string:String, start:int, len:int = 0x7FFFFFFF):String { }
-		
-		/**
-		 * Returns the length of the specified string. 
-		 * If there is no string argument it returns the length of 
-		 * the string value of the current node.
-		 * Example: string-length('Beatles')
-		 * Result: 7
-		 * @param	string
-		 * @return
-		 */
-		public static function stringLength(string:String = null):int { }
+		public static function substring(string:String, start:int, len:int = 0x7FFFFFFF):String
+		{
+			return string.substr(start, len);
+		}
 		
 		/**
 		 * Removes leading and trailing spaces from the specified string, 
@@ -274,13 +346,17 @@
 		 * @param	string
 		 * @return	String.
 		 */
-		public static function normalizeSpace(string:String):String { }
+		public static function normalizeSpace(string:String):String
+		{
+			return string.replace(/(\s|\t)+/gm, " ");
+		}
 		
+		// TODO: Figure out what's this :)
 		/**
 		 * 
 		 * @return	String.
 		 */
-		public static function normalizeUnicode():String { }
+		public static function normalizeUnicode():String { return ""; }
 		
 		/**
 		 * Converts the string argument to upper-case.
@@ -289,7 +365,7 @@
 		 * @param	string
 		 * @return	String.
 		 */
-		public static function upperCase(string:String):String { }
+		public static function upperCase(string:String):String { return string.toUpperCase(); }
 		
 		/**
 		 * Converts the string argument to lower-case.
@@ -298,7 +374,7 @@
 		 * @param	string
 		 * @return
 		 */
-		public static function lowerCase(string:String):String { }
+		public static function lowerCase(string:String):String { return string.toLowerCase(); }
 		
 		/**
 		 * Converts string1 by replacing the characters in string2 with 
@@ -432,7 +508,317 @@
 		 */
 		public static function not(arg:*):Boolean { }
 		
-		/*
+		/**
+		 * Returns <code>true</code>.
+		 * @return	<code>true</code>
+		 */
+		public static function xtrue():Boolean { return true; }
+		
+		/**
+		 * Returns <code>false</code>.
+		 * @return	<code>false</code>
+		 */
+		public static function xfalse():Boolean { return false; }
+		
+		public static function qname():QName { }
+		
+		public static function localNameFromQName():String { }
+		
+		public static function namespaceUriFromQName():String { }
+		
+		public static function namespaceURIForPrefix():String { }
+		
+		public static function inScopePrefixes():InteractiveList { }
+		
+		public static function resolveQName():void { }
+		
+		/**
+		 * Returns the name of the current node or the first node in the specified node set
+		 * @param	nodeset
+		 * @return
+		 */
+		public static function name(nodeset:XML = null):Object { }
+		
+		/**
+		 * Returns the name of the current node or the first node in the 
+		 * specified node set - without the namespace prefix
+		 * @param	nodeset = null
+		 * @return
+		 */
+		public static function localName(nodeset:XML = null):Object { }
+		
+		/**
+		 * Returns the namespace URI of the current node or the first node 
+		 * in the specified node set
+		 * @param	nodeset
+		 * @return
+		 */
+		public static function namespaceURI(nodeset:XML = null):Namespace { }
+		
+		/**
+		 * Returns true if the language of the current node matches the language of the specified language.
+		 * Example: Lang("en") is true for
+		 * <p xml:lang="en">...</p>
+		 * Example: Lang("de") is false for
+		 * <p xml:lang="en">...</p>
+		 * @param	lang
+		 * @return
+		 */
+		public static function lang(lang:String):Boolean { }
+		
+		/**
+		 * Returns the root of the tree to which the current node 
+		 * or the specified belongs. This will usually be a document node
+		 * @param	node
+		 * @return
+		 */
+		public static function root(node:XML = null):XML { }
+		
+		/**
+		 * Returns the positions within the sequence of items 
+		 * that are equal to the searchitem argument
+		 * Example: index-of ((15, 40, 25, 40, 10), 40)
+		 * Result: (2, 4)
+		 * Example: index-of (("a", "dog", "and", "a", "duck"), "a")
+		 * Result (1, 4)
+		 * Example: index-of ((15, 40, 25, 40, 10), 18)
+		 * Result: ()
+		 * @param	searchitem
+		 * @param	...items
+		 * @return
+		 */
+		public static function indexOf(searchitem:Object, ...items):InteractiveList { }
+		
+		/**
+		 * Returns a new sequence constructed from the value of the 
+		 * item arguments - with the item specified by the position 
+		 * argument removed
+		 * Example: remove(("ab", "cd", "ef"), 0)
+		 * Result: ("ab", "cd", "ef")
+		 * Example: remove(("ab", "cd", "ef"), 1)
+		 * Result: ("cd", "ef")
+		 * Example: remove(("ab", "cd", "ef"), 4)
+		 * Result: ("ab", "cd", "ef")
+		 * @param	position
+		 * @param	...items
+		 * @return
+		 */
+		public static function remove(position:int, ...items):InteractiveList { }
+
+		/**
+		 * Returns true if the value of the arguments IS an empty sequence, 
+		 * otherwise it returns false.
+		 * Example: empty(remove(("ab", "cd"), 1))
+		 * Result: false
+		 * @param	...items
+		 * @return
+		 */
+		public static function empty(...items):Boolean { }
+
+		/**
+		 * Returns true if the value of the arguments IS NOT an empty sequence, 
+		 * otherwise it returns false
+		 * Example: exists(remove(("ab"), 1))
+		 * Result: false
+		 * @param	...items
+		 * @return
+		 */
+		public static function exists(...items):Boolean { }
+
+		/**
+		 * Returns only distinct (different) values.
+		 * Example: distinct-values((1, 2, 3, 1, 2))
+		 * Result: (1, 2, 3)
+		 * @param	...items
+		 * @return	Array.
+		 */
+		public static function distinctValues(...items):InteractiveList
+
+		/**
+		 * Returns a new sequence constructed from the value of the item 
+		 * arguments - with the value of the inserts argument inserted 
+		 * in the position specified by the pos argument
+		 * Example: insert-before(("ab", "cd"), 0, "gh")
+		 * Result: ("gh", "ab", "cd")
+		 * Example: insert-before(("ab", "cd"), 1, "gh")
+		 * Result: ("gh", "ab", "cd")
+		 * Example: insert-before(("ab", "cd"), 2, "gh")
+		 * Result: ("ab", "gh", "cd")
+		 * Example: insert-before(("ab", "cd"), 5, "gh")
+		 * Result: ("ab", "cd", "gh")
+		 * @param	pos
+		 * @param	inserts
+		 * @param	...items
+		 * @return	Array.
+		 */
+		public static function insertBefore(pos:int, inserts:XML, ...items):InteractiveList { }
+
+		/**
+		 * Returns the reversed order of the items specified.
+		 * Example: reverse(("ab", "cd", "ef"))
+		 * Result: ("ef", "cd", "ab")
+		 * Example: reverse(("ab"))
+		 * Result: ("ab")
+		 * @param	...items
+		 * @return
+		 */
+		public static function reverse(...items):InteractiveList { }
+		
+		/**
+		 * Returns a sequence of items from the position specified 
+		 * by the start argument and continuing for the number 
+		 * of items specified by the len argument. 
+		 * The first item is located at position 1
+		 * Example: subsequence(($item1, $item2, $item3,...), 3)
+		 * Result: ($item3, ...)
+		 * Example: subsequence(($item1, $item2, $item3, ...), 2, 2)
+		 * Result: ($item2, $item3)
+		 * @param	start
+		 * @param	len
+		 * @param	...items
+		 * @return
+		 */
+		public static function subsequence(start:int, len:int, ...items):InteractiveList { }
+
+		/**
+		 * Returns the items in an implementation dependent order.
+		 * @param	...items
+		 * @return
+		 */
+		public static function unordered(...items):InteractiveList { }
+		
+		/**
+		 * Returns the argument if it contains zero or one items, 
+		 * otherwise it raises an error
+		 * @param	...items
+		 * @return
+		 * 
+		 * @throws XPathError.
+		 */
+		public static function zeroOrOne(...items):InteractiveList { }
+		
+		/**
+		 * Returns the argument if it contains one or more items, 
+		 * otherwise it raises an error
+		 * @param	...items
+		 * @return
+		 * 
+		 * @throws XPathError.
+		 */
+		public static function oneOrMore(...items):InteractiveList { }
+		
+		/**
+		 * Returns the argument if it contains exactly one item, 
+		 * otherwise it raises an error
+		 * @param	...items
+		 * @return
+		 * 
+		 * @throws XPathError.
+		 */
+		public static function exactlyOne(...items):InteractiveList { }
+		
+		/**
+		 * Returns true if param1 and param2 are deep-equal 
+		 * to each other, otherwise it returns false
+		 * @param	...items
+		 * @return
+		 */
+		public static function deepEqual(...items):Boolean { }
+		
+		/**
+		 * Returns the count of nodes
+		 * @param	...items
+		 * @return
+		 */
+		public static function count(...items):int { }
+		
+		/**
+		 * Returns the average of the argument values.
+		 * Example: avg((1,2,3))
+		 * Result: 2
+		 * @param	...numbers
+		 * @return
+		 */
+		public static function avg(...numbers):Number { }
+		
+
+		/**
+		 * Returns the argument that is greater than the others.
+		 * Example: max((1,2,3))
+		 * Result: 3
+		 * Example: max(('a', 'k'))
+		 * Result: 'k'
+		 * @param	...numbers
+		 * @return
+		 */
+		public static function max(...numbers):Number { }
+		
+		/**
+		 * Returns the argument that is less than the others.
+		 * Example: min((1,2,3))
+		 * Result: 1
+		 * Example: min(('a', 'k'))
+		 * Result: 'a'
+		 * @param	...numbers
+		 * @return
+		 */
+		public static function min(...numbers):Number { }
+
+		/**
+		 * Returns the sum of the numeric value of each node in the specified node-set.
+		 * @param	...numbers
+		 * @return
+		 */
+		public static function sum(...numbers):Number { }
+		
+		/**
+		 * Returns a sequence of element nodes that have an ID value 
+		 * equal to the value of one or more of the values specified 
+		 * in the string argument
+		 * @param	...ids
+		 * @return
+		 */
+		public static function id(...ids):InteractiveList { }
+		
+		/**
+		 * Returns a sequence of element or attribute nodes that have 
+		 * an IDREF value equal to the value of one or more of the values 
+		 * specified in the string argument
+		 * @param	...idrefs
+		 * @return
+		 */
+		public static function idref(...idrefs):InteractiveList { }
+		
+		public static function doc(URI:String):XML { }
+		
+		/**
+		 * Returns true if the doc() function returns a document node, 
+		 * otherwise it returns false
+		 * @param	URI
+		 * @return
+		 */
+		public static function docAvailable(URI:String):Boolean { }
+		
+		public static function collection(string:String = null):InteractiveList { }
+		
+		/**
+		 * Returns the index position of the node that is currently being processed.
+		 * Example: //book[position()<=3]
+		 * Result: Selects the first three book elements
+		 * @return
+		 */
+		public static function position():int { }
+		
+
+		/**
+		 * Returns the number of items in the processed node list.
+		 * Example: //book[last()]
+		 * Result: Selects the last book element
+		 * @return
+		 */
+		public static function last():int { }
+		
+/*
 		public static function dateTime(date,time) 	Converts the arguments to a date and a time
 		public static function years-from-duration(datetimedur) 	Returns an integer that represents the years component in the canonical lexical representation of the value of the argument
 		public static function months-from-duration(datetimedur) 	Returns an integer that represents the months component in the canonical lexical representation of the value of the argument
@@ -506,205 +892,14 @@
 		public static function adjust-dateTime-to-timezone(datetime,timezone) 	If the timezone argument is empty, it returns a dateTime without a timezone. Otherwise, it returns a dateTime with a timezone
 		public static function adjust-date-to-timezone(date,timezone) 	If the timezone argument is empty, it returns a date without a timezone. Otherwise, it returns a date with a timezone
 		public static function adjust-time-to-timezone(time,timezone) 	If the timezone argument is empty, it returns a time without a timezone. Otherwise, it returns a time with a timezone
-*/
-		public static function qname():QName
-		public static function localNameFromQName():String	 
-		public static function namespaceUriFromQName():String
-		public static function namespaceURIForPrefix():String
-		public static function inScopePrefixes():Array
-		public static function resolveQName():void
-		
-		/**
-		 * Returns the name of the current node or the first node in the specified node set
-		 * @param	nodeset
-		 * @return
-		 */
-		public static function name(nodeset:XML = null):Object { }
-		
-		/**
-		 * Returns the name of the current node or the first node in the 
-		 * specified node set - without the namespace prefix
-		 * @param	nodeset = null
-		 * @return
-		 */
-		public static function localName(nodeset:XML = null):Object { }
-		
-		/**
-		 * Returns the namespace URI of the current node or the first node 
-		 * in the specified node set
-		 * @param	nodeset
-		 * @return
-		 */
-		public static function namespaceURI(nodeset:XML = null):Namespace { }
-		
-		/**
-		 * Returns true if the language of the current node matches the language of the specified language.
-		 * Example: Lang("en") is true for
-		 * <p xml:lang="en">...</p>
-		 * Example: Lang("de") is false for
-		 * <p xml:lang="en">...</p>
-		 * @param	lang
-		 * @return
-		 */
-		public static function lang(lang:String):Boolean { }
-		
-		/**
-		 * Returns the root of the tree to which the current node 
-		 * or the specified belongs. This will usually be a document node
-		 * @param	node
-		 * @return
-		 */
-		public static function root(node:XML = null):XML { }
-		
-		/**
-		 * Returns the positions within the sequence of items 
-		 * that are equal to the searchitem argument
-		 * Example: index-of ((15, 40, 25, 40, 10), 40)
-		 * Result: (2, 4)
-		 * Example: index-of (("a", "dog", "and", "a", "duck"), "a")
-		 * Result (1, 4)
-		 * Example: index-of ((15, 40, 25, 40, 10), 18)
-		 * Result: ()
-		 * @param	searchitem
-		 * @param	...items
-		 * @return
-		 */
-		public static function indexOf(searchitem:Object, ...items):Array { }
-		
-		/**
-		 * Returns a new sequence constructed from the value of the 
-		 * item arguments - with the item specified by the position 
-		 * argument removed
-		 * Example: remove(("ab", "cd", "ef"), 0)
-		 * Result: ("ab", "cd", "ef")
-		 * Example: remove(("ab", "cd", "ef"), 1)
-		 * Result: ("cd", "ef")
-		 * Example: remove(("ab", "cd", "ef"), 4)
-		 * Result: ("ab", "cd", "ef")
-		 * @param	position
-		 * @param	...items
-		 * @return
-		 */
-		public static function remove(position:int, ...items):Array { }
 
-		/**
-		 * 
-		public static function empty(item,item,...) 	Returns true if the value of the arguments IS an empty sequence, otherwise it returns false
-
-		/**
-		 * Example: empty(remove(("ab", "cd"), 1))
-		 * Result: false
-		public static function exists(item,item,...) 	Returns true if the value of the arguments IS NOT an empty sequence, otherwise it returns false
-
-		/**
-		 * Example: exists(remove(("ab"), 1))
-		 * Result: false
-		public static function distinct-values((item,item,...),collation) 	Returns only distinct (different) values
-
-		/**
-		 * Example: distinct-values((1, 2, 3, 1, 2))
-		 * Result: (1, 2, 3)
-		public static function insert-before((item,item,...),pos,inserts) 	Returns a new sequence constructed from the value of the item arguments - with the value of the inserts argument inserted in the position specified by the pos argument
-
-		/**
-		 * Example: insert-before(("ab", "cd"), 0, "gh")
-		 * Result: ("gh", "ab", "cd")
-
-		/**
-		 * Example: insert-before(("ab", "cd"), 1, "gh")
-		 * Result: ("gh", "ab", "cd")
-
-		/**
-		 * Example: insert-before(("ab", "cd"), 2, "gh")
-		 * Result: ("ab", "gh", "cd")
-
-		/**
-		 * Example: insert-before(("ab", "cd"), 5, "gh")
-		 * Result: ("ab", "cd", "gh")
-		public static function reverse((item,item,...)) 	Returns the reversed order of the items specified
-
-		/**
-		 * Example: reverse(("ab", "cd", "ef"))
-		 * Result: ("ef", "cd", "ab")
-
-		/**
-		 * Example: reverse(("ab"))
-		 * Result: ("ab")
-		public static function subsequence((item,item,...),start,len) 	Returns a sequence of items from the position specified by the start argument and continuing for the number of items specified by the len argument. The first item is located at position 1
-
-		/**
-		 * Example: subsequence(($item1, $item2, $item3,...), 3)
-		 * Result: ($item3, ...)
-
-		/**
-		 * Example: subsequence(($item1, $item2, $item3, ...), 2, 2)
-		 * Result: ($item2, $item3)
-		public static function unordered((item,item,...)) 	Returns the items in an implementation dependent order
-
-Functions That Test the Cardinality of Sequences
-Name 	Description
-		public static function zero-or-one(item,item,...) 	Returns the argument if it contains zero or one items, otherwise it raises an error
-		public static function one-or-more(item,item,...) 	Returns the argument if it contains one or more items, otherwise it raises an error
-		public static function exactly-one(item,item,...) 	Returns the argument if it contains exactly one item, otherwise it raises an error
-
-Equals, Union, Intersection and Except
-Name 	Description
-		public static function deep-equal(param1,param2,collation) 	Returns true if param1 and param2 are deep-equal to each other, otherwise it returns false
-
-Aggregate Functions
-Name 	Description
-		public static function count((item,item,...)) 	Returns the count of nodes
-		public static function avg((arg,arg,...)) 	Returns the average of the argument values
-
-		/**
-		 * Example: avg((1,2,3))
-		 * Result: 2
-		public static function max((arg,arg,...)) 	Returns the argument that is greater than the others
-
-		/**
-		 * Example: max((1,2,3))
-		 * Result: 3
-
-		/**
-		 * Example: max(('a', 'k'))
-		 * Result: 'k'
-		public static function min((arg,arg,...)) 	Returns the argument that is less than the others
-
-		/**
-		 * Example: min((1,2,3))
-		 * Result: 1
-
-		/**
-		 * Example: min(('a', 'k'))
-		 * Result: 'a'
-		public static function sum(arg,arg,...) 	Returns the sum of the numeric value of each node in the specified node-set
-
-Functions that Generate Sequences
-Name 	Description
-		public static function id((string,string,...),node) 	Returns a sequence of element nodes that have an ID value equal to the value of one or more of the values specified in the string argument
-		public static function idref((string,string,...),node) 	Returns a sequence of element or attribute nodes that have an IDREF value equal to the value of one or more of the values specified in the string argument
-		public static function doc(URI) 	 
-		public static function doc-available(URI) 	Returns true if the doc() function returns a document node, otherwise it returns false
-		public static function collection()
-		public static function collection(string) 	 
-Context Functions
-Name 	Description
-		public static function position() 	Returns the index position of the node that is currently being processed
-
-		/**
-		 * Example: //book[position()<=3]
-		 * Result: Selects the first three book elements
-		public static function last() 	Returns the number of items in the processed node list
-
-		/**
-		 * Example: //book[last()]
-		 * Result: Selects the last book element
 		public static function current-dateTime() 	Returns the current dateTime (with timezone)
 		public static function current-date() 	Returns the current date (with timezone)
 		public static function current-time() 	Returns the current time (with timezone)
 		public static function implicit-timezone() 	Returns the value of the implicit timezone
 		public static function default-collation() 	Returns the value of the default collation
 		public static function static-base-uri() 	Returns the value of the base-uri
+		*/
 		
 		
 		//--------------------------------------------------------------------------

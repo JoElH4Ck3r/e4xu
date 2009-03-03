@@ -64,6 +64,12 @@
 		
 		public function length():int { return _nodes.length; }
 		
+		public function append(node:InteractiveModel):InteractiveList
+		{
+			_nodes.push(node);
+			return this;
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
