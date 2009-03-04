@@ -54,6 +54,9 @@
 		public static const MODULUS:String = "mod"; // 	Modulus (division remainder) 	5 mod 2 	1
 		public static const SELECTOR:String = "::";
 		public static const FUNCTION:String = "fn:";
+		public static const OPERATOR:String = "op:";
+		
+		private static const W3C_XML:Namespace = new Namespace("xml", "http://www.w3.org/XML/1998/namespace");
 		
 		//--------------------------------------------------------------------------
 		//
@@ -116,6 +119,103 @@
 			return InteractiveModel(this).toXMLString().length;
 		}
 		
+		/**
+		 * Returns absolute URL
+		 * @param	relative
+		 * @param	base
+		 * @return
+		 */
+		public static var resolveUri:Function = function(relative:Boolean, base:String = null):String
+		{
+			if (!base) return InteractiveModel(this).url() + ROOT + relative;
+			return base + ROOT + relative;
+		}
+		
+		
+		public static var qname:Function = function(name:String):QName
+		{
+			var na:Array = name.split(":");
+			var ns:Namespace = new Namespace(na[0], InteractiveModel(this).url());
+			return new QName(na[0], ns);
+		}
+		
+		public static var localNameFromQName:Function = function():String
+		{
+			return QName(InteractiveModel(this).name()).localName;
+		}
+		
+		public static var namespaceUriFromQName:Function = function():String
+		{
+			return QName(InteractiveModel(this).name()).uri;
+		}
+		
+		public static var namespaceURIForPrefix:Function = function(prefix:String):String
+		{
+			var nss:Array = InteractiveModel(this).namespaceDeclarations();
+			for each(var ns:Namespace in nss)
+			{
+				if (ns.prefix == prefix) return ns.uri;
+			}
+			return "";
+		}
+		
+		public static var inScopePrefixes:Function = function():Array
+		{
+			var nss:Array = InteractiveModel(this).namespaceDeclarations();
+			var ra:Array = [];
+			for each(var ns:Namespace in nss) ra.push(ns.prefix);
+			return ra;
+		}
+		
+		/**
+		 * Returns the name of the current node or the first node in the specified node set
+		 * @param	nodeset
+		 * @return
+		 */
+		public static var name:Function = function(nodeset:InteractiveModel = null):QName
+		{
+			if (nodeset) return QName(nodeset.name());
+			return QName(InteractiveModel(this).name());
+		}
+		
+		/**
+		 * Returns the name of the current node or the first node in the 
+		 * specified node set - without the namespace prefix
+		 * @param	nodeset = null
+		 * @return
+		 */
+		public static var localName:Function = function(nodeset:InteractiveModel = null):String
+		{
+			if (nodeset) return nodeset.localName();
+			return InteractiveModel(this).localName();
+		}
+		
+		/**
+		 * Returns the namespace URI of the current node or the first node 
+		 * in the specified node set
+		 * @param	nodeset
+		 * @return
+		 */
+		public static var namespaceURI:Function = function(nodeset:InteractiveModel = null):String
+		{
+			if (nodeset) return nodeset.namespace().uri;
+			return InteractiveModel(this).namespace().uri;
+		}
+		
+		/**
+		 * Returns true if the language of the current node matches the language of the specified language.
+		 * Example: Lang("en") is true for
+		 * <p xml:lang="en">...</p>
+		 * Example: Lang("de") is false for
+		 * <p xml:lang="en">...</p>
+		 * @param	lang
+		 * @return
+		 */
+		public static var lang:Function = function(lang:String):Boolean
+		{
+			return InteractiveModel(this).W3C_XML::lang() == lang;
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Public methods
@@ -164,7 +264,10 @@
 		 * Example: error(fn:QName('http://example.com/test', 'err:toohigh'), 'Error: Price is too high')
 		 * Result: Returns http://example.com/test#toohigh and the string "Error: Price is too high" to the external processing environment
 		 */
-		public static function error(error:Error, description:String):void { }
+		public static function error(description:String):void
+		{
+			throw new Error(description);
+		}
 		
 		/**
 		 * Used to debug queries
@@ -390,7 +493,24 @@
 		 * @param	string3
 		 * @return	String.
 		 */
-		public static function translate(string1:String, string2:String, string3:String):String { }
+		public static function translate(string1:String, string2:String, string3:String):String
+		{
+			if (string2.length != string3.length)
+				throw new XPathError(1, string2 + " and " string3);
+			var result:Array = string1.split();
+			var inArr:Array = string2.split();
+			var outArr:Array = string3.split();
+			var i:int;
+			while (i++ < string1.length)
+			{
+				if (string1.charAt(i) == inArr[0])
+				{
+					result[i] = outArr.shift();
+					inArr.shift();
+				}
+			}
+			return result.join();
+		}
 		
 		/**
 		 * Example: escape-uri("http://example.com/test#car", true())
@@ -401,9 +521,15 @@
 		 * Result: "http://example.com/~b%C3%A9b%C3%A9"
 		 * @param	stringURI
 		 * @param	reverse
+		 * @default	<code>false</code>
+		 * 
 		 * @return	String.
 		 */
-		public static function escapeUri(stringURI:String, reverse:Boolean):String { }
+		public static function escapeUri(stringURI:String, reverse:Boolean = false):String
+		{
+			if (reverse) return encodeURI(stringURI);
+			return unescape(stringURI);
+		}
 		
 		/**
 		 * Returns true if string1 contains string2, otherwise it returns false
@@ -413,7 +539,10 @@
 		 * @param	string2
 		 * @return	Boolean.
 		 */
-		public static function contains(string1:String, string2:String):Boolean { }
+		public static function contains(string1:String, string2:String):Boolean
+		{
+			return string1.indexOf(string2) > -1;
+		}
 		
 		/**
 		 * Returns true if string1 starts with string2, otherwise it returns false.
@@ -423,7 +552,10 @@
 		 * @param	string2
 		 * @return	Boolean.
 		 */
-		public static function startsWith(string1:String, string2:String):Boolean { }
+		public static function startsWith(string1:String, string2:String):Boolean
+		{
+			return string1.indexOf(string2) == 0;
+		}
 		
 		/**
 		 * Returns true if string1 ends with string2, otherwise it returns false.
@@ -433,7 +565,10 @@
 		 * @param	string2
 		 * @return
 		 */
-		public static function endsWith(string1:String, string2:String):Boolean { }
+		public static function endsWith(string1:String, string2:String):Boolean
+		{
+			return string1.lastIndexOf(string2) == string1.length - string2.length;
+		}
 		
 		/**
 		 * Returns the start of string1 before string2 occurs in it.
@@ -443,7 +578,10 @@
 		 * @param	string2
 		 * @return
 		 */
-		public static function substringBefore(string1:String, string2:String):String { }
+		public static function substringBefore(string1:String, string2:String):String
+		{
+			return string1.substr(0, string1.indexOf(string2));
+		}
 		
 		/**
 		 * Returns the remainder of string1 after string2 occurs in it.
@@ -453,7 +591,11 @@
 		 * @param	string2
 		 * @return
 		 */
-		public static function substringAfter(string1:String, string2:String):String { }
+		public static function substringAfter(string1:String, string2:String):String
+		{
+			var i:int = string1.lastIndexOf(string2);
+			return string1.substr(i, string1 - i);
+		}
 		
 		/**
 		 * Returns true if the string argument matches the pattern, otherwise, it returns false
@@ -461,9 +603,13 @@
 		 * Result: true
 		 * @param	string
 		 * @param	pattern
-		 * @return
+		 * 
+		 * @return	Boolean
 		 */
-		public static function matches(string:String, pattern:RegExp):Boolean { }
+		public static function matches(string:String, pattern:RegExp):Boolean
+		{
+			return string.match(pattern);
+		}
 		
 		/**
 		 * Returns a string that is created by replacing the given pattern 
@@ -475,9 +621,13 @@
 		 * @param	string
 		 * @param	pattern
 		 * @param	replace
-		 * @return
+		 * 
+		 * @return	String
 		 */
-		public static function replace(string:String, pattern:RegExp, replace:String):String { }
+		public static function replace(string:String, pattern:RegExp, replace:String):String
+		{
+			return string.replace(pattern, replace);
+		}
 		
 		/**
 		 * Example: tokenize("XPath is fun", "\s+")
@@ -486,16 +636,17 @@
 		 * @param	pattern
 		 * @return
 		 */
-		public static function tokenize(string:String, pattern:RegExp):String { }
-
-		public static function resolveUri(relative:Boolean, base:String):String { }
+		public static function tokenize(string:String, pattern:RegExp):Array
+		{
+			return string.split(pattern);
+		}
 		
 		/**
 		 * Returns a boolean value for a number, string, or node-set.
 		 * @param	arg
 		 * @return
 		 */
-		public static function boolean(arg:*):Boolean { }
+		public static function boolean(arg:*):Boolean { return Boolean(arg); }
 		
 		/**
 		 * The argument is first reduced to a boolean value 
@@ -506,7 +657,7 @@
 		 * @param	arg
 		 * @return
 		 */
-		public static function not(arg:*):Boolean { }
+		public static function not(arg:*):Boolean { return !arg; }
 		
 		/**
 		 * Returns <code>true</code>.
@@ -520,51 +671,8 @@
 		 */
 		public static function xfalse():Boolean { return false; }
 		
-		public static function qname():QName { }
-		
-		public static function localNameFromQName():String { }
-		
-		public static function namespaceUriFromQName():String { }
-		
-		public static function namespaceURIForPrefix():String { }
-		
-		public static function inScopePrefixes():InteractiveList { }
-		
+		// TODO: Figure out what's this.
 		public static function resolveQName():void { }
-		
-		/**
-		 * Returns the name of the current node or the first node in the specified node set
-		 * @param	nodeset
-		 * @return
-		 */
-		public static function name(nodeset:XML = null):Object { }
-		
-		/**
-		 * Returns the name of the current node or the first node in the 
-		 * specified node set - without the namespace prefix
-		 * @param	nodeset = null
-		 * @return
-		 */
-		public static function localName(nodeset:XML = null):Object { }
-		
-		/**
-		 * Returns the namespace URI of the current node or the first node 
-		 * in the specified node set
-		 * @param	nodeset
-		 * @return
-		 */
-		public static function namespaceURI(nodeset:XML = null):Namespace { }
-		
-		/**
-		 * Returns true if the language of the current node matches the language of the specified language.
-		 * Example: Lang("en") is true for
-		 * <p xml:lang="en">...</p>
-		 * Example: Lang("de") is false for
-		 * <p xml:lang="en">...</p>
-		 * @param	lang
-		 * @return
-		 */
-		public static function lang(lang:String):Boolean { }
 		
 		/**
 		 * Returns the root of the tree to which the current node 
@@ -818,7 +926,7 @@
 		 */
 		public static function last():int { }
 		
-/*
+/* 8.469
 		public static function dateTime(date,time) 	Converts the arguments to a date and a time
 		public static function years-from-duration(datetimedur) 	Returns an integer that represents the years component in the canonical lexical representation of the value of the argument
 		public static function months-from-duration(datetimedur) 	Returns an integer that represents the months component in the canonical lexical representation of the value of the argument

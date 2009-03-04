@@ -33,6 +33,8 @@
 		public static const PI:String = "processing-instruction";
 		public static const CDATA:String = "CData";
 		
+		private static const W3C_XML:Namespace = new Namespace("xml", "http://www.w3.org/XML/1998/namespace");
+		
 		//------------------------------------
 		//  Public property source
 		//------------------------------------
@@ -95,6 +97,8 @@
 		private var _type:String = ELEMENT;
 		private var _name:QName;
 		private var _text:String;
+		private var _url:String;
+		private var _lang:String;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -222,9 +226,13 @@
 		
 		public function root():InteractiveModel { return _root; }
 		
+		public function url():String { return _url; }
+		
 		public function toXML():XML { return XUtils.objectToXML(this); }
 		
 		public function nodeKind():String { return _type; }
+		
+		W3C_XML function lang():String { return _lang; }
 		
 		//--------------------------------------------------------------------------
 		//
