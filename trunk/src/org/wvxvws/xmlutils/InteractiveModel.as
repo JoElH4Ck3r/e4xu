@@ -33,8 +33,6 @@
 		public static const PI:String = "processing-instruction";
 		public static const CDATA:String = "CData";
 		
-		private static const W3C_XML:Namespace = new Namespace("xml", "http://www.w3.org/XML/1998/namespace");
-		
 		//------------------------------------
 		//  Public property source
 		//------------------------------------
@@ -84,6 +82,8 @@
 		//  Private properties
 		//
 		//--------------------------------------------------------------------------
+		
+		private namespace wc3xml = "http://www.w3.org/XML/1998/namespace";
 		
 		private static var _instanceCounter:int;
 		
@@ -232,7 +232,7 @@
 		
 		public function nodeKind():String { return _type; }
 		
-		W3C_XML function lang():String { return _lang; }
+		wc3xml function lang():String { return _lang; }
 		
 		//--------------------------------------------------------------------------
 		//
