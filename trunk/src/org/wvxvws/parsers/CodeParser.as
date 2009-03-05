@@ -39,6 +39,7 @@
 		private static var _isApostropheString:Boolean;
 		
 		private static var _isEscaped:Boolean;
+		private static var _isPreviousEscaped:Boolean;
 		static private var _isRegExp:Boolean;
 		static private var _isXML:Boolean;
 		//--------------------------------------------------------------------------
@@ -82,6 +83,7 @@
 				lineLoop: while (s < sl)
 				{
 					chr = st.charAt(s);
+					if (_isEscaped) _isPreviousEscaped = true;
 					switch (chr)
 					{
 						case "\"":
@@ -97,6 +99,18 @@
 								sl += 17;
 								s += 17;
 							}
+							else if (!_isEscaped && !_isXML && 
+									!_isApostropheString && _isString && 
+									!_isJavaComment)
+							{
+								_isString = false;
+								_isApostropheString = false;
+								st = st.substr(0, s + 1) + 
+								"</span>" + 
+								st.substr(s + 1, st.length);
+								sl += 7;
+								s += 7;
+							}
 							break;
 						case "\'":
 							if (!_isEscaped && !_isLineComment && 
@@ -110,6 +124,18 @@
 								st.substr(s, st.length);
 								sl += 17;
 								s += 17;
+							}
+							else if (!_isEscaped && !_isXML && 
+									_isApostropheString && !_isString && 
+									!_isJavaComment)
+							{
+								_isApostropheString = false;
+								_isString = false;
+								st = st.substr(0, s + 1) + 
+								"</span>" + 
+								st.substr(s + 1, st.length);
+								sl += 7;
+								s += 7;
 							}
 							break;
 						case "\\":
@@ -143,6 +169,11 @@
 								break lineLoop;
 							}
 							break;
+					}
+					if (_isPreviousEscaped)
+					{
+						_isEscaped = false;
+						_isPreviousEscaped = false;
 					}
 					s++;
 				}
