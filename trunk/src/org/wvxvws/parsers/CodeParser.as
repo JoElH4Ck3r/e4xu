@@ -64,6 +64,7 @@
 			var sl:int;
 			var st:String;
 			var chr:String;
+			var reCheck:String;
 			if (code is Class)
 			{
 				_bytes = new (code as Class)() as ByteArray;
@@ -89,7 +90,7 @@
 						case "\"":
 							if (!_isEscaped && !_isLineComment && 
 								!_isJavaComment && !_isString && 
-								!_isApostropheString && !_isXML)
+								!_isApostropheString && !_isXML && !_isRegExp)
 							{
 								_isString = true;
 								_isApostropheString = false;
@@ -101,7 +102,7 @@
 							}
 							else if (!_isEscaped && !_isXML && 
 									!_isApostropheString && _isString && 
-									!_isJavaComment)
+									!_isJavaComment && !_isRegExp)
 							{
 								_isString = false;
 								_isApostropheString = false;
@@ -115,7 +116,7 @@
 						case "\'":
 							if (!_isEscaped && !_isLineComment && 
 								!_isJavaComment && !_isString && 
-								!_isApostropheString)
+								!_isApostropheString && !_isRegExp)
 							{
 								_isString = true;
 								_isApostropheString = true;
@@ -127,7 +128,7 @@
 							}
 							else if (!_isEscaped && !_isXML && 
 									_isApostropheString && !_isString && 
-									!_isJavaComment)
+									!_isJavaComment && !_isRegExp)
 							{
 								_isApostropheString = false;
 								_isString = false;
@@ -139,7 +140,7 @@
 							}
 							break;
 						case "\\":
-							if (!_isRegExp) _isEscaped = true;
+							_isEscaped = true;
 							break;
 						case "/":
 							if (!_isString && !_isApostropheString && 
@@ -156,6 +157,30 @@
 							{
 								_isJavaComment = false;
 								_isJavaCommentEnd = true;
+							}
+							else if (!_isApostropheString && !_isString &&
+									!_isJavaComment && !_isRegExp)
+							{
+								reCheck = st.substr(s - 1);
+								if (st.charAt(s + 1) !== "*" && st.charAt(s + 1) !== "/" &&
+									reCheck.match(/^[^\\]\/(.*)[^\\]\//g).length)
+								{
+									_isRegExp = true;
+									st = st.substr(0, s) + 
+									"<span class=\"s2\">" + 
+									st.substr(s, st.length);
+									sl += 17;
+									s += 17;
+								}
+							}
+							else if (_isRegExp && !_isEscaped)
+							{
+								_isRegExp = false;
+								st = st.substr(0, s + 1) + 
+								"</span>" + 
+								st.substr(s + 1, st.length);
+								sl += 7;
+								s += 7;
 							}
 							break;
 						case "*":
@@ -190,9 +215,14 @@
 					_isJavaCommentEnd = false;
 					st += "</span>";
 				}
+				if (_isRegExp)
+				{
+					st += "</span>";
+				}
 				_isLineComment = false;
 				_isApostropheString = false;
 				_isString = false;
+				_isRegExp = false;
 				_lines[i] = st;
 				i++;
 			}
