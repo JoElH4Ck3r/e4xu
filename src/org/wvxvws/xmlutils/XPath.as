@@ -216,6 +216,18 @@
 			return InteractiveModel(this).W3C_XML::lang() == lang;
 		}
 		
+		/**
+		 * Returns the root of the tree to which the current node 
+		 * or the specified belongs. This will usually be a document node
+		 * @param	node
+		 * @return
+		 */
+		public static function root(node:InteractiveModel = null):InteractiveModel
+		{
+			if (node) return node.root();
+			return InteractiveModel(this).root();
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Public methods
@@ -675,14 +687,6 @@
 		public static function resolveQName():void { }
 		
 		/**
-		 * Returns the root of the tree to which the current node 
-		 * or the specified belongs. This will usually be a document node
-		 * @param	node
-		 * @return
-		 */
-		public static function root(node:XML = null):XML { }
-		
-		/**
 		 * Returns the positions within the sequence of items 
 		 * that are equal to the searchitem argument
 		 * Example: index-of ((15, 40, 25, 40, 10), 40)
@@ -692,10 +696,21 @@
 		 * Example: index-of ((15, 40, 25, 40, 10), 18)
 		 * Result: ()
 		 * @param	searchitem
-		 * @param	...items
+		 * @param	items
 		 * @return
 		 */
-		public static function indexOf(searchitem:Object, ...items):InteractiveList { }
+		public static function indexOf(searchitem:Object, items:Array):Array
+		{
+			var i:int;
+			var ra:Array = [];
+			do
+			{
+				i = items.indexOf(searchitem, i);
+				if (i > -1) ra.push(i);
+			}
+			while (i > -1);
+			return ra;
+		}
 		
 		/**
 		 * Returns a new sequence constructed from the value of the 
