@@ -11,6 +11,9 @@
 			import org.wvxvws.mxmlutils.MXMLHelper;
 			import org.wvxvws.xmlutils.IMEvent;
 			
+			[Embed (source="../.svn/all-wcprops", mimeType="application/octet-stream")]
+			private static const _version:Class;
+			
 			private function imchangeHandler(event:IMEvent):void
 			{
 				trace("imchangeHandler", event.newValue);
@@ -20,11 +23,13 @@
 			private function enterFrameHandler(event:Event):void
 			{
 				var f:Function = MXMLHelper.nameForMXMLListener(this, Event.ENTER_FRAME);
+				trace(new _version());
 				removeEventListener(Event.ENTER_FRAME, f);
 				trace("Frameworkless\r", someId.toXMLString());
 				trace("Frameworkless\r", someId.levelB.levelC.@foo);
 				someId.levelB.levelC.@foo = "asdfgh";
 				trace("Frameworkless\r", someId.toXMLString());
+				//someId.levelB.levelC.(trace(name()));
 			}
 		]]>
 	</mx:Script>
