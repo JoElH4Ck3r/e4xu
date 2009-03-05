@@ -42,6 +42,8 @@
 		private static var _isPreviousEscaped:Boolean;
 		static private var _isRegExp:Boolean;
 		static private var _isXML:Boolean;
+		static private var _isNumber:Boolean;
+		static private var _isHex:Boolean;
 		//--------------------------------------------------------------------------
 		//
 		//  Cunstructor
@@ -72,7 +74,6 @@
 				{
 					_text = _bytes.toString();
 					_lines = _text.split(/\n?\r\n?/gm);
-					//trace(_lines.join("\r"));
 				}
 			}
 			l = _lines.length;
@@ -194,6 +195,82 @@
 								break lineLoop;
 							}
 							break;
+						case "0":
+						case "1":
+						case "2":
+						case "3":
+						case "4":
+						case "5":
+						case "6":
+						case "7":
+						case "8":
+						case "9":
+							if (!_isJavaComment && !_isLineComment && 
+								!_isRegExp && !_isApostropheString && 
+								!_isNumber && !_isHex &&
+								!_isString && st.charAt(s - 1).match(/\W/g).length)
+							{
+								if (st.charAt(s + 1) == "x")
+								{
+									_isHex = true;
+								}
+								else
+								{
+									_isNumber = true;
+								}
+								st = st.substr(0, s) + 
+								"<span class=\"s3\">" + 
+								st.substr(s, st.length);
+								sl += 17;
+								s += 17;
+							}
+							else if ((_isNumber && !st.charAt(s + 1).match(/\d/g).length) || 
+									(_isHex && !st.charAt(s + 1).match(/\d|A|B|C|D|E|F/gi).length &&
+									st.charAt(s + 1) != "x"))
+							{
+								_isNumber = false;
+								_isHex = false;
+								st = st.substr(0, s + 1) + 
+								"</span>" + 
+								st.substr(s + 1, st.length);
+								sl += 7;
+								s += 7;
+							}
+							break;
+						case "A":
+						case "B":
+						case "C":
+						case "D":
+						case "E":
+						case "F":
+						case "a":
+						case "b":
+						case "c":
+						case "d":
+						case "e":
+						case "f":
+							if (_isHex && !st.charAt(s + 1).match(/\d|A|B|C|D|E|F/gi).length)
+							{
+								_isHex = false;
+								_isNumber = false;
+								st = st.substr(0, s + 1) + 
+								"</span>" + 
+								st.substr(s + 1, st.length);
+								sl += 7;
+								s += 7;
+							}
+							break;
+						default:
+							if (_isNumber || _isHex)
+							{
+								_isHex = false;
+								_isNumber = false;
+								st = st.substr(0, s) + 
+								"</span>" + 
+								st.substr(s, st.length);
+								sl += 7;
+								s += 7;
+							}
 					}
 					if (_isPreviousEscaped)
 					{
@@ -202,27 +279,22 @@
 					}
 					s++;
 				}
-				if (_isApostropheString || _isString)
-				{
-					st += "</span>";
-				}
-				if (_isLineComment)
-				{
-					st += "</span>";
-				}
+				if (_isApostropheString || _isString) st += "</span>";
+				if (_isLineComment) st += "</span>";
+				if (_isRegExp) st += "</span>";
+				if (_isNumber) st += "</span>";
+				if (_isHex) st += "</span>";
 				if (_isJavaCommentEnd)
 				{
 					_isJavaCommentEnd = false;
-					st += "</span>";
-				}
-				if (_isRegExp)
-				{
 					st += "</span>";
 				}
 				_isLineComment = false;
 				_isApostropheString = false;
 				_isString = false;
 				_isRegExp = false;
+				_isNumber = false;
+				_isHex = false;
 				_lines[i] = st;
 				i++;
 			}
