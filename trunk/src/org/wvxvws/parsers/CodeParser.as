@@ -27,6 +27,32 @@
 		//  Private properties
 		//
 		//--------------------------------------------------------------------------
+		private static const UID:String = "8b8b0c1e2de4c5e70d004a11cdb62bc2"; // 32
+		private static const SPAN_BEGIN:String = "<8b8b0c1e2de4c5e70d004a11cdb62bc2 class=\"xxx\">"; // 46
+		private static const SPAN_END:String = "</8b8b0c1e2de4c5e70d004a11cdb62bc2>"; // 35
+		
+		private static const JCOMMENT_RE_HELPER:String = "$1<8b8b0c1e2de4c5e70d004a11cdb62bc2 class=\"s00\">"; // 35
+		
+		private static const NOT_SPAN:RegExp = /(.*)<(8b8b0c1e2de4c5e70d004a11cdb62bc2)( class="...">)(.*)(<\/\2>)(.*)/g
+		
+		private static const JCOMMENT_C:String = "s00";
+		private static const COMMENT_C:String = "s01";
+		private static const STRING_C:String = "s02";
+		private static const NUMBER_C:String = "s03";
+		private static const REGEXP_C:String = "s04";
+		private static const HTML_C:String = "s05";
+		private static const BUILTIN_C:String = "s06";
+		private static const TYPE_C:String = "s07";
+		
+		private static var JCOMMENT:String;
+		private static var COMMENT:String;
+		private static var STRING:String;
+		private static var NUMBER:String;
+		private static var REGEXP:String;
+		private static var HTML:String;
+		private static var BUILTIN:String;
+		private static var TYPE:String;
+		
 		private static var _text:String;
 		private static var _bytes:ByteArray;
 		private static var _lines:Array;
@@ -44,6 +70,10 @@
 		static private var _isXML:Boolean;
 		static private var _isNumber:Boolean;
 		static private var _isHex:Boolean;
+		
+		static private var _init:Boolean;
+		
+		private static var traceHelper:int;
 		//--------------------------------------------------------------------------
 		//
 		//  Cunstructor
@@ -67,6 +97,7 @@
 			var st:String;
 			var chr:String;
 			var reCheck:String;
+			if (!_init) _init = init();
 			if (code is Class)
 			{
 				_bytes = new (code as Class)() as ByteArray;
@@ -82,10 +113,16 @@
 				s = 0;
 				st = _lines[i];
 				sl = st.length;
+				if (_isJavaComment)
+				{
+					st = st.replace(/^([\t\s]+)/, "$1<8b8b0c1e2de4c5e70d004a11cdb62bc2 class=\"s00\">");
+					s += st.indexOf(JCOMMENT) + 45;
+					sl = st.length;
+				}
 				lineLoop: while (s < sl)
 				{
-					chr = st.charAt(s);
 					if (_isEscaped) _isPreviousEscaped = true;
+					chr = st.charAt(s);
 					switch (chr)
 					{
 						case "\"":
@@ -96,10 +133,10 @@
 								_isString = true;
 								_isApostropheString = false;
 								st = st.substr(0, s) + 
-								"<span class=\"s0\">" + 
+								STRING + 
 								st.substr(s, st.length);
-								sl += 17;
-								s += 17;
+								sl += 46;
+								s += 46;
 							}
 							else if (!_isEscaped && !_isXML && 
 									!_isApostropheString && _isString && 
@@ -108,10 +145,10 @@
 								_isString = false;
 								_isApostropheString = false;
 								st = st.substr(0, s + 1) + 
-								"</span>" + 
+								SPAN_END + 
 								st.substr(s + 1, st.length);
-								sl += 7;
-								s += 7;
+								sl += 35;
+								s += 35;
 							}
 							break;
 						case "\'":
@@ -122,10 +159,10 @@
 								_isString = true;
 								_isApostropheString = true;
 								st = st.substr(0, s) + 
-								"<span class=\"s0\">" + 
+								STRING + 
 								st.substr(s, st.length);
-								sl += 17;
-								s += 17;
+								sl += 46;
+								s += 46;
 							}
 							else if (!_isEscaped && !_isXML && 
 									_isApostropheString && !_isString && 
@@ -134,10 +171,10 @@
 								_isApostropheString = false;
 								_isString = false;
 								st = st.substr(0, s + 1) + 
-								"</span>" + 
+								SPAN_END + 
 								st.substr(s + 1, st.length);
-								sl += 7;
-								s += 7;
+								sl += 35;
+								s += 35;
 							}
 							break;
 						case "\\":
@@ -149,7 +186,7 @@
 							{
 								_isLineComment = true;
 								st = st.substr(0, s - 1) + 
-								"<span class=\"s1\">" + 
+								COMMENT + 
 								st.substr(s - 1, st.length);
 								break lineLoop;
 							}
@@ -168,20 +205,20 @@
 								{
 									_isRegExp = true;
 									st = st.substr(0, s) + 
-									"<span class=\"s2\">" + 
+									REGEXP + 
 									st.substr(s, st.length);
-									sl += 17;
-									s += 17;
+									sl += 46;
+									s += 46;
 								}
 							}
 							else if (_isRegExp && !_isEscaped)
 							{
 								_isRegExp = false;
 								st = st.substr(0, s + 1) + 
-								"</span>" + 
+								SPAN_END + 
 								st.substr(s + 1, st.length);
-								sl += 7;
-								s += 7;
+								sl += 35;
+								s += 35;
 							}
 							break;
 						case "*":
@@ -189,7 +226,7 @@
 								&& st.charAt(s - 1) == "/")
 							{
 								st = st.substr(0, s - 1) + 
-								"<span class=\"s0\">" + 
+								JCOMMENT + 
 								st.substr(s - 1, st.length);
 								_isJavaComment = true;
 								break lineLoop;
@@ -219,10 +256,10 @@
 									_isNumber = true;
 								}
 								st = st.substr(0, s) + 
-								"<span class=\"s3\">" + 
+								NUMBER + 
 								st.substr(s, st.length);
-								sl += 17;
-								s += 17;
+								sl += 46;
+								s += 46;
 							}
 							else if ((_isNumber && !st.charAt(s + 1).match(/\d/g).length) || 
 									(_isHex && !st.charAt(s + 1).match(/\d|A|B|C|D|E|F/gi).length &&
@@ -231,10 +268,10 @@
 								_isNumber = false;
 								_isHex = false;
 								st = st.substr(0, s + 1) + 
-								"</span>" + 
+								SPAN_END + 
 								st.substr(s + 1, st.length);
-								sl += 7;
-								s += 7;
+								sl += 35;
+								s += 35;
 							}
 							break;
 						case "A":
@@ -254,10 +291,10 @@
 								_isHex = false;
 								_isNumber = false;
 								st = st.substr(0, s + 1) + 
-								"</span>" + 
+								SPAN_END + 
 								st.substr(s + 1, st.length);
-								sl += 7;
-								s += 7;
+								sl += 35;
+								s += 35;
 							}
 							break;
 						default:
@@ -266,10 +303,10 @@
 								_isHex = false;
 								_isNumber = false;
 								st = st.substr(0, s) + 
-								"</span>" + 
+								SPAN_END + 
 								st.substr(s, st.length);
-								sl += 7;
-								s += 7;
+								sl += 35;
+								s += 35;
 							}
 					}
 					if (_isPreviousEscaped)
@@ -279,15 +316,16 @@
 					}
 					s++;
 				}
-				if (_isApostropheString || _isString) st += "</span>";
-				if (_isLineComment) st += "</span>";
-				if (_isRegExp) st += "</span>";
-				if (_isNumber) st += "</span>";
-				if (_isHex) st += "</span>";
+				if (_isApostropheString || _isString) st += SPAN_END;
+				if (_isLineComment) st += SPAN_END;
+				if (_isRegExp) st += SPAN_END;
+				if (_isNumber) st += SPAN_END;
+				if (_isHex) st += SPAN_END;
+				if (_isJavaComment) st += SPAN_END;
 				if (_isJavaCommentEnd)
 				{
 					_isJavaCommentEnd = false;
-					st += "</span>";
+					st += SPAN_END;
 				}
 				_isLineComment = false;
 				_isApostropheString = false;
@@ -295,7 +333,7 @@
 				_isRegExp = false;
 				_isNumber = false;
 				_isHex = false;
-				_lines[i] = st;
+				_lines[i] = htmlEncode(st);
 				i++;
 			}
 			return _lines.join("\r");
@@ -310,14 +348,45 @@
 			return true;
 		}
 		
-		private static function doString(string:String):String
+		private static function init():Boolean
 		{
-			return "<span class=\"s0\">" + string + "</span>";
+			JCOMMENT = SPAN_BEGIN.replace(/xxx/g, JCOMMENT_C);
+			COMMENT = SPAN_BEGIN.replace(/xxx/g, COMMENT_C);
+			STRING = SPAN_BEGIN.replace(/xxx/g, STRING_C);
+			NUMBER = SPAN_BEGIN.replace(/xxx/g, NUMBER_C);
+			REGEXP = SPAN_BEGIN.replace(/xxx/g, REGEXP_C);
+			HTML = SPAN_BEGIN.replace(/xxx/g, HTML_C);
+			BUILTIN = SPAN_BEGIN.replace(/xxx/g, BUILTIN_C);
+			TYPE = SPAN_BEGIN.replace(/xxx/g, TYPE_C);
+			return true;
 		}
 		
-		private static function doComment(string:String):String
+		private static function htmlEncode(string:String):String
 		{
-			return "<span class=\"s1\">" + string + "</span>";
+			var result:String = string.replace(NOT_SPAN, encodeHelper);
+			if (result == string) return encodeHTML(string) + "<br/>";
+			return result + "<br/>";
+		}
+		
+		private static function encodeHelper(...rest):String
+		{
+			return (encodeHTML(rest[1]) + "<span" + rest[3] + encodeHTML(rest[4]) + 
+					(rest[5].length ? "</span>" : "") + encodeHTML(rest[6]));
+		}
+		
+		private static function encodeHTML(input:String):String
+		{
+			if (input)
+			{
+                var xml:XML = <a>{ replaceWhiteSpace(input) }</a>;
+                return xml.toXMLString().replace(/(^<a>)|(<\/a>$)/g, "").split("\u00A0").join("&nbsp;");
+            }
+			return "";
+		}
+		
+		private static function replaceWhiteSpace(input:String):String
+		{
+			return input.split(" ").join("\u00A0").split("\t").join("\u00A0\u00A0\u00A0\u00A0");
 		}
 		
 		//--------------------------------------------------------------------------
