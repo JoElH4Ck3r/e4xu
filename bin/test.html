@@ -19,131 +19,117 @@
 	.s07 { color:#aaaaaa; }
 </style>
 <body>
-<p>Running process: C:\Program Files\FlashDevelop\Tools\fdbuild\fdbuild.exe "C:\www\projects\xmlhelpers\xmlhelpers.as3proj" -ipc c3be6e25-3301-4e91-b0bd-48f00d98b4a9 -compiler "C:\Flex_4_SDK" -library "C:\Program Files\FlashDevelop\Library"
-Using the Flex Compiler Shell.
-Building xmlhelpers
-mxmlc -load-config+=obj\xmlhelpersConfig.xml -debug=true -incremental=true -benchmark=false -compiler.namespaces.namespace http://e4xu.googlecode.com c:\www\projects\xmlhelpers\run\manifest.xml -keep -o obj\xmlhelpers633719080784687500
-Incremental compile of 2
- Loading configuration file C:\Flex_4_SDK\frameworks\flex-config.xml
-Loading configuration file C:\www\projects\xmlhelpers\obj\xmlhelpersConfig.xml
-Recompile: C:\www\projects\xmlhelpers\src\org\wvxvws\parsers\CodeParser.as
-Reason: The source file or one of the included files has been updated.
-Files changed: 1 Files affected: 0
-obj\xmlhelpers633719080784687500 (10348 bytes)
-(fcsh)
-Build succeeded
-Done (0)
-[Capturing traces with FDB]
+<p>
 package&nbsp;org.wvxvws.xmlutils<br/>
 {<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;import&nbsp;flash.utils.getQualifiedClassName;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<br/>
-	<span class="s00">/**</span><br/>
-	<span class="s00">*&nbsp;XMLUtils&nbsp;class.</span><br/>
-	<span class="s00">*&nbsp;@author&nbsp;wvxvw</span><br/>
-	<span class="s00">*&nbsp;@langVersion&nbsp;3.0</span><br/>
-	<span class="s00">*&nbsp;@playerVersion&nbsp;10.0.12.36</span><br/>
-	<span class="s00">*/</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">/**</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;XMLUtils&nbsp;class.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@author&nbsp;wvxvw</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@langVersion&nbsp;3.0</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@playerVersion&nbsp;10.0.12.36</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*/</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;class&nbsp;XUtils&nbsp;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;{<br/>
-		<span class="s01">//--------------------------------------------------------------------------</span><br/>
-		<span class="s01">//</span><br/>
-		<span class="s01">//&nbsp;&nbsp;Public&nbsp;properties</span><br/>
-		<span class="s01">//</span><br/>
-		<span class="s01">//--------------------------------------------------------------------------</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//--------------------------------------------------------------------------</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//&nbsp;&nbsp;Public&nbsp;properties</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//--------------------------------------------------------------------------</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
-		<span class="s01">//--------------------------------------------------------------------------</span><br/>
-		<span class="s01">//</span><br/>
-		<span class="s01">//&nbsp;&nbsp;Protected&nbsp;properties</span><br/>
-		<span class="s01">//</span><br/>
-		<span class="s01">//--------------------------------------------------------------------------</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//--------------------------------------------------------------------------</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//&nbsp;&nbsp;Protected&nbsp;properties</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//--------------------------------------------------------------------------</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
-		<span class="s01">//--------------------------------------------------------------------------</span><br/>
-		<span class="s01">//</span><br/>
-		<span class="s01">//&nbsp;&nbsp;Private&nbsp;properties</span><br/>
-		<span class="s01">//</span><br/>
-		<span class="s01">//--------------------------------------------------------------------------</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//--------------------------------------------------------------------------</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//&nbsp;&nbsp;Private&nbsp;properties</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//--------------------------------------------------------------------------</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
-		private static const ATTRIBUTE_VALUE:String = <span class="s02">"%attribute&nbsp;value%"</span>;<br/>
-		private static const GENERATOR:String = <span class="s02">"ABCDEFGHIJKLMNOP"</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;private static const ATTRIBUTE_VALUE:String = <span class="s02">"%attribute&nbsp;value%"</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;private static const GENERATOR:String = <span class="s02">"ABCDEFGHIJKLMNOP"</span>;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;private&nbsp;static&nbsp;var&nbsp;_hash:Object&nbsp;=&nbsp;{&nbsp;};<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;private&nbsp;static&nbsp;var&nbsp;_collection:Array&nbsp;=&nbsp;[];<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;private&nbsp;static&nbsp;var&nbsp;_uidindex:uint;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
-		<span class="s01">//--------------------------------------------------------------------------</span><br/>
-		<span class="s01">//</span><br/>
-		<span class="s01">//&nbsp;&nbsp;Cunstructor</span><br/>
-		<span class="s01">//</span><br/>
-		<span class="s01">//--------------------------------------------------------------------------</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//--------------------------------------------------------------------------</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//&nbsp;&nbsp;Cunstructor</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//--------------------------------------------------------------------------</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
-		<span class="s00">/**</span><br/>
-		 <span class="s00">*&nbsp;All&nbsp;of&nbsp;the&nbsp;methods&nbsp;of&nbsp;this&nbsp;class&nbsp;are&nbsp;static,&nbsp;there's&nbsp;no&nbsp;need&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;to&nbsp;instantiate&nbsp;it.</span><br/>
-		 <span class="s00">*/</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">/**</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;All&nbsp;of&nbsp;the&nbsp;methods&nbsp;of&nbsp;this&nbsp;class&nbsp;are&nbsp;static,&nbsp;there's&nbsp;no&nbsp;need&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;to&nbsp;instantiate&nbsp;it.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*/</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;function&nbsp;XUtils()&nbsp;{&nbsp;super();&nbsp;}<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
-		<span class="s01">//--------------------------------------------------------------------------</span><br/>
-		<span class="s01">//</span><br/>
-		<span class="s01">//&nbsp;&nbsp;Public&nbsp;methods</span><br/>
-		<span class="s01">//</span><br/>
-		<span class="s01">//--------------------------------------------------------------------------</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//--------------------------------------------------------------------------</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//&nbsp;&nbsp;Public&nbsp;methods</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//--------------------------------------------------------------------------</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
-		<span class="s00">/**</span><br/>
-		 <span class="s00">*&nbsp;Searches&nbsp;for&nbsp;the&nbsp;first&nbsp;attribute&nbsp;from&nbsp;the&nbsp;specified&nbsp;position.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;list&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;XMLList.&nbsp;The&nbsp;list&nbsp;of&nbsp;nodes&nbsp;to&nbsp;perform&nbsp;a&nbsp;search.</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;attr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String.&nbsp;The&nbsp;attribute&nbsp;name&nbsp;to&nbsp;search&nbsp;for.</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;val&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String.&nbsp;The&nbsp;attribute&nbsp;value&nbsp;to&nbsp;search&nbsp;for.</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;position&nbsp;&nbsp;&nbsp;&nbsp;int.&nbsp;The&nbsp;position&nbsp;to&nbsp;start&nbsp;searching&nbsp;from.</span><br/>
-		 <span class="s00">*&nbsp;@default&nbsp;&nbsp;&nbsp;&nbsp;0.&nbsp;If&nbsp;not&nbsp;specified&nbsp;will&nbsp;search&nbsp;from&nbsp;the&nbsp;first&nbsp;node&nbsp;onwards.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;int.&nbsp;-1&nbsp;if&nbsp;the&nbsp;searched&nbsp;match&nbsp;wasn't&nbsp;found,&nbsp;or&nbsp;zero&nbsp;based&nbsp;index&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;the&nbsp;searched&nbsp;node.</span><br/>
-		 <span class="s00">*/</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">/**</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;Searches&nbsp;for&nbsp;the&nbsp;first&nbsp;attribute&nbsp;from&nbsp;the&nbsp;specified&nbsp;position.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;list&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;XMLList.&nbsp;The&nbsp;list&nbsp;of&nbsp;nodes&nbsp;to&nbsp;perform&nbsp;a&nbsp;search.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;attr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String.&nbsp;The&nbsp;attribute&nbsp;name&nbsp;to&nbsp;search&nbsp;for.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;val&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String.&nbsp;The&nbsp;attribute&nbsp;value&nbsp;to&nbsp;search&nbsp;for.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;position&nbsp;&nbsp;&nbsp;&nbsp;int.&nbsp;The&nbsp;position&nbsp;to&nbsp;start&nbsp;searching&nbsp;from.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@default&nbsp;&nbsp;&nbsp;&nbsp;0.&nbsp;If&nbsp;not&nbsp;specified&nbsp;will&nbsp;search&nbsp;from&nbsp;the&nbsp;first&nbsp;node&nbsp;onwards.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;int.&nbsp;-1&nbsp;if&nbsp;the&nbsp;searched&nbsp;match&nbsp;wasn't&nbsp;found,&nbsp;or&nbsp;zero&nbsp;based&nbsp;index&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;the&nbsp;searched&nbsp;node.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*/</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;static&nbsp;function&nbsp;indexOfAttribute(list:XMLList,&nbsp;attr:String,&nbsp;val:String,<br/>
-																position:int = <span class="s03">0</span>):int<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;position:int = <span class="s03">0</span>):int<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;i:int;<br/>
-			var found:int = -<span class="s03">1</span>;<br/>
-			list.(attribute(attr) == val && i > position && found == -<span class="s03">1</span> ? found = i : i++);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var found:int = -<span class="s03">1</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list.(attribute(attr) == val && i > position && found == -<span class="s03">1</span> ? found = i : i++);<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;found;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
-		<span class="s00">/**</span><br/>
-		 <span class="s00">*&nbsp;Searches&nbsp;for&nbsp;the&nbsp;last&nbsp;attribute&nbsp;before&nbsp;the&nbsp;specified&nbsp;position.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;list&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;XMLList.&nbsp;The&nbsp;list&nbsp;of&nbsp;nodes&nbsp;to&nbsp;perform&nbsp;a&nbsp;search.</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;attr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String.&nbsp;The&nbsp;attribute&nbsp;name&nbsp;to&nbsp;search&nbsp;for.</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;val&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String.&nbsp;The&nbsp;attribute&nbsp;value&nbsp;to&nbsp;search&nbsp;for.</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;position&nbsp;&nbsp;&nbsp;&nbsp;int.&nbsp;The&nbsp;last&nbsp;position&nbsp;to&nbsp;be&nbsp;considered.</span><br/>
-		 <span class="s00">*&nbsp;@default&nbsp;&nbsp;&nbsp;&nbsp;0x7FFFFFFF&nbsp;(&lt;code&gt;int.MAX_VALUE&lt;/code&gt;).</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;int.&nbsp;-1&nbsp;if&nbsp;the&nbsp;searched&nbsp;match&nbsp;wasn't&nbsp;found,&nbsp;or&nbsp;zero&nbsp;based&nbsp;index&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;the&nbsp;searched&nbsp;node.</span><br/>
-		 <span class="s00">*/</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">/**</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;Searches&nbsp;for&nbsp;the&nbsp;last&nbsp;attribute&nbsp;before&nbsp;the&nbsp;specified&nbsp;position.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;list&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;XMLList.&nbsp;The&nbsp;list&nbsp;of&nbsp;nodes&nbsp;to&nbsp;perform&nbsp;a&nbsp;search.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;attr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String.&nbsp;The&nbsp;attribute&nbsp;name&nbsp;to&nbsp;search&nbsp;for.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;val&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String.&nbsp;The&nbsp;attribute&nbsp;value&nbsp;to&nbsp;search&nbsp;for.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;position&nbsp;&nbsp;&nbsp;&nbsp;int.&nbsp;The&nbsp;last&nbsp;position&nbsp;to&nbsp;be&nbsp;considered.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@default&nbsp;&nbsp;&nbsp;&nbsp;0x7FFFFFFF&nbsp;(&lt;code&gt;int.MAX_VALUE&lt;/code&gt;).</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;int.&nbsp;-1&nbsp;if&nbsp;the&nbsp;searched&nbsp;match&nbsp;wasn't&nbsp;found,&nbsp;or&nbsp;zero&nbsp;based&nbsp;index&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;the&nbsp;searched&nbsp;node.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*/</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;static&nbsp;function&nbsp;lastIndexOfAttribute(list:XMLList,&nbsp;attr:String,&nbsp;<br/>
-											val:String, position:int = <span class="s03">0</span>x7FFFFFFF):int<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;val:String, position:int = <span class="s03">0</span>x7FFFFFFF):int<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;i:int;<br/>
-			var found:int = -<span class="s03">1</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var found:int = -<span class="s03">1</span>;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list.(attribute(attr)&nbsp;==&nbsp;val&nbsp;&amp;&amp;&nbsp;i&nbsp;&lt;&nbsp;position&nbsp;?&nbsp;found&nbsp;=&nbsp;i++&nbsp;:&nbsp;i++);<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;found;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
-		<span class="s00">/**</span><br/>
-		 <span class="s00">*&nbsp;Slices&nbsp;the&nbsp;XMLList&nbsp;into&nbsp;array.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;list&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;XMLList.&nbsp;The&nbsp;list&nbsp;to&nbsp;be&nbsp;sliced.</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;keepReferences&nbsp;&nbsp;&nbsp;&nbsp;Boolean.&nbsp;If&nbsp;set&nbsp;to&nbsp;true,&nbsp;will&nbsp;use&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;nodes&nbsp;from&nbsp;the&nbsp;list.&nbsp;Otherwise&nbsp;will&nbsp;populate&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;array&nbsp;with&nbsp;copied&nbsp;nodes.</span><br/>
-		 <span class="s00">*&nbsp;@default&nbsp;&nbsp;&nbsp;&nbsp;&lt;code&gt;true&lt;/code&gt;&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;set&nbsp;to&nbsp;&lt;code&gt;true&lt;/code&gt;,&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;will&nbsp;use&nbsp;nodes&nbsp;from&nbsp;the&nbsp;list,&nbsp;otherwise</span><br/>
-		 <span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;will&nbsp;populate&nbsp;array&nbsp;with&nbsp;copied&nbsp;nodes.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;Array.&nbsp;The&nbsp;array&nbsp;containing&nbsp;XMLs&nbsp;for&nbsp;each&nbsp;node&nbsp;in&nbsp;the&nbsp;list.</span><br/>
-		 <span class="s00">*/</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">/**</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;Slices&nbsp;the&nbsp;XMLList&nbsp;into&nbsp;array.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;list&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;XMLList.&nbsp;The&nbsp;list&nbsp;to&nbsp;be&nbsp;sliced.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;keepReferences&nbsp;&nbsp;&nbsp;&nbsp;Boolean.&nbsp;If&nbsp;set&nbsp;to&nbsp;true,&nbsp;will&nbsp;use&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;nodes&nbsp;from&nbsp;the&nbsp;list.&nbsp;Otherwise&nbsp;will&nbsp;populate&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;array&nbsp;with&nbsp;copied&nbsp;nodes.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@default&nbsp;&nbsp;&nbsp;&nbsp;&lt;code&gt;true&lt;/code&gt;&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;set&nbsp;to&nbsp;&lt;code&gt;true&lt;/code&gt;,&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;will&nbsp;use&nbsp;nodes&nbsp;from&nbsp;the&nbsp;list,&nbsp;otherwise</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;will&nbsp;populate&nbsp;array&nbsp;with&nbsp;copied&nbsp;nodes.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;Array.&nbsp;The&nbsp;array&nbsp;containing&nbsp;XMLs&nbsp;for&nbsp;each&nbsp;node&nbsp;in&nbsp;the&nbsp;list.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*/</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;static&nbsp;function&nbsp;listToArray(list:XMLList,&nbsp;keepReferences:Boolean&nbsp;=&nbsp;true):Array<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;arr:Array&nbsp;=&nbsp;[];<br/>
@@ -152,19 +138,19 @@ package&nbsp;org.wvxvws.xmlutils<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;arr;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
-		<span class="s00">/**</span><br/>
-		 <span class="s00">*&nbsp;Creates&nbsp;an&nbsp;XMLList&nbsp;from&nbsp;XML&nbsp;onjects&nbsp;contained&nbsp;within&nbsp;an&nbsp;array.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;array&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array.&nbsp;The&nbsp;array&nbsp;of&nbsp;XML&nbsp;objects.</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;keepReferences&nbsp;&nbsp;&nbsp;&nbsp;Boolean.&nbsp;If&nbsp;set&nbsp;to&nbsp;&lt;code&gt;true&lt;/code&gt;&nbsp;will&nbsp;use&nbsp;the&nbsp;XML</span><br/>
-		 <span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;objects&nbsp;from&nbsp;the&nbsp;array,&nbsp;otherwise&nbsp;will&nbsp;copy&nbsp;the&nbsp;XMLs.</span><br/>
-		 <span class="s00">*&nbsp;@default&nbsp;&nbsp;&nbsp;&nbsp;&lt;code&gt;true&lt;/code&gt;&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;set&nbsp;to&nbsp;&lt;code&gt;true&lt;/code&gt;&nbsp;will&nbsp;use&nbsp;the&nbsp;XML</span><br/>
-		 <span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;objects&nbsp;from&nbsp;the&nbsp;array,&nbsp;otherwise&nbsp;will&nbsp;copy&nbsp;the&nbsp;XMLs.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;XMLList.&nbsp;The&nbsp;collection&nbsp;of&nbsp;nodes&nbsp;contained&nbsp;within&nbsp;the&nbsp;passed&nbsp;array.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@see&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#multyArrayToList()</span><br/>
-		 <span class="s00">*/</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">/**</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;Creates&nbsp;an&nbsp;XMLList&nbsp;from&nbsp;XML&nbsp;onjects&nbsp;contained&nbsp;within&nbsp;an&nbsp;array.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;array&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Array.&nbsp;The&nbsp;array&nbsp;of&nbsp;XML&nbsp;objects.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;keepReferences&nbsp;&nbsp;&nbsp;&nbsp;Boolean.&nbsp;If&nbsp;set&nbsp;to&nbsp;&lt;code&gt;true&lt;/code&gt;&nbsp;will&nbsp;use&nbsp;the&nbsp;XML</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;objects&nbsp;from&nbsp;the&nbsp;array,&nbsp;otherwise&nbsp;will&nbsp;copy&nbsp;the&nbsp;XMLs.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@default&nbsp;&nbsp;&nbsp;&nbsp;&lt;code&gt;true&lt;/code&gt;&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;set&nbsp;to&nbsp;&lt;code&gt;true&lt;/code&gt;&nbsp;will&nbsp;use&nbsp;the&nbsp;XML</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;objects&nbsp;from&nbsp;the&nbsp;array,&nbsp;otherwise&nbsp;will&nbsp;copy&nbsp;the&nbsp;XMLs.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;XMLList.&nbsp;The&nbsp;collection&nbsp;of&nbsp;nodes&nbsp;contained&nbsp;within&nbsp;the&nbsp;passed&nbsp;array.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@see&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#multyArrayToList()</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*/</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;static&nbsp;function&nbsp;arrayToList(array:Array,&nbsp;keepReferences:Boolean&nbsp;=&nbsp;true):XMLList<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;cloneArray:Array&nbsp;=&nbsp;array.slice();<br/>
@@ -181,17 +167,17 @@ package&nbsp;org.wvxvws.xmlutils<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;list;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
-		<span class="s00">/**</span><br/>
-		 <span class="s00">*&nbsp;Unlike&nbsp;the&nbsp;&lt;a&nbsp;href="#arrayToList()"&gt;arrayToList()&lt;/a&gt;&nbsp;function,&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;will&nbsp;parse&nbsp;objects&nbsp;contained&nbsp;within&nbsp;an&nbsp;array&nbsp;to&nbsp;XML&nbsp;objects&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;and&nbsp;generates&nbsp;a&nbsp;new&nbsp;XMLList.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;array&nbsp;&nbsp;&nbsp;&nbsp;Array.&nbsp;The&nbsp;array&nbsp;of&nbsp;objects&nbsp;to&nbsp;be&nbsp;parsed&nbsp;into&nbsp;XMLs.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;XMLList.&nbsp;The&nbsp;XMLList&nbsp;representing&nbsp;the&nbsp;given&nbsp;array.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@see&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#arrayToList()</span><br/>
-		 <span class="s00">*/</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">/**</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;Unlike&nbsp;the&nbsp;&lt;a&nbsp;href="#arrayToList()"&gt;arrayToList()&lt;/a&gt;&nbsp;function,&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;will&nbsp;parse&nbsp;objects&nbsp;contained&nbsp;within&nbsp;an&nbsp;array&nbsp;to&nbsp;XML&nbsp;objects&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;and&nbsp;generates&nbsp;a&nbsp;new&nbsp;XMLList.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;array&nbsp;&nbsp;&nbsp;&nbsp;Array.&nbsp;The&nbsp;array&nbsp;of&nbsp;objects&nbsp;to&nbsp;be&nbsp;parsed&nbsp;into&nbsp;XMLs.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;XMLList.&nbsp;The&nbsp;XMLList&nbsp;representing&nbsp;the&nbsp;given&nbsp;array.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@see&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#arrayToList()</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*/</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;static&nbsp;function&nbsp;multyArrayToList(array:Array):XMLList<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;cloneArray:Array&nbsp;=&nbsp;array.slice();<br/>
@@ -200,18 +186,18 @@ package&nbsp;org.wvxvws.xmlutils<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;list;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
-		<span class="s00">/**</span><br/>
-		 <span class="s00">*&nbsp;Creates&nbsp;a&nbsp;new&nbsp;XML&nbsp;object&nbsp;from&nbsp;the&nbsp;object&nbsp;and&nbsp;it's&nbsp;properties&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;provided&nbsp;in&nbsp;the&nbsp;arguments.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;object&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Object.&nbsp;The&nbsp;object&nbsp;to&nbsp;be&nbsp;parsed&nbsp;into&nbsp;XML.</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;nodeName&nbsp;&nbsp;&nbsp;&nbsp;String.&nbsp;If&nbsp;you&nbsp;don't&nbsp;specify&nbsp;a&nbsp;new&nbsp;name&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;the&nbsp;root&nbsp;XML&nbsp;node</span><br/>
-		 <span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;od&nbsp;the&nbsp;resulting&nbsp;XML&nbsp;it'll&nbsp;became&nbsp;&amp;lt;node/&amp;gt;.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;XML.&nbsp;New&nbsp;XML&nbsp;object&nbsp;generated&nbsp;from&nbsp;the&nbsp;object&nbsp;provided&nbsp;in&nbsp;arguments.</span><br/>
-		 <span class="s00">*/</span><br/>
-		public static function objectToXML(object:Object, nodeName:String = <span class="s02">"node"</span>):XML<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">/**</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;Creates&nbsp;a&nbsp;new&nbsp;XML&nbsp;object&nbsp;from&nbsp;the&nbsp;object&nbsp;and&nbsp;it's&nbsp;properties&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;provided&nbsp;in&nbsp;the&nbsp;arguments.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;object&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Object.&nbsp;The&nbsp;object&nbsp;to&nbsp;be&nbsp;parsed&nbsp;into&nbsp;XML.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;nodeName&nbsp;&nbsp;&nbsp;&nbsp;String.&nbsp;If&nbsp;you&nbsp;don't&nbsp;specify&nbsp;a&nbsp;new&nbsp;name&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;the&nbsp;root&nbsp;XML&nbsp;node</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;od&nbsp;the&nbsp;resulting&nbsp;XML&nbsp;it'll&nbsp;became&nbsp;&amp;lt;node/&amp;gt;.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;XML.&nbsp;New&nbsp;XML&nbsp;object&nbsp;generated&nbsp;from&nbsp;the&nbsp;object&nbsp;provided&nbsp;in&nbsp;arguments.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*/</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public static function objectToXML(object:Object, nodeName:String = <span class="s02">"node"</span>):XML<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(object&nbsp;is&nbsp;XML)&nbsp;return&nbsp;XML(object);<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(isXMLName(object))&nbsp;object&nbsp;=&nbsp;QName(object).localName;<br/>
@@ -227,41 +213,41 @@ package&nbsp;org.wvxvws.xmlutils<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;xml;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
-		<span class="s00">/**</span><br/>
-		 <span class="s00">*&nbsp;Removes&nbsp;all&nbsp;namespce&nbsp;declarations&nbsp;as&nbsp;well&nbsp;as&nbsp;namespaces&nbsp;themeselves&nbsp;from&nbsp;the</span><br/>
-		 <span class="s00">*&nbsp;XML&nbsp;provided&nbsp;in&nbsp;the&nbsp;arguments&nbsp;and&nbsp;all&nbsp;it's&nbsp;descendants.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;xml&nbsp;&nbsp;&nbsp;&nbsp;XML.&nbsp;The&nbsp;XML&nbsp;to&nbsp;be&nbsp;stripped&nbsp;of&nbsp;namespaces.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;XML.&nbsp;New&nbsp;XML&nbsp;object&nbsp;with&nbsp;data&nbsp;structure&nbsp;of&nbsp;the&nbsp;XML&nbsp;provided&nbsp;in</span><br/>
-		 <span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;arguments,&nbsp;however,&nbsp;without&nbsp;namespaces.</span><br/>
-		 <span class="s00">*/</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">/**</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;Removes&nbsp;all&nbsp;namespce&nbsp;declarations&nbsp;as&nbsp;well&nbsp;as&nbsp;namespaces&nbsp;themeselves&nbsp;from&nbsp;the</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;XML&nbsp;provided&nbsp;in&nbsp;the&nbsp;arguments&nbsp;and&nbsp;all&nbsp;it's&nbsp;descendants.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;xml&nbsp;&nbsp;&nbsp;&nbsp;XML.&nbsp;The&nbsp;XML&nbsp;to&nbsp;be&nbsp;stripped&nbsp;of&nbsp;namespaces.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;XML.&nbsp;New&nbsp;XML&nbsp;object&nbsp;with&nbsp;data&nbsp;structure&nbsp;of&nbsp;the&nbsp;XML&nbsp;provided&nbsp;in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;arguments,&nbsp;however,&nbsp;without&nbsp;namespaces.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*/</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;static&nbsp;function&nbsp;stripNameSpaces(xml:XML):XML<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;xmlSource:String&nbsp;=&nbsp;xml.toXMLString();<br/>
-			xmlSource = xmlSource.replace(<span class="s04">/&lt;[^!?]?[^&gt;]+?&gt;/</span>g, removeNamspaces);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xmlSource = xmlSource.replace(<span class="s04">/&lt;[^!?]?[^&gt;]+?&gt;/</span>g, removeNamspaces);<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;XML(xmlSource);<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
-		<span class="s00">/**</span><br/>
-		 <span class="s00">*&nbsp;Sorts&nbsp;the&nbsp;XMLList&nbsp;much&nbsp;like&nbsp;the&nbsp;&lt;code&gt;Array.sort()&lt;/code&gt;&nbsp;does.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;list&nbsp;&nbsp;&nbsp;&nbsp;XMLList.&nbsp;The&nbsp;XMLList&nbsp;to&nbsp;be&nbsp;sorted.</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;options&nbsp;&nbsp;&nbsp;&nbsp;Object.&nbsp;May&nbsp;be&nbsp;of&nbsp;the&nbsp;following&nbsp;types:&lt;br/&gt;</span><br/>
-		 <span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String.&nbsp;If&nbsp;you&nbsp;provide&nbsp;a&nbsp;string,&nbsp;the&nbsp;behavior&nbsp;will&nbsp;be&nbsp;the&nbsp;same&nbsp;as&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;&lt;code&gt;Array.sortOn("parameter")&lt;/code&gt;&lt;br/&gt;</span><br/>
-		 <span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int.&nbsp;If&nbsp;you&nbsp;provide&nbsp;an&nbsp;integer,&nbsp;then&nbsp;the&nbsp;behavior&nbsp;will&nbsp;be&nbsp;the&nbsp;same</span><br/>
-		 <span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;as&nbsp;of&nbsp;&lt;code&gt;Array.sortOn(0-31)&lt;/code&gt;.&nbsp;You&nbsp;may&nbsp;use&nbsp;Array&nbsp;constants&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;this&nbsp;sorting&nbsp;operation,&nbsp;the&nbsp;same&nbsp;rules&nbsp;apply.&lt;br/&gt;</span><br/>
-		 <span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Function.&nbsp;If&nbsp;you&nbsp;specify&nbsp;the&nbsp;function&nbsp;as&nbsp;an&nbsp;option,&nbsp;this&nbsp;function&nbsp;will&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;be&nbsp;called&nbsp;with&nbsp;the&nbsp;following&nbsp;arguments:&nbsp;previous&nbsp;XML&nbsp;node&nbsp;and&nbsp;next&nbsp;XML&nbsp;node.</span><br/>
-		 <span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;function&nbsp;signature&nbsp;should&nbsp;look&nbsp;like&nbsp;this:&lt;br/&gt;</span><br/>
-		 <span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;code&gt;function&nbsp;sortingFunction(a:XML,&nbsp;b:XML):int&lt;/code&gt;.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;XMLList.&nbsp;The&nbsp;sorted&nbsp;XMLList.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@throws&nbsp;ArgumentError.&nbsp;"options"&nbsp;argument&nbsp;cannot&nbsp;be&nbsp;of&nbsp;type&nbsp;&lt;i&gt;type&lt;/i&gt;!</span><br/>
-		 <span class="s00">*/</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">/**</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;Sorts&nbsp;the&nbsp;XMLList&nbsp;much&nbsp;like&nbsp;the&nbsp;&lt;code&gt;Array.sort()&lt;/code&gt;&nbsp;does.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;list&nbsp;&nbsp;&nbsp;&nbsp;XMLList.&nbsp;The&nbsp;XMLList&nbsp;to&nbsp;be&nbsp;sorted.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;options&nbsp;&nbsp;&nbsp;&nbsp;Object.&nbsp;May&nbsp;be&nbsp;of&nbsp;the&nbsp;following&nbsp;types:&lt;br/&gt;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String.&nbsp;If&nbsp;you&nbsp;provide&nbsp;a&nbsp;string,&nbsp;the&nbsp;behavior&nbsp;will&nbsp;be&nbsp;the&nbsp;same&nbsp;as&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;&lt;code&gt;Array.sortOn("parameter")&lt;/code&gt;&lt;br/&gt;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int.&nbsp;If&nbsp;you&nbsp;provide&nbsp;an&nbsp;integer,&nbsp;then&nbsp;the&nbsp;behavior&nbsp;will&nbsp;be&nbsp;the&nbsp;same</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;as&nbsp;of&nbsp;&lt;code&gt;Array.sortOn(0-31)&lt;/code&gt;.&nbsp;You&nbsp;may&nbsp;use&nbsp;Array&nbsp;constants&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;this&nbsp;sorting&nbsp;operation,&nbsp;the&nbsp;same&nbsp;rules&nbsp;apply.&lt;br/&gt;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Function.&nbsp;If&nbsp;you&nbsp;specify&nbsp;the&nbsp;function&nbsp;as&nbsp;an&nbsp;option,&nbsp;this&nbsp;function&nbsp;will&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;be&nbsp;called&nbsp;with&nbsp;the&nbsp;following&nbsp;arguments:&nbsp;previous&nbsp;XML&nbsp;node&nbsp;and&nbsp;next&nbsp;XML&nbsp;node.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;function&nbsp;signature&nbsp;should&nbsp;look&nbsp;like&nbsp;this:&lt;br/&gt;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;code&gt;function&nbsp;sortingFunction(a:XML,&nbsp;b:XML):int&lt;/code&gt;.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;XMLList.&nbsp;The&nbsp;sorted&nbsp;XMLList.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@throws&nbsp;ArgumentError.&nbsp;"options"&nbsp;argument&nbsp;cannot&nbsp;be&nbsp;of&nbsp;type&nbsp;&lt;i&gt;type&lt;/i&gt;!</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*/</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;static&nbsp;function&nbsp;sort(list:XMLList,&nbsp;options:Object&nbsp;=&nbsp;null):XMLList<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;arr:Array&nbsp;=&nbsp;listToArray(list);<br/>
@@ -278,21 +264,21 @@ package&nbsp;org.wvxvws.xmlutils<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;arr.sort(options);<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;default:<br/>
-					throw new ArgumentError(<span class="s02">"\"options\"&nbsp;argument&nbsp;cannot&nbsp;be&nbsp;of&nbsp;type&nbsp;"</span> +<br/>
-					getQualifiedClassName(options) + <span class="s02">"!"</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw new ArgumentError(<span class="s02">"\"options\"&nbsp;argument&nbsp;cannot&nbsp;be&nbsp;of&nbsp;type&nbsp;"</span> +<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;getQualifiedClassName(options) + <span class="s02">"!"</span>);<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;arrayToList(arr);<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
-		<span class="s00">/**</span><br/>
-		 <span class="s00">*&nbsp;Searches&nbsp;the&nbsp;XML&nbsp;for&nbsp;identical&nbsp;child&nbsp;nodes&nbsp;and&nbsp;removes&nbsp;them.</span><br/>
-		 <span class="s00">*&nbsp;This&nbsp;function&nbsp;doesn't&nbsp;modify&nbsp;the&nbsp;original&nbsp;XML.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;xml&nbsp;&nbsp;&nbsp;&nbsp;XML.&nbsp;XML&nbsp;to&nbsp;be&nbsp;searched&nbsp;for&nbsp;identical&nbsp;nodes.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;XML.&nbsp;The&nbsp;XML&nbsp;containing&nbsp;no&nbsp;identical&nbsp;nodes.</span><br/>
-		 <span class="s00">*/</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">/**</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;Searches&nbsp;the&nbsp;XML&nbsp;for&nbsp;identical&nbsp;child&nbsp;nodes&nbsp;and&nbsp;removes&nbsp;them.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;This&nbsp;function&nbsp;doesn't&nbsp;modify&nbsp;the&nbsp;original&nbsp;XML.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;xml&nbsp;&nbsp;&nbsp;&nbsp;XML.&nbsp;XML&nbsp;to&nbsp;be&nbsp;searched&nbsp;for&nbsp;identical&nbsp;nodes.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;XML.&nbsp;The&nbsp;XML&nbsp;containing&nbsp;no&nbsp;identical&nbsp;nodes.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*/</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;static&nbsp;function&nbsp;removeDuplicates(xml:XML):XML<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;result:XML&nbsp;=&nbsp;&lt;{xml.name()}/&gt;;<br/>
@@ -303,14 +289,14 @@ package&nbsp;org.wvxvws.xmlutils<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;result;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
-		<span class="s00">/**</span><br/>
-		 <span class="s00">*&nbsp;Creates&nbsp;a&nbsp;one-level&nbsp;copy&nbsp;of&nbsp;the&nbsp;provided&nbsp;XML.&nbsp;I.e.&nbsp;this&nbsp;copy&nbsp;will&nbsp;contain</span><br/>
-		 <span class="s00">*&nbsp;the&nbsp;attributes&nbsp;of&nbsp;the&nbsp;copied&nbsp;XML,&nbsp;no&nbsp;child&nbsp;nodes&nbsp;will&nbsp;be&nbsp;copied.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;xml&nbsp;&nbsp;&nbsp;&nbsp;XML.&nbsp;The&nbsp;XML&nbsp;to&nbsp;copy.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;XML.&nbsp;New&nbsp;copied&nbsp;XML.</span><br/>
-		 <span class="s00">*/</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">/**</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;Creates&nbsp;a&nbsp;one-level&nbsp;copy&nbsp;of&nbsp;the&nbsp;provided&nbsp;XML.&nbsp;I.e.&nbsp;this&nbsp;copy&nbsp;will&nbsp;contain</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;the&nbsp;attributes&nbsp;of&nbsp;the&nbsp;copied&nbsp;XML,&nbsp;no&nbsp;child&nbsp;nodes&nbsp;will&nbsp;be&nbsp;copied.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;xml&nbsp;&nbsp;&nbsp;&nbsp;XML.&nbsp;The&nbsp;XML&nbsp;to&nbsp;copy.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;XML.&nbsp;New&nbsp;copied&nbsp;XML.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*/</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;static&nbsp;function&nbsp;shallowCopy(xml:XML):XML<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;result:XML&nbsp;=&nbsp;&lt;{xml.name()}/&gt;;<br/>
@@ -318,20 +304,20 @@ package&nbsp;org.wvxvws.xmlutils<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;result;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
-		<span class="s00">/**</span><br/>
-		 <span class="s00">*&nbsp;Creates&nbsp;a&nbsp;list&nbsp;of&nbsp;N&nbsp;nodes&nbsp;with&nbsp;the&nbsp;optional&nbsp;randomization.&lt;br/&gt;</span><br/>
-		 <span class="s00">*&nbsp;Note&nbsp;that&nbsp;if&nbsp;you&nbsp;supply&nbsp;quantity&nbsp;greater&nbsp;then&nbsp;the&nbsp;number&nbsp;of&nbsp;nodes,&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;the&nbsp;list&nbsp;will&nbsp;contain&nbsp;as&nbsp;many&nbsp;nodes&nbsp;as&nbsp;there&nbsp;are&nbsp;in&nbsp;the&nbsp;XML.&nbsp;If&nbsp;randomize</span><br/>
-		 <span class="s00">*&nbsp;is&nbsp;set&nbsp;to&nbsp;&lt;code&gt;false&lt;/code&gt;&nbsp;the&nbsp;returned&nbsp;nodes&nbsp;are&nbsp;the&nbsp;first&nbsp;children</span><br/>
-		 <span class="s00">*&nbsp;of&nbsp;the&nbsp;provided&nbsp;XML.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;xml&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;XML.&nbsp;The&nbsp;XML&nbsp;to&nbsp;extract&nbsp;nodes&nbsp;from.</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;quantity&nbsp;&nbsp;&nbsp;&nbsp;uint.&nbsp;How&nbsp;many&nbsp;nodes&nbsp;to&nbsp;extract.</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;randomise&nbsp;&nbsp;&nbsp;&nbsp;Boolean.&nbsp;Whether&nbsp;or&nbsp;not&nbsp;to&nbsp;randomize&nbsp;the&nbsp;list.</span><br/>
-		 <span class="s00">*&nbsp;@default&nbsp;&nbsp;&nbsp;&nbsp;&lt;code&gt;false&lt;/code&gt;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;nodes&nbsp;are&nbsp;not&nbsp;randomized&nbsp;by&nbsp;default.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;XMLList.&nbsp;The&nbsp;list&nbsp;containing&nbsp;some&nbsp;nodes.</span><br/>
-		 <span class="s00">*/</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">/**</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;Creates&nbsp;a&nbsp;list&nbsp;of&nbsp;N&nbsp;nodes&nbsp;with&nbsp;the&nbsp;optional&nbsp;randomization.&lt;br/&gt;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;Note&nbsp;that&nbsp;if&nbsp;you&nbsp;supply&nbsp;quantity&nbsp;greater&nbsp;then&nbsp;the&nbsp;number&nbsp;of&nbsp;nodes,&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;the&nbsp;list&nbsp;will&nbsp;contain&nbsp;as&nbsp;many&nbsp;nodes&nbsp;as&nbsp;there&nbsp;are&nbsp;in&nbsp;the&nbsp;XML.&nbsp;If&nbsp;randomize</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;is&nbsp;set&nbsp;to&nbsp;&lt;code&gt;false&lt;/code&gt;&nbsp;the&nbsp;returned&nbsp;nodes&nbsp;are&nbsp;the&nbsp;first&nbsp;children</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;of&nbsp;the&nbsp;provided&nbsp;XML.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;xml&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;XML.&nbsp;The&nbsp;XML&nbsp;to&nbsp;extract&nbsp;nodes&nbsp;from.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;quantity&nbsp;&nbsp;&nbsp;&nbsp;uint.&nbsp;How&nbsp;many&nbsp;nodes&nbsp;to&nbsp;extract.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;randomise&nbsp;&nbsp;&nbsp;&nbsp;Boolean.&nbsp;Whether&nbsp;or&nbsp;not&nbsp;to&nbsp;randomize&nbsp;the&nbsp;list.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@default&nbsp;&nbsp;&nbsp;&nbsp;&lt;code&gt;false&lt;/code&gt;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;nodes&nbsp;are&nbsp;not&nbsp;randomized&nbsp;by&nbsp;default.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;XMLList.&nbsp;The&nbsp;list&nbsp;containing&nbsp;some&nbsp;nodes.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*/</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;static&nbsp;function&nbsp;few(xml:XML,&nbsp;quantity:uint,&nbsp;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;randomise:Boolean&nbsp;=&nbsp;false):XMLList<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
@@ -343,9 +329,9 @@ package&nbsp;org.wvxvws.xmlutils<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;i:uint;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;do<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
-				node = randomise ? nodes[(Math.random() * nodes.length()) >> <span class="s03">0</span>] :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;node = randomise ? nodes[(Math.random() * nodes.length()) >> <span class="s03">0</span>] :<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nodes[i++];<br/>
-				if (randomise && hash.indexOf(node.toXMLString()) < <span class="s03">0</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (randomise && hash.indexOf(node.toXMLString()) < <span class="s03">0</span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hash.push(node.toXMLString());<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list&nbsp;?&nbsp;list&nbsp;+=&nbsp;node&nbsp;:&nbsp;list&nbsp;=&nbsp;XMLList(node);<br/>
@@ -356,15 +342,15 @@ package&nbsp;org.wvxvws.xmlutils<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;list;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
-		<span class="s00">/**</span><br/>
-		 <span class="s00">*&nbsp;Renames&nbsp;all&nbsp;XML&nbsp;nodes&nbsp;such&nbsp;as&nbsp;to&nbsp;shorten&nbsp;the&nbsp;names.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;xml&nbsp;&nbsp;&nbsp;&nbsp;XML.&nbsp;The&nbsp;XML&nbsp;to&nbsp;rename.&nbsp;Note,&nbsp;the&nbsp;XML&nbsp;will&nbsp;be&nbsp;renamed&nbsp;in&nbsp;place.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;Object.&nbsp;The&nbsp;object&nbsp;containing&nbsp;tokens&nbsp;for&nbsp;the&nbsp;generated&nbsp;node&nbsp;names.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@see&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#reverseBatchRename()</span><br/>
-		 <span class="s00">*/</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">/**</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;Renames&nbsp;all&nbsp;XML&nbsp;nodes&nbsp;such&nbsp;as&nbsp;to&nbsp;shorten&nbsp;the&nbsp;names.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;xml&nbsp;&nbsp;&nbsp;&nbsp;XML.&nbsp;The&nbsp;XML&nbsp;to&nbsp;rename.&nbsp;Note,&nbsp;the&nbsp;XML&nbsp;will&nbsp;be&nbsp;renamed&nbsp;in&nbsp;place.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;Object.&nbsp;The&nbsp;object&nbsp;containing&nbsp;tokens&nbsp;for&nbsp;the&nbsp;generated&nbsp;node&nbsp;names.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@see&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#reverseBatchRename()</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*/</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;static&nbsp;function&nbsp;batchRename(xml:XML):Object<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_hash&nbsp;=&nbsp;{&nbsp;};<br/>
@@ -377,16 +363,16 @@ package&nbsp;org.wvxvws.xmlutils<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;newHash;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
-		<span class="s00">/**</span><br/>
-		 <span class="s00">*&nbsp;Restores&nbsp;node&nbsp;names&nbsp;previously&nbsp;renamed&nbsp;by&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;&lt;a&nbsp;href="#batchRename()"&gt;batchRename()&lt;/a&gt;.&nbsp;Note,&nbsp;The&nbsp;XML&nbsp;will&nbsp;be&nbsp;chenged&nbsp;in&nbsp;place.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;xml&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;XML.&nbsp;The&nbsp;XML&nbsp;to&nbsp;be&nbsp;renamed.</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;hash&nbsp;&nbsp;&nbsp;&nbsp;Object.&nbsp;The&nbsp;object&nbsp;containing&nbsp;propery-value&nbsp;pairs&nbsp;to&nbsp;serve&nbsp;as</span><br/>
-		 <span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tokens&nbsp;for&nbsp;renaming.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;XML&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;modified&nbsp;XML.</span><br/>
-		 <span class="s00">*/</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">/**</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;Restores&nbsp;node&nbsp;names&nbsp;previously&nbsp;renamed&nbsp;by&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;&lt;a&nbsp;href="#batchRename()"&gt;batchRename()&lt;/a&gt;.&nbsp;Note,&nbsp;The&nbsp;XML&nbsp;will&nbsp;be&nbsp;chenged&nbsp;in&nbsp;place.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;xml&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;XML.&nbsp;The&nbsp;XML&nbsp;to&nbsp;be&nbsp;renamed.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;hash&nbsp;&nbsp;&nbsp;&nbsp;Object.&nbsp;The&nbsp;object&nbsp;containing&nbsp;propery-value&nbsp;pairs&nbsp;to&nbsp;serve&nbsp;as</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tokens&nbsp;for&nbsp;renaming.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;XML&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;modified&nbsp;XML.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*/</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;static&nbsp;function&nbsp;reverseBatchRename(xml:XML,&nbsp;hash:Object):XML<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_hash&nbsp;=&nbsp;hash;<br/>
@@ -403,20 +389,20 @@ package&nbsp;org.wvxvws.xmlutils<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;xml;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
-		<span class="s00">/**</span><br/>
-		 <span class="s00">*&nbsp;Inserts&nbsp;one&nbsp;or&nbsp;more&nbsp;XML&nbsp;objects&nbsp;into&nbsp;given&nbsp;XMLList.&nbsp;XMLList&nbsp;is&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;modified&nbsp;in&nbsp;place.&nbsp;Acts&nbsp;similar&nbsp;to&nbsp;&lt;code&gt;Array.splice()&lt;/code&gt;</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;list&nbsp;&nbsp;&nbsp;&nbsp;XMLList.&nbsp;The&nbsp;list&nbsp;to&nbsp;insert&nbsp;items</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;index&nbsp;&nbsp;&nbsp;&nbsp;int.&nbsp;The&nbsp;position&nbsp;to&nbsp;insert&nbsp;at.</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;...xmls&nbsp;&nbsp;&nbsp;&nbsp;One&nbsp;or&nbsp;more&nbsp;objects&nbsp;to&nbsp;be&nbsp;inserted&nbsp;in&nbsp;the&nbsp;list.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;XMLList.&nbsp;The&nbsp;modified&nbsp;XMLList.</span><br/>
-		 <span class="s00">*/</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">/**</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;Inserts&nbsp;one&nbsp;or&nbsp;more&nbsp;XML&nbsp;objects&nbsp;into&nbsp;given&nbsp;XMLList.&nbsp;XMLList&nbsp;is&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;modified&nbsp;in&nbsp;place.&nbsp;Acts&nbsp;similar&nbsp;to&nbsp;&lt;code&gt;Array.splice()&lt;/code&gt;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;list&nbsp;&nbsp;&nbsp;&nbsp;XMLList.&nbsp;The&nbsp;list&nbsp;to&nbsp;insert&nbsp;items</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;index&nbsp;&nbsp;&nbsp;&nbsp;int.&nbsp;The&nbsp;position&nbsp;to&nbsp;insert&nbsp;at.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;...xmls&nbsp;&nbsp;&nbsp;&nbsp;One&nbsp;or&nbsp;more&nbsp;objects&nbsp;to&nbsp;be&nbsp;inserted&nbsp;in&nbsp;the&nbsp;list.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;XMLList.&nbsp;The&nbsp;modified&nbsp;XMLList.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*/</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;public&nbsp;static&nbsp;function&nbsp;insert(list:XMLList,&nbsp;index:int,&nbsp;...xmls):XMLList<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
-			if (index > list.length() - <span class="s03">1</span>) index = list.length() - <span class="s03">1</span>;<br/>
-			if (index < <span class="s03">0</span>) index = <span class="s03">0</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (index > list.length() - <span class="s03">1</span>) index = list.length() - <span class="s03">1</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (index < <span class="s03">0</span>) index = <span class="s03">0</span>;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;toInsert:XMLList&nbsp;=&nbsp;XMLList(xmls.shift());<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while&nbsp;(xmls.length)&nbsp;toInsert&nbsp;+=&nbsp;xmls.shift();<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;toInsert&nbsp;+=&nbsp;list[index].copy();<br/>
@@ -424,61 +410,61 @@ package&nbsp;org.wvxvws.xmlutils<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;list;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
-		<span class="s01">//--------------------------------------------------------------------------</span><br/>
-		<span class="s01">//</span><br/>
-		<span class="s01">//&nbsp;&nbsp;Private&nbsp;methods</span><br/>
-		<span class="s01">//</span><br/>
-		<span class="s01">//--------------------------------------------------------------------------</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//--------------------------------------------------------------------------</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//&nbsp;&nbsp;Private&nbsp;methods</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s01">//--------------------------------------------------------------------------</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
-		<span class="s00">/**</span><br/>
-		 <span class="s00">*&nbsp;@private</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;...rest</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;String.</span><br/>
-		 <span class="s00">*/</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">/**</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@private</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;...rest</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;String.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*/</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;private&nbsp;static&nbsp;function&nbsp;removeNamspaces(...rest):String<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
-			rest[<span class="s03">0</span>] = rest[<span class="s03">0</span>].replace(<span class="s04">/xmlns[^"]+\"[^"]+\"/</span>g, <span class="s02">""</span>);<br/>
-			var attrs:Array = rest[<span class="s03">0</span>].match(<span class="s04">/\"[^"]*\"/</span>g);<br/>
-			rest[<span class="s03">0</span>] = rest[<span class="s03">0</span>].replace(<span class="s04">/\"[^"]*\"/</span>g, ATTRIBUTE_VALUE);<br/>
-			rest[<span class="s03">0</span>] = rest[<span class="s03">0</span>].replace(<span class="s04">/(&lt;\/?|\s)\w+\:/</span>g, <span class="s02">"$1"</span>);<br/>
-			while (rest[<span class="s03">0</span>].indexOf(ATTRIBUTE_VALUE) > <span class="s03">0</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rest[<span class="s03">0</span>] = rest[<span class="s03">0</span>].replace(<span class="s04">/xmlns[^"]+\"[^"]+\"/</span>g, <span class="s02">""</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var attrs:Array = rest[<span class="s03">0</span>].match(<span class="s04">/\"[^"]*\"/</span>g);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rest[<span class="s03">0</span>] = rest[<span class="s03">0</span>].replace(<span class="s04">/\"[^"]*\"/</span>g, ATTRIBUTE_VALUE);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rest[<span class="s03">0</span>] = rest[<span class="s03">0</span>].replace(<span class="s04">/(&lt;\/?|\s)\w+\:/</span>g, <span class="s02">"$1"</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while (rest[<span class="s03">0</span>].indexOf(ATTRIBUTE_VALUE) > <span class="s03">0</span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
-				rest[<span class="s03">0</span>] = rest[<span class="s03">0</span>].replace(ATTRIBUTE_VALUE, attrs.shift());<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rest[<span class="s03">0</span>] = rest[<span class="s03">0</span>].replace(ATTRIBUTE_VALUE, attrs.shift());<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
-			return rest[<span class="s03">0</span>];<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return rest[<span class="s03">0</span>];<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
-		<span class="s00">/**</span><br/>
-		 <span class="s00">*&nbsp;@private</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;node&nbsp;&nbsp;&nbsp;&nbsp;XML.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;Boolean.</span><br/>
-		 <span class="s00">*/</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">/**</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@private</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;node&nbsp;&nbsp;&nbsp;&nbsp;XML.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;Boolean.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*/</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;private&nbsp;static&nbsp;function&nbsp;checkDuplicate(node:XML):Boolean<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
-			if (_collection.indexOf(node.toXMLString()) > -<span class="s03">1</span>) return false;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (_collection.indexOf(node.toXMLString()) > -<span class="s03">1</span>) return false;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_collection.push(node.toXMLString());<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;true;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
-		<span class="s00">/**</span><br/>
-		 <span class="s00">*&nbsp;@private</span><br/>
-		 <span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;nodeName&nbsp;&nbsp;&nbsp;&nbsp;String.</span><br/>
-		 <span class="s00">*&nbsp;</span><br/>
-		 <span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;String.</span><br/>
-		 <span class="s00">*/</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">/**</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@private</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@param&nbsp;&nbsp;&nbsp;&nbsp;nodeName&nbsp;&nbsp;&nbsp;&nbsp;String.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*&nbsp;@return&nbsp;&nbsp;&nbsp;&nbsp;String.</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="s00">*/</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;private&nbsp;static&nbsp;function&nbsp;generateUID(nodeName:String):String<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_uidindex++;<br/>
-			var pin:String = <span class="s02">""</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var pin:String = <span class="s02">""</span>;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;upos:uint&nbsp;=&nbsp;_uidindex;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;i:int;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;pos:int;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while&nbsp;(upos)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
-				pos = upos % <span class="s03">16</span>;<br/>
-				upos /= <span class="s03">16</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pos = upos % <span class="s03">16</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;upos /= <span class="s03">16</span>;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i++;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pin&nbsp;+=&nbsp;GENERATOR.charAt(pos);<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
