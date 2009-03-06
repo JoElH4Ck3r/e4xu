@@ -67,12 +67,16 @@
 		
 		private static var _isEscaped:Boolean;
 		private static var _isPreviousEscaped:Boolean;
-		static private var _isRegExp:Boolean;
-		static private var _isXML:Boolean;
-		static private var _isNumber:Boolean;
-		static private var _isHex:Boolean;
+		private static var _isRegExp:Boolean;
+		private static var _isXML:Boolean;
+		private static var _isNumber:Boolean;
+		private static var _isHex:Boolean;
 		
-		static private var _init:Boolean;
+		private static var _xmlNodeType:int;
+		private static var _isOpenNode:Boolean;
+		private static var _xmlBody:String;
+		
+		private static var _init:Boolean;
 		
 		private static var traceHelper:int;
 		//--------------------------------------------------------------------------
@@ -98,6 +102,9 @@
 			var st:String;
 			var chr:String;
 			var reCheck:String;
+			var xmlTagStartEnd:int;
+			var xmlTagEnd:int;
+			
 			if (!_init) _init = init();
 			if (code is Class)
 			{
@@ -119,6 +126,27 @@
 					st = st.replace(/^([\t\s]+)/, "$1<8b8b0c1e2de4c5e70d004a11cdb62bc2 class=\"s00\">");
 					s += st.indexOf(JCOMMENT) + 45;
 					sl = st.length;
+				}
+				else if (_isXML && _isOpenNode)
+				{
+					xmlTagEnd = lineIsXMLEnd(st);
+					if (xmlTagEnd > -1)
+					{
+						st = st.substr(0, xmlTagEnd) + 
+						SPAN_END + 
+						st.substr(xmlTagEnd, st.length);
+						
+						st = st.replace(/^([\t\s]+)/, "$1<8b8b0c1e2de4c5e70d004a11cdb62bc2 class=\"s05\">");
+						s += st.indexOf(HTML) + 80;
+						sl = st.length;
+					}
+					else
+					{
+						_xmlBody += st;
+						st = st.replace(/^([\t\s]+)/, "$1<8b8b0c1e2de4c5e70d004a11cdb62bc2 class=\"s05\">");
+						sl = st.length;
+						s = sl;
+					}
 				}
 				lineLoop: while (s < sl)
 				{
@@ -298,8 +326,38 @@
 								s += 35;
 							}
 							break;
+						case "<":
+							if (!_isJavaComment && !_isApostropheString && 
+								!_isString && st.charAt(s - 1) !== "." && 
+								st.charAt(s + 1) !== " " && st.charAt(s + 1) !== "\t")
+							{
+								xmlTagStartEnd = checkForXMLStart(st, s, i);
+								if (xmlTagStartEnd > -1)
+								{
+									_isXML = true;
+									st = st.substr(0, s) + 
+									HTML + 
+									st.substr(s, st.length);
+									sl += (46 + xmlTagStartEnd);
+									s += (46 + xmlTagStartEnd);
+								}
+							}
+							break;
+						case ">":
+							if (_isXML && checkForXMLEnd(st, s, i))
+							{
+								_isXML = false;
+								_isOpenNode = false;
+								st = st.substr(0, s + 1) + 
+								SPAN_END + 
+								st.substr(s + 1, st.length);
+								sl += 35;
+								s += 35;
+								xmlTagEnd = s;
+							}
+							break;
 						default:
-							if (_isNumber || _isHex)
+							if ((_isNumber || _isHex) && chr != "x" && !chr.match(/\d|A|B|C|D|E|F/gi).length)
 							{
 								_isHex = false;
 								_isNumber = false;
@@ -323,6 +381,7 @@
 				if (_isNumber) st += SPAN_END;
 				if (_isHex) st += SPAN_END;
 				if (_isJavaComment) st += SPAN_END;
+				if (_isXML) st += SPAN_END;
 				if (_isJavaCommentEnd)
 				{
 					_isJavaCommentEnd = false;
@@ -338,6 +397,138 @@
 				i++;
 			}
 			return _lines.join("\r");
+		}
+		
+		static private function lineIsXMLEnd(input:String, pos:int = 0):int
+		{
+			var lastIndex:int = input.indexOf(">", pos);
+			var xml:XML;
+			if (lastIndex < 0) return lastIndex;
+			try
+			{
+				xml = XML(_xmlBody + input.substr(0, lastIndex));
+				return lastIndex;
+			}
+			catch (error:Error)
+			{
+				return lineIsXMLEnd(input, lastIndex);
+			}
+			return -1;
+		}
+		
+		static private function checkForXMLEnd(currentLine:String, lineIndex:int, 
+														arrayIndex:int):Boolean
+		{
+			switch (_xmlNodeType)
+			{
+				case 1:
+					if (currentLine.charAt(lineIndex - 1) == currentLine.charAt(lineIndex - 2) == "-")
+					{
+						return true;
+					}
+					break;
+				case 2:
+					if (currentLine.charAt(lineIndex - 1) == currentLine.charAt(lineIndex - 2) == "]")
+					{
+						return true;
+					}
+					break;
+				case 3:
+					if (currentLine.charAt(lineIndex - 1) == "?")
+					{
+						return true;
+					}
+					break;
+				case 4:
+					if (!_isOpenNode && currentLine.charAt(lineIndex - 1) == "/")
+					{
+						return true;
+					}
+					break;
+			}
+			return false;
+		}
+		
+		static private function checkForXMLStart(currentLine:String, lineIndex:int, 
+														arrayIndex:int):int
+		{
+			var lastGT:int = currentLine.indexOf("/>", lineIndex);
+			var tagEnd:int;
+			
+			var subtr:int;
+			
+			if (lastGT < 0)
+			{
+				if (lastGT < lineIndex)
+				{
+					lastGT = currentLine.indexOf("-->", lineIndex);
+					subtr = 3;
+				}
+				
+				if (lastGT < lineIndex)
+				{
+					lastGT = currentLine.indexOf("]]>", lineIndex);
+					subtr = 3;
+				}
+				if (lastGT < lineIndex)
+				{
+					lastGT = currentLine.indexOf("?>", lineIndex);
+					subtr = 2;
+				}
+				if (lastGT < lineIndex)
+				{
+					lastGT = currentLine.indexOf(">", lineIndex);
+					_isOpenNode = true;
+					subtr = 1;
+				}
+				
+				if (lastGT < lineIndex)
+				{
+					lastGT = currentLine.length;
+					subtr = 0;
+				}
+				tagEnd = currentLine.length;
+				_xmlBody = currentLine.substring(lineIndex, lastGT - subtr);
+			}
+			else
+			{
+				tagEnd = lastGT - 2;
+				_xmlBody = currentLine.substring(lineIndex, tagEnd);
+			}
+			if (checkValidOpenTag(_xmlBody))
+			{
+				return tagEnd - lineIndex;
+			}
+			else
+			{
+				_xmlBody = "";
+				return -1;
+			}
+		}
+		
+		static private function checkValidOpenTag(input:String):Boolean
+		{
+			if (input.match(/^<--/g).length)
+			{
+				_xmlNodeType = 1;
+				return true;
+			}
+			if (input.match(/^<!\[CDATA\[/gi).length)
+			{
+				_xmlNodeType = 2;
+				return true;
+			}
+			if (input.match(/^<\?\w/g).length)
+			{
+				_xmlNodeType = 3;
+				return true;
+			}
+			if (input.match(/^<\w[\w\.\-\$:_]*([\s\t]+?[\w\.\-\$:_]*\s*=\s*("|')[^\2]*\2)*$/g).length)
+			{
+				_xmlNodeType = 4;
+				return true;
+			}
+			return false;
 		}
 		
 		private static function isUTF(bytes:ByteArray):Boolean
