@@ -38,6 +38,7 @@
 		public function Test() 
 		{
 			super();
+			//CodeParser.parse(_code)
 			trace(CodeParser.parse(_code));
 		}
 		//--------------------------------------------------------------------------
