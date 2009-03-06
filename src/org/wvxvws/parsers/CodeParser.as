@@ -452,7 +452,8 @@
 		static private function doKeyWords(input:String):String
 		{
 			var re:RegExp;
-			for each (var s:String in KEYWORDS)
+			var s:String;
+			for each (s in KEYWORDS)
 			{
 				if (input.indexOf(s) < 0) continue;
 				if (s == "class")
@@ -464,11 +465,18 @@
 					re = new RegExp("(\\W)(" + s + ")(\\W)", "g");
 				}
 				input = input.replace(re, "$1<span class=\"s06\">$2</span>$3");
-				if ((traceHelper++) < 10)
-				{
-					trace(re.source);
-					trace(input);
-				}
+			}
+			for each (s in SECONDARY_KEYWORDS)
+			{
+				if (input.indexOf(s) < 0) continue;
+				re = new RegExp("(\\W)(" + s + ")(\\W)", "g");
+				input = input.replace(re, "$1<span class=\"s06\">$2</span>$3");
+			}
+			for each (s in CLASSES)
+			{
+				if (input.indexOf(s) < 0) continue;
+				re = new RegExp("(\\W)(" + s + ")(\\W)", "g");
+				input = input.replace(re, "$1<span class=\"s07\">$2</span>$3");
 			}
 			return input;
 		}
