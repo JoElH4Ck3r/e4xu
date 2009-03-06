@@ -34,6 +34,7 @@
 		private static const JCOMMENT_RE_HELPER:String = "$1<8b8b0c1e2de4c5e70d004a11cdb62bc2 class=\"s00\">"; // 35
 		
 		private static const NOT_SPAN:RegExp = /<(8b8b0c1e2de4c5e70d004a11cdb62bc2)( class="...">)(.+?)(<\/\1>)/g;
+		private static const TRAILING_SPACES:RegExp = /^((\s|\t)+)((.+?)\1)*/g;
 		
 		private static const JCOMMENT_C:String = "s00";
 		private static const COMMENT_C:String = "s01";
@@ -366,7 +367,12 @@
 			//if ((traceHelper++) < 10) trace(string);
 			var result:String = string.replace(NOT_SPAN, encodeHelper);
 			if (result == string) return encodeHTML(string) + "<br/>";
-			return result + "<br/>";
+			return result.replace(TRAILING_SPACES, keepTrailingSpace) + "<br/>";
+		}
+		
+		static private function keepTrailingSpace(...rest):String
+		{
+			return rest[0].split(" ").join("&nbsp;").split("\t").join("&nbsp;&nbsp;&nbsp;&nbsp;");
 		}
 		
 		private static function encodeHelper(...rest):String
