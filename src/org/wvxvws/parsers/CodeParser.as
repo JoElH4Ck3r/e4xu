@@ -27,6 +27,51 @@
 		//  Private properties
 		//
 		//--------------------------------------------------------------------------
+		
+		private static const KEYWORDS:Array =
+		[
+			"class", "dynamic", "extends", "implements", "import", "interface", "new", "case", "do", "while", "else", "if", "for", "in", "switch", "throw", "intrinsic",
+			"private", "public", "static", "get", "set", "function", "var", "try", "catch", "finally", "while", "with", "default", "break", "continue", "delete", "return",
+			"final", "each", "internal", "native", "override", "protected", "const", "namespace", "package", "include", "use", "AS3"
+		];
+		
+		private static const SECONDARY_KEYWORDS:Array =
+		[
+			"super", "this", "null", "Infinity", "NaN", "undefined", "true", "false", "is", "as", "instanceof", "typeof"
+		];
+		
+		private static const CLASSES:Array =
+		[
+			"void", "Null", "ArgumentError", "arguments", "Array", "Boolean", "Class", "Date", "DefinitionError", "Error", "EvalError", "Function", "int", "Math", "Namespace",
+			"Number", "Object", "QName", "RangeError", "ReferenceError", "RegExp", "SecurityError", "String", "SyntaxError", "TypeError", "uint", "URIError",
+			"VerifyError", "XML", "XMLList", "Accessibility", "AccessibilityProperties", "ActionScriptVersion", "AVM1Movie", "Bitmap", "BitmapData",
+			"BitmapDataChannel", "BlendMode", "CapsStyle", "DisplayObject", "DisplayObjectContainer", "FrameLabel", "GradientType", "Graphics",
+			"IBitmapDrawable", "InteractiveObject", "InterpolationMethod", "JointStyle", "LineScaleMode", "Loader", "LoaderInfo", "MorphShape", "MovieClip",
+			"PixelSnapping", "Scene", "Shape", "SimpleButton", "SpreadMethod", "Sprite", "Stage", "StageAlign", "StageDisplayState", "StageQuality", "StageScaleMode",
+			"SWFVersion", "EOFError", "IllegalOperationError", "InvalidSWFError", "IOError", "MemoryError", "ScriptTimeoutError", "StackOverflowError",
+			"ActivityEvent", "AsyncErrorEvent", "ContextMenuEvent", "DataEvent", "ErrorEvent", "Event", "EventDispatcher", "EventPhase", "FocusEvent",
+			"FullScreenEvent", "HTTPStatusEvent", "IEventDispatcher", "IMEEvent", "IOErrorEvent", "KeyboardEvent", "MouseEvent", "NetStatusEvent", "ProgressEvent",
+			"SecurityErrorEvent", "StatusEvent", "SyncEvent", "TextEvent", "TimerEvent", "ExternalInterface", "BevelFilter", "BitmapFilter",
+			"BitmapFilterQuality", "BitmapFilterType", "BlurFilter", "ColorMatrixFilter", "ConvolutionFilter", "DisplacementMapFilter",
+			"DisplacementMapFilterMode", "DropShadowFilter", "GlowFilter", "GradientBevelFilter", "GradientGlowFilter", "ColorTransform", "Matrix",
+			"Point", "Rectangle", "Transform", "Camera", "ID3Info", "Microphone", "Sound", "SoundChannel", "SoundLoaderContext", "SoundMixer", "SoundTransform",
+			"Video", "FileFilter", "FileReference", "FileReferenceList", "IDynamicPropertyOutput", "IDynamicPropertyWriter", "LocalConnection",
+			"NetConnection", "NetStream", "ObjectEncoding", "Responder", "SharedObject", "SharedObjectFlushStatus", "Socket", "URLLoader",
+			"URLLoaderDataFormat", "URLRequest", "URLRequestHeader", "URLRequestMethod", "URLStream", "URLVariables", "XMLSocket",
+			"PrintJob", "PrintJobOptions", "PrintJobOrientation", "ApplicationDomain", "Capabilities", "IME", "IMEConversionMode", "LoaderContext",
+			"Security", "SecurityDomain", "SecurityPanel", "System", "AntiAliasType", "CSMSettings", "Font", "FontStyle", "FontType", "GridFitType",
+			"StaticText", "StyleSheet", "TextColorType", "TextDisplayMode", "TextField", "TextFieldAutoSize", "TextFieldType", "TextFormat",
+			"TextFormatAlign", "TextLineMetrics", "TextRenderer", "TextSnapshot", "ContextMenu", "ContextMenuBuiltInItems", "ContextMenuItem",
+			"Keyboard", "KeyLocation", "Mouse", "ByteArray", "Dictionary", "Endian", "IDataInput", "IDataOutput", "IExternalizable", "Proxy", "Timer",
+			"XMLDocument", "XMLNode", "XMLNodeType"
+		];
+		
+		private static const DOC_KEYWORDS:Array =
+		[
+			"author", "copy", "default", "deprecated", "eventType", "example", "exampleText", "exception", "haxe", "inheritDoc", "internal", "link", "mtasc", "mxmlc",
+			"param", "private", "return", "see", "serial", "serialData", "serialField", "since", "throws", "usage", "version"
+		];
+		
 		private static const UID:String = "8b8b0c1e2de4c5e70d004a11cdb62bc2"; // 32
 		private static const SPAN_BEGIN:String = "<8b8b0c1e2de4c5e70d004a11cdb62bc2 class=\"xxx\">"; // 46
 		private static const SPAN_END:String = "</8b8b0c1e2de4c5e70d004a11cdb62bc2>"; // 35
@@ -387,16 +432,45 @@
 					_isJavaCommentEnd = false;
 					st += SPAN_END;
 				}
+				_lines[i] = htmlEncode(st);
+				if (!_isJavaComment && !_isLineComment)
+				{
+					_lines[i] = doKeyWords(_lines[i]);
+				}
 				_isLineComment = false;
 				_isApostropheString = false;
 				_isString = false;
 				_isRegExp = false;
 				_isNumber = false;
 				_isHex = false;
-				_lines[i] = htmlEncode(st);
+				
 				i++;
 			}
 			return _lines.join("\r");
+		}
+		
+		static private function doKeyWords(input:String):String
+		{
+			var re:RegExp;
+			for each (var s:String in KEYWORDS)
+			{
+				if (input.indexOf(s) < 0) continue;
+				if (s == "class")
+				{
+					re = new RegExp("(\\W)(" + s + ")([^=\w])", "g");
+				}
+				else
+				{
+					re = new RegExp("(\\W)(" + s + ")(\\W)", "g");
+				}
+				input = input.replace(re, "$1<span class=\"s06\">$2</span>$3");
+				if ((traceHelper++) < 10)
+				{
+					trace(re.source);
+					trace(input);
+				}
+			}
+			return input;
 		}
 		
 		static private function lineIsXMLEnd(input:String, pos:int = 0):int
