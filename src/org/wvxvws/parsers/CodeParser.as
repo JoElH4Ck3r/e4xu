@@ -33,7 +33,7 @@
 		
 		private static const JCOMMENT_RE_HELPER:String = "$1<8b8b0c1e2de4c5e70d004a11cdb62bc2 class=\"s00\">"; // 35
 		
-		private static const NOT_SPAN:RegExp = /(.*)<(8b8b0c1e2de4c5e70d004a11cdb62bc2)( class="...">)(.*)(<\/\2>)(.*)/g
+		private static const NOT_SPAN:RegExp = /<(8b8b0c1e2de4c5e70d004a11cdb62bc2)( class="...">)(.+?)(<\/\1>)/g;
 		
 		private static const JCOMMENT_C:String = "s00";
 		private static const COMMENT_C:String = "s01";
@@ -363,6 +363,7 @@
 		
 		private static function htmlEncode(string:String):String
 		{
+			//if ((traceHelper++) < 10) trace(string);
 			var result:String = string.replace(NOT_SPAN, encodeHelper);
 			if (result == string) return encodeHTML(string) + "<br/>";
 			return result + "<br/>";
@@ -370,8 +371,7 @@
 		
 		private static function encodeHelper(...rest):String
 		{
-			return (encodeHTML(rest[1]) + "<span" + rest[3] + encodeHTML(rest[4]) + 
-					(rest[5].length ? "</span>" : "") + encodeHTML(rest[6]));
+			return ("<span" + rest[2] + encodeHTML(rest[3]) + "</span>");
 		}
 		
 		private static function encodeHTML(input:String):String
