@@ -437,6 +437,10 @@
 				{
 					_lines[i] = doKeyWords(_lines[i]);
 				}
+				else if (_isJavaComment)
+				{
+					_lines[i] = doJDocKeywords(_lines[i]);
+				}
 				_isLineComment = false;
 				_isApostropheString = false;
 				_isString = false;
@@ -446,7 +450,29 @@
 				
 				i++;
 			}
-			return _lines.join("\r");
+			l = _lines.length;
+			i = 0;
+			st = "";
+			while (i < l)
+			{
+				st += "<li class=\"c " + ((i % 2) ? "even" : "odd") + 
+					"\"><span class=\"cd\">" + _lines[i] + "</li>\r";
+				i++;
+			}
+			return "<ol class=\"codeOL\">" + st + "</ol>";
+		}
+		
+		static private function doJDocKeywords(input:String):String
+		{
+			var re:RegExp;
+			var s:String;
+			for each (s in DOC_KEYWORDS)
+			{
+				if (input.indexOf("@" + s) < 0) continue;
+				re = new RegExp("(@)(" + s + ")(\\W)", "g");
+				input = input.replace(re, "<span class=\"s08\">$1$2</span>$3");
+			}
+			return input;
 		}
 		
 		static private function doKeyWords(input:String):String
@@ -458,24 +484,24 @@
 				if (input.indexOf(s) < 0) continue;
 				if (s == "class")
 				{
-					re = new RegExp("(\\W)(" + s + ")([^=\w])", "g");
+					re = new RegExp("(^|\\W)(" + s + ")([^=\w])", "g");
 				}
 				else
 				{
-					re = new RegExp("(\\W)(" + s + ")(\\W)", "g");
+					re = new RegExp("(^|\\W)(" + s + ")(\\W)", "g");
 				}
 				input = input.replace(re, "$1<span class=\"s06\">$2</span>$3");
 			}
 			for each (s in SECONDARY_KEYWORDS)
 			{
 				if (input.indexOf(s) < 0) continue;
-				re = new RegExp("(\\W)(" + s + ")(\\W)", "g");
+				re = new RegExp("(^|\\W)(" + s + ")(\\W)", "g");
 				input = input.replace(re, "$1<span class=\"s06\">$2</span>$3");
 			}
 			for each (s in CLASSES)
 			{
 				if (input.indexOf(s) < 0) continue;
-				re = new RegExp("(\\W)(" + s + ")(\\W)", "g");
+				re = new RegExp("(^|\\W)(" + s + ")(\\W)", "g");
 				input = input.replace(re, "$1<span class=\"s07\">$2</span>$3");
 			}
 			return input;
@@ -639,8 +665,8 @@
 		{
 			//if ((traceHelper++) < 10) trace(string);
 			var result:String = string.replace(NOT_SPAN, encodeHelper);
-			if (result == string) return encodeHTML(string) + "<br/>";
-			return result.replace(TRAILING_SPACES, keepTrailingSpace) + "<br/>";
+			if (result == string) return encodeHTML(string) + "<span/>";
+			return result.replace(TRAILING_SPACES, keepTrailingSpace) + "<span/>";
 		}
 		
 		static private function keepTrailingSpace(...rest):String
