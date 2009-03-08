@@ -28,6 +28,27 @@
 		//
 		//--------------------------------------------------------------------------
 		
+		private var xml:XML =
+		<docs>
+			<!--
+				asdf
+				<docs a='5'/>
+				<docs a='5'></docs>
+				<![CDATA[Matches any word character (alphanumeric & underscore).<br/><br/><b>Note:</b><br/>
+			-->
+			<category name="character classes">
+				<item 
+				pattern=".">Matches any character, except for line breaks if dotall is false.</item>
+				<item pattern="\w"><![CDATA[Matches (alphanumeric & underscore).<br/><br/><b>Note:</b><br/>The actionscript implementation of word characters is very p characters.]]></item>
+				<item pattern="\W"
+				>Matches any character that is not a word character (alphanumeric & underscore).</item>
+			</category>
+			<category name="character sets">
+				<item pattern="[ABC]"><![CDATA[Match in the set.<br/><br/><b>Example:</b><br/>Matches defense or defence<br/>defen[cs]e]]></item>
+				<item pattern="[^ABC]">Match any single character that is not in the set.</item>
+			</category>
+		</docs>;
+		
 		private static const ATTRIBUTE_VALUE:String = "%attribute value%";
 		private static const GENERATOR:String = "ABCDEFGHIJKLMNOP";
 		
