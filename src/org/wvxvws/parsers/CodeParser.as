@@ -177,6 +177,7 @@
 					xmlTagEnd = lineIsXMLEnd(st);
 					if (xmlTagEnd > -1)
 					{
+						_isXML = false;
 						st = st.substr(0, xmlTagEnd) + 
 						SPAN_END + 
 						st.substr(xmlTagEnd, st.length);
@@ -224,10 +225,11 @@
 								sl += 35;
 								s += 35;
 							}
+							else if (_isXML) _xmlBody += chr;
 							break;
 						case "\'":
 							if (!_isEscaped && !_isLineComment && 
-								!_isJavaComment && !_isString && 
+								!_isXML && !_isJavaComment && !_isString && 
 								!_isApostropheString && !_isRegExp)
 							{
 								_isString = true;
@@ -250,12 +252,14 @@
 								sl += 35;
 								s += 35;
 							}
+							else if (_isXML) _xmlBody += chr;
 							break;
 						case "\\":
 							_isEscaped = true;
+							if (_isXML) _xmlBody += chr;
 							break;
 						case "/":
-							if (!_isString && !_isApostropheString && 
+							if (!_isXML && !_isString && !_isApostropheString && 
 								st.charAt(s - 1) == "/")
 							{
 								_isLineComment = true;
@@ -265,13 +269,13 @@
 								break lineLoop;
 							}
 							else if (!_isString && !_isApostropheString && 
-									st.charAt(s - 1) == "*")
+									!_isXML && st.charAt(s - 1) == "*")
 							{
 								_isJavaComment = false;
 								_isJavaCommentEnd = true;
 							}
 							else if (!_isApostropheString && !_isString &&
-									!_isJavaComment && !_isRegExp)
+									!_isXML && !_isJavaComment && !_isRegExp)
 							{
 								reCheck = st.substr(s - 1);
 								if (st.charAt(s + 1) !== "*" && st.charAt(s + 1) !== "/" &&
@@ -285,7 +289,7 @@
 									s += 46;
 								}
 							}
-							else if (_isRegExp && !_isEscaped)
+							else if (!_isXML && _isRegExp && !_isEscaped)
 							{
 								_isRegExp = false;
 								st = st.substr(0, s + 1) + 
@@ -294,9 +298,10 @@
 								sl += 35;
 								s += 35;
 							}
+							else if (_isXML) _xmlBody += chr;
 							break;
 						case "*":
-							if (!_isString && !_isApostropheString 
+							if (!_isXML && !_isString && !_isApostropheString 
 								&& st.charAt(s - 1) == "/")
 							{
 								st = st.substr(0, s - 1) + 
@@ -305,6 +310,7 @@
 								_isJavaComment = true;
 								break lineLoop;
 							}
+							else if (_isXML) _xmlBody += chr;
 							break;
 						case "0":
 						case "1":
@@ -318,7 +324,7 @@
 						case "9":
 							if (!_isJavaComment && !_isLineComment && 
 								!_isRegExp && !_isApostropheString && 
-								!_isNumber && !_isHex &&
+								!_isNumber && !_isHex && !_isXML &&
 								!_isString && st.charAt(s - 1).match(/\W/g).length)
 							{
 								if (st.charAt(s + 1) == "x")
@@ -335,8 +341,8 @@
 								sl += 46;
 								s += 46;
 							}
-							else if ((_isNumber && !st.charAt(s + 1).match(/\d/g).length) || 
-									(_isHex && !st.charAt(s + 1).match(/\d|A|B|C|D|E|F/gi).length &&
+							else if ((!_isXML && _isNumber && !st.charAt(s + 1).match(/\d/g).length) || 
+									(!_isXML && _isHex && !st.charAt(s + 1).match(/\d|A|B|C|D|E|F/gi).length &&
 									st.charAt(s + 1) != "x"))
 							{
 								_isNumber = false;
@@ -347,6 +353,7 @@
 								sl += 35;
 								s += 35;
 							}
+							else if (_isXML) {_xmlBody += chr; trace("entered");}
 							break;
 						case "A":
 						case "B":
@@ -360,7 +367,8 @@
 						case "d":
 						case "e":
 						case "f":
-							if (_isHex && !st.charAt(s + 1).match(/\d|A|B|C|D|E|F/gi).length)
+							if (!_isXML && _isHex && 
+								!st.charAt(s + 1).match(/\d|A|B|C|D|E|F/gi).length)
 							{
 								_isHex = false;
 								_isNumber = false;
@@ -370,15 +378,17 @@
 								sl += 35;
 								s += 35;
 							}
+							else if (_isXML) _xmlBody += chr;
 							break;
 						case "<":
-							if (!_isJavaComment && !_isApostropheString && 
+							if (!_isXML && !_isJavaComment && !_isApostropheString && 
 								!_isString && st.charAt(s - 1) !== "." && 
 								st.charAt(s + 1) !== " " && st.charAt(s + 1) !== "\t")
 							{
 								xmlTagStartEnd = checkForXMLStart(st, s, i);
 								if (xmlTagStartEnd > -1)
 								{
+									trace(s, xmlTagStartEnd);
 									_isXML = true;
 									st = st.substr(0, s) + 
 									HTML + 
@@ -387,6 +397,7 @@
 									s += (46 + xmlTagStartEnd);
 								}
 							}
+							else if (_isXML) _xmlBody += chr;
 							break;
 						case ">":
 							if (_isXML && checkForXMLEnd(st, s, i))
@@ -400,6 +411,7 @@
 								s += 35;
 								xmlTagEnd = s;
 							}
+							else if (_isXML) _xmlBody += chr;
 							break;
 						default:
 							if ((_isNumber || _isHex) && chr != "x" && !chr.match(/\d|A|B|C|D|E|F/gi).length)
@@ -412,6 +424,11 @@
 								sl += 35;
 								s += 35;
 							}
+							else if (_isXML)
+							{
+								_xmlBody += chr;
+							}
+							break;
 					}
 					if (_isPreviousEscaped)
 					{
@@ -514,12 +531,13 @@
 			if (lastIndex < 0) return lastIndex;
 			try
 			{
-				xml = XML(_xmlBody + input.substr(0, lastIndex));
+				trace(_xmlBody + input.substr(0, lastIndex + 1));
+				xml = XML(_xmlBody + input.substr(0, lastIndex + 1));
 				return lastIndex;
 			}
 			catch (error:Error)
 			{
-				return lineIsXMLEnd(input, lastIndex);
+				return lineIsXMLEnd(input, lastIndex + 1);
 			}
 			return -1;
 		}
@@ -596,7 +614,7 @@
 					subtr = 0;
 				}
 				tagEnd = currentLine.length;
-				_xmlBody = currentLine.substring(lineIndex, lastGT - subtr);
+				_xmlBody = currentLine.substring(lineIndex, lastGT);// - subtr);
 			}
 			else
 			{
@@ -605,7 +623,7 @@
 			}
 			if (checkValidOpenTag(_xmlBody))
 			{
-				return tagEnd - lineIndex;
+				return tagEnd - (lineIndex + 2);
 			}
 			else
 			{
