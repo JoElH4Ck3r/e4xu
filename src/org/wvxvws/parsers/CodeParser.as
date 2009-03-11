@@ -120,6 +120,10 @@
 		private static var _xmlNodeType:int;
 		private static var _isOpenNode:Boolean;
 		private static var _xmlBody:String;
+		private static const _fakeXMLName = "a";
+		private static const _fakeXMLAttribute = "a=\"\"";
+		private static var _fakeNameCounter:int;
+		private static var _fakeAttributeCounter:int;
 		
 		private static var _init:Boolean;
 		
@@ -710,6 +714,19 @@
 		private static function replaceWhiteSpace(input:String):String
 		{
 			return input.split(" ").join("\u00A0").split("\t").join("\u00A0\u00A0\u00A0\u00A0");
+		}
+		
+		private static function nextMatchingBracket(input:String, from:int = 0):int
+		{
+			var ret:int = -1;
+			var indexOpen:int = input.indexOf("{", from);
+			var indexClose:int = input.indexOf("}", indexOpen);
+			if (indexClose < 0 || indexOpen < 0) return ret;
+			if (input.indexOf("{", indexOpen) < indexClose)
+			{
+				
+			}
+			return ret;
 		}
 		
 		//--------------------------------------------------------------------------
