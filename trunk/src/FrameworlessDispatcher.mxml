@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- FrameworlessDispatcher -->
+<fl:Sprite 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:fl="flash.display.*"
+	xmlns:e4xu="http://e4xu.googlecode.com"
+	xmlns:tests="*"
+	enterFrame="enterFrameHandler(event)">
+	<mx:Script>
+		<![CDATA[
+			import flash.events.Event;
+			import org.wvxvws.mxmlutils.MXMLHelper;
+			
+			private function enterFrameHandler(event:Event):void
+			{
+				var f:Function = MXMLHelper.nameForMXMLListener(this, Event.ENTER_FRAME);
+				removeEventListener(Event.ENTER_FRAME, f);
+			}
+		]]>
+	</mx:Script>
+	<tests:TestMap/>
+</fl:Sprite>
