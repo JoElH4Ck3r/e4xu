@@ -3,4 +3,9 @@
 <componentPackage>
 	<!-- MODEL -->
 	<component id="InteractiveModel" class="org.wvxvws.xmlutils.InteractiveModel"/>
+	<!-- EVENTS -->
+	<component id="Dispatcher" class="org.wvxvws.mxmlutils.Dispatcher"/>
+	<component id="Handler" class="org.wvxvws.mxmlutils.Handler"/>
+	<component id="Listener" class="org.wvxvws.mxmlutils.Listener"/>
+	<component id="Map" class="org.wvxvws.mxmlutils.Map"/>
 </componentPackage>
