@@ -65,7 +65,7 @@
 			}
 			_source = value.copy();
 			_children = new InteractiveList(_root, value.*);
-			_attributes = new InteractiveList(_root, value.@ * );
+			_attributes = new InteractiveList(_root, value.@*);
 			if (_map === null) _map = <map/>;
 			_map.setChildren(_source);
 			dispatchEvent(new IMEvent(IMEvent.IMCHANGE, path, old, _map));
