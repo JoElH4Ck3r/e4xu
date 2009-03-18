@@ -56,7 +56,7 @@
 		//--------------------------------------------------------------------------
 		
 		public static function parseStylesXML(source:XML, 
-								styleObject:StyleObject = null):StyleObject
+				styleObject:StyleObject = null, tokenise:Boolean = false):StyleObject
 		{
 			var instance:CSSParser;
 			if (styleObject && (styleObject.parser in _instances))
@@ -74,14 +74,23 @@
 				instance = _staticInstance;
 				_instances.push(instance);
 			}
-			instance.parseXML(source);
+			instance.parseXML(source, tokenise);
 			return instance.declarations;
 		}
 		
-		public function parseXML(source:XML):void
+		public function parseXML(source:XML, tokenise:Boolean = false):void
 		{
 			_source = source;
-			_source..*.@style.(parseDeclaration(toXMLString()));
+			if (tokenise)
+			{
+				_source..*.@style.(parent().@[name()] = 
+					parseDeclaration(toXMLString().replace(/\r|\n|\t/g, "")));
+			}
+			else
+			{
+				_source..*.@style.(
+					parseDeclaration(toXMLString().replace(/\r|\n|\t/g, "")));
+			}
 		}
 		
 		public function parseCSS(cssSource:String):void
@@ -101,14 +110,16 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		private function parseDeclaration(decl:String):void
+		private function parseDeclaration(decl:String):String
 		{
 			_styleDeclaration = new AlphaProps();
 			decl.replace(STYLE_RE, replaceHelper);
-			if (!_declarations[_styleDeclaration.toString()])
+			var token:String = _styleDeclaration.token;
+			if (!_declarations[token])
 			{
-				_declarations[_styleDeclaration.toString()] = _styleDeclaration;
+				_declarations[token] = _styleDeclaration;
 			}
+			return token;
 		}
 		
 		private function replaceHelper(...rest):String
@@ -136,12 +147,30 @@ internal dynamic final class AlphaProps extends Proxy
 {
 	//--------------------------------------------------------------------------
 	//
+	//  Public properties
+	//
+	//--------------------------------------------------------------------------
+	
+	public function get token():String
+	{
+		if (_needHashRegen)
+		{
+			_hash = hash(toString().replace(/\W+/g, ""));
+			_needHashRegen = false;
+		}
+		return _hash;
+	}
+	
+	//--------------------------------------------------------------------------
+	//
 	//  Private properties
 	//
 	//--------------------------------------------------------------------------
 	
 	private var _keys:Array = [];
 	private var _props:Object = { };
+	private var _needHashRegen:Boolean;
+	private var _hash:String;
 	
 	//--------------------------------------------------------------------------
 	//
@@ -174,6 +203,7 @@ internal dynamic final class AlphaProps extends Proxy
 	
 	override flash_proxy function setProperty(name:*, value:*):void 
 	{
+		_needHashRegen = true;
 		_keys.push(name);
 		_keys.sort();
 		_props[name] = value;
@@ -188,4 +218,40 @@ internal dynamic final class AlphaProps extends Proxy
 	}
 	
 	override flash_proxy function nextValue(index:int):* { return _props[_keys[index]]; }
+	
+	private static function hash(input:String):String
+	{
+		while (input.length % 8) input += "z";
+		var ilt:int = input.length;
+		var chklt:int = ilt / 8;
+		if (chklt > 31) throw new Error("Input to long.");
+		var arr:Array = [];
+		var wlt:int;
+		var wsum:int;
+		var i:int;
+		var ix:int;
+		var rs:String = "";
+		var p:String;
+		while (arr.length < 8)
+		{
+			arr.push(input.substr(chklt * arr.length, chklt));
+		}
+		for (ix = 0; ix < 8; ix++)
+		{
+			p = arr[ix];
+			wlt = p.length;
+			wsum = 0;
+			i = 0;
+			while (i < chklt)
+			{
+				wsum += p.charCodeAt(i);
+				wsum += wsum % p.charCodeAt(i);
+				i++;
+			}
+			rs = wsum.toString(32);
+			while (rs.length < 3) rs = "0" + rs;
+			arr[ix] = wlt.toString(32) + rs;
+		}
+		return arr.join("");
+	}
 }
