@@ -120,8 +120,8 @@
 		private static var _xmlNodeType:int;
 		private static var _isOpenNode:Boolean;
 		private static var _xmlBody:String;
-		private static const _fakeXMLName = "a";
-		private static const _fakeXMLAttribute = "a=\"\"";
+		private static const _fakeXMLName:String = "a";
+		private static const _fakeXMLAttribute:String = "a=\"\"";
 		private static var _fakeNameCounter:int;
 		private static var _fakeAttributeCounter:int;
 		
@@ -141,6 +141,52 @@
 		//  Public methods
 		//
 		//--------------------------------------------------------------------------
+		
+		public static function generateHTML(input:String):String
+			{
+				var html:XML =
+				<html>
+					<![CDATA[<html>
+<head>
+	<title>Code example</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="language" content="en" />
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+</head>
+<style type="text/css">
+	.codeOL { color: #fafaf3;
+			background-color: #afaf9f;
+			padding: 0px 0px 0px 40px; margin: 0px; }
+	.c { font-family: monospace;
+		font-size: 12px;
+		padding-left: 5px;
+		color: #fafaf3; }
+	.cd { color: black; }
+	.odd { background-color: #fcfcfd; }
+	.even { background-color: #fafaf7; }
+	.s00 { color:#008000; }
+	.s01 { color:#006000; }
+	.s02 { color:#a31515; }
+	.s03 { color:#000099; }
+	.s04 { color:#ff00ff; }
+	.s05 { color:#0000ff; }
+	.s06 { color:#000090; }
+	.s07 { color:#009090; }
+	.s08 { color:#806060; }
+	.codeDiv { width: 550px; height: 800px; 
+		overflow: scroll; display:block; 
+		padding: 0px; margin: 0px; }
+	.insideCodeDiv { width: 300%; overflow: visible; 
+		display:block; padding: 0px; margin: 0px; }
+</style>
+<body>
+<div class="codeDiv"><div class="insideCodeDiv codeOL">
+					]]>{input}<![CDATA[</div></div>
+</body>
+</html>]]></html>;
+				return "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">" + html;
+			}
 		
 		public static function parse(code:Object):String
 		{
@@ -164,6 +210,11 @@
 					_lines = _text.split(/\n?\r\n?/gm);
 				}
 			}
+			else if (code is String)
+			{
+				_text = code.toString();
+				_lines = _text.split(/\n?\r\n?/gm);
+			}
 			l = _lines.length;
 			while (i < l)
 			{
@@ -182,12 +233,12 @@
 					if (xmlTagEnd > -1)
 					{
 						_isXML = false;
-						st = st.substr(0, xmlTagEnd) + 
+						st = st.substr(0, xmlTagEnd + 1) + 
 						SPAN_END + 
-						st.substr(xmlTagEnd, st.length);
+						st.substr(xmlTagEnd + 1, st.length);
 						
-						st = st.replace(/^([\t\s]+)/, "$1<8b8b0c1e2de4c5e70d004a11cdb62bc2 class=\"s05\">");
-						s += st.indexOf(HTML) + 80;
+						st = st.replace(/^([\t\s]*)/, "$1<8b8b0c1e2de4c5e70d004a11cdb62bc2 class=\"s05\">");
+						s += st.indexOf(HTML) + 81;
 						sl = st.length;
 					}
 					else
@@ -198,6 +249,7 @@
 						s = sl;
 					}
 				}
+				if (!sl) st = " ";
 				lineLoop: while (s < sl)
 				{
 					if (_isEscaped) _isPreviousEscaped = true;
