@@ -224,8 +224,8 @@
 				sl = st.length;
 				if (_isJavaComment)
 				{
-					st = st.replace(/^([\t\s]+)/, "$1<8b8b0c1e2de4c5e70d004a11cdb62bc2 class=\"s00\">");
-					s += st.indexOf(JCOMMENT) + 45;
+					st = st.replace(/^([\t\s]*)/, "$1<8b8b0c1e2de4c5e70d004a11cdb62bc2 class=\"s00\">");
+					s += st.indexOf(JCOMMENT) + 44;
 					sl = st.length;
 				}
 				else if (_isXML && _isOpenNode)
@@ -245,7 +245,7 @@
 					else
 					{
 						_xmlBody += st;
-						st = st.replace(/^([\t\s]+)/, "$1<8b8b0c1e2de4c5e70d004a11cdb62bc2 class=\"s05\">");
+						st = st.replace(/^([\t\s]*)/, "$1<8b8b0c1e2de4c5e70d004a11cdb62bc2 class=\"s05\">");
 						sl = st.length;
 						s = sl;
 					}
@@ -330,6 +330,11 @@
 							{
 								_isJavaComment = false;
 								_isJavaCommentEnd = true;
+								st = st.substr(0, s + 1) + 
+								SPAN_END + 
+								st.substr(s + 1, st.length);
+								sl += 35;
+								s += 35;
 							}
 							else if (!_isApostropheString && !_isString &&
 									!_isXML && !_isJavaComment && !_isRegExp)
@@ -348,6 +353,7 @@
 							}
 							else if (!_isXML && _isRegExp && !_isEscaped)
 							{
+								trace("Slash 4");
 								_isRegExp = false;
 								st = st.substr(0, s + 1) + 
 								SPAN_END + 
@@ -365,7 +371,15 @@
 								JCOMMENT + 
 								st.substr(s - 1, st.length);
 								_isJavaComment = true;
-								break lineLoop;
+								if (st.indexOf("*/", s) < 0)
+								{
+									break lineLoop;
+								}
+								else
+								{
+									s = st.indexOf("*/", s);
+									sl = st.length;
+								}
 							}
 							else if (_isXML) _xmlBody += chr;
 							break;
@@ -494,6 +508,7 @@
 					}
 					s++;
 				}
+				trace(st, _isJavaComment);
 				if (_isApostropheString || _isString) st += SPAN_END;
 				if (_isLineComment) st += SPAN_END;
 				if (_isRegExp) st += SPAN_END;
@@ -671,7 +686,7 @@
 					subtr = 0;
 				}
 				tagEnd = currentLine.length;
-				_xmlBody = currentLine.substring(lineIndex, lastGT);// - subtr);
+				_xmlBody = currentLine.substring(lineIndex, lastGT);
 			}
 			else
 			{
@@ -707,21 +722,21 @@
 				return true;
 			}
 			// EXPERIMENTAL!
-			if (input.match(/^<\{/g).length && !input.match(/^<\{\w+:/g).length)
-			{
-				_xmlNodeType = 5;
-				return true;
-			}
-			if (input.match(/^<\w[\w\.\-\$:_]*[\s\t]+?\{/g).length)
-			{
-				_xmlNodeType = 6;
-				return true;
-			}
-			if (input.match(/^<\w[\w\.\-\$:_]*[\s\t]+?[\w\.\-\$:_]*\s*=\s*\{/g).length)
-			{
-				_xmlNodeType = 7;
-				return true;
-			}
+			//if (input.match(/^<\{/g).length && !input.match(/^<\{\w+:/g).length)
+			//{
+				//_xmlNodeType = 5;
+				//return true;
+			//}
+			//if (input.match(/^<\w[\w\.\-\$:_]*[\s\t]+?\{/g).length)
+			//{
+				//_xmlNodeType = 6;
+				//return true;
+			//}
+			//if (input.match(/^<\w[\w\.\-\$:_]*[\s\t]+?[\w\.\-\$:_]*\s*=\s*\{/g).length)
+			//{
+				//_xmlNodeType = 7;
+				//return true;
+			//}
 			if (input.match(/^<\w[\w\.\-\$:_]*([\s\t]+?[\w\.\-\$:_]*\s*=\s*("|')[^\2]*\2)*$/g).length)
 			{
 				_xmlNodeType = 4;
@@ -791,7 +806,7 @@
 			var closeCount:int;
 			_curlyBrackets = [];
 			input.replace(/\{|\}/g, bracketHelper);
-			for each(var o:Object in brackets)
+			for each(var o:Object in _curlyBrackets)
 			{
 				if (o.open) closeCount++;
 				else closeCount--;
@@ -801,7 +816,7 @@
 		}
 		
 		// EXPERIMENTAL!
-		private function bracketHelper(inp:String, index:int, all:String):String
+		private static function bracketHelper(inp:String, index:int, all:String):String
 		{
 			_curlyBrackets.push({open: Boolean(inp == "{"), position: index});
 			return inp;
