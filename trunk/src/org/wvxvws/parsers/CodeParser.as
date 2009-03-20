@@ -128,6 +128,7 @@
 		private static var _init:Boolean;
 		
 		private static var traceHelper:int;
+		static private var _curlyBrackets:Array;
 		//--------------------------------------------------------------------------
 		//
 		//  Cunstructor
@@ -705,6 +706,22 @@
 				_xmlNodeType = 3;
 				return true;
 			}
+			// EXPERIMENTAL!
+			if (input.match(/^<\{/g).length && !input.match(/^<\{\w+:/g).length)
+			{
+				_xmlNodeType = 5;
+				return true;
+			}
+			if (input.match(/^<\w[\w\.\-\$:_]*[\s\t]+?\{/g).length)
+			{
+				_xmlNodeType = 6;
+				return true;
+			}
+			if (input.match(/^<\w[\w\.\-\$:_]*[\s\t]+?[\w\.\-\$:_]*\s*=\s*\{/g).length)
+			{
+				_xmlNodeType = 7;
+				return true;
+			}
 			if (input.match(/^<\w[\w\.\-\$:_]*([\s\t]+?[\w\.\-\$:_]*\s*=\s*("|')[^\2]*\2)*$/g).length)
 			{
 				_xmlNodeType = 4;
@@ -768,19 +785,27 @@
 			return input.split(" ").join("\u00A0").split("\t").join("\u00A0\u00A0\u00A0\u00A0");
 		}
 		
-		private static function nextMatchingBracket(input:String, from:int = 0):int
+		// EXPERIMENTAL!
+		private static function nextMatchingBracket(input:String):int
 		{
-			var ret:int = -1;
-			var indexOpen:int = input.indexOf("{", from);
-			var indexClose:int = input.indexOf("}", indexOpen);
-			if (indexClose < 0 || indexOpen < 0) return ret;
-			if (input.indexOf("{", indexOpen) < indexClose)
+			var closeCount:int;
+			_curlyBrackets = [];
+			input.replace(/\{|\}/g, bracketHelper);
+			for each(var o:Object in brackets)
 			{
-				
+				if (o.open) closeCount++;
+				else closeCount--;
+				if (!closeCount) return o.position;
 			}
-			return ret;
+			return -1;
 		}
 		
+		// EXPERIMENTAL!
+		private function bracketHelper(inp:String, index:int, all:String):String
+		{
+			_curlyBrackets.push({open: Boolean(inp == "{"), position: index});
+			return inp;
+		}
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
