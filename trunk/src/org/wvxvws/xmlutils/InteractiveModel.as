@@ -191,7 +191,6 @@
 		public function initialized(document:Object, id:String):void
 		{
 			_name = new QName(id);
-			_map.setName(id);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -234,6 +233,8 @@
 		
 		wc3xml function lang():String { return _lang; }
 		
+		public function children():InteractiveList { return _children; }
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
@@ -262,8 +263,6 @@
 					return _source.child(rest[0]);
 				case "childIndex":
 					return _source.childIndex();
-				case "children":
-					return _source.children();
 				case "comments":
 					return _source.comments();
 				case "contains":

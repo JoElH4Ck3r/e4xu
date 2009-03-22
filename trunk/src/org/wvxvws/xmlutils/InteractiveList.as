@@ -78,6 +78,10 @@
 		
 		flash_proxy override function getProperty(name:*):* 
 		{
+			if (!isNaN(Number(name)) && Number(name) == int(name))
+			{
+				return _nodes[int(name)];
+			}
 			return findMatch(String(name));
 		}
 		
@@ -94,8 +98,13 @@
 					if (nodeIsAttribute) xml = <{name}>{value}</{name}>;
 					else xml = XML(value);
 					_nodes[i] = new InteractiveModel(xml, _root, nodeIsAttribute);
+					return;
 				}
 			}
+			nodeIsAttribute = flash_proxy::isAttribute(name);
+			if (nodeIsAttribute) xml = <{name}>{value}</{name}>;
+			else xml = XML(value);
+			_nodes.push(new InteractiveModel(xml, _root, nodeIsAttribute));
 		}
 		
 		flash_proxy override function nextName(index:int):String 
