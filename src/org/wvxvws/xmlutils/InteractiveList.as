@@ -38,7 +38,8 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public function InteractiveList(root:InteractiveModel, parent:InteractiveModel, nodes:XMLList) 
+		public function InteractiveList(root:InteractiveModel, parent:InteractiveModel,
+																	nodes:XMLList) 
 		{
 			super();
 			_root = root;
@@ -72,11 +73,39 @@
 			return this;
 		}
 		
+		public function filter(contition:String):InteractiveList
+		{
+			var list:InteractiveList;
+			for each(var model:InteractiveModel in _nodes)
+			{
+				if (XPath.eval(contition, model))
+				{
+					if (!list)
+					{
+						list = new InteractiveList(model.root(), model.parent(), null);
+					}
+					else
+					{
+						list.append(model);
+					}
+				}
+			}
+			if (!list) return new InteractiveList(null, null, null);
+			return list;
+		}
+		
+		
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
+		
+		xmlutils_internal function append(model:InteractiveModel):void
+		{
+			_nodes.push(model);
+		}
 		
 		flash_proxy override function getProperty(name:*):* 
 		{
@@ -143,8 +172,7 @@
 		private function populate(nodes:XMLList):void
 		{
 			if (nodes[0] === undefined) return;
-			nodes.(_nodes[_nodes.push(new InteractiveModel(valueOf(), 
-				_root)) - 1].addEventListener(IMEvent.IMCHANGE, _root.imeChangeHandler) ===
+			nodes.(_nodes.push(new InteractiveModel(valueOf(), _root)) &&
 				_nodes[_nodes.length - 1].xmlutils_internal::setParent(_parent));
 		}
 	}

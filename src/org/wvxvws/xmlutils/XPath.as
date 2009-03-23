@@ -43,12 +43,12 @@
 		public static const MINUS:String = "-"; // 	Subtraction 	6 - 4 	2
 		public static const MULTIPLICATION:String = "*";  //	Multiplication 	6 * 424
 		public static const DIVISION:String = "div"; // 	Division 	8 div 4 	2
-		public static const EQUAL = "="; // 	Equal 	price = 9.80 	true if price is 9.80 false if price is 9.90
-		public static const NOT_EQUAL = "!="; // 	Not equal 	price != 9.80 	true if price is 9.90 false if price is 9.80
+		public static const EQUAL:String = "="; // 	Equal 	price = 9.80 	true if price is 9.80 false if price is 9.90
+		public static const NOT_EQUAL:String = "!="; // 	Not equal 	price != 9.80 	true if price is 9.90 false if price is 9.80
 		public static const LESS_THAN:String = "<"; // 	Less than 	price < 9.80 	true if price is 9.00 false if price is 9.80
 		public static const LESS_THAN_OR_EQUAL:String = "<="; // 	Less than or equal to 	price <= 9.80 	true if price is 9.00 false if price is 9.90
 		public static const GREATER_THAN:String = ">"; // 	Greater than 	price > 9.80 	true if price is 9.90 false if price is 9.80
-		public static const GREATER_THAN_OR_EQUAL = ">="; // 	Greater than or equal to 	price >= 9.80 	true if price is 9.90 false if price is 9.70
+		public static const GREATER_THAN_OR_EQUAL:String = ">="; // 	Greater than or equal to 	price >= 9.80 	true if price is 9.90 false if price is 9.70
 		public static const OR:String =	"or"; // 	price = 9.80 or price = 9.70 	true if price is 9.80 false if price is 9.50
 		public static const AND:String = "and"; // 	price > 9.00 and price < 9.90 	true if price is 9.80 false if price is 8.50
 		public static const MODULUS:String = "mod"; // 	Modulus (division remainder) 	5 mod 2 	1
@@ -130,7 +130,6 @@
 			if (!base) return InteractiveModel(this).url() + ROOT + relative;
 			return base + ROOT + relative;
 		}
-		
 		
 		public static var qname:Function = function(name:String):QName
 		{
@@ -216,13 +215,20 @@
 			return InteractiveModel(this).W3C_XML::lang() == lang;
 		}
 		
+		public static var nodeKind:Function = function():String
+		{
+			return InteractiveModel(this).nodeKind();
+		}
+		
+		
 		/**
 		 * Returns the root of the tree to which the current node 
 		 * or the specified belongs. This will usually be a document node
 		 * @param	node
 		 * @return
 		 */
-		public static function root(node:InteractiveModel = null):InteractiveModel
+		public static var root:Function = function(node:InteractiveModel = 
+															null):InteractiveModel
 		{
 			if (node) return node.root();
 			return InteractiveModel(this).root();
@@ -234,13 +240,43 @@
 		//
 		//--------------------------------------------------------------------------
 		
+		public static function eval(expression:String, model:InteractiveModel):Boolean
+		{
+			var exp:Array = expression.split(/(|)/g);
+			var fn:Function = XPath[exp[0]];
+			var ret:Boolean;
+			if (fn == null) throw new XPathError(1, exp[0]);
+			if (fn.apply != null)
+			{
+				if (exp[1])
+				{
+					ret = fn.apply(model, exp[1].split(","));
+				}
+				else
+				{
+					ret = fn.call(model);
+				}
+			}
+			else
+			{
+				if (exp[1])
+				{
+					ret = fn(exp[1].split(","));
+				}
+				else
+				{
+					ret = fn();
+				}
+			}
+			return ret;
+		}
 		
 		/**
 		 * Returns the node-name of the argument node
 		 * @param	node
 		 * @return	Object
 		 */
-		public static function nodeName(node:InteractiveModel):Object { node.name(); }
+		public static function nodeName(node:InteractiveModel):Object { return node.name(); }
 		
 		/**
 		 * Returns a Boolean value indicating whether the argument node is nilled
@@ -252,7 +288,8 @@
 			var declarations:Array = node.namespaceDeclarations();
 			for each(var ns:Namespace in declarations)
 			{
-				if (ns.prefix == "xsi" && node.ns::@nil == "true" && node.@ * .length() == 1)
+				if (ns.prefix == "xsi" && node.ns::["@nil"] == "true" &&
+													node.@*.length() == 1)
 				{
 					return true;
 				}
@@ -269,7 +306,8 @@
 		{
 			var list:XMLList = XMLList(rest.shift());
 			while (rest.length) list += XMLList(rest.shift());
-			var ilist:InteractiveList = new InteractiveList(null, list);
+			var ilist:InteractiveList = new InteractiveList(null, null, list);
+			return ilist;
 		}
 		
 		/**
@@ -305,7 +343,7 @@
 		 * @param	num
 		 * @return	Number.
 		 */
-		public static function abs(num:Object):Number { return Math.abs(num); }
+		public static function abs(num:Object):Number { return Math.abs(Number(num)); }
 		
 		/**
 		 * Returns the smallest integer that is greater than the number argument
@@ -314,7 +352,7 @@
 		 * @param	num
 		 * @return	Number.
 		 */
-		public static function ceiling(num:Object):Number { return Math.ceil(num); }
+		public static function ceiling(num:Object):Number { return Math.ceil(Number(num)); }
 		
 		/**
 		 * Returns the largest integer that is not greater than the number argument
@@ -330,7 +368,7 @@
 		 * Example: round(3.14)
 		 * Result: 3
 		 */
-		public static function round(num:Object):Number { return Math.round(num); }
+		public static function round(num:Object):Number { return Math.round(Number(num)); }
 
 		/**
 		 * Example: round-half-to-even(0.5)
@@ -342,7 +380,10 @@
 		 * @param	num
 		 * @return	Number.
 		 */
-		public static function roundHalfToEven(num:Object):Number { return ((Math.ceil(num) / 2) >> 0) * 2; }
+		public static function roundHalfToEven(num:Object):Number
+		{
+			return ((Math.ceil(Number(num)) / 2) >> 0) * 2;
+		}
 		
 		/**
 		 * Returns the string value of the argument. The argument could be a number, boolean, or node-set
@@ -508,7 +549,7 @@
 		public static function translate(string1:String, string2:String, string3:String):String
 		{
 			if (string2.length != string3.length)
-				throw new XPathError(1, string2 + " and " string3);
+				throw new XPathError(1, string2 + " and " + string3);
 			var result:Array = string1.split();
 			var inArr:Array = string2.split();
 			var outArr:Array = string3.split();
@@ -606,7 +647,7 @@
 		public static function substringAfter(string1:String, string2:String):String
 		{
 			var i:int = string1.lastIndexOf(string2);
-			return string1.substr(i, string1 - i);
+			return string1.substr(i, string1.length - i);
 		}
 		
 		/**
@@ -620,7 +661,7 @@
 		 */
 		public static function matches(string:String, pattern:RegExp):Boolean
 		{
-			return string.match(pattern);
+			return Boolean(string.match(pattern));
 		}
 		
 		/**
@@ -726,7 +767,7 @@
 		 * @param	...items
 		 * @return
 		 */
-		public static function remove(position:int, ...items):InteractiveList { }
+		public static function remove(position:int, ...items):InteractiveList { return null; }
 
 		/**
 		 * Returns true if the value of the arguments IS an empty sequence, 
@@ -736,7 +777,7 @@
 		 * @param	...items
 		 * @return
 		 */
-		public static function empty(...items):Boolean { }
+		public static function empty(...items):Boolean { return true; }
 
 		/**
 		 * Returns true if the value of the arguments IS NOT an empty sequence, 
@@ -746,7 +787,7 @@
 		 * @param	...items
 		 * @return
 		 */
-		public static function exists(...items):Boolean { }
+		public static function exists(...items):Boolean { return true; }
 
 		/**
 		 * Returns only distinct (different) values.
@@ -756,6 +797,9 @@
 		 * @return	Array.
 		 */
 		public static function distinctValues(...items):InteractiveList
+		{
+			return null;
+		}
 
 		/**
 		 * Returns a new sequence constructed from the value of the item 
@@ -774,7 +818,11 @@
 		 * @param	...items
 		 * @return	Array.
 		 */
-		public static function insertBefore(pos:int, inserts:XML, ...items):InteractiveList { }
+		public static function insertBefore(pos:int, inserts:XML, 
+										...items):InteractiveList
+		{
+			return null;
+		}
 
 		/**
 		 * Returns the reversed order of the items specified.
@@ -785,7 +833,10 @@
 		 * @param	...items
 		 * @return
 		 */
-		public static function reverse(...items):InteractiveList { }
+		public static function reverse(...items):InteractiveList
+		{
+			return null;
+		}
 		
 		/**
 		 * Returns a sequence of items from the position specified 
@@ -801,14 +852,20 @@
 		 * @param	...items
 		 * @return
 		 */
-		public static function subsequence(start:int, len:int, ...items):InteractiveList { }
+		public static function subsequence(start:int, len:int, ...items):InteractiveList
+		{
+			return null;
+		}
 
 		/**
 		 * Returns the items in an implementation dependent order.
 		 * @param	...items
 		 * @return
 		 */
-		public static function unordered(...items):InteractiveList { }
+		public static function unordered(...items):InteractiveList
+		{
+			return null;
+		}
 		
 		/**
 		 * Returns the argument if it contains zero or one items, 
@@ -818,7 +875,10 @@
 		 * 
 		 * @throws XPathError.
 		 */
-		public static function zeroOrOne(...items):InteractiveList { }
+		public static function zeroOrOne(...items):InteractiveList
+		{
+			return null;
+		}
 		
 		/**
 		 * Returns the argument if it contains one or more items, 
@@ -828,7 +888,10 @@
 		 * 
 		 * @throws XPathError.
 		 */
-		public static function oneOrMore(...items):InteractiveList { }
+		public static function oneOrMore(...items):InteractiveList
+		{
+			return null;
+		}
 		
 		/**
 		 * Returns the argument if it contains exactly one item, 
@@ -838,7 +901,10 @@
 		 * 
 		 * @throws XPathError.
 		 */
-		public static function exactlyOne(...items):InteractiveList { }
+		public static function exactlyOne(...items):InteractiveList
+		{
+			return null;
+		}
 		
 		/**
 		 * Returns true if param1 and param2 are deep-equal 
@@ -846,14 +912,20 @@
 		 * @param	...items
 		 * @return
 		 */
-		public static function deepEqual(...items):Boolean { }
+		public static function deepEqual(...items):Boolean
+		{
+			return true;
+		}
 		
 		/**
 		 * Returns the count of nodes
 		 * @param	...items
 		 * @return
 		 */
-		public static function count(...items):int { }
+		public static function count(...items):int
+		{
+			return 0;
+		}
 		
 		/**
 		 * Returns the average of the argument values.
@@ -862,7 +934,10 @@
 		 * @param	...numbers
 		 * @return
 		 */
-		public static function avg(...numbers):Number { }
+		public static function avg(...numbers):Number
+		{
+			return 0;
+		}
 		
 
 		/**
@@ -874,7 +949,10 @@
 		 * @param	...numbers
 		 * @return
 		 */
-		public static function max(...numbers):Number { }
+		public static function max(...numbers):Number
+		{
+			return 0;
+		}
 		
 		/**
 		 * Returns the argument that is less than the others.
@@ -885,14 +963,20 @@
 		 * @param	...numbers
 		 * @return
 		 */
-		public static function min(...numbers):Number { }
+		public static function min(...numbers):Number
+		{
+			return 0;
+		}
 
 		/**
 		 * Returns the sum of the numeric value of each node in the specified node-set.
 		 * @param	...numbers
 		 * @return
 		 */
-		public static function sum(...numbers):Number { }
+		public static function sum(...numbers):Number
+		{
+			return 0;
+		}
 		
 		/**
 		 * Returns a sequence of element nodes that have an ID value 
@@ -901,7 +985,10 @@
 		 * @param	...ids
 		 * @return
 		 */
-		public static function id(...ids):InteractiveList { }
+		public static function id(...ids):InteractiveList
+		{
+			return null;
+		}
 		
 		/**
 		 * Returns a sequence of element or attribute nodes that have 
@@ -910,9 +997,12 @@
 		 * @param	...idrefs
 		 * @return
 		 */
-		public static function idref(...idrefs):InteractiveList { }
+		public static function idref(...idrefs):InteractiveList
+		{
+			return null;
+		}
 		
-		public static function doc(URI:String):XML { }
+		public static function doc(URI:String):InteractiveModel { return null; }
 		
 		/**
 		 * Returns true if the doc() function returns a document node, 
@@ -920,9 +1010,15 @@
 		 * @param	URI
 		 * @return
 		 */
-		public static function docAvailable(URI:String):Boolean { }
+		public static function docAvailable(URI:String):Boolean
+		{
+			return true;
+		}
 		
-		public static function collection(string:String = null):InteractiveList { }
+		public static function collection(string:String = null):InteractiveList
+		{
+			return null;
+		}
 		
 		/**
 		 * Returns the index position of the node that is currently being processed.
@@ -930,7 +1026,7 @@
 		 * Result: Selects the first three book elements
 		 * @return
 		 */
-		public static function position():int { }
+		public static function position():int { return 0; }
 		
 
 		/**
@@ -939,7 +1035,7 @@
 		 * Result: Selects the last book element
 		 * @return
 		 */
-		public static function last():int { }
+		public static function last():int { return 0; }
 		
 /* 8.469
 		public static function dateTime(date,time) 	Converts the arguments to a date and a time

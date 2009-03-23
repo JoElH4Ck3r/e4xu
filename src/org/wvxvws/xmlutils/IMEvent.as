@@ -12,31 +12,34 @@
 	{
 		public static const IMCHANGE:String = "imchange";
 		
-		protected var _propE4X:String;
 		protected var _oldValue:Object;
 		protected var _newValue:Object;
+		protected var _model:InteractiveModel;
 		
-		public function IMEvent(type:String, propE4X:String, oldValue:Object, newValue:Object)
+		public function IMEvent(type:String, oldValue:Object, 
+								newValue:Object, model:InteractiveModel)
 		{ 
 			super(type);
-			_propE4X = propE4X;
 			_oldValue = oldValue;
 			_newValue = newValue;
+			_model = model;
 		} 
 		
 		public override function clone():Event 
 		{ 
-			return new IMEvent(type, _propE4X, _oldValue, _newValue);
+			return new IMEvent(type, _oldValue, _newValue, _model);
 		} 
 		
 		public override function toString():String 
 		{ 
-			return formatToString("IMEvent", "type", "bubbles", "cancelable", "eventPhase"); 
+			return formatToString("IMEvent", "type", "oldValue", "newValue"); 
 		}
 		
 		public function get oldValue():Object { return _oldValue; }
 		
 		public function get newValue():Object { return _newValue; }
+		
+		public function get model():InteractiveModel { return _model; }
 		
 	}
 	
