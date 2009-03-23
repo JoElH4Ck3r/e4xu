@@ -105,7 +105,6 @@
 		
 		private static var _isLineComment:Boolean;
 		private static var _isJavaComment:Boolean;
-		private static var _isJavaCommentEnd:Boolean;
 		
 		private static var _isString:Boolean;
 		private static var _isApostropheString:Boolean;
@@ -128,7 +127,8 @@
 		private static var _init:Boolean;
 		
 		private static var traceHelper:int;
-		static private var _curlyBrackets:Array;
+		private static var _curlyBrackets:Array;
+		private static var _word:String = "";
 		//--------------------------------------------------------------------------
 		//
 		//  Cunstructor
@@ -147,7 +147,8 @@
 			{
 				var html:XML =
 				<html>
-					<![CDATA[<html>
+					<![CDATA[<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
 <head>
 	<title>Code example</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -186,7 +187,7 @@
 					]]>{input}<![CDATA[</div></div>
 </body>
 </html>]]></html>;
-				return "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">" + html;
+				return html;
 			}
 		
 		public static function parse(code:Object):String
@@ -255,9 +256,11 @@
 				{
 					if (_isEscaped) _isPreviousEscaped = true;
 					chr = st.charAt(s);
+					//trace("_word:", _word);
 					switch (chr)
 					{
 						case "\"":
+							_word = "";
 							if (!_isEscaped && !_isLineComment && 
 								!_isJavaComment && !_isString && 
 								!_isApostropheString && !_isXML && !_isRegExp)
@@ -285,6 +288,7 @@
 							else if (_isXML) _xmlBody += chr;
 							break;
 						case "\'":
+							_word = "";
 							if (!_isEscaped && !_isLineComment && 
 								!_isXML && !_isJavaComment && !_isString && 
 								!_isApostropheString && !_isRegExp)
@@ -312,10 +316,12 @@
 							else if (_isXML) _xmlBody += chr;
 							break;
 						case "\\":
+							_word = "";
 							_isEscaped = true;
 							if (_isXML) _xmlBody += chr;
 							break;
 						case "/":
+							_word = "";
 							if (!_isXML && !_isString && !_isApostropheString && 
 								st.charAt(s - 1) == "/")
 							{
@@ -329,7 +335,6 @@
 									!_isXML && st.charAt(s - 1) == "*")
 							{
 								_isJavaComment = false;
-								_isJavaCommentEnd = true;
 								st = st.substr(0, s + 1) + 
 								SPAN_END + 
 								st.substr(s + 1, st.length);
@@ -364,6 +369,7 @@
 							else if (_isXML) _xmlBody += chr;
 							break;
 						case "*":
+							_word = "";
 							if (!_isXML && !_isString && !_isApostropheString 
 								&& st.charAt(s - 1) == "/")
 							{
@@ -406,6 +412,7 @@
 								{
 									_isNumber = true;
 								}
+								_word = "";
 								st = st.substr(0, s) + 
 								NUMBER + 
 								st.substr(s, st.length);
@@ -424,7 +431,7 @@
 								sl += 35;
 								s += 35;
 							}
-							else if (_isXML) {_xmlBody += chr; trace("entered");}
+							else if (_isXML) _xmlBody += chr;
 							break;
 						case "A":
 						case "B":
@@ -441,6 +448,7 @@
 							if (!_isXML && _isHex && 
 								!st.charAt(s + 1).match(/\d|A|B|C|D|E|F/gi).length)
 							{
+								_word = "";
 								_isHex = false;
 								_isNumber = false;
 								st = st.substr(0, s + 1) + 
@@ -449,9 +457,40 @@
 								sl += 35;
 								s += 35;
 							}
-							else if (_isXML) _xmlBody += chr;
+							else if (_isXML)
+							{
+								_word = "";
+								_xmlBody += chr;
+							}
+							else if (!_isXML && !_isString && !_isJavaComment && 
+									!_isLineComment && !_isHex && !_isRegExp)
+							{
+								if (!st.charAt(s + 1).match(/\w/) && isClass(_word + chr))
+								{
+									st = st.substr(0, s - _word.length) + 
+									TYPE + _word + chr + SPAN_END + 
+									st.substring(s + 1, st.length);
+									sl += 81;
+									s += 81;
+									_word = "";
+								}
+								else if (!st.charAt(s + 1).match(/\w/) && isKeyWord(_word + chr))
+								{
+									st = st.substr(0, s - _word.length) + 
+									BUILTIN + _word + chr + SPAN_END + 
+									st.substring(s + 1, st.length);
+									sl += 81;
+									s += 81;
+									_word = "";
+								}
+								else
+								{
+									_word += chr;
+								}
+							}
 							break;
 						case "<":
+							_word = "";
 							if (!_isXML && !_isJavaComment && !_isApostropheString && 
 								!_isString && st.charAt(s - 1) !== "." && 
 								st.charAt(s + 1) !== " " && st.charAt(s + 1) !== "\t")
@@ -471,6 +510,7 @@
 							else if (_isXML) _xmlBody += chr;
 							break;
 						case ">":
+							_word = "";
 							if (_isXML && checkForXMLEnd(st, s, i))
 							{
 								_isXML = false;
@@ -484,9 +524,31 @@
 							}
 							else if (_isXML) _xmlBody += chr;
 							break;
+						case "+":
+						case "-":
+						case "=":
+						case "!":
+						case "&":
+						case "|":
+						case " ":
+						case "\t":
+						case ".":
+						case ":":
+						case "[":
+						case "]":
+						case "{":
+						case "}":
+						case "(":
+						case ")":
+						case "%":
+						case "^":
+						case "~":
+							_word = "";
+							break;
 						default:
 							if ((_isNumber || _isHex) && chr != "x" && !chr.match(/\d|A|B|C|D|E|F/gi).length)
 							{
+								_word = "";
 								_isHex = false;
 								_isNumber = false;
 								st = st.substr(0, s) + 
@@ -497,7 +559,34 @@
 							}
 							else if (_isXML)
 							{
+								_word = "";
 								_xmlBody += chr;
+							}
+							else if (!_isString && !_isRegExp && !_isJavaComment && !_isHex &&
+									!_isNumber && !_isLineComment && _word.match(/^\w*$/))
+							{
+								if (!st.charAt(s + 1).match(/\w/) && isClass(_word + chr))
+								{
+									st = st.substr(0, s - _word.length) + 
+									TYPE + _word + chr + SPAN_END + 
+									st.substring(s + 1, st.length);
+									sl += 81;
+									s += 81;
+									_word = "";
+								}
+								else if (!st.charAt(s + 1).match(/\w/) && isKeyWord(_word + chr))
+								{
+									st = st.substr(0, s - _word.length) + 
+									BUILTIN + _word + chr + SPAN_END + 
+									st.substring(s + 1, st.length);
+									sl += 81;
+									s += 81;
+									_word = "";
+								}
+								else
+								{
+									_word += chr;
+								}
 							}
 							break;
 					}
@@ -508,7 +597,6 @@
 					}
 					s++;
 				}
-				trace(st, _isJavaComment);
 				if (_isApostropheString || _isString) st += SPAN_END;
 				if (_isLineComment) st += SPAN_END;
 				if (_isRegExp) st += SPAN_END;
@@ -516,17 +604,8 @@
 				if (_isHex) st += SPAN_END;
 				if (_isJavaComment) st += SPAN_END;
 				if (_isXML) st += SPAN_END;
-				if (_isJavaCommentEnd)
-				{
-					_isJavaCommentEnd = false;
-					st += SPAN_END;
-				}
 				_lines[i] = htmlEncode(st);
-				if (!_isJavaComment && !_isLineComment)
-				{
-					_lines[i] = doKeyWords(_lines[i]);
-				}
-				else if (_isJavaComment)
+				if (_isJavaComment)
 				{
 					_lines[i] = doJDocKeywords(_lines[i]);
 				}
@@ -594,6 +673,18 @@
 				input = input.replace(re, "$1<span class=\"s07\">$2</span>$3");
 			}
 			return input;
+		}
+		
+		private static function isKeyWord(input:String):Boolean
+		{
+			if (KEYWORDS.indexOf(input) > -1) return true;
+			if (SECONDARY_KEYWORDS.indexOf(input) > -1) return true;
+			return false;
+		}
+		
+		private static function isClass(input:String):Boolean
+		{
+			return (CLASSES.indexOf(input) > -1);
 		}
 		
 		static private function lineIsXMLEnd(input:String, pos:int = 0):int
