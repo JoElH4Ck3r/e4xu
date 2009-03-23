@@ -64,11 +64,12 @@
 				}
 			}
 			_source = value.copy();
+			_name = value.name();
 			_children = new InteractiveList(_root, this, value.*);
 			_attributes = new InteractiveList(_root, this, value.@*);
 			if (_map === null) _map = <map/>;
 			_map.setChildren(_source);
-			dispatchEvent(new IMEvent(IMEvent.IMCHANGE, path, old, _map));
+			//dispatchEvent(new IMEvent(generateEventType(), old, _map, this));
 		}
 		
 		//--------------------------------------------------------------------------
@@ -155,11 +156,6 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public function imeChangeHandler(event:IMEvent):void
-		{
-			dispatchEvent(event.clone());
-		}
-		
 		public function generateEventType():String
 		{
 			var etype:String = _name ? _name.toString() : "*";
@@ -184,6 +180,21 @@
  	 	
 		public function dispatchEvent(event:Event):Boolean
 		{
+			if (event is IMEvent && this !== _root)
+			{
+				var etype:String = event.type;
+				var tempEvent:String = etype;
+				while (tempEvent.indexOf("/") > -1)
+				{
+					trace("hasEventListener", _root.hasEventListener(tempEvent), tempEvent);
+					if (_root.hasEventListener(tempEvent))
+					{
+						_root.dispatchEvent(new IMEvent(tempEvent, 
+							(event as IMEvent).oldValue, (event as IMEvent).newValue, this));
+					}
+					tempEvent = tempEvent.substr(0, tempEvent.lastIndexOf("/"));
+				}
+			}
 			return _dispatcher.dispatchEvent(event);
 		}
  	 	
@@ -251,6 +262,11 @@
 		wc3xml function lang():String { return _lang; }
 		
 		public function children():InteractiveList { return _children; }
+		
+		public function text():InteractiveList
+		{
+			return _children.filter("");
+		}
 		
 		//--------------------------------------------------------------------------
 		//
@@ -331,10 +347,6 @@
 					return _source.setName(rest[0]);
 				case "setNamespace":
 					return _source.setNamespace(rest[0]);
-				case "text":
-					return _source.text();
-				case "toXMLString":
-					return _source.toXMLString();
 				default:
 					throw new IllegalOperationError("No method " + 
 								name + " on " + _id);
@@ -379,17 +391,20 @@
 		flash_proxy override function setProperty(name:*, value:*):void 
 		{
 			var old:InteractiveModel;
+			var oldName:String;
 			if (flash_proxy::isAttribute(name))
 			{
 				old = _attributes[name];
 				_attributes[name] = value;
+				oldName = "/#" + old.name();
 			}
 			else
 			{
 				old = _children[name];
 				_children[name] = value;
+				oldName = "/" + old.name();
 			}
-			dispatchEvent(new IMEvent(IMEvent.IMCHANGE, "", old, value));
+			dispatchEvent(new IMEvent(generateEventType() + oldName, old, value, this));
 		}
 		
 		//--------------------------------------------------------------------------
