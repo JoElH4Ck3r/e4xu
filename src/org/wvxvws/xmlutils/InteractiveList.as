@@ -30,6 +30,7 @@
 		
 		private var _nodes:Array = [];
 		private var _root:InteractiveModel;
+		private var _parent:InteractiveModel;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -37,10 +38,11 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public function InteractiveList(root:InteractiveModel, nodes:XMLList) 
+		public function InteractiveList(root:InteractiveModel, parent:InteractiveModel, nodes:XMLList) 
 		{
 			super();
 			_root = root;
+			_parent = parent;
 			if (nodes) populate(nodes);
 			
 		}
@@ -98,6 +100,7 @@
 					if (nodeIsAttribute) xml = <{name}>{value}</{name}>;
 					else xml = XML(value);
 					_nodes[i] = new InteractiveModel(xml, _root, nodeIsAttribute);
+					(_nodes[i] as InteractiveModel).xmlutils_internal::setParent(_parent);
 					return;
 				}
 			}
@@ -105,6 +108,7 @@
 			if (nodeIsAttribute) xml = <{name}>{value}</{name}>;
 			else xml = XML(value);
 			_nodes.push(new InteractiveModel(xml, _root, nodeIsAttribute));
+			(_nodes[_nodes.length - 1] as InteractiveModel).xmlutils_internal::setParent(_parent);
 		}
 		
 		flash_proxy override function nextName(index:int):String 
@@ -140,7 +144,8 @@
 		{
 			if (nodes[0] === undefined) return;
 			nodes.(_nodes[_nodes.push(new InteractiveModel(valueOf(), 
-				_root)) - 1].addEventListener(IMEvent.IMCHANGE, _root.imeChangeHandler));
+				_root)) - 1].addEventListener(IMEvent.IMCHANGE, _root.imeChangeHandler) ===
+				_nodes[_nodes.length - 1].xmlutils_internal::setParent(_parent));
 		}
 	}
 	
