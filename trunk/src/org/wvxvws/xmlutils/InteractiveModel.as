@@ -64,8 +64,8 @@
 				}
 			}
 			_source = value.copy();
-			_children = new InteractiveList(_root, value.*);
-			_attributes = new InteractiveList(_root, value.@*);
+			_children = new InteractiveList(_root, this, value.*);
+			_attributes = new InteractiveList(_root, this, value.@*);
 			if (_map === null) _map = <map/>;
 			_map.setChildren(_source);
 			dispatchEvent(new IMEvent(IMEvent.IMCHANGE, path, old, _map));
@@ -99,6 +99,7 @@
 		private var _text:String;
 		private var _url:String;
 		private var _lang:String;
+		private var _parent:InteractiveModel;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -130,8 +131,8 @@
 						_type = ELEMENT;
 						_name = xml.name();
 						_text = xml.text().toXMLString();
-						_children = new InteractiveList(_root, xml.children());
-						_attributes = new InteractiveList(_root, xml.attributes());
+						_children = new InteractiveList(_root, this, xml.children());
+						_attributes = new InteractiveList(_root, this, xml.attributes());
 						break;
 					case PI:
 						_type = PI;
@@ -157,6 +158,20 @@
 		public function imeChangeHandler(event:IMEvent):void
 		{
 			dispatchEvent(event.clone());
+		}
+		
+		public function generateEventType():String
+		{
+			var etype:String = _name ? _name.toString() : "*";
+			if (_type == ATTRIBUTE) etype = "#" + etype;
+			var nextParent:InteractiveModel = parent() as InteractiveModel;
+			if (nextParent === root()) return nextParent.name() + "/" + etype;
+			while (nextParent !== root())
+			{
+				etype = nextParent.name() + "/" + etype;
+				nextParent = nextParent.parent();
+			}
+			return nextParent.name() + "/" + etype;
 		}
 		
 		public function addEventListener(type:String, listener:Function, 
@@ -221,9 +236,11 @@
 			return "";
 		}
 		
-		public function name():Object { return _name; }
+		public function name():Object { return _name ? _name : "*"; }
 		
 		public function root():InteractiveModel { return _root; }
+		
+		public function parent():InteractiveModel { return _parent; }
 		
 		public function url():String { return _url; }
 		
@@ -245,6 +262,11 @@
 		{
 			if (node.toXMLString().match(/^<!\[CDATA\[[^(\]\]>)]*\]\]>$/)) return true;
 			return false;
+		}
+		
+		xmlutils_internal function setParent(model:InteractiveModel):void
+		{
+			_parent = model;
 		}
 		
 		flash_proxy override function callProperty(name:*, ...rest):* 
@@ -293,8 +315,6 @@
 					return _source.namespaceDeclarations();
 				case "normalize":
 					return _source.normalize();
-				case "parent":
-					return _source.parent();
 				case "prependChild":
 					return _source.prependChild(rest[0]);
 				case "processingInstructions":
