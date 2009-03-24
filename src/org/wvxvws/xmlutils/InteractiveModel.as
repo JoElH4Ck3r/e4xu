@@ -18,7 +18,7 @@
 	* @playerVersion 10.0.12.36
 	*/
 	public dynamic class InteractiveModel extends Proxy implements IEventDispatcher, 
-																	IMXMLObject
+															IMXMLObject, IInteracive
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -142,7 +142,7 @@
 					case TEXT:
 						if (xmlutils_internal::isCData(xml)) _type = CDATA;
 						else _type = TEXT;
-						_text = xml.text().toXMLString();
+						_text = xml.toXMLString();
 						break;
 				}
 				_map = XML(xml.copy());
@@ -186,7 +186,6 @@
 				var tempEvent:String = etype;
 				while (tempEvent.indexOf("/") > -1)
 				{
-					trace("hasEventListener", _root.hasEventListener(tempEvent), tempEvent);
 					if (_root.hasEventListener(tempEvent))
 					{
 						_root.dispatchEvent(new IMEvent(tempEvent, 
@@ -265,7 +264,27 @@
 		
 		public function text():InteractiveList
 		{
-			return _children.filter("fn:nodeKind()='text'");
+			var ret:InteractiveList;
+			for each (var model:InteractiveModel in _children)
+			{
+				if (model.nodeKind() == InteractiveModel.TEXT)
+				{
+					if (!ret)
+					{
+						ret = new InteractiveList(model.root(), model.parent(), null);
+						ret.append(model);
+					}
+					else
+					{
+						ret.append(model);
+					}
+				}
+			}
+			if (ret)
+			{
+				return ret;
+			}
+			return new InteractiveList(null, null, null);
 		}
 		
 		public function filter(expression:String):InteractiveList

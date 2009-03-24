@@ -8,7 +8,7 @@
 	* @langVersion 3.0
 	* @playerVersion 10.0.12.36
 	*/
-	public dynamic class InteractiveList extends Proxy
+	public dynamic class InteractiveList extends Proxy implements IInteracive
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -56,6 +56,58 @@
 		public function root():InteractiveModel { return _root; }
 		
 		public function toString():String { return toXMLString(); }
+		
+		public function text():InteractiveList
+		{
+			var ret:InteractiveList;
+			for each(var node:InteractiveModel in _nodes)
+			{
+				if (node.nodeKind() == InteractiveModel.ELEMENT)
+				{
+					if (!ret)
+					{
+						ret = new InteractiveList(node.root(), node.parent(),
+										XMLList(node.text().toXMLString()));
+						ret.append(node);
+					}
+					else
+					{
+						ret.append(node);
+					}
+				}
+			}
+			if (ret)
+			{
+				return ret;
+			}
+			return new InteractiveList(null, null, null);
+		}
+		
+		public function attributes():InteractiveList
+		{
+			var ret:InteractiveList;
+			for each(var node:InteractiveModel in _nodes)
+			{
+				if (node.nodeKind() == InteractiveModel.ELEMENT)
+				{
+					if (!ret)
+					{
+						ret = new InteractiveList(node.root(), node.parent(), 
+									XMLList(node.children().toXMLString()));
+						ret.append(node);
+					}
+					else
+					{
+						ret.append(node);
+					}
+				}
+			}
+			if (ret)
+			{
+				return ret;
+			}
+			return new InteractiveList(null, null, null);
+		}
 		
 		public function toXMLString():String
 		{
