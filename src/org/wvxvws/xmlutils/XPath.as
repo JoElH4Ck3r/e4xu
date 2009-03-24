@@ -352,7 +352,7 @@
 			var target:InteractiveModel;
 			var targes:InteractiveList;
 			var targetObj:Object;
-			if (expression.charAt() == "/")
+			if (expression.charAt() == "/" || expression.charAt() == ".")
 			{
 				targetObj = findNode(expression, model);
 				if (targetObj is InteractiveModel)
