@@ -265,7 +265,14 @@
 		
 		public function text():InteractiveList
 		{
-			return _children.filter("");
+			return _children.filter("fn:nodeKind()='text'");
+		}
+		
+		public function filter(expression:String):InteractiveList
+		{
+			var list:InteractiveList;
+			XPath.eval(expression, this);
+			return list;
 		}
 		
 		//--------------------------------------------------------------------------
