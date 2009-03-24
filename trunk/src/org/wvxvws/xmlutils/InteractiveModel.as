@@ -159,15 +159,28 @@
 		public function generateEventType():String
 		{
 			var etype:String = _name ? _name.toString() : "*";
+			var i:int;
+			var list:InteractiveList;
 			if (_type == ATTRIBUTE) etype = "#" + etype;
 			var nextParent:InteractiveModel = parent() as InteractiveModel;
-			if (nextParent === root()) return nextParent.name() + "/" + etype;
+			if (nextParent === root())
+			{
+				return (nextParent.name() + "/" + etype + 
+					(_type == ATTRIBUTE ? "" : "/" + nextParent.children().indexOf(this)));
+			}
 			while (nextParent !== root())
 			{
 				etype = nextParent.name() + "/" + etype;
 				nextParent = nextParent.parent();
 			}
-			return nextParent.name() + "/" + etype;
+			var exp:Array = [nextParent.name()].concat(etype.split("/"));
+			exp.shift();
+			list = _root[exp.shift()];
+			while (exp.length)
+			{
+				list = list[exp.shift()];
+			}
+			return nextParent.name() + "/" + etype + (_type == ATTRIBUTE ? "" : "/" + list.indexOf(this));
 		}
 		
 		public function addEventListener(type:String, listener:Function, 
