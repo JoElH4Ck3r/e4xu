@@ -240,9 +240,9 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public static function findNode(expression:String, model:InteractiveModel):Object
+		public static function findNode(expression:String, model:InteractiveModel):IInteracive
 		{
-			var target:Object = model;
+			var target:IInteracive = model;
 			if (expression.charAt() == "/" && expression.indexOf("//") != 0)
 			{
 				target = model.root();
@@ -349,27 +349,17 @@
 		public static function eval(expression:String, model:InteractiveModel):Boolean
 		{
 			var atoms:Array = expression.split(/\band\b|\bor\b|=|!=|<=|>=|\|/);
-			var target:InteractiveModel;
-			var targes:InteractiveList;
-			var targetObj:Object;
+			var targetObj:IInteracive;
 			if (expression.charAt() == "/" || expression.charAt() == ".")
 			{
 				targetObj = findNode(expression, model);
-				if (targetObj is InteractiveModel)
-				{
-					target = targetObj as InteractiveModel;
-				}
-				else if (targetObj is InteractiveList)
-				{
-					targes = targetObj as InteractiveList;
-				}
-				else
+				if (!targetObj)
 				{
 					trace("node does not exist!");
 					return false;
 				}
 			}
-			trace(target.toXMLString());
+			trace(targetObj.toXMLString());
 			trace(atoms);
 			return true;
 			var exp:Array = expression.split(/(|)/g);

@@ -262,6 +262,8 @@
 		
 		public function children():InteractiveList { return _children; }
 		
+		public function attributes():InteractiveList { return _attributes; }
+		
 		public function text():InteractiveList
 		{
 			var ret:InteractiveList;
@@ -321,8 +323,6 @@
 					return _source.appendChild(rest[0]);
 				case "attribute":
 					return _source.attribute(rest[0]);
-				case "attributes":
-					return _source.attributes();
 				case "child":
 					return _source.child(rest[0]);
 				case "childIndex":
@@ -389,7 +389,7 @@
 		flash_proxy override function getProperty(name:*):* 
 		{
 			if (flash_proxy::isAttribute(name)) return _attributes[name];
-			return _children[name];
+			return _children.xmlutils_internal::filterChildren(name);
 		}
 		
 		flash_proxy override function hasProperty(name:*):Boolean 

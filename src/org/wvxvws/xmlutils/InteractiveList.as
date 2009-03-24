@@ -45,7 +45,6 @@
 			_root = root;
 			_parent = parent;
 			if (nodes) populate(nodes);
-			
 		}
 		//--------------------------------------------------------------------------
 		//
@@ -109,11 +108,58 @@
 			return new InteractiveList(null, null, null);
 		}
 		
+		public function parent():InteractiveModel
+		{
+			var toBeParent:InteractiveModel;
+			for each(var model:InteractiveModel in _nodes)
+			{
+				if (!toBeParent)
+				{
+					toBeParent = model.parent();
+				}
+				else if (toBeParent !== model.parent())
+				{
+					return null;
+				}
+			}
+			return toBeParent;
+		}
+		
+		public function children():InteractiveList
+		{
+			var temp:InteractiveList;
+			var child:InteractiveModel;
+			for each(var model:InteractiveModel in _nodes)
+			{
+				if (!temp)
+				{
+					for each (child in model.children())
+					{
+						if (!temp) temp = new InteractiveList(child.root(), 
+														child.parent(), null);
+						temp.append(child);
+					}
+				}
+				else
+				{
+					for each (child in model.children())
+					{
+						temp.append(child);
+					}
+				}
+			}
+			if (temp)
+			{
+				return temp;
+			}
+			return new InteractiveList(null, null, null);
+		}
+		
 		public function toXMLString():String
 		{
 			var rstr:String = "";
 			var l:int = _nodes.length;
-			for (var i:int; i < l; i++) rstr += _nodes[i].toXMLString();
+			for (var i:int; i < l; i++) rstr += (rstr ? "\r" : "") + _nodes[i].toXMLString();
 			return rstr;
 		}
 		
@@ -135,6 +181,7 @@
 					if (!list)
 					{
 						list = new InteractiveList(model.root(), model.parent(), null);
+						list.append(model);
 					}
 					else
 					{
@@ -146,13 +193,20 @@
 			return list;
 		}
 		
-		
-		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
+		
+		xmlutils_internal function filterChildren(name:*):*
+		{
+			if (!isNaN(Number(name)) && Number(name) == int(name))
+			{
+				return _nodes[int(name)];
+			}
+			return findMatch(String(name));
+		}
 		
 		xmlutils_internal function append(model:InteractiveModel):void
 		{
@@ -165,7 +219,30 @@
 			{
 				return _nodes[int(name)];
 			}
-			return findMatch(String(name));
+			return findMatchInChildren(String(name));
+		}
+		
+		private function findMatchInChildren(name:String):InteractiveList
+		{
+			var temp:InteractiveList;
+			var tempChildren:InteractiveList;
+			for each(var model:InteractiveModel in _nodes)
+			{
+				tempChildren = model[name];
+				if (tempChildren)
+				{
+					for each(var child:InteractiveModel in tempChildren)
+					{
+						if (!temp)
+						{
+							temp = new InteractiveList(child.root(), child.parent(), null);
+						}
+						temp.append(child);
+					}
+				}
+			}
+			if (temp) return temp;
+			return new InteractiveList(null, null, null);
 		}
 		
 		flash_proxy override function setProperty(name:*, value:*):void 
@@ -214,11 +291,29 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		private function findMatch(name:String):InteractiveModel
+		private function findMatch(name:String):InteractiveList
 		{
-			var i:int = _nodes.length;
-			while (i--) if (_nodes[i].name() == name) return _nodes[i];
-			return null;
+			var temp:InteractiveList;
+			for each(var model:InteractiveModel in _nodes)
+			{
+				if (model.name() == name)
+				{
+					if (!temp)
+					{
+						temp = new InteractiveList(model.root(), model.parent(), null);
+						temp.append(model);
+					}
+					else
+					{
+						temp.append(model);
+					}
+				}
+			}
+			if (temp)
+			{
+				return temp;
+			}
+			return new InteractiveList(null, null, null);
 		}
 		
 		private function populate(nodes:XMLList):void
