@@ -240,8 +240,138 @@
 		//
 		//--------------------------------------------------------------------------
 		
+		public static function findNode(expression:String, model:InteractiveModel):Object
+		{
+			var target:Object = model;
+			if (expression.charAt() == "/" && expression.indexOf("//") != 0)
+			{
+				target = model.root();
+				expression = expression.substr(1, expression.length - 1);
+			}
+			else if (expression.indexOf("..") == 0)
+			{
+				target = model.parent();
+				expression = expression.substr(1, expression.length - 2);
+			}
+			else if (expression.indexOf(".") == 0)
+			{
+				expression = expression.substr(1, expression.length - 1);
+			}
+			else if (expression.indexOf("//") == 0)
+			{
+				target = new InteractiveList(null, null, null);
+				return findeNodeRecursive(expression.match(/\w[\w\$\.(\:\w)(\-\w)_]*/)[0], 
+													model.children(), target as InteractiveList)
+			}
+			var pos:int;
+			var len:int = expression.length;
+			var chr:String;
+			var word:String = "";
+			var prefix:String;
+			var isNamespace:Boolean;
+			findLoop: while (pos < len)
+			{
+				chr = expression.charAt(pos);
+				switch (true)
+				{
+					case Boolean(chr === "/"):
+						target = target[word];
+						word = "";
+						break;
+					case Boolean(chr === ":"):
+						prefix = word;
+						isNamespace = true;
+						word = "";
+						break;
+					case Boolean(chr === "."):
+						if (expression.charAt(pos + 1) === ".")
+						{
+							target = target.parent();
+							if (!target)
+							{
+								trace("node not found");
+								break findLoop;
+							}
+							word = "";
+						}
+						break;
+					case Boolean(chr === "*"):
+						target = target.children();
+						word = "";
+						break;
+					case Boolean(chr === "@"):
+						target = target.attributes();
+						word = "";
+						break;
+					case Boolean(chr === "["):
+						target = target[word];
+						break findLoop;
+					case Boolean(chr.match(/\w|\$|\-|\._/)):
+						if (!word && !chr.match(/\w/))
+						{
+							trace("incorrect name");
+							break findLoop;
+						}
+						word += chr;
+						break;
+					default:
+						if (target[word] is InteractiveModel || 
+							target[word] is InteractiveList)
+						{
+							return target[word];
+						}
+						trace("node not found");
+						break findLoop;
+				}
+				pos++;
+			}
+			return target;
+		}
+		
+		static private function findeNodeRecursive(expression:String, 
+						list:InteractiveList, result:InteractiveList):InteractiveList
+		{
+			for each (var model:InteractiveModel in list)
+			{
+				if (model.name() == expression)
+				{
+					result.append(model);
+				}
+				if (model.nodeKind() == InteractiveModel.ELEMENT && 
+					model.children().length())
+				{
+					findeNodeRecursive(expression, model.children(), result);
+				}
+			}
+			return result;
+		}
+		
 		public static function eval(expression:String, model:InteractiveModel):Boolean
 		{
+			var atoms:Array = expression.split(/\band\b|\bor\b|=|!=|<=|>=|\|/);
+			var target:InteractiveModel;
+			var targes:InteractiveList;
+			var targetObj:Object;
+			if (expression.charAt() == "/")
+			{
+				targetObj = findNode(expression, model);
+				if (targetObj is InteractiveModel)
+				{
+					target = targetObj as InteractiveModel;
+				}
+				else if (targetObj is InteractiveList)
+				{
+					targes = targetObj as InteractiveList;
+				}
+				else
+				{
+					trace("node does not exist!");
+					return false;
+				}
+			}
+			trace(target.toXMLString());
+			trace(atoms);
+			return true;
 			var exp:Array = expression.split(/(|)/g);
 			var fn:Function = XPath[exp[0]];
 			var ret:Boolean;
