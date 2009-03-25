@@ -171,12 +171,13 @@
 			var i:int;
 			var lnt:int = input.length;
 			var output:String = "";
+			var prop:String = decimal ? "d" : "h";
 			while (i < lnt)
 			{
 				chr = input.charAt(i);
 				if (chr in table)
 				{
-					output += table[chr][(decimal ? "d" : "h")];
+					output += table[chr][prop];
 				}
 				else
 				{
