@@ -9,6 +9,7 @@
 	*/
 	public class Converter 
 	{
+		private static const SPACE:String = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
 		private static const HTML_ENTITIES:Function = function():Object
 		{
 			this["\u00A0"] = { d:"&#160;", h:"&nbsp;" };
@@ -186,6 +187,51 @@
 				i++;
 			}
 			return output;
+		}
+		
+		public static function formatXMLRecursive(xml:XML, level:int = 0):String
+		{
+			var attribs:Array = [];
+			var addedSpace:String = SPACE.substr(0, level);
+			if (xml.nodeKind() != "element")
+			{
+				return addedSpace + xml.toXMLString();
+			}
+			var childString:String = "";
+			
+			xml.@*.(attribs.push("\r" + addedSpace + "\t" + 
+				qnameToXMLName(namespace(), name()) + "=\"" + valueOf() + "\""));
+			var list:XMLList = xml.children();
+			var declarations:Array = xml.namespaceDeclarations();
+			for each(var ns:Namespace in declarations)
+			{
+				attribs.push("\r" + addedSpace + "\txmlns:" + 
+							ns.prefix + "=\"" + ns.uri + "\"");
+			}
+			for each(var xn:XML in list)
+			{
+				childString += (childString ? "\r" : "") + 
+					formatXMLRecursive(xn, level + 1);
+			}
+			return (addedSpace + "<" + qnameToXMLName(xml.namespace(), xml.name()) + 
+				(attribs.length ? attribs.join("") : "") + 
+				((Boolean(attribs.length) && Boolean(childString)) ? "\r" + addedSpace + 
+				"\t>\r" : ((Boolean(attribs.length) && !Boolean(childString)) ? "\r" + 
+				addedSpace + "\t/>" : (!Boolean(attribs.length) && 
+				Boolean(childString)) ? ">\r" : "")) + (Boolean(childString) ? 
+				childString + "\r" + addedSpace + "</" + 
+				qnameToXMLName(xml.namespace(), xml.name()) + ">" : 
+				(attribs.length ? "" : "/>")));
+		}
+		
+		private static function qnameToXMLName(ns:Namespace, name:QName):String
+		{
+			var xname:String = name.toString();
+			if (xname.indexOf("::") > -1)
+			{
+				return xname.replace(/^.+?\:\:/, ns.prefix + ":");
+			}
+			return xname; 
 		}
 		
 		// TODO: Add support to all HTML entities.
