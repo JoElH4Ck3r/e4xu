@@ -1,0 +1,338 @@
+﻿<?xml version="1.0"?>
+<mx:WindowedApplication
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:my="*"
+	width="520"
+	height="220"
+	paddingTop="5"
+	paddingLeft="5"
+	paddingBottom="5"
+	paddingRight="5"
+	invoke="invokeHandler(event)"
+	verticalScrollPolicy="off"
+	horizontalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import flash.display.NativeWindow;
+			import flash.display.NativeWindowInitOptions;
+			import flash.display.NativeWindowSystemChrome;
+			import flash.display.NativeWindowType;
+			import flash.display.StageAlign;
+			import flash.display.StageScaleMode;
+			import flash.events.Event;
+			import flash.events.InvokeEvent;
+			import flash.desktop.NativeApplication;
+			import flash.events.TimerEvent;
+			import flash.filesystem.File;
+			import flash.filesystem.FileMode;
+			import flash.filesystem.FileStream;
+			import flash.net.FileFilter;
+			import flash.text.TextField;
+			import flash.text.TextFieldAutoSize;
+			import flash.text.TextFormat;
+			import flash.utils.ByteArray;
+			import flash.utils.Timer;
+			import org.wvxvws.parsers.CodeParser;
+			
+			
+			private var _asFile:String;
+			private var _htmlFile:ByteArray;
+			private var _processedFileName:String;
+			private var _isCMD:Boolean;
+			private var _currentDirectory:String;
+			private var _in:Array = [];
+			private var _out:Array = [];
+			private var _timer:Timer = new Timer(100);
+			
+			[Bindable]
+			private var _info:String = "";
+			
+			private function browse_clickHandler():void
+			{
+				var file:File = new File();
+				var asFilter:FileFilter = new FileFilter("ActionScript", "*.as");
+				try 
+				{
+					file.browseForOpen("Open", [asFilter]);
+					file.addEventListener(Event.SELECT, fileSelected);
+				}
+				catch (error:Error)
+				{
+					trace("Failed:", error.message);
+				}
+			}
+			
+			private function fileSelected(event:Event):void
+			{
+				var stream:FileStream = new FileStream();
+				stream.open(event.target as File, FileMode.READ);
+				_asFile = stream.readUTFBytes(stream.bytesAvailable);
+				fileInput.text = (event.target as File).nativePath;
+				_processedFileName = (event.target as File).name;
+			}
+			
+			private function save_clickHandler():void
+			{
+				if (!fileInput.text.length)
+				{
+					nativeAlert("Select the Input File first!");
+					return;
+				}
+				var data:String;
+				var file:File;
+				if (fileOutput.text.length)
+				{
+					try
+					{
+						file = new File(fileOutput.text);
+					}
+					catch (error:ArgumentError)
+					{
+						nativeAlert("Cannot Save to This Location!");
+						return;
+					}
+					var stream:FileStream = new FileStream()
+					stream.open(file, FileMode.WRITE);
+					data = CodeParser.parse(_asFile as Object);
+					stream.writeUTFBytes(CodeParser.generateHTML(data));
+					stream.close();
+					return;
+				}
+				file = new File();
+				file.addEventListener(Event.SELECT, fileSelectedForSave);
+				data = CodeParser.parse(_asFile as Object);
+				file.save(CodeParser.generateHTML(data), 
+							_processedFileName.replace(/\.as$/i, ".html"));
+			}
+			
+			private function fileSelectedForSave(event:Event):void 
+			{
+				fileOutput.text = (event.target as File).nativePath;
+			}
+			
+			private function invokeHandler(event:InvokeEvent):void
+			{ 
+				var now:String = new Date().toTimeString();
+				logEvent("Invoke event received: " + now);
+					 
+				if (event.currentDirectory != null)
+				{
+					logEvent("Current directory=" + event.currentDirectory.nativePath);
+				}
+				else
+				{
+					logEvent("--no directory information available--"); 
+				} 
+				if (event.arguments.length > 0)
+				{
+					logEvent("Arguments: " + event.arguments.toString());
+					_isCMD = true;
+					var appArgs:Array = event.arguments;
+					var isIn:Boolean;
+					var isOut:Boolean;
+					var i:int;
+					for (i; i < appArgs.length; i++)
+					{
+						if (appArgs[i] == "-in")
+						{
+							isIn = true;
+							isOut = false;
+							continue;
+						}
+						if (appArgs[i] == "-out")
+						{
+							isIn = false;
+							isOut = true;
+							continue;
+						}
+						if (isIn)
+						{
+							_in.push(appArgs[i]);
+						}
+						if (isOut)
+						{
+							_out.push(appArgs[i]);
+						}
+					}
+				}
+				else
+				{
+					logEvent("--no arguments--");
+				}
+				if (_isCMD)
+				{
+					var inFile:File;
+					for (i = 0; i < _in.length; i++)
+					{
+						try
+						{
+							inFile = new File(_in[i]);
+							var dname:String;
+							if (inFile.isDirectory)
+							{
+								var inList:Array = inFile.getDirectoryListing();
+								var df:File;
+								for (var i0:int; i0 < inList.length; i0++)
+								{
+									df = inList[i0];
+									if (df.name.match(/\.as$/i))
+									{
+										_in.splice(i, 0, df.nativePath);
+										i++;
+									}
+								}
+							}
+						}
+						catch (error:ArgumentError)
+						{
+							_in.splice(i, 1);
+							if (!_in.length)
+							{
+								break;
+							}
+							i--;
+						}
+					}
+					if (!_in.length) return;
+					_timer.addEventListener(TimerEvent.TIMER, timerHandler);
+					_timer.start();
+				}
+			} 
+			
+			private function timerHandler(event:TimerEvent):void 
+			{
+				if (_in.length)
+				{
+					processNextFile();
+				}
+				else
+				{
+					_timer.removeEventListener(TimerEvent.TIMER, timerHandler);
+					_timer.stop();
+				}
+			}
+			
+			private function processNextFile():void
+			{
+				var stream:FileStream = new FileStream();
+				try
+				{
+					var inFile:File = new File(String(_in.shift()));
+				}
+				catch (error:ArgumentError)
+				{
+					if (_in.length)
+					{
+						processNextFile();
+					}
+					else
+					{
+						return;
+					}
+				}
+				catch (error0:Error)
+				{
+					if (_in.length)
+					{
+						processNextFile();
+					}
+					else
+					{
+						return;
+					}
+				}
+				stream.open(inFile, FileMode.READ);
+				_asFile = stream.readUTFBytes(stream.bytesAvailable);
+				fileInput.text = inFile.nativePath;
+				_processedFileName = inFile.nativePath;
+				var fileTosave:String = _processedFileName.replace(/\.as$/i, ".html");
+				fileOutput.text = fileTosave;
+				try
+				{
+					var outFile:File = new File(fileTosave);
+				}
+				catch (error:ArgumentError)
+				{
+					return;
+				}
+				stream = new FileStream();
+				stream.open(outFile, FileMode.WRITE);
+				var data:String = CodeParser.parse(_asFile as Object);
+				stream.writeUTFBytes(CodeParser.generateHTML(data));
+				stream.close();
+			}
+			
+			private function logEvent(entry:String):void
+			{ 
+				_info += entry + "\n";
+				trace(entry);
+			}
+			
+			private function nativeAlert(message:String):void
+			{
+				var windowOptions:NativeWindowInitOptions = new NativeWindowInitOptions();
+				windowOptions.systemChrome = NativeWindowSystemChrome.STANDARD;
+				windowOptions.type = NativeWindowType.UTILITY;
+				var newWindow:NativeWindow = new NativeWindow(windowOptions);
+				var messageTF:TextField = new TextField();
+				messageTF.multiline = true;
+				messageTF.wordWrap = true;
+				messageTF.width = 300;
+				messageTF.height = 200;
+				var messageFormat:TextFormat = new TextFormat("_sans", 12, 
+											null, null, null, null, null, null, "center");
+				messageTF.defaultTextFormat = messageFormat;
+				messageTF.text = message;
+				newWindow.height = 200;
+				newWindow.width = 300;
+				newWindow.activate();
+				newWindow.stage.scaleMode = StageScaleMode.NO_SCALE;
+				newWindow.stage.align = StageAlign.TOP_LEFT;
+				newWindow.stage.addChild(messageTF);
+			}
+		]]>
+	</mx:Script>
+	<mx:Canvas>
+		
+		<mx:Label 
+			text="Select Input ActionScript file:"/>
+			
+		<mx:TextInput 
+			width="400" 
+			id="fileInput" 
+			y="20"/>
+			
+		<mx:Label 
+			text="Specify Output HTML file:" 
+			y="50"/>
+			
+		<mx:TextInput 
+			width="400" 
+			id="fileOutput" 
+			y="70"/>
+			
+		<mx:Button 
+			label="Browse" 
+			id="browse" 
+			click="browse_clickHandler()" 
+			y="20" 
+			x="410" 
+			width="100"/>
+			
+		<mx:Button 
+			label="Save" 
+			id="save" 
+			click="save_clickHandler()" 
+			y="70" 
+			x="410" 
+			width="100"/>
+			
+		<mx:TextArea 
+			text="{_info}" 
+			y="100" 
+			backgroundColor="0xCFCFCF" 
+			width="{width - 10}"
+			height="80"/>
+			
+	</mx:Canvas>
+</mx:WindowedApplication>
