@@ -1,5 +1,7 @@
 ﻿package org.wvxvws.xmlutils 
 {
+	import flash.utils.describeType;
+	import org.wvxvws.xmlutils.xmlutils_internal;
 	
 	/**
 	 * XPath class.
@@ -57,6 +59,7 @@
 		public static const OPERATOR:String = "op:";
 		
 		private static const W3C_XML:Namespace = new Namespace("xml", "http://www.w3.org/XML/1998/namespace");
+		private static var _globalPos:int;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -220,7 +223,6 @@
 			return InteractiveModel(this).nodeKind();
 		}
 		
-		
 		/**
 		 * Returns the root of the tree to which the current node 
 		 * or the specified belongs. This will usually be a document node
@@ -242,6 +244,7 @@
 		
 		public static function findNode(expression:String, model:InteractiveModel):IInteracive
 		{
+			trace("findNode", expression);
 			var target:IInteracive = model;
 			if (expression.charAt() == "/" && expression.indexOf("//") != 0)
 			{
@@ -269,13 +272,25 @@
 			var word:String = "";
 			var prefix:String;
 			var isNamespace:Boolean;
+			
 			findLoop: while (pos < len)
 			{
 				chr = expression.charAt(pos);
 				switch (true)
 				{
 					case Boolean(chr === "/"):
-						target = target[word];
+						if (target is InteractiveModel)
+						{
+							target = (target as InteractiveModel)[word];
+						}
+						else if(target is InteractiveList)
+						{
+							target = (target as InteractiveList).xmlutils_internal::filterChildren(word);
+						}
+						else
+						{
+							trace("cannot find node");
+						}
 						word = "";
 						break;
 					case Boolean(chr === ":"):
@@ -286,7 +301,7 @@
 					case Boolean(chr === "."):
 						if (expression.charAt(pos + 1) === ".")
 						{
-							target = target.parent();
+							target = (target as Object).parent();
 							if (!target)
 							{
 								trace("node not found");
@@ -296,15 +311,49 @@
 						}
 						break;
 					case Boolean(chr === "*"):
-						target = target.children();
+						target = (target as Object).children();
 						word = "";
 						break;
 					case Boolean(chr === "@"):
-						target = target.attributes();
+						target = (target as Object).attributes();
 						word = "";
 						break;
 					case Boolean(chr === "["):
-						target = target[word];
+						if (target is InteractiveModel)
+						{
+							target = (target as InteractiveModel)[word];
+						}
+						else if(target is InteractiveList)
+						{
+							target = (target as InteractiveList)[word];
+						}
+						else
+						{
+							trace("cannot find node");
+						}
+						if (target)
+						{
+							switch (expression.charAt(pos + 1))
+							{
+								case "/":
+								case ".":
+									if (target is InteractiveModel)
+									{
+										return findNode(expression.slice(pos), target as InteractiveModel);
+									}
+									if ((target as InteractiveList).length() == 1)
+									{
+										return findNode(expression.slice(pos), target[0]);
+									}
+									else
+									{
+										return findNodeList(expression.slice(pos), target as InteractiveList);
+									}
+									break;
+								default:
+									return callFunc(expression.slice(pos + 1), target);
+							}
+						}
 						break findLoop;
 					case Boolean(chr.match(/\w|\$|\-|\._/)):
 						if (!word && !chr.match(/\w/))
@@ -328,6 +377,27 @@
 			return target;
 		}
 		
+		static private function findNodeList(expression:String, 
+											list:InteractiveList):IInteracive
+		{
+			var retList:InteractiveList;
+			var ii:IInteracive;
+			for each(var m:InteractiveModel in list)
+			{
+				ii = findNode(expression, m);
+				if (ii && (ii is InteractiveList) && (ii as InteractiveList).length())
+				{
+					if (!retList) retList = 
+						new InteractiveList(ii[0].root(), ii[0].parent(), null);
+					for each(var n:InteractiveModel in ii)
+					{
+						retList.append(n);
+					}
+				}
+			}
+			return retList;
+		}
+		
 		static private function findeNodeRecursive(expression:String, 
 						list:InteractiveList, result:InteractiveList):InteractiveList
 		{
@@ -346,7 +416,7 @@
 			return result;
 		}
 		
-		public static function eval(expression:String, model:InteractiveModel):Boolean
+		public static function eval(expression:String, model:InteractiveModel):IInteracive
 		{
 			var atoms:Array = expression.split(/\band\b|\bor\b|=|!=|<=|>=|\|/);
 			var targetObj:IInteracive;
@@ -356,39 +426,80 @@
 				if (!targetObj)
 				{
 					trace("node does not exist!");
-					return false;
+					return null;
 				}
 			}
-			trace(targetObj.toXMLString());
-			trace(atoms);
-			return true;
-			var exp:Array = expression.split(/(|)/g);
-			var fn:Function = XPath[exp[0]];
-			var ret:Boolean;
-			if (fn == null) throw new XPathError(1, exp[0]);
-			if (fn.apply != null)
+			return targetObj;
+		}
+		
+		private static function callFunc(expression:String, 
+										target:IInteracive):IInteracive
+		{
+			var command:String;
+			var argsString:String;
+			var args:Array;
+			var argsCount:int;
+			trace("callFunc", expression);
+			if (expression.indexOf("fn:") == 0)
 			{
-				if (exp[1])
+				command = expression.replace(/^fn:([^\(]+)\(.+$/, "$1");
+				argsString = expression.replace(/^[^\(]+\(([^\)]*).+$/, "$1");
+				trace(command, argsString);
+				if (argsString)
 				{
-					ret = fn.apply(model, exp[1].split(","));
+					args = argsString.split(",");
 				}
-				else
+				if (XPath[command])
 				{
-					ret = fn.call(model);
+					if (XPath[command].apply)
+					{
+						if (XPath[command].apply(target, args))
+						{
+							return target;
+						}
+					}
+					else
+					{
+						argsCount = describeType(XPath).method.(@name == 
+											command).parameter.length();
+						if (args)
+						{
+							switch(argsCount)
+							{
+								case 0:
+									if (XPath[command]()) return target;
+									break;
+								case 1:
+									if (XPath[command](args[0])) return target;
+									break;
+								case 2:
+									if (XPath[command](args[0], args[1])) return target;
+									break;
+								case 3:
+									if (XPath[command](args[0], args[1], args[2])) return target;
+									break;
+								case 4:
+									if (XPath[command](args[0], args[1], args[2], args[3])) return target;
+									break;
+								case 5:
+									if (XPath[command](args[0], args[1], args[2], args[3], args[4])) return target;
+									break;
+								case 6:
+									if (XPath[command](args[0], args[1], args[2], args[3], args[4], args[4])) return target;
+									break;
+								default:
+									trace("incorrect number of arguments");
+									return null;
+							}
+						}
+						else if (XPath[command]())
+						{
+							return target;
+						}
+					}
 				}
 			}
-			else
-			{
-				if (exp[1])
-				{
-					ret = fn(exp[1].split(","));
-				}
-				else
-				{
-					ret = fn();
-				}
-			}
-			return ret;
+			return null;
 		}
 		
 		/**
