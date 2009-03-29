@@ -26,6 +26,8 @@
 		//
 		//--------------------------------------------------------------------------
 		
+		use namespace xmlutils_internal;
+		
 		public static const ELEMENT:String = "element";
 		public static const ATTRIBUTE:String = "attribute";
 		public static const TEXT:String = "text";
@@ -259,25 +261,25 @@
 			return "";
 		}
 		
-		public function name():Object { return _name ? _name : "*"; }
+		xmlutils_internal function name():Object { return _name ? _name : "*"; }
 		
-		public function root():InteractiveModel { return _root; }
+		xmlutils_internal function root():InteractiveModel { return _root; }
 		
-		public function parent():InteractiveModel { return _parent; }
+		xmlutils_internal function parent():InteractiveModel { return _parent; }
 		
-		public function url():String { return _url; }
+		xmlutils_internal function url():String { return _url; }
 		
-		public function toXML():XML { return XUtils.objectToXML(this); }
+		xmlutils_internal function toXML():XML { return XUtils.objectToXML(this); }
 		
-		public function nodeKind():String { return _type; }
+		xmlutils_internal function nodeKind():String { return _type; }
 		
 		wc3xml function lang():String { return _lang; }
 		
-		public function children():InteractiveList { return _children; }
+		xmlutils_internal function children():InteractiveList { return _children; }
 		
-		public function attributes():InteractiveList { return _attributes; }
+		xmlutils_internal function attributes():InteractiveList { return _attributes; }
 		
-		public function text():InteractiveList
+		xmlutils_internal function text():InteractiveList
 		{
 			var ret:InteractiveList;
 			for each (var model:InteractiveModel in _children)
@@ -302,7 +304,7 @@
 			return new InteractiveList(null, null, null);
 		}
 		
-		public function filter(expression:String):InteractiveList
+		xmlutils_internal function filter(expression:String):InteractiveList
 		{
 			var list:InteractiveList;
 			XPath.eval(expression, this);
@@ -328,6 +330,10 @@
 		
 		flash_proxy override function callProperty(name:*, ...rest):* 
 		{
+			if (this.xmlutils_internal::[name])
+			{
+				return this.xmlutils_internal::[name].apply(this, rest);
+			}
 			switch (String(name))
 			{
 				case "addNamespace":

@@ -10,6 +10,7 @@
 	*/
 	public dynamic class InteractiveList extends Proxy implements IInteracive
 	{
+		use namespace xmlutils_internal;
 		//--------------------------------------------------------------------------
 		//
 		//  Public properties
@@ -52,11 +53,11 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public function root():InteractiveModel { return _root; }
+		xmlutils_internal function root():InteractiveModel { return _root; }
 		
 		public function toString():String { return toXMLString(); }
 		
-		public function text():InteractiveList
+		xmlutils_internal function text():InteractiveList
 		{
 			var ret:InteractiveList;
 			for each(var node:InteractiveModel in _nodes)
@@ -82,7 +83,7 @@
 			return new InteractiveList(null, null, null);
 		}
 		
-		public function attributes():InteractiveList
+		xmlutils_internal function attributes():InteractiveList
 		{
 			var ret:InteractiveList;
 			for each(var node:InteractiveModel in _nodes)
@@ -108,7 +109,7 @@
 			return new InteractiveList(null, null, null);
 		}
 		
-		public function parent():InteractiveModel
+		xmlutils_internal function parent():InteractiveModel
 		{
 			var toBeParent:InteractiveModel;
 			for each(var model:InteractiveModel in _nodes)
@@ -125,7 +126,7 @@
 			return toBeParent;
 		}
 		
-		public function children():InteractiveList
+		xmlutils_internal function children():InteractiveList
 		{
 			var temp:InteractiveList;
 			var child:InteractiveModel;
@@ -155,7 +156,7 @@
 			return new InteractiveList(null, null, null);
 		}
 		
-		public function toXMLString():String
+		xmlutils_internal function toXMLString():String
 		{
 			var rstr:String = "";
 			var l:int = _nodes.length;
@@ -163,20 +164,20 @@
 			return rstr;
 		}
 		
-		public function length():int { return _nodes.length; }
+		xmlutils_internal function length():int { return _nodes.length; }
 		
-		public function indexOf(node:InteractiveModel):int
+		xmlutils_internal function indexOf(node:InteractiveModel):int
 		{
 			return _nodes.indexOf(node);
 		}
 		
-		public function append(node:InteractiveModel):InteractiveList
+		xmlutils_internal function append(node:InteractiveModel):InteractiveList
 		{
 			_nodes.push(node);
 			return this;
 		}
 		
-		public function filter(contition:String):InteractiveList
+		xmlutils_internal function filter(contition:String):InteractiveList
 		{
 			var list:InteractiveList;
 			for each(var model:InteractiveModel in _nodes)
@@ -211,6 +212,15 @@
 				return _nodes[int(name)];
 			}
 			return findMatch(String(name));
+		}
+		
+		flash_proxy override function callProperty(name:*, ...rest):* 
+		{
+			if (this.xmlutils_internal::[name])
+			{
+				return this.xmlutils_internal::[name].apply(this, rest);
+			}
+			return null;
 		}
 		
 		flash_proxy override function getProperty(name:*):* 
