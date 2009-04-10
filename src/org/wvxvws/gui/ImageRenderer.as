@@ -53,6 +53,8 @@
 		protected var _imageData:BitmapData;
 		protected var _data:XML;
 		protected var _src:String;
+		protected var _document:Object;
+		protected var _id:String;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -105,6 +107,14 @@
 			_imageBitmap.x = (width - _imageBitmap.width) >> 1;
 			_imageBitmap.y = (height - _imageBitmap.height) >> 1;
 			addChild(_imageBitmap);
+		}
+		
+		/* INTERFACE org.wvxvws.gui.IRenderer */
+		
+		public function initialized(document:Object, id:String):void
+		{
+			_document = document;
+			_id = id;
 		}
 		
 		//--------------------------------------------------------------------------

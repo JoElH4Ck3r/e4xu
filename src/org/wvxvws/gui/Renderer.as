@@ -25,6 +25,8 @@
 		
 		protected var _data:XML;
 		protected var _field:TextField = new TextField();
+		protected var _document:Object;
+		protected var _id:String;
 		//--------------------------------------------------------------------------
 		//
 		//  Private properties
@@ -41,6 +43,14 @@
 			super();
 			addChild(_field);
 			_field.selectable = false;
+		}
+		
+		/* INTERFACE org.wvxvws.gui.IRenderer */
+		
+		public function initialized(document:Object, id:String):void
+		{
+			_document = document;
+			_id = id;
 		}
 		
 		public function get data():XML { return _data; }

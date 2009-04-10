@@ -1,5 +1,6 @@
 ﻿package org.wvxvws.gui 
 {
+	import mx.core.IMXMLObject;
 	
 	/**
 	* IRenderer interface.
@@ -7,7 +8,7 @@
 	* @langVersion 3.0
 	* @playerVersion 10.0.12.36
 	*/
-	public interface IRenderer 
+	public interface IRenderer extends IMXMLObject
 	{
 		function get isValid():Boolean;
 		
