@@ -36,7 +36,7 @@
 		//  Public properties
 		//
 		//--------------------------------------------------------------------------
-		override public function get x():Number { return super.x; }
+		override public function get x():Number { return _transformMatrix.tx; }
 		
 		override public function set x(value:Number):void 
 		{
@@ -45,7 +45,7 @@
 			invalidLayout = true;
 		}
 		
-		override public function get y():Number { return super.y; }
+		override public function get y():Number { return _transformMatrix.ty; }
 		
 		override public function set y(value:Number):void 
 		{
@@ -54,7 +54,7 @@
 			invalidLayout = true;
 		}
 		
-		override public function get width():Number { return super.width; }
+		override public function get width():Number { return _bounds.x; }
 		
 		override public function set width(value:Number):void 
 		{
@@ -63,16 +63,16 @@
 			invalidLayout = true;
 		}
 		
-		override public function get height():Number { return super.height; }
+		override public function get height():Number { return _bounds.y; }
 		
 		override public function set height(value:Number):void 
 		{
 			if (_bounds.y == value) return;
-			_bounds.y = value / 100;
+			_bounds.y = value;
 			invalidLayout = true;
 		}
 		
-		override public function get scaleX():Number { return super.scaleX; }
+		override public function get scaleX():Number { return _transformMatrix.a; }
 		
 		override public function set scaleX(value:Number):void 
 		{
@@ -81,7 +81,7 @@
 			invalidLayout = true;
 		}
 		
-		override public function get scaleY():Number { return super.scaleY; }
+		override public function get scaleY():Number { return _transformMatrix.d; }
 		
 		override public function set scaleY(value:Number):void 
 		{
@@ -90,7 +90,10 @@
 			invalidLayout = true;
 		}
 		
-		override public function get transform():Transform { return super.transform; }
+		override public function get transform():Transform
+		{
+			return _userTransform ? _userTransform : super.transform;
+		}
 		
 		override public function set transform(value:Transform):void 
 		{
