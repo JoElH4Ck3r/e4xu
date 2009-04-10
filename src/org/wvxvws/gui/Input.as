@@ -8,12 +8,12 @@
 	 * TextInput class.
 	 * @author wvxvw
 	 */
-	public class TextInput extends TextField implements IMXMLObject
+	public class Input extends TextField implements IMXMLObject
 	{
 		protected var _document:Object;
 		protected var _id:String;
 		
-		public function TextInput() { super(); }
+		public function Input() { super(); }
 		
 		/* INTERFACE mx.core.IMXMLObject */
 		
