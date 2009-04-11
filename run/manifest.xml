@@ -8,4 +8,19 @@
 	<component id="Handler" class="org.wvxvws.mxmlutils.Handler"/>
 	<component id="Listener" class="org.wvxvws.mxmlutils.Listener"/>
 	<component id="Map" class="org.wvxvws.mxmlutils.Map"/>
+	<!-- UI -->
+	<component id="Column" class="org.wvxvws.gui.Column"/>
+	<component id="Control" class="org.wvxvws.gui.Control"/>
+	<component id="FrameOne" class="org.wvxvws.base.FrameOne"/>
+	<component id="FrameTwo" class="org.wvxvws.base.FrameTwo"/>
+	<component id="Input" class="org.wvxvws.gui.Input"/>
+	<component id="Preloader" class="org.wvxvws.gui.Preloader"/>
+	<component id="Renderer" class="org.wvxvws.gui.Renderer"/>
+	<component id="ImageRenderer" class="org.wvxvws.gui.ImageRenderer"/>
+	<component id="SkinnableControl" class="org.wvxvws.gui.SkinnableControl"/>
+	<component id="SkinnableButton" class="org.wvxvws.gui.SkinnableButton"/>
+	<component id="TiledPanel" class="org.wvxvws.gui.TiledPanel"/>
+	<component id="Table" class="org.wvxvws.gui.Table"/>
+	<!-- DATA -->
+	<component id="Collection" class="org.wvxvws.data.Collection"/>
 </componentPackage>
