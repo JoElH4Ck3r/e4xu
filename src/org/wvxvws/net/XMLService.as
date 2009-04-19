@@ -250,8 +250,6 @@
 			_sending = true;
 			_currentID = id;
 			var operation:Operation = _operations[id];
-			var request:URLRequest = new URLRequest(_baseURL);
-			request.method = URLRequestMethod.POST;
 			var postData:String = "";
 			if (operation.method) postData += operation.method.id;
 			if (operation.parameters)
@@ -261,7 +259,8 @@
 					operation.parameters.toArgumentString() : "") + 
 					(postData ? "\"" : "");
 			}
-			request.data = postData;
+			var request:URLRequest = new URLRequest(_baseURL + (postData ? "?" + postData : ""));
+			request.method = URLRequestMethod.GET;
 			super.load(request);
 		}
 	}
