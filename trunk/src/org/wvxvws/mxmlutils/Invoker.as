@@ -1,14 +1,16 @@
-﻿package org.wvxvws.base 
+﻿package org.wvxvws.mxmlutils 
 {
-	import org.wvxvws.gui.Control;
+	import flash.events.Event;
+	import flash.events.EventDispatcher;
+	import mx.core.IMXMLObject;
 	
 	/**
-	* FrameTwo class.
+	* Invoker class.
 	* @author wvxvw
 	* @langVersion 3.0
 	* @playerVersion 10.0.12.36
 	*/
-	public class FrameTwo extends Control
+	public class Invoker extends EventDispatcher implements IMXMLObject
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -16,11 +18,35 @@
 		//
 		//--------------------------------------------------------------------------
 		
+		//------------------------------------
+		//  Public property callbacks
+		//------------------------------------
+		
+		[Bindable("callbacksChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>callbacksChange</code> event.
+		*/
+		public function get callbacks():Array { return _callbacks; }
+		
+		public function set callbacks(value:Array):void 
+		{
+		   if (_callbacks == value) return;
+		   _callbacks = value;
+		   dispatchEvent(new Event("callbacksChange"));
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
 		//
 		//--------------------------------------------------------------------------
+		
+		protected var _callbacks:Array = null;
+		protected var _document:Object;
+		private var _id:String;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -34,22 +60,24 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public function FrameTwo() { super(); }
+		public function Invoker() { super(); }
 		
+		/* INTERFACE mx.core.IMXMLObject */
+		
+		public function initialized(document:Object, id:String):void
+		{
+			_document = document;
+			_id = id;
+		}
 		//--------------------------------------------------------------------------
 		//
 		//  Public methods
 		//
 		//--------------------------------------------------------------------------
 		
-		public function create(...rest):Object { return { }; }
-		
-		public function info():Object {return { }; }
-		
-		[Mixin]
-		public static function init(obj:Object):void
+		public function call(event:Event = null):void
 		{
-			trace("mixin", obj);
+			for each (var cb:CallBack in _callbacks) cb.call();
 		}
 		
 		//--------------------------------------------------------------------------

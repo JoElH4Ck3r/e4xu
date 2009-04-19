@@ -188,6 +188,7 @@
 				_nativeTransform.matrix = _transformMatrix;
 			}
 			invalidLayout = false;
+			if (!_document) dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
 			dispatchEvent(new GUIEvent(GUIEvent.VALIDATED));
 		}
 		//--------------------------------------------------------------------------

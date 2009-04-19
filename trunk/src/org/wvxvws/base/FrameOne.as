@@ -4,12 +4,15 @@
 	import flash.display.MovieClip;
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
+	import flash.utils.ByteArray;
 	import flash.utils.getDefinitionByName;
+	import flash.utils.getTimer;
 	import mx.core.IMXMLObject;
 	import org.wvxvws.gui.Control;
 	import org.wvxvws.gui.IPreloader;
 	
 	[SWF (width="800", height="600", scriptTimeLimit="15", frameRate="30", backgroundColor="0x3E2F1B")]
+	[Frame(factoryClass="org.wvxvws.base.FrameTwo")]
 	
 	/**
 	* FrameOne class.
@@ -66,6 +69,30 @@
 		protected function completeHandler(event:Event):void 
 		{
 			if (framesLoaded < 2) return;
+			for (var p:String in loaderInfo.parameters)
+			{
+				trace(p, loaderInfo.parameters[p]);
+			}
+			trace(loaderInfo.url);
+			trace(loaderInfo.loaderURL);
+			// 35992 // 35316
+			// -services C:\www\projects\xmlhelpers\run\services.xml
+			var ba:ByteArray = loaderInfo.bytes;
+			trace(ba.length);
+			trace(this["info"]);
+			//ba.position = 18025;
+			//var st:String = "";
+			//var t:int = getTimer();
+			//var chr:int;
+			//trace(ba.length);
+			//while (ba.position < ba.length)
+			//{
+				//chr = ba.readUnsignedByte();
+				//if (chr < 32) chr = 32;
+				//st += String.fromCharCode(chr);
+				//if (getTimer() - t > 10000) break;
+			//}
+			//trace(st);
 			gotoAndStop(2);
 			(_ipreloader as IEventDispatcher).removeEventListener(
 									Event.COMPLETE, completeHandler);

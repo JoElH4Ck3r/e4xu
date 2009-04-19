@@ -198,7 +198,6 @@
 		
 		protected function completeHandler(event:Event):void 
 		{
-			trace("complete");
 			dispatchEvent(event);
 		}
 		
