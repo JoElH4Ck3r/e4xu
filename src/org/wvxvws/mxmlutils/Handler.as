@@ -90,7 +90,7 @@
 		//
 		//--------------------------------------------------------------------------
 		private var _document:Object;
-		private var _name:QName;
+		private var _id:String;
 		//--------------------------------------------------------------------------
 		//
 		//  Cunstructor
@@ -124,7 +124,7 @@
 		public function initialized(document:Object, id:String):void
 		{
 			_document = document;
-			_name = new QName(id);
+			_id = id;
 		}
 		//--------------------------------------------------------------------------
 		//

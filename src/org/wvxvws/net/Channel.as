@@ -1,15 +1,20 @@
-﻿package org.wvxvws.base 
+﻿package org.wvxvws.net 
 {
-	import org.wvxvws.gui.Control;
+	import flash.events.EventDispatcher;
+	import mx.core.IMXMLObject;
 	
 	/**
-	* FrameTwo class.
+	* Channel class.
 	* @author wvxvw
 	* @langVersion 3.0
 	* @playerVersion 10.0.12.36
 	*/
-	public class FrameTwo extends Control
+	public class Channel extends EventDispatcher implements IMXMLObject
 	{
+		private var _document:Object;
+		private var _id:String;
+		private var _uri:String;
+		private var _channelID:String;
 		//--------------------------------------------------------------------------
 		//
 		//  Public properties
@@ -33,24 +38,25 @@
 		//  Cunstructor
 		//
 		//--------------------------------------------------------------------------
+		public function Channel(channelID:String = null, uri:String = null) 
+		{
+			super();
+			_channelID = channelID;
+			_uri = uri;
+		}
 		
-		public function FrameTwo() { super(); }
+		/* INTERFACE mx.core.IMXMLObject */
 		
+		public function initialized(document:Object, id:String):void
+		{
+			_document = document;
+			_id = id;
+		}
 		//--------------------------------------------------------------------------
 		//
 		//  Public methods
 		//
 		//--------------------------------------------------------------------------
-		
-		public function create(...rest):Object { return { }; }
-		
-		public function info():Object {return { }; }
-		
-		[Mixin]
-		public static function init(obj:Object):void
-		{
-			trace("mixin", obj);
-		}
 		
 		//--------------------------------------------------------------------------
 		//
