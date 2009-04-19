@@ -3,11 +3,19 @@
 <componentPackage>
 	<!-- MODEL -->
 	<component id="InteractiveModel" class="org.wvxvws.xmlutils.InteractiveModel"/>
+	<!-- CORE -->
+	<component id="SystemManager" class="mx.managers.SystemManager"/>
 	<!-- EVENTS -->
+	<component id="CallBack" class="org.wvxvws.mxmlutils.CallBack"/>
 	<component id="Dispatcher" class="org.wvxvws.mxmlutils.Dispatcher"/>
 	<component id="Handler" class="org.wvxvws.mxmlutils.Handler"/>
+	<component id="Invoker" class="org.wvxvws.mxmlutils.Invoker"/>
 	<component id="Listener" class="org.wvxvws.mxmlutils.Listener"/>
 	<component id="Map" class="org.wvxvws.mxmlutils.Map"/>
+	<!-- NET -->
+	<component id="XMLService" class="org.wvxvws.net.XMLService"/>
+	<component id="ServiceMethod" class="org.wvxvws.net.ServiceMethod"/>
+	<component id="ServiceArguments" class="org.wvxvws.net.ServiceArguments"/>
 	<!-- UI -->
 	<component id="Column" class="org.wvxvws.gui.Column"/>
 	<component id="Control" class="org.wvxvws.gui.Control"/>
