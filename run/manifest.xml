@@ -27,8 +27,9 @@
 	<component id="ImageRenderer" class="org.wvxvws.gui.ImageRenderer"/>
 	<component id="SkinnableControl" class="org.wvxvws.gui.SkinnableControl"/>
 	<component id="SkinnableButton" class="org.wvxvws.gui.SkinnableButton"/>
-	<component id="TiledPanel" class="org.wvxvws.gui.TiledPanel"/>
 	<component id="Table" class="org.wvxvws.gui.Table"/>
+	<component id="TiledPanel" class="org.wvxvws.gui.TiledPanel"/>
+	<component id="Tris" class="org.wvxvws.gui.Tris"/>
 	<!-- DATA -->
 	<component id="Collection" class="org.wvxvws.data.Collection"/>
 </componentPackage>
