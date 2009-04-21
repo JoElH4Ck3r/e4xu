@@ -182,7 +182,7 @@
 		public function getIndexForNode(node:XML, position:int = -1):int
 		{
 			var i:int;
-			for each(var xn:XML in _dataProvider.*)
+			for each (var xn:XML in _dataProvider.*)
 			{
 				if (xn === node && i > position) return i;
 				i++;

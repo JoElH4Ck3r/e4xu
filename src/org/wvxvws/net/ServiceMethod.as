@@ -63,6 +63,7 @@
 		//  Cunstructor
 		//
 		//--------------------------------------------------------------------------
+		
 		public function ServiceMethod(){ super(); }
 		
 		/* INTERFACE mx.core.IMXMLObject */
@@ -72,6 +73,7 @@
 			_document = document as IService;
 			_id = id;
 		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Public methods
