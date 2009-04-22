@@ -254,7 +254,6 @@
 			dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED));
 		}
 		
-		
 		protected function addHandle(xml:XML):Boolean
 		{
 			var child:DisplayObject;
