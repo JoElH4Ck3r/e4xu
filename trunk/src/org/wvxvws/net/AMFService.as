@@ -6,7 +6,7 @@
 	import flash.net.NetConnection;
 	import flash.net.Responder;
 	
-	[DefaultProperty("parameters")]
+	[DefaultProperty("methods")]
 	
 	/**
 	* AMFService class.

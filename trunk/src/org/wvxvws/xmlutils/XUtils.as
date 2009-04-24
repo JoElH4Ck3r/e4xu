@@ -153,15 +153,33 @@
 		public static function arrayToList(array:Array, keepReferences:Boolean = true):XMLList
 		{
 			var cloneArray:Array = array.slice();
-			var list:XMLList = keepReferences ? XMLList(cloneArray.shift()) :
-								XMLList(cloneArray.shift().copy());
+			var nodes:Array = [];
+			var i:int = cloneArray.length;
+			while (i--)
+			{
+				if (cloneArray[i] === undefined) continue;
+				if (cloneArray[i] is XML)
+				{
+					nodes.unshift(cloneArray[i]);
+				}
+				else if (cloneArray[i] is Array)
+				{
+					nodes.unshift(arrayToList(cloneArray[i]));
+				}
+				else
+				{
+					nodes.unshift(objectToXML(cloneArray[i]));
+				}
+			}
+			var list:XMLList = keepReferences ? XMLList(nodes.shift()) :
+								XMLList(nodes.shift().copy());
 			if (keepReferences)
 			{
-				while (cloneArray.length) list += XML(cloneArray.shift());
+				while (nodes.length) list += XML(nodes.shift());
 			}
 			else
 			{
-				while (cloneArray.length) list += XML(cloneArray.shift().copy());
+				while (nodes.length) list += XML(nodes.shift().copy());
 			}
 			return list;
 		}
@@ -204,7 +222,6 @@
 			var check:XML;
 			for (var p:String in object)
 			{
-				trace(p, object[p]);
 				check = objectToXML(object[p], p);
 				if (check.hasSimpleContent() && !check.@*.length()) xml.@[p] = object[p];
 				else xml.appendChild(check);
