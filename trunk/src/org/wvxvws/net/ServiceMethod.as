@@ -40,6 +40,46 @@
 		   dispatchEvent(new Event("parametersChange"));
 		}
 		
+		//------------------------------------
+		//  Public property name
+		//------------------------------------
+		
+		[Bindable("nameChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>nameChange</code> event.
+		*/
+		public function get name():String { return _name ? _name : _id; }
+		
+		public function set name(value:String):void 
+		{
+		   if (_name == value) return;
+		   _name = value;
+		   dispatchEvent(new Event("nameChange"));
+		}
+		
+		//------------------------------------
+		//  Public property operation
+		//------------------------------------
+		
+		[Bindable("operationChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>operationChange</code> event.
+		*/
+		public function get operation():String { return _operation; }
+		
+		public function set operation(value:String):void 
+		{
+		   if (_operation == value) return;
+		   _operation = value;
+		   dispatchEvent(new Event("operationChange"));
+		}
+		
 		public function get id():String { return _id; }
 		
 		//--------------------------------------------------------------------------
@@ -51,6 +91,8 @@
 		protected var _document:IService;
 		protected var _id:String;
 		protected var _parameters:ServiceArguments;
+		protected var _name:String;
+		protected var _operation:String;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -85,6 +127,11 @@
 			if (!_document) return;
 			if (parameters) _document.send(id, parameters);
 			else _document.send(id, _parameters);
+		}
+		
+		public function get fullName():String
+		{
+			return name + (_operation ? "." + _operation : "");
 		}
 		
 		//--------------------------------------------------------------------------
