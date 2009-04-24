@@ -176,11 +176,11 @@
 				{
 					col.width = colWidth;
 					col.cellSize.x = colWidth;
-					col.dataProvider = listColumnChildren(col.filter);
 					super.addChild(col);
 					col.x = cumulativeX;
 					cumulativeX = cumulativeX + col.width;
 				}
+				col.dataProvider = listColumnChildren(col.filter);
 				col.validateLayout();
 			}
 			dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED));

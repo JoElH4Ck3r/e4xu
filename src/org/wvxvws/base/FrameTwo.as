@@ -2,6 +2,8 @@
 {
 	import org.wvxvws.gui.Control;
 	
+	//-frame application org.wvxvws.base.FrameTwo
+	
 	/**
 	* FrameTwo class.
 	* @author wvxvw
