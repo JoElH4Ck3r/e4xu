@@ -18,7 +18,7 @@
 	* @langVersion 3.0
 	* @playerVersion 10.0.12.36
 	*/
-	public class XMLService extends URLLoader implements IService
+	public class TXTService extends URLLoader implements IService
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -27,7 +27,7 @@
 		//--------------------------------------------------------------------------
 		
 		//------------------------------------
-		//  Public property destination
+		//  Public property baseURL
 		//------------------------------------
 		
 		[Bindable("baseURLChange")]
@@ -47,7 +47,7 @@
 		}
 		
 		//------------------------------------
-		//  Public property method
+		//  Public property methods
 		//------------------------------------
 		
 		[Bindable("methodsChange")]
@@ -156,7 +156,7 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public function XMLService(resultCallBack:Function = null, 
+		public function TXTService(resultCallBack:Function = null, 
 									faultCallBack:Function = null)
 		{
 			super();
@@ -211,8 +211,8 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		protected function defaultFaultCallBack():void { };
-		protected function defaultResultCallBack():void { };
+		protected function defaultFaultCallBack(value:Object):void { };
+		protected function defaultResultCallBack(value:Object):void { };
 		
 		protected function methodForName(name:String):ServiceMethod
 		{
@@ -276,7 +276,7 @@ internal final class Operation
 	public var parameters:ServiceArguments;
 	
 	public function Operation(id:int, method:ServiceMethod = null, 
-																parameters:ServiceArguments = null)
+								parameters:ServiceArguments = null)
 	{
 		super();
 		this.id = id;
