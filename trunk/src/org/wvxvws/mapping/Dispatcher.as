@@ -1,4 +1,4 @@
-﻿package org.wvxvws.mxmlutils 
+﻿package org.wvxvws.mapping 
 {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;

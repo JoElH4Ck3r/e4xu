@@ -151,7 +151,7 @@
 		protected var _document:Object;
 		protected var _id:String;
 		protected var _baseURL:String = "";
-		protected var _methods:Array /** of ServiceMethod */ = [];
+		protected var _methods:Array /* of ServiceMethod */ = [];
 		protected var _parameters:ServiceArguments;
 		protected var _resultCallBack:Function;
 		protected var _faultCallBack:Function;

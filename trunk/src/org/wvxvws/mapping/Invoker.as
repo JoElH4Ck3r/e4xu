@@ -1,15 +1,16 @@
-﻿package org.wvxvws.mxmlutils 
+﻿package org.wvxvws.mapping 
 {
+	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import mx.core.IMXMLObject;
 	
 	/**
-	* Map class.
+	* Invoker class.
 	* @author wvxvw
 	* @langVersion 3.0
 	* @playerVersion 10.0.12.36
 	*/
-	public class Map extends EventDispatcher implements IMXMLObject
+	public class Invoker extends EventDispatcher implements IMXMLObject
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -17,7 +18,25 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public function get euid():int { return _euid; }
+		//------------------------------------
+		//  Public property callbacks
+		//------------------------------------
+		
+		[Bindable("callbacksChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>callbacksChange</code> event.
+		*/
+		public function get callbacks():Array { return _callbacks; }
+		
+		public function set callbacks(value:Array):void 
+		{
+		   if (_callbacks == value) return;
+		   _callbacks = value;
+		   dispatchEvent(new Event("callbacksChange"));
+		}
 		
 		//--------------------------------------------------------------------------
 		//
@@ -25,25 +44,15 @@
 		//
 		//--------------------------------------------------------------------------
 		
+		protected var _callbacks:Array = null;
+		protected var _document:Object;
+		private var _id:String;
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Private properties
 		//
 		//--------------------------------------------------------------------------
-		
-		private static var _uidGenerator:int;
-		
-		private var _document:Object;
-		private var _name:QName;
-		private var _euid:int;
-		
-		//--------------------------------------------------------------------------
-		//
-		//  Internal properties
-		//
-		//--------------------------------------------------------------------------
-		
-		internal static var instances:Array = [];
 		
 		//--------------------------------------------------------------------------
 		//
@@ -51,34 +60,24 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public function Map() 
-		{
-			super();
-			_euid = generateUID();
-			instances.push(this);
-		}
+		public function Invoker() { super(); }
 		
+		/* INTERFACE mx.core.IMXMLObject */
+		
+		public function initialized(document:Object, id:String):void
+		{
+			_document = document;
+			_id = id;
+		}
 		//--------------------------------------------------------------------------
 		//
 		//  Public methods
 		//
 		//--------------------------------------------------------------------------
 		
-		public function hasEvent(eventType:String):Boolean
+		public function call(event:Event = null):void
 		{
-			var l:Listener;
-			for (var p:String in this)
-			{
-				l = this[p] as Listener;
-				if (l && l.eventType == eventType) return true;
-			}
-			return false;
-		}
-		
-		public function initialized(document:Object, id:String):void
-		{
-			_document = document;
-			_name = new QName(id);
+			for each (var cb:CallBack in _callbacks) cb.call();
 		}
 		
 		//--------------------------------------------------------------------------
@@ -92,11 +91,6 @@
 		//  Private methods
 		//
 		//--------------------------------------------------------------------------
-		
-		private static function generateUID():int
-		{
-			return (++_uidGenerator);
-		}
 	}
 	
 }
