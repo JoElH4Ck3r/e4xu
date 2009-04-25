@@ -17,6 +17,9 @@
 	<component id="AMFService" class="org.wvxvws.net.AMFService"/>
 	<component id="ServiceMethod" class="org.wvxvws.net.ServiceMethod"/>
 	<component id="ServiceArguments" class="org.wvxvws.net.ServiceArguments"/>
+	<!-- Resources -->
+	<component id="Resource" class="org.wvxvws.resources.Resource"/>
+	<component id="ResourceManager" class="org.wvxvws.resources.ResourceManager"/>
 	<!-- UI -->
 	<component id="Column" class="org.wvxvws.gui.Column"/>
 	<component id="Control" class="org.wvxvws.gui.Control"/>
