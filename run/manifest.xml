@@ -6,12 +6,12 @@
 	<!-- CORE -->
 	<component id="SystemManager" class="mx.managers.SystemManager"/>
 	<!-- EVENTS -->
-	<component id="CallBack" class="org.wvxvws.mxmlutils.CallBack"/>
-	<component id="Dispatcher" class="org.wvxvws.mxmlutils.Dispatcher"/>
-	<component id="Handler" class="org.wvxvws.mxmlutils.Handler"/>
-	<component id="Invoker" class="org.wvxvws.mxmlutils.Invoker"/>
-	<component id="Listener" class="org.wvxvws.mxmlutils.Listener"/>
-	<component id="Map" class="org.wvxvws.mxmlutils.Map"/>
+	<component id="CallBack" class="org.wvxvws.mapping.CallBack"/>
+	<component id="Dispatcher" class="org.wvxvws.mapping.Dispatcher"/>
+	<component id="Handler" class="org.wvxvws.mapping.Handler"/>
+	<component id="Invoker" class="org.wvxvws.mapping.Invoker"/>
+	<component id="Listener" class="org.wvxvws.mapping.Listener"/>
+	<component id="Map" class="org.wvxvws.mapping.Map"/>
 	<!-- NET -->
 	<component id="TXTService" class="org.wvxvws.net.TXTService"/>
 	<component id="AMFService" class="org.wvxvws.net.AMFService"/>
