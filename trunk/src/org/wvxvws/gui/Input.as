@@ -1,6 +1,7 @@
 ﻿package org.wvxvws.gui 
 {
 	import flash.display.DisplayObjectContainer;
+	import flash.display.MovieClip;
 	import flash.events.Event;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
@@ -30,7 +31,7 @@
 		protected var _backgroundColor:uint = 0x999999;
 		protected var _text:String = "";
 		protected var _autoSize:String = TextFieldAutoSize.LEFT;
-		protected var _textFormat:TextFormat = new TextFormat("_sans");
+		protected var _textFormat:TextFormat = new TextFormat("_sans", 12, 0xFFFFFF);
 		
 		//--------------------------------------------------------------------------
 		//
@@ -168,7 +169,6 @@
 		
 		public function validateLayout(event:Event = null):void
 		{
-			trace(_autoSize);
 			super.background = true;
 			super.backgroundColor = _backgroundColor;
 			super.autoSize = _autoSize;
