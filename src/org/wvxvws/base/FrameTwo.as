@@ -1,8 +1,13 @@
 ﻿package org.wvxvws.base 
 {
+	import flash.display.DisplayObject;
 	import org.wvxvws.gui.Control;
 	
-	//-frame application org.wvxvws.base.FrameTwo
+	//[SWF (width="800", height="600", scriptTimeLimit="15", frameRate="30", backgroundColor="0x3E2F1B")]
+	//[Frame(factoryClass="org.wvxvws.base.FrameOne")]
+	//[Frame(extraFrame="org.wvxvws.base.FrameOne")]
+	//[Frame(factoryClass="TestApplication")]
+	//[Frame(extraFrame="TestApplication")]
 	
 	/**
 	* FrameTwo class.
@@ -44,11 +49,21 @@
 		//
 		//--------------------------------------------------------------------------
 		
+		override public function initialized(document:Object, id:String):void 
+		{
+			super.initialized(document, id);
+			if (document is DisplayObject)
+			{
+				(document as DisplayObject).scaleX = 
+					(document as DisplayObject).scaleY = 1;
+			}
+		}
+		
 		public function create(...rest):Object { return { }; }
 		
 		public function info():Object {return { }; }
 		
-		[Mixin]
+		//[Mixin]
 		public static function init(obj:Object):void
 		{
 			trace("mixin", obj);
