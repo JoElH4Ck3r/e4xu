@@ -13,6 +13,9 @@
 	* @author wvxvw
 	* @langVersion 3.0
 	* @playerVersion 10.0.12.36
+	* EclipsePHP update site.
+	* http://phpeclipse.sourceforge.net/update/stable/1.2.x
+	* http://update.phpeclipse.net/update/stable/1.2.x
 	*/
 	public class AMFService extends NetConnection implements IService
 	{
