@@ -15,9 +15,11 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import mx.messaging.config.ServerConfig
 			private function testMe():void
 			{
 				trace("testMe()");
+				trace(ServerConfig.xml);
 			}
 		]]>
 	</mx:Script>
