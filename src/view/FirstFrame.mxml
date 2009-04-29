@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<e4xu:FrameOne 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:e4xu="http://e4xu.googlecode.com"
+	frameTwoAlias="view.SecondFrame"
+	width="800"
+	height="600"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			private function test(a:String, b:String, c:String, d:String):void
+			{
+				trace(arguments);
+			}
+		]]>
+	</mx:Script>
+	
+	<e4xu:preloader>
+		<e4xu:Preloader 
+			id="testPreloader" 
+			width="800" 
+			height="600"
+			complete="testInvoker.call()"
+			/>
+	</e4xu:preloader>
+	
+	<e4xu:Invoker id="testInvoker">
+		<e4xu:callbacks>
+			<e4xu:CallBack method="{test}">
+				<e4xu:parameters>
+					<mx:String>This</mx:String>
+					<mx:String>is</mx:String>
+					<mx:String>test</mx:String>
+					<mx:String>method</mx:String>
+				</e4xu:parameters>
+			</e4xu:CallBack>
+		</e4xu:callbacks>
+	</e4xu:Invoker>
+	
+</e4xu:FrameOne>
