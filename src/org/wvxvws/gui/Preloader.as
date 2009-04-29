@@ -170,7 +170,6 @@
 					new Point(Math.cos(Math.PI * numCircles / step) * _radius,
 					Math.sin(Math.PI * numCircles / step) * _radius)));
 			}
-			trace(width);
 			_container.x = _preTX = width >> 1;
 			_container.y = _preTY = height >> 1;
 			addChild(_container);
