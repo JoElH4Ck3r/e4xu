@@ -1,24 +1,79 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <flex-config>
-	<compiler>
-	<source-path append="true">
-		<path-element>C:\www\projects\xmlhelpers\src</path-element>
-		<path-element>C:\Program Files\FlashDevelop\Library\AS3\classes</path-element>
-	</source-path>
-		<namespaces>
-			<namespace>
-				<uri>http://e4xu.googlecode.com</uri>
-				<manifest>manifest.xml</manifest>
-			</namespace>
-		</namespaces>
-	</compiler>
-	<file-specs>
-		<path-element>C:\www\projects\xmlhelpers\src\Frameworkless.mxml</path-element>
-	</file-specs>
-	<default-background-color>#FFFFFF</default-background-color>
-	<default-frame-rate>30</default-frame-rate>
-	<default-size>
-		<width>800</width>
-		<height>600</height>
-	</default-size>
+  <compiler>
+    <source-path append="true">
+      <path-element>C:\www\projects\xmlhelpers\src</path-element>
+      <path-element>C:\Program Files\FlashDevelop\Library\AS3\classes</path-element>
+    </source-path>
+	<!--<external-library-path>
+		<path-element>C:\flex_sdk_3_3\frameworks\libs\player\9\playerglobal.swc</path-element>
+		<path-element>C:\flex_sdk_3_3\frameworks\libs\flex.swc</path-element>
+		<path-element>C:\flex_sdk_3_3\frameworks\libs\framework.swc</path-element>
+		<path-element>C:\flex_sdk_3_3\frameworks\libs\utilities.swc</path-element>
+		<path-element>C:\flex_sdk_3_3\frameworks\libs\rpc.swc</path-element>
+	</external-library-path>-->
+	<namespaces>
+		<namespace>
+			<uri>http://e4xu.googlecode.com</uri>
+			<manifest>C:\www\projects\xmlhelpers\run\manifest.xml</manifest>
+		</namespace>
+	</namespaces>
+  </compiler>
+  <include-classes>
+	<class>mx.binding.Binding</class>
+	<class>mx.binding.BindingManager</class>
+	<class>mx.binding.EvalBindingResponder</class>
+	<class>mx.binding.IBindingClient</class>
+	<class>mx.binding.IWatcherSetupUtil</class>
+	<class>mx.collections.errors.ItemPendingError</class>
+	<class>mx.core.IFlexModuleFactory</class>
+	<class>mx.core.IMXMLObject</class>
+	<class>mx.events.PropertyChangeEvent</class>
+	<class>mx.events.PropertyChangeEventKind</class>
+	<class>mx.rpc.IResponder</class>
+	
+	<class>mx.binding.IBindingClient</class>
+	<class>mx.core.ClassFactory</class>
+	<class>mx.core.DeferredInstanceFromClass</class>
+	<class>mx.core.DeferredInstanceFromFunction</class>
+	<class>mx.core.IDeferredInstance</class>
+	<class>mx.core.IFactory</class>
+	<class>mx.core.IPropertyChangeNotifier</class>
+	<class>mx.styles.IStyleModule</class>
+	
+	<class>mx.utils.UIDUtil</class>
+	<class>mx.utils.ObjectProxy</class><!-- mod + mx.collections.ICollectionView -->
+	
+	<class>mx.binding.ArrayElementWatcher</class>
+	<class>mx.binding.FunctionReturnWatcher</class>
+	<class>mx.binding.PropertyWatcher</class>
+	<class>mx.binding.RepeaterComponentWatcher</class>
+	<class>mx.binding.RepeaterItemWatcher</class>
+	<class>mx.binding.StaticPropertyWatcher</class>
+	<class>mx.binding.XMLWatcher</class>
+	<class>mx.binding.Watcher</class>
+	
+	<class>mx.messaging.config.ServerConfig</class> <!-- fake -->
+	<class>mx.styles.StyleManager</class> <!-- fake -->
+	
+	<!-- 	import mx.core.IPropertyChangeNotifier;
+			import mx.events.PropertyChangeEvent;
+			import mx.utils.ObjectProxy;
+			import mx.utils.UIDUtil; -->
+				
+	<!-- 	import mx.core.IFlexModuleFactory;
+			import mx.binding.ArrayElementWatcher;
+			import mx.binding.FunctionReturnWatcher;
+			import mx.binding.IWatcherSetupUtil;
+			import mx.binding.PropertyWatcher;
+			import mx.binding.RepeaterComponentWatcher;
+			import mx.binding.RepeaterItemWatcher;
+			import mx.binding.StaticPropertyWatcher;
+			import mx.binding.XMLWatcher;
+			import mx.binding.Watcher;-->
+	<!--	import mx.core.IFlexModule;
+			import mx.core.IFlexModuleFactory;
+			import mx.core.FlexVersion;-->
+	
+  </include-classes>
 </flex-config>
