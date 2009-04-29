@@ -14,6 +14,7 @@
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
     <class path="src" />
+    <class path="..\..\amfphp\services" />
   </classpaths>
   <!-- Build options -->
   <build>
@@ -34,8 +35,8 @@
     <option verboseStackTraces="False" />
     <option linkReport="" />
     <option loadExterns="" />
-    <option additional="-compiler.namespaces.namespace http://e4xu.googlecode.com c:\www\projects\xmlhelpers\run\manifest.xml&#xA;-keep&#xA;-link-report C:\www\projects\xmlhelpers\run\dependencies.xml" />
-    <option customSDK="C:\Flex_4_SDK" />
+    <option additional="-compiler.namespaces.namespace http://e4xu.googlecode.com c:\www\projects\xmlhelpers\run\manifest.xml&#xA;-keep&#xA;-link-report C:\www\projects\xmlhelpers\run\dependencies.xml&#xA;-dump-config C:\www\projects\xmlhelpers\run\config.xml&#xA;-defaults-css-url C:\www\projects\xmlhelpers\run\default.css&#xA;-services C:\www\projects\xmlhelpers\run\services.xml" />
+    <option customSDK="C:\flex_sdk_3_2" />
   </build>
   <!-- SWC Include Libraries -->
   <includeLibraries>
@@ -63,11 +64,11 @@
   </library>
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>
-    <compile path="src\FrameworlessDispatcher.mxml" />
+    <compile path="src\view\SecondFrame.mxml" />
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>
-    <!-- example: <hidden path="..." /> -->
+    <hidden path="src\generated" />
   </hiddenPaths>
   <!-- Executed before build -->
   <preBuildCommand />
@@ -75,7 +76,7 @@
   <postBuildCommand alwaysRun="False" />
   <!-- Other project options -->
   <options>
-    <option showHiddenPaths="False" />
+    <option showHiddenPaths="True" />
     <option testMovie="ExternalPlayer" />
   </options>
 </project>
