@@ -34,6 +34,7 @@
 		
 		protected var _ipreloader:IPreloader;
 		protected var _frameTwoClass:Class;
+		protected var _flexInit:Class;
 		protected var _frameTwoAlias:String = "org.wvxvws.base::FrameTwo";
 		
 		//--------------------------------------------------------------------------
@@ -80,8 +81,10 @@
 									Event.COMPLETE, completeHandler);
 			gotoAndStop(2);
 			_frameTwoClass = getDefinitionByName(_frameTwoAlias) as Class;
+			_flexInit = getDefinitionByName("FlexInit") as Class;
 			removeChild(_ipreloader as DisplayObject);
 			_ipreloader = null;
+			if (_flexInit) Object(_flexInit).init(null);
 			var app:DisplayObject = new _frameTwoClass() as DisplayObject;
 			addChild(app);
 			(app as IMXMLObject).initialized(this, "frameTwo");
