@@ -1,8 +1,10 @@
 ﻿package org.wvxvws.gui 
 {
+	//{imports
 	import flash.display.DisplayObject
 	import flash.events.Event;
 	import flash.geom.Point;
+	//}
 	
 	/**
 	* Column class.

@@ -1,5 +1,6 @@
 ﻿package org.wvxvws.gui 
 {
+	//{imports
 	import flash.display.DisplayObjectContainer;
 	import flash.display.MovieClip;
 	import flash.events.Event;
@@ -11,6 +12,7 @@
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
 	import mx.core.IMXMLObject;
+	//}
 	
 	[Event(name="initialized", type="org.wvxvws.gui.GUIEvent")]
 	[Event(name="validated", type="org.wvxvws.gui.GUIEvent")]
@@ -39,7 +41,7 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		override public function get x():Number { return super.x; }
+		override public function get x():Number { return _transformMatrix.tx; }
 		
 		override public function set x(value:Number):void 
 		{
@@ -48,7 +50,7 @@
 			invalidLayout = true;
 		}
 		
-		override public function get y():Number { return super.y; }
+		override public function get y():Number { return _transformMatrix.ty; }
 		
 		override public function set y(value:Number):void 
 		{
@@ -57,7 +59,7 @@
 			invalidLayout = true;
 		}
 		
-		override public function get width():Number { return super.width; }
+		override public function get width():Number { return _bounds.x; }
 		
 		override public function set width(value:Number):void 
 		{
@@ -67,7 +69,7 @@
 			invalidLayout = true;
 		}
 		
-		override public function get height():Number { return super.height; }
+		override public function get height():Number { return _bounds.y; }
 		
 		override public function set height(value:Number):void 
 		{
@@ -77,7 +79,7 @@
 			invalidLayout = true;
 		}
 		
-		override public function get scaleX():Number { return super.scaleX; }
+		override public function get scaleX():Number { return _transformMatrix.a; }
 		
 		override public function set scaleX(value:Number):void 
 		{
@@ -86,7 +88,7 @@
 			invalidLayout = true;
 		}
 		
-		override public function get scaleY():Number { return super.scaleY; }
+		override public function get scaleY():Number { return _transformMatrix.d; }
 		
 		override public function set scaleY(value:Number):void 
 		{

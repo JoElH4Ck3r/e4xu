@@ -1,13 +1,18 @@
-﻿package org.wvxvws.net 
+﻿package org.wvxvws.geometry 
 {
+	import flash.geom.Rectangle;
+	import mx.core.IMXMLObject;
 	
+	//{imports
+	
+	//}
 	/**
-	* Channel class.
+	* Rect class.
 	* @author wvxvw
 	* @langVersion 3.0
 	* @playerVersion 10.0.12.36
 	*/
-	public class Channel
+	public class Rect extends Rectangle implements IMXMLObject
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -15,21 +20,14 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public var available:Boolean = true;
-		public var used:Boolean;
-		
-		public function get endpoint():Endpoint { return _endpoint; }
-		
-		public function get channelID():String { return _channelID; }
-		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
 		//
 		//--------------------------------------------------------------------------
 		
-		protected var _channelID:String;
-		protected var _endpoint:Endpoint;
+		protected var _id:String;
+		protected var _document:Object;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -42,21 +40,24 @@
 		//  Cunstructor
 		//
 		//--------------------------------------------------------------------------
-		
-		public function Channel(channelID:String, endpoint:Endpoint) 
+		public function Rect(x:Number = 0, y:Number = 0, 
+											width:Number = 100, height:Number = 100) 
 		{
-			super();
-			_channelID = channelID;
-			_endpoint = endpoint;
+			super(x, y, width, height);
 		}
 		
+		/* INTERFACE mx.core.IMXMLObject */
+		
+		public function initialized(document:Object, id:String):void
+		{
+			_id = id;
+			_document = document;
+		}
 		//--------------------------------------------------------------------------
 		//
 		//  Public methods
 		//
 		//--------------------------------------------------------------------------
-		
-		public function isAvaliable():Boolean { return available && !used; }
 		
 		//--------------------------------------------------------------------------
 		//

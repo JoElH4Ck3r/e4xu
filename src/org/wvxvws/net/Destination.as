@@ -2,12 +2,12 @@
 {
 	
 	/**
-	* Channel class.
+	* Destination class.
 	* @author wvxvw
 	* @langVersion 3.0
 	* @playerVersion 10.0.12.36
 	*/
-	public class Channel
+	public class Destination 
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -15,21 +15,14 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public var available:Boolean = true;
-		public var used:Boolean;
-		
-		public function get endpoint():Endpoint { return _endpoint; }
-		
-		public function get channelID():String { return _channelID; }
-		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
 		//
 		//--------------------------------------------------------------------------
 		
-		protected var _channelID:String;
-		protected var _endpoint:Endpoint;
+		protected var _id:String;
+		protected var _channels:Array /* of Channel */;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -42,21 +35,21 @@
 		//  Cunstructor
 		//
 		//--------------------------------------------------------------------------
-		
-		public function Channel(channelID:String, endpoint:Endpoint) 
+		public function Destination(id:String, channels:Array) 
 		{
 			super();
-			_channelID = channelID;
-			_endpoint = endpoint;
+			_id = id;
+			_channels = channels;
 		}
 		
+		public function get id():String { return _id; }
+		
+		public function get channels():Array { return _channels; }
 		//--------------------------------------------------------------------------
 		//
 		//  Public methods
 		//
 		//--------------------------------------------------------------------------
-		
-		public function isAvaliable():Boolean { return available && !used; }
 		
 		//--------------------------------------------------------------------------
 		//

@@ -13,10 +13,11 @@
 	<component id="Listener" class="org.wvxvws.mapping.Listener"/>
 	<component id="Map" class="org.wvxvws.mapping.Map"/>
 	<!-- NET -->
-	<component id="TXTService" class="org.wvxvws.net.TXTService"/>
 	<component id="AMFService" class="org.wvxvws.net.AMFService"/>
+	<component id="MultiAMFService" class="org.wvxvws.net.MultiAMFService"/>
 	<component id="ServiceMethod" class="org.wvxvws.net.ServiceMethod"/>
 	<component id="ServiceArguments" class="org.wvxvws.net.ServiceArguments"/>
+	<component id="TXTService" class="org.wvxvws.net.TXTService"/>
 	<!-- Resources -->
 	<component id="Resource" class="org.wvxvws.resources.Resource"/>
 	<component id="ResourceManager" class="org.wvxvws.resources.ResourceManager"/>
@@ -31,9 +32,12 @@
 	<component id="ImageRenderer" class="org.wvxvws.gui.ImageRenderer"/>
 	<component id="SkinnableControl" class="org.wvxvws.gui.SkinnableControl"/>
 	<component id="SkinnableButton" class="org.wvxvws.gui.SkinnableButton"/>
+	<component id="Scroller" class="org.wvxvws.gui.Scroller"/>
 	<component id="Table" class="org.wvxvws.gui.Table"/>
 	<component id="TiledPanel" class="org.wvxvws.gui.TiledPanel"/>
 	<component id="Tris" class="org.wvxvws.gui.Tris"/>
+	<!-- GEOMETRY -->
+	<component id="Rect" class="org.wvxvws.geometry.Rect"/>
 	<!-- DATA -->
 	<component id="Collection" class="org.wvxvws.data.Collection"/>
 </componentPackage>

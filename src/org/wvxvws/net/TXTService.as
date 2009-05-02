@@ -1,5 +1,6 @@
 ﻿package org.wvxvws.net 
 {
+	//{imports
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
@@ -9,6 +10,7 @@
 	import flash.net.URLRequestMethod;
 	import mx.core.IMXMLObject;
 	import org.wvxvws.net.net_internal;
+	//}
 	
 	[DefaultProperty("parameters")]
 	

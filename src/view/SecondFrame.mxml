@@ -19,7 +19,18 @@
 			private function testMe():void
 			{
 				trace("testMe()");
-				trace(ServerConfig.xml);
+				//trace(ServerConfig.xml);
+				testService.send("SimpleService.sayHi");
+				testService.send("SimpleService.sayBoo");
+			}
+			private function serviceSuccess(value:Object):void
+			{
+				trace("serviceSuccess", value);
+			}
+			
+			private function serviceFault(value:Object):void
+			{
+				trace("serviceFault");
 			}
 		]]>
 	</mx:Script>
@@ -34,4 +45,32 @@
 		x="50"
 		y="20"
 		/>
+	
+	<e4xu:AMFService 
+		id="testService"
+		resultCallBack="serviceSuccess" 
+		faultCallBack="serviceFault"
+		baseURL="http://localhost/amfphp/gateway.php"
+		>
+		<e4xu:ServiceMethod
+			name="SimpleService"
+			operation="sayHi"
+			>
+			<e4xu:ServiceArguments>
+				<mx:String id="foo">bar</mx:String>
+				<mx:Number id="bar">22222</mx:Number>
+			</e4xu:ServiceArguments>
+		</e4xu:ServiceMethod>
+		
+		<e4xu:ServiceMethod
+			name="SimpleService"
+			operation="sayBoo"
+			>
+			<e4xu:ServiceArguments>
+				<mx:String id="oof">rab</mx:String>
+				<mx:Number id="rab">11111</mx:Number>
+			</e4xu:ServiceArguments>
+		</e4xu:ServiceMethod>
+	</e4xu:AMFService>
+	
 </e4xu:FrameTwo>
