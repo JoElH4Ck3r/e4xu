@@ -2,12 +2,12 @@
 {
 	
 	/**
-	* Channel class.
+	* Endpoint class.
 	* @author wvxvw
 	* @langVersion 3.0
 	* @playerVersion 10.0.12.36
 	*/
-	public class Channel
+	public class Endpoint
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -16,11 +16,6 @@
 		//--------------------------------------------------------------------------
 		
 		public var available:Boolean = true;
-		public var used:Boolean;
-		
-		public function get endpoint():Endpoint { return _endpoint; }
-		
-		public function get channelID():String { return _channelID; }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -28,8 +23,7 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		protected var _channelID:String;
-		protected var _endpoint:Endpoint;
+		protected var _uri:String;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -42,21 +36,18 @@
 		//  Cunstructor
 		//
 		//--------------------------------------------------------------------------
-		
-		public function Channel(channelID:String, endpoint:Endpoint) 
+		public function Endpoint(uri:String) 
 		{
 			super();
-			_channelID = channelID;
-			_endpoint = endpoint;
+			_uri = uri;
 		}
 		
+		public function get uri():String { return _uri; }
 		//--------------------------------------------------------------------------
 		//
 		//  Public methods
 		//
 		//--------------------------------------------------------------------------
-		
-		public function isAvaliable():Boolean { return available && !used; }
 		
 		//--------------------------------------------------------------------------
 		//

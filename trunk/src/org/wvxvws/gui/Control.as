@@ -1,5 +1,6 @@
 ﻿package org.wvxvws.gui 
 {
+	//{imports
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Graphics;
 	import flash.display.Sprite;
@@ -8,6 +9,7 @@
 	import flash.geom.Point;
 	import flash.geom.Transform;
 	import mx.core.IMXMLObject;
+	//}
 	
 	[Event(name="initialized", type="org.wvxvws.gui.GUIEvent")]
 	[Event(name="validated", type="org.wvxvws.gui.GUIEvent")]

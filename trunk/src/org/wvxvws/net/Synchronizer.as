@@ -1,10 +1,13 @@
 ﻿package org.wvxvws.net 
 {
+	//{imports
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
 	import flash.events.TimerEvent;
+	import flash.utils.getDefinitionByName;
 	import flash.utils.Timer;
 	import org.wvxvws.net.net_internal;
+	//}
 	
 	/**
 	* Synchronizer class.
@@ -19,6 +22,10 @@
 		//  Public properties
 		//
 		//--------------------------------------------------------------------------
+		
+		public function get hasConfig():Boolean { return _hasConfig; }
+		
+		public function get defaultGetaway():String { return _defaultGetaway; }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -37,6 +44,10 @@
 		private var _queves:Array = [];
 		private var _available:Boolean = true;
 		private var _timer:Timer = new Timer(1, 1);
+		private var _hasConfig:Boolean;
+		private var _config:XML;
+		private var _destinations:Object = { };
+		private var _defaultGetaway:String;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -48,6 +59,51 @@
 		{
 			super();
 			if (!initializer) throw new Error("Cannot instantiate");
+			try
+			{
+				var c:Object = getDefinitionByName("mx.messaging.config.ServerConfig");
+				_config = c.xml;
+				_hasConfig = true;
+				var channelClass:Class;
+				var destinations:XMLList = _config..destination;
+				var destinationID:String;
+				var channelID:String;
+				var endpoints:XMLList;
+				var endpointsArr:Array;
+				var channels:XMLList;
+				var channelsArr:Array;
+				var channel:Channel;
+				var ep:Endpoint;
+				var dstChannels:Array;
+				var destination:Destination;
+				var definitions:XMLList = _config..channel.(hasOwnProperty("@id"));
+				for each(var dst:XML in destinations)
+				{
+					channels = dst.channels.channel;
+					destinationID = dst.@id;
+					dstChannels = [];
+					for each(var chn:XML in channels)
+					{
+						channelID = chn.@ref;
+						endpointsArr = [];
+						channelsArr = [];
+						endpoints = definitions.(@id == channelID).endpoint;
+						endpoints.(endpointsArr.push(new Endpoint(@uri)) && 
+								channelsArr.push(getDefinitionByName(parent().@type)));
+						while (endpointsArr.length)
+						{
+							ep = endpointsArr.pop() as Endpoint;
+							if (!_defaultGetaway) _defaultGetaway = ep.uri;
+							channelsArr[endpointsArr.length] = 
+								new (channelsArr[endpointsArr.length] as Class)(channelID, ep);
+						}
+						dstChannels = dstChannels.concat(channelsArr);
+					}
+					destination = new Destination(destinationID, dstChannels);
+					_destinations[destinationID] = destination;
+				}
+			}
+			catch (error:Error) { };
 			_timer.addEventListener(TimerEvent.TIMER_COMPLETE, timerCompleteHandler);
 		}
 		
@@ -96,6 +152,24 @@
 					break;
 				}
 			}
+		}
+		
+		public function hasDestination(destination:String):Boolean
+		{
+			return (destination in _destinations);
+		}
+		
+		public function endpointsForAlias(alias:String):Array
+		{
+			var destination:Destination = _destinations[alias] as Destination;
+			var channels:Array = destination.channels;
+			var endpoints:Array = [];
+			for each (var cn:Channel in channels)
+			{
+				if (!cn.available) continue;
+				endpoints.push(cn.endpoint.uri);
+			}
+			return endpoints;
 		}
 		
 		private function sendNext():void

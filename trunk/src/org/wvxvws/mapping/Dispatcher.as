@@ -1,11 +1,13 @@
 ﻿package org.wvxvws.mapping 
 {
+	//{imports
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.utils.describeType;
 	import flash.utils.getDefinitionByName;
 	import flash.utils.getQualifiedSuperclassName;
 	import mx.core.IMXMLObject;
+	//}
 	
 	/**
 	* Dispatcher class.

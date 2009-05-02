@@ -1,5 +1,6 @@
 ﻿package org.wvxvws.gui 
 {
+	//{imports
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -7,6 +8,7 @@
 	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
 	import org.wvxvws.animation.easingDefault;
+	//}
 	
 	/**
 	 * Menu class.

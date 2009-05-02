@@ -1,12 +1,16 @@
 ﻿package org.wvxvws.net 
 {
+	//{imports
 	import flash.events.Event;
 	import flash.events.NetStatusEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.net.NetConnection;
 	import flash.net.Responder;
+	//}
 	
 	[DefaultProperty("methods")]
+	
+	[Event(name="complete", type="flash.events.Event")]
 	
 	/**
 	* AMFService class.
@@ -243,6 +247,7 @@
 			_synchronizer.acknowledge(_currentID);
 			_sending = false;
 			if (_faultCallBack !== null) _faultCallBack(value);
+			dispatchEvent(new Event(Event.COMPLETE));
 		}
 		
 		protected function defaultResultCallBack(value:Object):void
@@ -250,6 +255,7 @@
 			_synchronizer.acknowledge(_currentID);
 			_sending = false;
 			if (_resultCallBack !== null) _resultCallBack(value);
+			dispatchEvent(new Event(Event.COMPLETE));
 		}
 		
 		protected function methodForName(name:String):ServiceMethod
@@ -285,7 +291,7 @@
 			}
 		}
 		
-		private function securityErrorHandler(event:SecurityErrorEvent):void 
+		protected function securityErrorHandler(event:SecurityErrorEvent):void 
 		{
 			_faultCallBack("security error");
 		}
@@ -309,17 +315,18 @@
 				_deferredOperation = 
 					_deferredOperation.concat(operation.parameters.parameters);
 			}
+			if (!_baseURL) _baseURL = _synchronizer.defaultGetaway;
+			if (!_baseURL) 
+			{
+				defaultFaultCallBack("must specify baseURL");
+				return;
+			}
 			if (!_connected)
 			{
-				
 				super.connect(_baseURL);
 				_connected = true;
-				super.call.apply(this, _deferredOperation);
 			}
-			else
-			{
-				super.call.apply(this, _deferredOperation);
-			}
+			super.call.apply(this, _deferredOperation);
 			_deferredOperation = null;
 		}
 	}

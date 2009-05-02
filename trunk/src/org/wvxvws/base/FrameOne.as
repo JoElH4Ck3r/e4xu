@@ -1,5 +1,6 @@
 ﻿package org.wvxvws.base 
 {
+	//{imports
 	import flash.display.DisplayObject;
 	import flash.display.MovieClip;
 	import flash.display.StageAlign;
@@ -11,6 +12,7 @@
 	import mx.core.IMXMLObject;
 	import org.wvxvws.gui.Control;
 	import org.wvxvws.gui.IPreloader;
+	//}
 	
 	/**
 	* FrameOne class.
