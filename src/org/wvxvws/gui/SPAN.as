@@ -17,11 +17,13 @@
 	[Event(name="initialized", type="org.wvxvws.gui.GUIEvent")]
 	[Event(name="validated", type="org.wvxvws.gui.GUIEvent")]
 	
+	[DefaultProperty("text")]
+	
 	/**
-	 * TextInput class.
+	 * TextSPAN class.
 	 * @author wvxvw
 	 */
-	public class Input extends TextField implements IMXMLObject
+	public class SPAN extends TextField implements IMXMLObject
 	{
 		protected var _document:Object;
 		protected var _id:String;
@@ -132,7 +134,7 @@
 			invalidLayout = true;
 		}
 		
-		public function Input()
+		public function SPAN()
 		{
 			super();
 			_nativeTransform = new Transform(this);

@@ -1,7 +1,7 @@
 ﻿package org.wvxvws.base 
 {
 	import flash.display.DisplayObject;
-	import org.wvxvws.gui.Control;
+	import org.wvxvws.gui.DIV;
 	
 	//[SWF (width="800", height="600", scriptTimeLimit="15", frameRate="30", backgroundColor="0x3E2F1B")]
 	//[Frame(factoryClass="org.wvxvws.base.FrameOne")]
@@ -15,7 +15,7 @@
 	* @langVersion 3.0
 	* @playerVersion 10.0.12.36
 	*/
-	public class FrameTwo extends Control
+	public class FrameTwo extends DIV
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -37,7 +37,7 @@
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Cunstructor
+		//  Constructor
 		//
 		//--------------------------------------------------------------------------
 		

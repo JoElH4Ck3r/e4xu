@@ -21,7 +21,7 @@
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Cunstructor
+		//  Constructor
 		//
 		//--------------------------------------------------------------------------
 		
@@ -105,7 +105,7 @@ internal final class CSSParser
 	
 	//--------------------------------------------------------------------------
 	//
-	//  Cunstructor
+	//  Constructor
 	//
 	//--------------------------------------------------------------------------
 	
@@ -447,7 +447,7 @@ internal dynamic final class AlphaProps extends Proxy implements ICSSStyle
 	
 	//--------------------------------------------------------------------------
 	//
-	//  Cunstructor
+	//  Constructor
 	//
 	//--------------------------------------------------------------------------
 	
@@ -522,7 +522,7 @@ internal dynamic final class AlphaProps extends Proxy implements ICSSStyle
 		while (input.length % 8) input += "z";
 		var ilt:int = input.length;
 		var chklt:int = ilt / 8;
-		if (chklt > 31) throw new Error("Input to long.");
+		if (chklt > 31) throw new Error("SPAN to long.");
 		var arr:Array = [];
 		var wlt:int;
 		var wsum:int;

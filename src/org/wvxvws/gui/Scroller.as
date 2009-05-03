@@ -14,7 +14,7 @@
 	* @langVersion 3.0
 	* @playerVersion 10.0.12.36
 	*/
-	public class Scroller extends Control
+	public class Scroller extends DIV
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -177,7 +177,7 @@
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Cunstructor
+		//  Constructor
 		//
 		//--------------------------------------------------------------------------
 		
@@ -361,7 +361,6 @@
 			else
 			{
 				var toBeX:Number = mouseX - _handleShift;
-				//trace();
 				if (toBeX < _minHandle.width)
 				{
 					toBeX = _minHandle.width;

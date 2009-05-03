@@ -10,7 +10,7 @@
 	import flash.utils.getDefinitionByName;
 	import flash.utils.getTimer;
 	import mx.core.IMXMLObject;
-	import org.wvxvws.gui.Control;
+	import org.wvxvws.gui.DIV;
 	import org.wvxvws.gui.IPreloader;
 	//}
 	
@@ -47,7 +47,7 @@
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Cunstructor
+		//  Constructor
 		//
 		//--------------------------------------------------------------------------
 		public function FrameOne()

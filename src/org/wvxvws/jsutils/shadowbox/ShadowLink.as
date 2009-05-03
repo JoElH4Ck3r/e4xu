@@ -37,7 +37,7 @@
 		private var _uid:String;
 		//--------------------------------------------------------------------------
 		//
-		//  Cunstructor
+		//  Constructor
 		//
 		//--------------------------------------------------------------------------
 		public function ShadowLink(href:String = null) 

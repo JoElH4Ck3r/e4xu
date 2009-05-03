@@ -9,17 +9,17 @@
 	import mx.styles.CSSStyleDeclaration;
 	
 	/**
-	 * SkinnableControl class.
+	 * SkinnableDIV class.
 	 * @author wvxvw
 	 */
-	public class SkinnableControl extends Control implements ISkinableControl
+	public class SkinnableDIV extends DIV implements ISkinableDIV
 	{
 		protected var _skin:Skin;
 		protected var _inheritingStyles:Object = {};
 		protected var _nonInheritingStyles:Object = {};
 		protected var _styleDeclaration:CSSStyleDeclaration;
 		
-		public function SkinnableControl() { super(); }
+		public function SkinnableDIV() { super(); }
 		
 		public function setSkin(skin:Skin):void
 		{
@@ -28,7 +28,7 @@
 			isInvalidLayout = true;
 		}
 		
-		/* INTERFACE org.wvxvws.gui.ISkinableControl */
+		/* INTERFACE org.wvxvws.gui.ISkinableDIV */
 		
 		public function get className():String
 		{

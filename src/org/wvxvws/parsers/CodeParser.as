@@ -62,7 +62,7 @@
 			"Security", "SecurityDomain", "SecurityPanel", "System", "AntiAliasType", "CSMSettings", "Font", "FontStyle", "FontType", "GridFitType",
 			"StaticText", "StyleSheet", "TextColorType", "TextDisplayMode", "TextField", "TextFieldAutoSize", "TextFieldType", "TextFormat",
 			"TextFormatAlign", "TextLineMetrics", "TextRenderer", "TextSnapshot", "ContextMenu", "ContextMenuBuiltInItems", "ContextMenuItem",
-			"Keyboard", "KeyLocation", "Mouse", "ByteArray", "Dictionary", "Endian", "IDataInput", "IDataOutput", "IExternalizable", "Proxy", "Timer",
+			"Keyboard", "KeyLocation", "Mouse", "ByteArray", "Dictionary", "Endian", "IDataSPAN", "IDataOutput", "IExternalizable", "Proxy", "Timer",
 			"XMLDocument", "XMLNode", "XMLNodeType"
 		];
 		
@@ -131,7 +131,7 @@
 		private static var _word:String = "";
 		//--------------------------------------------------------------------------
 		//
-		//  Cunstructor
+		//  Constructor
 		//
 		//--------------------------------------------------------------------------
 		
