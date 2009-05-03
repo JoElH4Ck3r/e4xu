@@ -198,13 +198,29 @@
 			super.validateLayout(event);
 			if (_direction)
 			{
-				_path = height - (_minHandle.height + _maxHandle.height);
 				_minHandle.width = width;
 				_maxHandle.width = width;
 				_handle.width = width;
 				_maxHandle.y = height - _maxHandle.height;
+				_path = height - (_minHandle.height + _maxHandle.height);
 				_handle.height = handleRatio() * _path;
 				_handle.y = _minHandle.height + (_path - _handle.height) * _position;
+			}
+			else
+			{
+				_minHandle.width = height;
+				_maxHandle.width = height;
+				_handle.width = width;
+				_handle.rotation = -90;
+				_handle.y = height;
+				_minHandle.rotation = -90;
+				_minHandle.y = height;
+				_maxHandle.rotation = -90;
+				_maxHandle.y = height;
+				_path = width - (_minHandle.width + _maxHandle.width);
+				_maxHandle.x = width - _maxHandle.height;
+				_handle.height = handleRatio() * _path;
+				_handle.x = _minHandle.height + (_path - _handle.height) * _position;
 			}
 			if (!super.contains(_minHandle)) super.addChild(_minHandle);
 			if (!super.contains(_maxHandle)) super.addChild(_maxHandle);
@@ -245,6 +261,15 @@
 				_target.scrollRect = _area;
 				_position = value;
 				_handle.y = _minHandle.height + (_path - _handle.height) * value;
+			}
+			else
+			{
+				limit = _target.width - _area.width;
+				shift = value * limit;
+				_area.x = shift;
+				_target.scrollRect = _area;
+				_position = value;
+				_handle.x = _minHandle.height + (_path - _handle.width) * value;
 			}
 		}
 		
@@ -320,16 +345,33 @@
 		
 		protected function moveAreaUpDown():void
 		{
-			var toBeY:Number = mouseY - _handleShift;
-			if (toBeY < _minHandle.height)
+			if (_direction)
 			{
-				toBeY = _minHandle.height;
+				var toBeY:Number = mouseY - _handleShift;
+				if (toBeY < _minHandle.height)
+				{
+					toBeY = _minHandle.height;
+				}
+				else if (toBeY > _maxHandle.y - _handle.height)
+				{
+					toBeY = _maxHandle.y - _handle.height;
+				}
+				scrollTo((toBeY - _maxHandle.height) / (_path - _handle.height));
 			}
-			else if (toBeY > _maxHandle.y - _handle.height)
+			else
 			{
-				toBeY = _maxHandle.y - _handle.height;
+				var toBeX:Number = mouseX - _handleShift;
+				//trace();
+				if (toBeX < _minHandle.width)
+				{
+					toBeX = _minHandle.width;
+				}
+				else if (toBeX > _maxHandle.x - _handle.width)
+				{
+					toBeX = _maxHandle.x - _handle.width;
+				}
+				scrollTo((toBeX - _maxHandle.width) / (_path - _handle.width));
 			}
-			scrollTo((toBeY - _maxHandle.height) / (_path - _handle.height));
 		}
 		
 		protected function handleRatio():Number
