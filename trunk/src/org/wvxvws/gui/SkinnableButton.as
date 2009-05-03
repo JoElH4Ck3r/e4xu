@@ -14,7 +14,7 @@
 	 * SkinnableButton class.
 	 * @author wvxvw
 	 */
-	public class SkinnableButton extends SkinnableControl
+	public class SkinnableButton extends SkinnableDIV
 	{
 		public static const UP:String = "up";
 		public static const OVER:String = "over";

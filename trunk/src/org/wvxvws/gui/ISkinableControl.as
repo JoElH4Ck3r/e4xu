@@ -7,10 +7,10 @@
 	import mx.styles.IStyleClient;
 	
 	/**
-	 * IScinableControl interface.
+	 * IScinableDIV interface.
 	 * @author wvxvw
 	 */
-	public interface ISkinableControl extends IStyleClient
+	public interface ISkinableDIV extends IStyleClient
 	{
 		function validateLayout(event:Event = null):void;
 		

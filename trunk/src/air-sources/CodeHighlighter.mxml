@@ -67,15 +67,15 @@
 				var stream:FileStream = new FileStream();
 				stream.open(event.target as File, FileMode.READ);
 				_asFile = stream.readUTFBytes(stream.bytesAvailable);
-				fileInput.text = (event.target as File).nativePath;
+				fileSPAN.text = (event.target as File).nativePath;
 				_processedFileName = (event.target as File).name;
 			}
 			
 			private function save_clickHandler():void
 			{
-				if (!fileInput.text.length)
+				if (!fileSPAN.text.length)
 				{
-					nativeAlert("Select the Input File first!");
+					nativeAlert("Select the SPAN File first!");
 					return;
 				}
 				var data:String;
@@ -243,7 +243,7 @@
 				}
 				stream.open(inFile, FileMode.READ);
 				_asFile = stream.readUTFBytes(stream.bytesAvailable);
-				fileInput.text = inFile.nativePath;
+				fileSPAN.text = inFile.nativePath;
 				_processedFileName = inFile.nativePath;
 				var fileTosave:String = _processedFileName.replace(/\.as$/i, ".html");
 				fileOutput.text = fileTosave;
@@ -295,18 +295,18 @@
 	<mx:Canvas>
 		
 		<mx:Label 
-			text="Select Input ActionScript file:"/>
+			text="Select SPAN ActionScript file:"/>
 			
-		<mx:TextInput 
+		<mx:TextSPAN 
 			width="400" 
-			id="fileInput" 
+			id="fileSPAN" 
 			y="20"/>
 			
 		<mx:Label 
 			text="Specify Output HTML file:" 
 			y="50"/>
 			
-		<mx:TextInput 
+		<mx:TextSPAN 
 			width="400" 
 			id="fileOutput" 
 			y="70"/>

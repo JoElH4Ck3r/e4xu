@@ -16,7 +16,7 @@
 	* @langVersion 3.0
 	* @playerVersion 10.0.12.36
 	*/
-	public class Preloader extends Control implements IPreloader
+	public class Preloader extends DIV implements IPreloader
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -110,7 +110,7 @@
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Cunstructor
+		//  Constructor
 		//
 		//--------------------------------------------------------------------------
 		

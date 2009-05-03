@@ -34,8 +34,8 @@
 			}
 		]]>
 	</mx:Script>
-	<e4xu:Input 
-		id="testInput"
+	<e4xu:SPAN 
+		id="testSPAN"
 		text="Test text"
 		align="center"
 		background="true"

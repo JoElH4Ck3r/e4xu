@@ -15,12 +15,12 @@
 	[Event(name="validated", type="org.wvxvws.gui.GUIEvent")]
 	
 	/**
-	* Control class.
+	* DIV class.
 	* @author wvxvw
 	* @langVersion 3.0
 	* @playerVersion 10.0.12.36
 	*/
-	public class Control extends Sprite implements IMXMLObject
+	public class DIV extends Sprite implements IMXMLObject
 	{
 		protected var _document:Object;
 		protected var _id:String;
@@ -116,10 +116,10 @@
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Cunstructor
+		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		public function Control()
+		public function DIV()
 		{
 			super();
 			_nativeTransform = new Transform(this);

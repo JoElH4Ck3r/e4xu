@@ -51,7 +51,7 @@
 		private var _overlayOpacity:Number;
 		private var _flashBgColor:uint;
 		private var _autoplayMovies:Boolean;
-		private var _showMovieControls:Boolean;
+		private var _showMovieDIVs:Boolean;
 		private var _slideshowDelay:int;
 		private var _resizeDuration:int;
 		private var _fadeDuration:int;
@@ -77,7 +77,7 @@
 
 		//--------------------------------------------------------------------------
 		//
-		//  Cunstructor
+		//  Constructor
 		//
 		//--------------------------------------------------------------------------
 		
@@ -212,13 +212,13 @@
 		 * Set this <code>false</code> to disable displaying QuickTime and Windows Media player 
 		 * movie control bars. Defaults to <code>true</code>.
 		 */
-		public function get showMovieControls():Boolean { return _showMovieControls; }
+		public function get showMovieDIVs():Boolean { return _showMovieDIVs; }
 
-		public function set showMovieControls(value:Boolean):void 
+		public function set showMovieDIVs(value:Boolean):void 
 		{
-			if (value) delete _proxy["showMovieControls"];
-			else _proxy["showMovieControls"] = value;
-			_showMovieControls = value;
+			if (value) delete _proxy["showMovieDIVs"];
+			else _proxy["showMovieDIVs"] = value;
+			_showMovieDIVs = value;
 		}
 
 		/**
