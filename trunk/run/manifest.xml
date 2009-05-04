@@ -36,6 +36,8 @@
 	<component id="Table" class="org.wvxvws.gui.Table"/>
 	<component id="TiledPanel" class="org.wvxvws.gui.TiledPanel"/>
 	<component id="Tris" class="org.wvxvws.gui.Tris"/>
+	<!-- CSS -->
+	<component id="STYLE" class="org.wvxvws.gui.styles.STYLE"/>
 	<!-- GEOMETRY -->
 	<component id="Rect" class="org.wvxvws.geometry.Rect"/>
 	<!-- DATA -->

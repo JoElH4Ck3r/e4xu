@@ -1,4 +1,4 @@
-﻿package org.wvxvws.parsers 
+﻿package org.wvxvws.gui.styles
 {
 	
 	/**

@@ -1,4 +1,4 @@
-﻿package org.wvxvws.parsers 
+﻿package org.wvxvws.gui.styles 
 {
 	
 	/**
@@ -240,8 +240,8 @@ internal final class CSSParser
 	}
 }
 
-import org.wvxvws.parsers.ICSSClass;
-import org.wvxvws.parsers.ICSSStyle;
+import org.wvxvws.gui.styles.ICSSClass;
+import org.wvxvws.gui.styles.ICSSStyle;
 
 /**
 * AlphaProps class.
@@ -331,7 +331,7 @@ internal final class CSSClass implements ICSSClass
 	}
 }
 
-import org.wvxvws.parsers.ICSSDefinition;
+import org.wvxvws.gui.styles.ICSSDefinition;
 
 /**
 * AlphaProps class.
@@ -408,7 +408,7 @@ internal final class CSSDefinition implements ICSSDefinition
 
 import flash.utils.Proxy;
 import flash.utils.flash_proxy;
-import org.wvxvws.parsers.ICSSStyle;
+import org.wvxvws.gui.styles.ICSSStyle;
 
 /**
 * AlphaProps class.
