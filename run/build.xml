@@ -56,6 +56,23 @@
 	<class>mx.messaging.config.ServerConfig</class> <!-- fake -->
 	<class>mx.styles.StyleManager</class> <!-- fake -->
 	
+	<class>mx.core.BitmapAsset</class>
+	<class>mx.core.ByteArrayAsset</class>
+	<class>mx.core.FlexBitmap</class>
+	<class>mx.core.FontAsset</class>
+	<class>mx.core.IFlexAsset</class>
+	<class>mx.core.IFlexDisplayObject</class>
+	<class>mx.core.IRepeaterClient</class>
+	<class>mx.utils.NameUtil</class>
+	<class>mx.core.MovieClipAsset</class>
+	<class>mx.core.MovieClipLoaderAsset</class>
+	<class>mx.core.IBorder</class>
+	<class>mx.core.FlexMovieClip</class>
+	<class>mx.core.EdgeMetrics</class>
+	<class>mx.core.SoundAsset</class>
+	<class>mx.core.SpriteAsset</class>
+	
+	
 	<!-- 	import mx.core.IPropertyChangeNotifier;
 			import mx.events.PropertyChangeEvent;
 			import mx.utils.ObjectProxy;
