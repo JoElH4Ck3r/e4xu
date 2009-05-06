@@ -28,6 +28,7 @@ package org.wvxvws.gui.styles
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.text.TextFormat;
+	import flash.utils.describeType;
 	import flash.utils.getDefinitionByName;
 	//}
 	
@@ -73,7 +74,7 @@ package org.wvxvws.gui.styles
 		//--------------------------------------------------------------------------
 		
 		private static const DECLARATION:RegExp = /(\.)?(\w+(\-\w)?\w*)+\s*\{([^\}]*)\}/g;
-		private static const PROPERTIES:RegExp = /([^:]+)\:([^;]+);/g;
+		private static const PROPERTIES:RegExp = /([^:]+)\:([^;]+)(;|$)/g;
 		private static const WHITESPACE:RegExp = /[\r\n\t]|(\s\s+)/g;
 		private static const TRIM:RegExp = /^\s*(.+)\s*$/;
 		
@@ -153,6 +154,21 @@ package org.wvxvws.gui.styles
 			return ret;
 		}
 		
+		public function applyMetaData(client:Object, style:Object):void
+		{
+			var applicableStyles:XMLList = describeType(client).metadata.(@name == "CSS").arg;
+			var arg:XML;
+			for each(var p:String in style)
+			{
+				if (client.hasOwnProperty(p))
+				{
+					arg = applicableStyles.(@key == p)[0];
+					client[p] = stringToType(style[arg.@key.toString()], 
+											conversionTable[arg.@value.toString()]);
+				}
+			}
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
@@ -168,6 +184,7 @@ package org.wvxvws.gui.styles
 		private function parseTextFormat(input:String):Object
 		{
 			var tf:Array = input.split(",");
+			// TODO: Parse TextFormat from string.
 			return new TextFormat() as Object;
 		}
 		
@@ -205,7 +222,7 @@ package org.wvxvws.gui.styles
 		}
 		
 		private static function propertiesHelper(match:String, propName:String, 
-											propValue:String, index:int, all:String):void
+								propValue:String, isLast:String, index:int, all:String):void
 		{
 			_currentRawClass[propName.replace(TRIM, "$1")] = 
 											propValue.replace(TRIM, "$1");
@@ -220,7 +237,5 @@ package org.wvxvws.gui.styles
 									properties: properties } );
 			return match;
 		}
-		
 	}
-	
 }
