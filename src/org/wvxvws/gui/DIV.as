@@ -54,11 +54,14 @@ package org.wvxvws.gui
 		protected var _backgroundColor:uint = 0x999999;
 		protected var _backgroundAlpha:Number = 0;
 		protected var _children:Array = [];
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Public properties
 		//
 		//--------------------------------------------------------------------------
+		
+		[Bindable("xChange")]
 		override public function get x():Number { return _transformMatrix.tx; }
 		
 		override public function set x(value:Number):void 
@@ -66,8 +69,10 @@ package org.wvxvws.gui
 			if (_transformMatrix.tx == value) return;
 			_transformMatrix.tx = value;
 			invalidLayout = true;
+			dispatchEvent(new Event("xChange"));
 		}
 		
+		[Bindable("yChange")]
 		override public function get y():Number { return _transformMatrix.ty; }
 		
 		override public function set y(value:Number):void 
@@ -75,8 +80,10 @@ package org.wvxvws.gui
 			if (_transformMatrix.ty == value) return;
 			_transformMatrix.ty = value;
 			invalidLayout = true;
+			dispatchEvent(new Event("yChange"));
 		}
 		
+		[Bindable("widthChange")]
 		override public function get width():Number { return _bounds.x; }
 		
 		override public function set width(value:Number):void 
@@ -84,8 +91,10 @@ package org.wvxvws.gui
 			if (_bounds.x == value) return;
 			_bounds.x = value;
 			invalidLayout = true;
+			dispatchEvent(new Event("widthChange"));
 		}
 		
+		[Bindable("heightChange")]
 		override public function get height():Number { return _bounds.y; }
 		
 		override public function set height(value:Number):void 
@@ -93,8 +102,10 @@ package org.wvxvws.gui
 			if (_bounds.y == value) return;
 			_bounds.y = value;
 			invalidLayout = true;
+			dispatchEvent(new Event("heightChange"));
 		}
 		
+		[Bindable("scaleXChange")]
 		override public function get scaleX():Number { return _transformMatrix.a; }
 		
 		override public function set scaleX(value:Number):void 
@@ -102,8 +113,10 @@ package org.wvxvws.gui
 			if (_transformMatrix.a == value) return;
 			_transformMatrix.a = value;
 			invalidLayout = true;
+			dispatchEvent(new Event("scaleXChange"));
 		}
 		
+		[Bindable("scaleYChange")]
 		override public function get scaleY():Number { return _transformMatrix.d; }
 		
 		override public function set scaleY(value:Number):void 
@@ -111,8 +124,10 @@ package org.wvxvws.gui
 			if (_transformMatrix.d == value) return;
 			_transformMatrix.d = value;
 			invalidLayout = true;
+			dispatchEvent(new Event("scaleYChange"));
 		}
 		
+		[Bindable("transformChange")]
 		override public function get transform():Transform
 		{
 			return _userTransform ? _userTransform : super.transform;
@@ -122,6 +137,7 @@ package org.wvxvws.gui
 		{
 			_userTransform = value;
 			invalidLayout = true;
+			dispatchEvent(new Event("transformChange"));
 		}
 		//--------------------------------------------------------------------------
 		//
