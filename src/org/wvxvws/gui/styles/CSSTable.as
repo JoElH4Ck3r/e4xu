@@ -154,9 +154,10 @@ internal final dynamic class CSSProxy extends Proxy implements ICSSClass
 {
 	private var _className:String;
 	private var _dispatcher:EventDispatcher;
-	private var _theStyle:Object = { };
+	private var _theStyle:Array = [];
 	private var _client:ICSSClient;
 	private var _table:Dictionary;
+	private var _props:Dictionary = new Dictionary(true);
 	
 	public function CSSProxy(className:String, table:Dictionary)
 	{
@@ -199,27 +200,69 @@ internal final dynamic class CSSProxy extends Proxy implements ICSSClass
 	
 	flash_proxy override function setProperty(name:*, value:*):void
 	{
-		if (_theStyle.hasOwnProperty(name) && _theStyle[name] == value)
+		var index:int = _theStyle.indexOf(String(name));
+		var prop:*;
+		var nextIndex:int;
+		for (var o:Object in _props)
 		{
-			return;
+			if (_props[o] == index) prop = o;
+			nextIndex++;
 		}
-		_theStyle[name] = value;
+		if (index > -1 && prop == value) return;
+		_theStyle[nextIndex] = name;
+		_props[value] = nextIndex;
 		dispatchEvent(new Event(name + "Change"));
 	}
 	
 	flash_proxy override function getProperty(name:*):*
 	{
-		return _theStyle[name];
+		var index:int = _theStyle.indexOf(String(name));
+		var prop:*;
+		for (var o:Object in _props)
+		{
+			if (_props[o] == index)
+			{
+				prop = o;
+				break;
+			}
+		}
+		return prop;
 	}
 	
 	flash_proxy override function deleteProperty(name:*):Boolean
 	{
-		return delete _theStyle[name];
+		var index:int = _theStyle.indexOf(String(name));
+		if (index < 0) return false;
+		var prop:*;
+		for (var o:Object in _props)
+		{
+			if (_props[o] == index) prop = o;
+			break;
+		}
+		_theStyle.splice(index, 1);
+		return delete _props[prop];
 	}
 	
 	flash_proxy override function callProperty(name:*, ...rest):*
 	{
 		trace("callProperty", name);
+	}
+	
+	flash_proxy override function nextName(index:int):String { return _theStyle[index - 1]; }
+	
+	flash_proxy override function nextNameIndex(index:int):int 
+	{
+		if (_theStyle.length > index) return index + 1;
+		return 0;
+	}
+	
+	override flash_proxy function nextValue(index:int):*
+	{
+		for (var o:Object in _props)
+		{
+			if (_props[o] == index) return o;
+		}
+		return undefined;
 	}
 	
 	/* INTERFACE org.wvxvws.gui.styles.ICSSClass */
@@ -247,9 +290,9 @@ internal final dynamic class CSSProxy extends Proxy implements ICSSClass
 	{
 		var temp:String = _className + "{";
 		var b:Boolean;
-		for (var p:String in _theStyle)
+		for (var o:Object in _props)
 		{
-			temp += (b ? ";" : "") + p + ":" + _theStyle[p];
+			temp += (b ? ";" : "") + _theStyle[_props[o]] + ":" + o;
 			b = true;
 		}
 		return temp + "}";
