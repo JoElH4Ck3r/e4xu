@@ -25,6 +25,7 @@ package org.wvxvws.gui
 	import flash.display.DisplayObjectContainer;
 	import flash.display.MovieClip;
 	import flash.events.Event;
+	import flash.events.IEventDispatcher;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Transform;
@@ -32,7 +33,10 @@ package org.wvxvws.gui
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
+	import flash.utils.getDefinitionByName;
+	import flash.utils.getQualifiedClassName;
 	import mx.core.IMXMLObject;
+	import org.wvxvws.gui.styles.ICSSClient
 	//}
 	
 	[Event(name="initialized", type="org.wvxvws.gui.GUIEvent")]
@@ -44,7 +48,7 @@ package org.wvxvws.gui
 	 * TextSPAN class.
 	 * @author wvxvw
 	 */
-	public class SPAN extends TextField implements IMXMLObject
+	public class SPAN extends TextField implements IMXMLObject, ICSSClient
 	{
 		protected var _document:Object;
 		protected var _id:String;
@@ -57,6 +61,8 @@ package org.wvxvws.gui
 		protected var _text:String = "";
 		protected var _autoSize:String = TextFieldAutoSize.LEFT;
 		protected var _textFormat:TextFormat = new TextFormat("_sans", 12, 0xFFFFFF);
+		protected var _className:String;
+		protected var _style:IEventDispatcher;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -158,6 +164,8 @@ package org.wvxvws.gui
 		public function SPAN()
 		{
 			super();
+			var nm:Array = getQualifiedClassName(this).split("::");
+			_className = String(nm.pop());
 			_nativeTransform = new Transform(this);
 			invalidLayout = true;
 			super.autoSize = TextFieldAutoSize.LEFT;
@@ -168,6 +176,7 @@ package org.wvxvws.gui
 		public function initialized(document:Object, id:String):void
 		{
 			_document = document;
+			initStyles();
 			if (_document is DisplayObjectContainer) 
 				(_document as DisplayObjectContainer).addChild(this);
 			_id = id;
@@ -216,5 +225,45 @@ package org.wvxvws.gui
 			invalidLayout = false;
 			dispatchEvent(new GUIEvent(GUIEvent.VALIDATED));
 		}
+		
+		/* INTERFACE org.wvxvws.gui.styles.ICSSClient */
+		
+		public function get className():String { return _className; }
+		
+		public function set className(value:String):void
+		{
+			_className = value;
+		}
+		
+		public function get style():IEventDispatcher { return _style; }
+		
+		public function set style(value:IEventDispatcher):void
+		{
+			_style = value;
+		}
+		
+		public function refreshStyles(event:Event = null):void
+		{
+			
+		}
+		
+		
+		protected function initStyles():void
+		{
+			try
+			{
+				var styleParser:Class = getDefinitionByName("org.wvxvws.gui.styles.CSSParser") as Class;
+				if (Object(styleParser).parsed)
+				{
+					Object(styleParser).processClient(this);
+				}
+				else
+				{
+					Object(styleParser).addPendingClient(this);
+				}
+			}
+			catch (error:Error) { trace("eror applying styles", error.getStackTrace()) };
+		}
+		
 	}
 }

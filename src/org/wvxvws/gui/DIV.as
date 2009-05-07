@@ -32,14 +32,13 @@ package org.wvxvws.gui
 	import flash.geom.Transform;
 	import flash.utils.Dictionary;
 	import flash.utils.getDefinitionByName;
+	import flash.utils.getQualifiedClassName;
 	import mx.core.IMXMLObject;
 	import org.wvxvws.gui.styles.ICSSClient;
 	//}
 	
 	[Event(name="initialized", type="org.wvxvws.gui.GUIEvent")]
 	[Event(name="validated", type="org.wvxvws.gui.GUIEvent")]
-	
-	[CSS(x="n", y="n", width="n", height="n", scaleX="n", scaleY="n", backgroundColor="u")]
 	
 	/**
 	* DIV class.
@@ -61,7 +60,7 @@ package org.wvxvws.gui
 		protected var _backgroundAlpha:Number = 0;
 		protected var _children:Array = [];
 		protected var _style:IEventDispatcher;
-		protected var _className:String = "DIV";
+		protected var _className:String;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -230,6 +229,8 @@ package org.wvxvws.gui
 		public function DIV()
 		{
 			super();
+			var nm:Array = getQualifiedClassName(this).split("::");
+			_className = String(nm.pop());
 			_nativeTransform = new Transform(this);
 			invalidLayout = true;
 		}
