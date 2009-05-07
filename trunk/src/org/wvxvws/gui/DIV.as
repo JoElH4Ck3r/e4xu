@@ -26,14 +26,20 @@ package org.wvxvws.gui
 	import flash.display.Graphics;
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.events.IEventDispatcher;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Transform;
+	import flash.utils.Dictionary;
+	import flash.utils.getDefinitionByName;
 	import mx.core.IMXMLObject;
+	import org.wvxvws.gui.styles.ICSSClient;
 	//}
 	
 	[Event(name="initialized", type="org.wvxvws.gui.GUIEvent")]
 	[Event(name="validated", type="org.wvxvws.gui.GUIEvent")]
+	
+	[CSS(x="n", y="n", width="n", height="n", scaleX="n", scaleY="n", backgroundColor="u")]
 	
 	/**
 	* DIV class.
@@ -41,7 +47,7 @@ package org.wvxvws.gui
 	* @langVersion 3.0
 	* @playerVersion 10.0.12.36
 	*/
-	public class DIV extends Sprite implements IMXMLObject
+	public class DIV extends Sprite implements IMXMLObject, ICSSClient
 	{
 		protected var _document:Object;
 		protected var _id:String;
@@ -54,6 +60,8 @@ package org.wvxvws.gui
 		protected var _backgroundColor:uint = 0x999999;
 		protected var _backgroundAlpha:Number = 0;
 		protected var _children:Array = [];
+		protected var _style:IEventDispatcher;
+		protected var _className:String = "DIV";
 		
 		//--------------------------------------------------------------------------
 		//
@@ -62,6 +70,12 @@ package org.wvxvws.gui
 		//--------------------------------------------------------------------------
 		
 		[Bindable("xChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>styleChange</code> event.
+		*/
 		override public function get x():Number { return _transformMatrix.tx; }
 		
 		override public function set x(value:Number):void 
@@ -73,6 +87,12 @@ package org.wvxvws.gui
 		}
 		
 		[Bindable("yChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>styleChange</code> event.
+		*/
 		override public function get y():Number { return _transformMatrix.ty; }
 		
 		override public function set y(value:Number):void 
@@ -84,6 +104,12 @@ package org.wvxvws.gui
 		}
 		
 		[Bindable("widthChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>styleChange</code> event.
+		*/
 		override public function get width():Number { return _bounds.x; }
 		
 		override public function set width(value:Number):void 
@@ -95,6 +121,12 @@ package org.wvxvws.gui
 		}
 		
 		[Bindable("heightChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>styleChange</code> event.
+		*/
 		override public function get height():Number { return _bounds.y; }
 		
 		override public function set height(value:Number):void 
@@ -106,6 +138,12 @@ package org.wvxvws.gui
 		}
 		
 		[Bindable("scaleXChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>styleChange</code> event.
+		*/
 		override public function get scaleX():Number { return _transformMatrix.a; }
 		
 		override public function set scaleX(value:Number):void 
@@ -117,6 +155,12 @@ package org.wvxvws.gui
 		}
 		
 		[Bindable("scaleYChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>styleChange</code> event.
+		*/
 		override public function get scaleY():Number { return _transformMatrix.d; }
 		
 		override public function set scaleY(value:Number):void 
@@ -128,6 +172,12 @@ package org.wvxvws.gui
 		}
 		
 		[Bindable("transformChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>styleChange</code> event.
+		*/
 		override public function get transform():Transform
 		{
 			return _userTransform ? _userTransform : super.transform;
@@ -139,6 +189,27 @@ package org.wvxvws.gui
 			invalidLayout = true;
 			dispatchEvent(new Event("transformChange"));
 		}
+		
+		//------------------------------------
+		//  Public property style
+		//------------------------------------
+		
+		[Bindable("styleChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>styleChange</code> event.
+		*/
+		public function get style():IEventDispatcher { return _style; }
+		
+		public function set style(value:IEventDispatcher):void 
+		{
+		   if (_style == value) return;
+		   _style = value;
+		   dispatchEvent(new Event("styleChange"));
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
@@ -168,6 +239,7 @@ package org.wvxvws.gui
 		public function initialized(document:Object, id:String):void
 		{
 			_document = document;
+			initStyles();
 			if (_document is DisplayObjectContainer)
 			{
 				(_document as DisplayObjectContainer).addChild(this);
@@ -227,14 +299,52 @@ package org.wvxvws.gui
 				_nativeTransform.matrix = _transformMatrix;
 			}
 			invalidLayout = false;
-			if (!_document) dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
+			if (!_document) 
+			{
+				_document = this;
+				initStyles();
+				dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
+			}
 			dispatchEvent(new GUIEvent(GUIEvent.VALIDATED));
 		}
+		
+		/* INTERFACE org.wvxvws.gui.styles.ICSSClient */
+		
+		public function get className():String { return _className; }
+		
+		public function set className(value:String):void
+		{
+			_className = value;
+			refreshStyles();
+		}
+		
+		public function refreshStyles(event:Event = null):void
+		{
+			
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
+		
+		protected function initStyles():void
+		{
+			try
+			{
+				var styleParser:Class = getDefinitionByName("org.wvxvws.gui.styles.CSSParser") as Class;
+				if (Object(styleParser).parsed)
+				{
+					Object(styleParser).processClient(this);
+				}
+				else
+				{
+					Object(styleParser).addPendingClient(this);
+				}
+			}
+			catch (error:Error) { trace("eror applying styles", error.getStackTrace()) };
+		}
 		
 		//--------------------------------------------------------------------------
 		//

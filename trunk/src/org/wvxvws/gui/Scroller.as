@@ -29,6 +29,8 @@ package org.wvxvws.gui
 	import flash.geom.Rectangle;
 	//}
 	
+	[CSS(x="n", y="n", width="n", height="n", direction="b", backgroundColor="u")]
+	
 	/**
 	* Scroller class.
 	* @author wvxvw

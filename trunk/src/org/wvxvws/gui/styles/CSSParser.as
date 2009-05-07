@@ -23,12 +23,14 @@ package org.wvxvws.gui.styles
 {
 	
 	//{imports
+	import flash.events.IEventDispatcher;
 	import flash.geom.ColorTransform;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.text.TextFormat;
 	import flash.utils.describeType;
+	import flash.utils.Dictionary;
 	import flash.utils.getDefinitionByName;
 	//}
 	
@@ -61,6 +63,8 @@ package org.wvxvws.gui.styles
 			u: uint
 		}
 		
+		public static function get parsed():Boolean { return Boolean(_table); }
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
@@ -80,13 +84,18 @@ package org.wvxvws.gui.styles
 		
 		private static var _declarations:Array;
 		private static var _currentRawClass:Object;
+		private static var _table:CSSTable;
+		private static var _pending:Dictionary = new Dictionary();
+		private static var _iterator:int;
 		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
+		
 		public function CSSParser() { super(); }
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Public methods
@@ -95,20 +104,25 @@ package org.wvxvws.gui.styles
 		
 		public static function parse(source:String):CSSTable
 		{
+			// TODO: reparsing!
+			if (_table) return _table;
 			var table:CSSTable = new CSSTable();
 			source = source.replace(WHITESPACE, "");
 			_declarations = [];
 			source.replace(DECLARATION, declarationsHelper);
-			for each (var o:Object in _declarations)
+			var o:Object;
+			for each (o in _declarations)
 			{
 				_currentRawClass = { };
 				o.properties.replace(PROPERTIES, propertiesHelper);
 				table.addClass(o.className, _currentRawClass);
 			}
+			_table = table;
+			for (o in _pending) processClient(o as ICSSClient);
 			return table;
 		}
 		
-		public function stringToType(input:String, type:Class):Object
+		public static function stringToType(input:String, type:Class):Object
 		{
 			var ret:Object;
 			switch (type)
@@ -154,9 +168,18 @@ package org.wvxvws.gui.styles
 			return ret;
 		}
 		
-		public function applyMetaData(client:Object, style:Object):void
+		public static function applyMetaData(client:Object, style:Object):void
 		{
 			var applicableStyles:XMLList = describeType(client).metadata.(@name == "CSS").arg;
+			var superClasses:XMLList = describeType(client).extendsClass.@type;
+			var superArr:Array = [];
+			var clientList:XMLList;
+			for each (var classXML:XML in superClasses)
+			{
+				clientList = isCSSClient(classXML.toString());
+				if (!clientList) break;
+				applicableStyles += clientList;
+			}
 			var arg:XML;
 			for each(var p:String in style)
 			{
@@ -167,6 +190,30 @@ package org.wvxvws.gui.styles
 											conversionTable[arg.@value.toString()]);
 				}
 			}
+		}
+		
+		static private function isCSSClient(theClass:String):XMLList
+		{
+			var c:Class = getDefinitionByName(theClass) as Class;
+			var d:XMLList = describeType(c).factory;
+			var list:XMLList = 
+				d.implementsInterface.(attribute("type") == 
+											"org.wvxvws.gui.styles::ICSSClient");
+			if (!list.length()) return null;
+			return d.metadata.(@name == "CSS").arg;
+		}
+		
+		public static function processClient(client:ICSSClient):void
+		{
+			var style:IEventDispatcher = _table.getClass(client.className);
+			client.style = style;
+			applyMetaData(client, style);
+			//client.refreshStyles();
+		}
+		
+		public static function addPendingClient(client:ICSSClient):void
+		{
+			_pending[client] = ++_iterator;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -181,14 +228,14 @@ package org.wvxvws.gui.styles
 		//
 		//--------------------------------------------------------------------------
 		
-		private function parseTextFormat(input:String):Object
+		private static function parseTextFormat(input:String):Object
 		{
 			var tf:Array = input.split(",");
 			// TODO: Parse TextFormat from string.
 			return new TextFormat() as Object;
 		}
 		
-		private function parseColorTransform(input:String):Object
+		private static function parseColorTransform(input:String):Object
 		{
 			var ctt:Array = input.split(",");
 			return new ColorTransform(Number(ctt[0]), Number(ctt[1]), Number(ctt[2]), 
@@ -196,26 +243,26 @@ package org.wvxvws.gui.styles
 										Number(ctt[6]), Number(ctt[7])) as Object;
 		}
 		
-		private function parseMatrix(input:String):Object
+		private static function parseMatrix(input:String):Object
 		{
 			var mt:Array = input.split(",");
 			return new Matrix(Number(mt[0]), Number(mt[1]), Number(mt[2]), Number(mt[3]), 
 												Number(mt[4]), Number(mt[5])) as Object; 
 		}
 		
-		private function parseRectangle(input:String):Object
+		private static function parseRectangle(input:String):Object
 		{
 			var rt:Array = input.split(",");
 			return new Rectangle(Number(rt[0]), Number(rt[1]), Number(rt[2]), Number(rt[3])) as Object;
 		}
 		
-		private function parsePoint(input:String):Object
+		private static function parsePoint(input:String):Object
 		{
 			var pt:Array = input.split(",");
 			return new Point(Number(pt[0]), Number(pt[1])) as Object;
 		}
 		
-		private function parseArray(input:String):Object
+		private static function parseArray(input:String):Object
 		{
 			input = input.replace(/^\[([^\]]*)\]$/, "$1");
 			return input.split(",") as Object;

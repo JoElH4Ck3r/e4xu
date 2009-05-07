@@ -91,7 +91,7 @@ package org.wvxvws.gui.styles
 				default:
 					throw new Error("Wrong source type.");
 			}
-			trace(_source);
+			CSSParser.parse(_source);
 		}
 		//--------------------------------------------------------------------------
 		//
