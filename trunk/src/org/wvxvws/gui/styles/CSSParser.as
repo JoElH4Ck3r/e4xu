@@ -48,19 +48,20 @@ package org.wvxvws.gui.styles
 		//
 		//--------------------------------------------------------------------------
 		
-		public static const conversionTable:Object =
+		public static const conversionTable:Function = function():Object
 		{
-			a: Array,
-			b: Boolean,
-			c: Class,
-			f: ColorTransform,
-			i: int,
-			n: Number,
-			m: Matrix,
-			p: Point,
-			r: Rectangle,
-			t: TextFormat,
-			u: uint
+			this["Array"] = Array;
+			this["Boolean"] = Boolean;
+			this["Class"] = Class;
+			this["flash.geom::ColorTransform"] = ColorTransform;
+			this["int"] = int;
+			this["Number"] = Number;
+			this["flash.geom::Matrix"] = Matrix;
+			this["flash.geom::Point"] = Point;
+			this["flash.geom::Rectangle"] = Rectangle;
+			this["flash.text::TextFormat"] = TextFormat;
+			this["uint"] = uint;
+			return this;
 		}
 		
 		public static function get parsed():Boolean { return Boolean(_table); }
@@ -170,37 +171,27 @@ package org.wvxvws.gui.styles
 		
 		public static function applyMetaData(client:Object, style:Object):void
 		{
-			var applicableStyles:XMLList = describeType(client).metadata.(@name == "CSS").arg;
-			var superClasses:XMLList = describeType(client).extendsClass.@type;
-			var superArr:Array = [];
-			var clientList:XMLList;
-			for each (var classXML:XML in superClasses)
-			{
-				clientList = isCSSClient(classXML.toString());
-				if (!clientList) break;
-				applicableStyles += clientList;
-			}
-			var arg:XML;
+			var applicableStyles:XMLList = 
+				describeType(client).*.(localName().match(/(^accessor$)|(^variable$)/) &&
+				valueOf().hasOwnProperty("@access") && @access == "readwrite" && canBeStyled(@type));
+			var description:XML;
+			var type:Class;
+			var types:Object = conversionTable();
 			for each(var p:String in style)
 			{
 				if (client.hasOwnProperty(p))
 				{
-					arg = applicableStyles.(@key == p)[0];
-					client[p] = stringToType(style[arg.@key.toString()], 
-											conversionTable[arg.@value.toString()]);
+					description = applicableStyles.(@name == p)[0];
+					type = types[description.@type.toString()];
+					client[p] = stringToType(style[description.@name.toString()], type);
 				}
 			}
 		}
 		
-		static private function isCSSClient(theClass:String):XMLList
+		static private function canBeStyled(className:String):Boolean
 		{
-			var c:Class = getDefinitionByName(theClass) as Class;
-			var d:XMLList = describeType(c).factory;
-			var list:XMLList = 
-				d.implementsInterface.(attribute("type") == 
-											"org.wvxvws.gui.styles::ICSSClient");
-			if (!list.length()) return null;
-			return d.metadata.(@name == "CSS").arg;
+			var types:Object = conversionTable();
+			return types.hasOwnProperty(className);
 		}
 		
 		public static function processClient(client:ICSSClient):void
