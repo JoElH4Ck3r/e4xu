@@ -209,7 +209,7 @@ internal final dynamic class CSSProxy extends Proxy implements ICSSClass
 			nextIndex++;
 		}
 		if (index > -1 && prop == value) return;
-		_theStyle[nextIndex] = name;
+		_theStyle[nextIndex] = String(name);
 		_props[value] = nextIndex;
 		dispatchEvent(new Event(name + "Change"));
 	}
@@ -258,11 +258,8 @@ internal final dynamic class CSSProxy extends Proxy implements ICSSClass
 	
 	override flash_proxy function nextValue(index:int):*
 	{
-		for (var o:Object in _props)
-		{
-			if (_props[o] == index) return o;
-		}
-		return undefined;
+		if (_theStyle.length < index) return undefined;
+		return _theStyle[index - 1];
 	}
 	
 	/* INTERFACE org.wvxvws.gui.styles.ICSSClass */
