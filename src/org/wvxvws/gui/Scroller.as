@@ -27,6 +27,7 @@ package org.wvxvws.gui
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Rectangle;
+	import org.wvxvws.gui.skins.ISkin;
 	//}
 	
 	/**
@@ -90,7 +91,7 @@ package org.wvxvws.gui
 		//------------------------------------
 		
 		[Bindable("minHandleChange")]
-		
+		[Skinable(states="mouseUp,mouseDown,mouseOver")]
 		/**
 		* ...
 		* This property can be used as the source for data binding.
@@ -111,7 +112,7 @@ package org.wvxvws.gui
 		//------------------------------------
 		
 		[Bindable("maxHandleChange")]
-		
+		[Skinable(states="mouseUp,mouseDown,mouseOver")]
 		/**
 		* ...
 		* This property can be used as the source for data binding.
@@ -132,7 +133,7 @@ package org.wvxvws.gui
 		//------------------------------------
 		
 		[Bindable("handleChange")]
-		
+		[Skinable(states="up,over,down,disabled")]
 		/**
 		* ...
 		* This property can be used as the source for data binding.
@@ -163,10 +164,10 @@ package org.wvxvws.gui
 		
 		public function set direction(value:Boolean):void 
 		{
-		   if (_direction == value) return;
-		   _direction = value;
-		   invalidLayout = true;
-		   dispatchEvent(new Event("directionChange"));
+			if (_direction == value) return;
+			_direction = value;
+			invalidLayout = true;
+			dispatchEvent(new Event("directionChange"));
 		}
 		
 		//--------------------------------------------------------------------------
@@ -252,6 +253,10 @@ package org.wvxvws.gui
 									minmax_mouseDownHandler, false, 0, true);
 				_minHandle.addEventListener(MouseEvent.MOUSE_UP, 
 									minmax_mouseUpHandler, false, 0, true);
+				_minHandle.addEventListener(MouseEvent.MOUSE_OVER, 
+									skinnables_mouseOverHandler, false, 0, true);
+				_minHandle.addEventListener(MouseEvent.MOUSE_OUT, 
+									skinnables_mouseOverHandler, false, 0, true);
 			}
 			if (!_maxHandle.willTrigger(MouseEvent.MOUSE_DOWN))
 			{
@@ -259,6 +264,10 @@ package org.wvxvws.gui
 									minmax_mouseDownHandler, false, 0, true);
 				_maxHandle.addEventListener(MouseEvent.MOUSE_UP, 
 									minmax_mouseUpHandler, false, 0, true);
+				_maxHandle.addEventListener(MouseEvent.MOUSE_OVER, 
+									skinnables_mouseOverHandler, false, 0, true);
+				_maxHandle.addEventListener(MouseEvent.MOUSE_OUT, 
+									skinnables_mouseOverHandler, false, 0, true);
 			}
 			if (!_handle.willTrigger(MouseEvent.MOUSE_DOWN))
 			{
@@ -266,8 +275,22 @@ package org.wvxvws.gui
 									handle_mouseDownHandler, false, 0, true);
 				_handle.addEventListener(MouseEvent.MOUSE_UP, 
 									handle_mouseUpHandler, false, 0, true);
+				_handle.addEventListener(MouseEvent.MOUSE_OVER, 
+									skinnables_mouseOverHandler, false, 0, true);
+				_handle.addEventListener(MouseEvent.MOUSE_OUT, 
+									skinnables_mouseOverHandler, false, 0, true);
 			}
 			_target.scrollRect = _area;
+		}
+		
+		protected function skinnables_mouseOverHandler(event:MouseEvent):void
+		{
+			if (event.currentTarget is ISkin) (event.currentTarget as ISkin).state = MouseEvent.MOUSE_OVER;
+		}
+		
+		protected function skinnables_mouseOutHandler(event:MouseEvent):void
+		{
+			if (event.currentTarget is ISkin) (event.currentTarget as ISkin).state = MouseEvent.MOUSE_OUT;
 		}
 		
 		public function scrollTo(value:Number):void
@@ -302,6 +325,7 @@ package org.wvxvws.gui
 		
 		protected function minmax_mouseDownHandler(event:MouseEvent):void
 		{
+			if (event.currentTarget is ISkin) (event.currentTarget as ISkin).state = event.type;
 			if (event.currentTarget === _maxHandle)
 			{
 				_moveFunction = moveAreaUp;
@@ -316,12 +340,14 @@ package org.wvxvws.gui
 		
 		protected function minmax_mouseUpHandler(event:MouseEvent):void
 		{
+			if (event.currentTarget is ISkin) (event.currentTarget as ISkin).state = event.type;
 			removeEventListener(Event.ENTER_FRAME, enterFrameHandler);
 			stage.removeEventListener(MouseEvent.MOUSE_UP, stage_mouseUpHandler);
 		}
 		
 		protected function handle_mouseDownHandler(event:MouseEvent):void
 		{
+			if (event.currentTarget is ISkin) (event.currentTarget as ISkin).state = event.type;
 			_handleShift = _handle.mouseY * _handle.scaleY;
 			_moveFunction = moveAreaUpDown;
 			stage.addEventListener(MouseEvent.MOUSE_UP, stage_mouseUpHandler, false, 0, true);
@@ -330,6 +356,7 @@ package org.wvxvws.gui
 		
 		protected function handle_mouseUpHandler(event:MouseEvent):void
 		{
+			if (event.currentTarget is ISkin) (event.currentTarget as ISkin).state = event.type;
 			removeEventListener(Event.ENTER_FRAME, enterFrameHandler);
 			stage.removeEventListener(MouseEvent.MOUSE_UP, stage_mouseUpHandler);
 		}
@@ -341,6 +368,9 @@ package org.wvxvws.gui
 		
 		protected function stage_mouseUpHandler(event:MouseEvent):void
 		{
+			if (_handle is ISkin) (_handle as ISkin).state = event.type;
+			if (_minHandle is ISkin) (_minHandle as ISkin).state = event.type;
+			if (_maxHandle is ISkin) (_maxHandle as ISkin).state = event.type;
 			removeEventListener(Event.ENTER_FRAME, enterFrameHandler);
 			stage.removeEventListener(MouseEvent.MOUSE_UP, stage_mouseUpHandler);
 		}
@@ -412,6 +442,9 @@ package org.wvxvws.gui
 			(_handle as Sprite).graphics.beginFill(0xFF);
 			(_handle as Sprite).graphics.drawRect(0, 0, 10, 10);
 			(_handle as Sprite).graphics.endFill();
+			if (_minHandle is ISkin) (_minHandle as ISkin).state = MouseEvent.MOUSE_UP;
+			if (_maxHandle is ISkin) (_maxHandle as ISkin).state = MouseEvent.MOUSE_UP;
+			if (_handle is ISkin) (_handle as ISkin).state = MouseEvent.MOUSE_UP;
 		}
 		
 		//--------------------------------------------------------------------------

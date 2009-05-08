@@ -22,16 +22,19 @@
 package org.wvxvws.gui.skins 
 {
 	//{imports
-	import flash.display.Graphics;
+	import flash.display.DisplayObject;
+	import flash.display.Sprite;
+	import flash.events.Event;
+	import mx.core.IMXMLObject;
 	//}
 	
 	/**
-	* SkinFactory class.
+	* State class.
 	* @author wvxvw
 	* @langVersion 3.0
 	* @playerVersion 10.0.12.36
 	*/
-	public class Drawings 
+	public class SkinState extends Sprite implements IMXMLObject
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -39,11 +42,89 @@ package org.wvxvws.gui.skins
 		//
 		//--------------------------------------------------------------------------
 		
+		//------------------------------------
+		//  Public property event
+		//------------------------------------
+		
+		[Bindable("eventChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>eventChange</code> event.
+		*/
+		public function get event():String { return _event; }
+		
+		public function set event(value:String):void 
+		{
+			if (_event == value) return;
+			_event = value;
+			dispatchEvent(new Event("eventChange"));
+		}
+		
+		//------------------------------------
+		//  Public property content
+		//------------------------------------
+		
+		[Bindable("contentChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>contentChange</code> event.
+		*/
+		public function get content():DisplayObject
+		{
+			if (!_content) _content = this;
+			return _content;
+		}
+		
+		public function set content(value:DisplayObject):void 
+		{
+			if (_content == value) return;
+			_content = value;
+			dispatchEvent(new Event("contentChange"));
+		}
+		
+		public function get source():Object { return _source; }
+		
+		public function set source(value:Object):void 
+		{
+			var sourceFromClass:DisplayObject;
+			if (value is Class)
+			{
+				sourceFromClass = new (value as Class)();
+				if (sourceFromClass)
+				{
+					_source = sourceFromClass;
+				}
+			}
+			else if (value is DisplayObject)
+			{
+				_source = value;
+			}
+			else if (value is String)
+			{
+				// TODO: load resource at runtime.
+				trace("not implemented");
+			}
+			else
+			{
+				throw new Error("Improper source type.");
+			}
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
 		//
 		//--------------------------------------------------------------------------
+		
+		protected var _event:String;
+		protected var _content:DisplayObject;
+		protected var _source:Object;
+		protected var _document:Skin;
+		protected var _id:String;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -57,63 +138,23 @@ package org.wvxvws.gui.skins
 		//
 		//--------------------------------------------------------------------------
 		
-		public function Drawings() { super(); }
+		public function SkinState() { super(); }
+		
+		/* INTERFACE mx.core.IMXMLObject */
+		
+		public function initialized(document:Object, id:String):void
+		{
+			trace(this, document is Skin);
+			if (document is Skin) _document = document as Skin;
+			_id = id;
+		}
 		
 		//--------------------------------------------------------------------------
 		//
 		//  Public methods
 		//
 		//--------------------------------------------------------------------------
-		public static function drawRoundedCorners(g:Graphics, rx:int, ry:int,
-							top:int, left:int, w:int, h:int, flags:uint):void
-		{
-			rx = rx > w >> 1 ? w >> 1 : rx;
-			ry = ry > h >> 1 ? h >> 1 : ry;
-			flags = flags > 15 ? 15 : flags;
-			if (flags % 2) g.moveTo(left + rx, top); // LT
-			else g.moveTo(left, top);
-			if ((12 | flags) >> 1 == 7) // RT
-			{
-				g.lineTo(left + w - rx, top);
-				g.curveTo(left + w, top, left + w, top + ry);
-			}
-			else g.lineTo(left + w, top);
-			if ((8 | flags) >> 2 == 3) // RB
-			{
-				g.lineTo(left + w, top + h - ry);
-				g.curveTo(left + w, top + h, left + w - rx, top + h);
-			}
-			else g.lineTo(left + w, top + h);
-			if (flags > 7) // LB
-			{
-				g.lineTo(left + rx, top + h);
-				g.curveTo(left, top + h, left, top + h - ry);
-			}
-			else g.lineTo(left, top + h);
-			if (flags % 2) // LT
-			{
-				g.lineTo(left, top + ry);
-				g.curveTo(left, top, left + rx, top);
-			}
-			else g.lineTo(left, top);
-		}
 		
-		public static function drawPolygon(g:Graphics, rx:int, ry:int, top:int, 
-				left:int, segments:uint, isStar:Boolean = false, delta:int = 0):void
-		{
-			
-		}
-		
-		public static function drawPolyline(g:Graphics, points:Array /* of Point */):void
-		{
-			
-		}
-		
-		public static function drawSector(g:Graphics, r:int, angleA:Number, 
-												angleB:Number, top:int, left:int):void
-		{
-			
-		}
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods

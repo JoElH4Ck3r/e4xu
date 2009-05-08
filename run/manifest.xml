@@ -41,6 +41,9 @@
 	<!-- GEOMETRY -->
 	<component id="Rect" class="org.wvxvws.geometry.Rect"/>
 	<component id="Dot" class="org.wvxvws.geometry.Dot"/>
+	<!-- SKINS -->
+	<component id="Skin" class="org.wvxvws.gui.skins.Skin"/>
+	<component id="SkinState" class="org.wvxvws.gui.skins.SkinState"/>
 	<!-- DATA -->
 	<component id="Collection" class="org.wvxvws.data.Collection"/>
 </componentPackage>

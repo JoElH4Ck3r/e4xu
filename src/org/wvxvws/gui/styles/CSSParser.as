@@ -117,6 +117,7 @@ package org.wvxvws.gui.styles
 				_table.addClass(o.className, _currentRawClass);
 			}
 			for (o in _pending) processClient(o as ICSSClient);
+			_pending = new Dictionary();
 			return _table;
 		}
 		
