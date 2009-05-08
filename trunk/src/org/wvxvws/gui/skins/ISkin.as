@@ -19,39 +19,19 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package org.wvxvws.gui 
+package org.wvxvws.gui.skins 
 {
-	import flash.events.Event;
-	
 	/**
-	* GUIEvent event.
+	* ISkin interface.
 	* @author wvxvw
 	* @langVersion 3.0
 	* @playerVersion 10.0.12.36
 	*/
-	public class GUIEvent extends Event 
+	public interface ISkin 
 	{
-		public static const INITIALIZED:String = "initialized";
-		public static const VALIDATED:String = "validated";
-		public static const CHILDREN_CREATED:String = "childrenCreated";
-		public static const DISABLED:String = "disabled";
-		
-		public function GUIEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) 
-		{ 
-			super(type, bubbles, cancelable);
-			
-		} 
-		
-		public override function clone():Event 
-		{ 
-			return new GUIEvent(type, bubbles, cancelable);
-		} 
-		
-		public override function toString():String 
-		{ 
-			return formatToString("GUIEvent", "type", "bubbles", "cancelable", "eventPhase"); 
-		}
-		
+		function get states():Object; 
+		function get state():String;
+		function set state(value:String):void;
 	}
 	
 }

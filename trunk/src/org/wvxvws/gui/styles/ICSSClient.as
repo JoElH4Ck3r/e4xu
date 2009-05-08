@@ -36,7 +36,6 @@ package org.wvxvws.gui.styles
 		function set className(value:String):void;
 		function get style():IEventDispatcher;
 		function set style(value:IEventDispatcher):void;
-		function refreshStyles(event:Event = null):void;
 	}
 	
 }

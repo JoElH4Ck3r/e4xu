@@ -316,12 +316,7 @@ package org.wvxvws.gui
 		public function set className(value:String):void
 		{
 			_className = value;
-			refreshStyles();
-		}
-		
-		public function refreshStyles(event:Event = null):void
-		{
-			
+			initStyles();
 		}
 		
 		//--------------------------------------------------------------------------
@@ -332,19 +327,20 @@ package org.wvxvws.gui
 		
 		protected function initStyles():void
 		{
+			var styleParser:Class;
 			try
 			{
-				var styleParser:Class = getDefinitionByName("org.wvxvws.gui.styles.CSSParser") as Class;
-				if (Object(styleParser).parsed)
-				{
-					Object(styleParser).processClient(this);
-				}
-				else
-				{
-					Object(styleParser).addPendingClient(this);
-				}
+				styleParser = getDefinitionByName("org.wvxvws.gui.styles.CSSParser") as Class;
 			}
-			catch (error:Error) { trace("eror applying styles", error.getStackTrace()) };
+			catch (refError:Error) { return; };
+			if (Object(styleParser).parsed)
+			{
+				Object(styleParser).processClient(this);
+			}
+			else
+			{
+				Object(styleParser).addPendingClient(this);
+			}
 		}
 		
 		//--------------------------------------------------------------------------

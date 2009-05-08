@@ -242,28 +242,22 @@ package org.wvxvws.gui
 			_style = value;
 		}
 		
-		public function refreshStyles(event:Event = null):void
-		{
-			
-		}
-		
-		
 		protected function initStyles():void
 		{
 			try
 			{
-				var styleParser:Class = getDefinitionByName("org.wvxvws.gui.styles.CSSParser") as Class;
-				if (Object(styleParser).parsed)
-				{
-					Object(styleParser).processClient(this);
-				}
-				else
-				{
-					Object(styleParser).addPendingClient(this);
-				}
+				var styleParser:Class = 
+					getDefinitionByName("org.wvxvws.gui.styles.CSSParser") as Class;
 			}
-			catch (error:Error) { trace("eror applying styles", error.getStackTrace()) };
+			catch (error:Error) { return; };
+			if (Object(styleParser).parsed)
+			{
+				Object(styleParser).processClient(this);
+			}
+			else
+			{
+				Object(styleParser).addPendingClient(this);
+			}
 		}
-		
 	}
 }
