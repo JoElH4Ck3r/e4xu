@@ -40,6 +40,7 @@
 	<component id="STYLE" class="org.wvxvws.gui.styles.STYLE"/>
 	<!-- GEOMETRY -->
 	<component id="Rect" class="org.wvxvws.geometry.Rect"/>
+	<component id="Dot" class="org.wvxvws.geometry.Dot"/>
 	<!-- DATA -->
 	<component id="Collection" class="org.wvxvws.data.Collection"/>
 </componentPackage>
