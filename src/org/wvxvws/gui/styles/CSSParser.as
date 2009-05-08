@@ -105,9 +105,7 @@ package org.wvxvws.gui.styles
 		
 		public static function parse(source:String):CSSTable
 		{
-			// TODO: reparsing!
-			if (_table) return _table;
-			var table:CSSTable = new CSSTable();
+			if (!_table) _table = new CSSTable();
 			source = source.replace(WHITESPACE, "");
 			_declarations = [];
 			source.replace(DECLARATION, declarationsHelper);
@@ -116,11 +114,10 @@ package org.wvxvws.gui.styles
 			{
 				_currentRawClass = { };
 				o.properties.replace(PROPERTIES, propertiesHelper);
-				table.addClass(o.className, _currentRawClass);
+				_table.addClass(o.className, _currentRawClass);
 			}
-			_table = table;
 			for (o in _pending) processClient(o as ICSSClient);
-			return table;
+			return _table;
 		}
 		
 		public static function stringToType(input:String, type:Class):Object
