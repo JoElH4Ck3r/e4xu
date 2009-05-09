@@ -57,18 +57,25 @@ package org.wvxvws.gui.skins
 			if (_state == value) return;
 			if (!_states[value]) return;
 			if (!(_states[value] is DisplayObject)) return;
-			_bounds = getBounds(this);
-			var wasInit:Boolean = numChildren > 0;
 			var sc:DisplayObject;
+			var wasNotInit:Boolean = numChildren > 0;
+			var wasStateEmpty:Boolean = true;
+			var previousBounds:Rectangle;
 			for each (sc in _states)
 			{
 				if (contains(sc))
 				{
+					previousBounds = getBounds(this);
 					removeChild(sc);
 					if (sc is MovieClip) (sc as MovieClip).gotoAndStop(1);
 				}
 				else if (sc is SkinState && contains((sc as SkinState).content))
 				{
+					if ((sc as SkinState).content !== sc)
+					{
+						wasStateEmpty = false;
+					}
+					previousBounds = getBounds(this);
 					removeChild((sc as SkinState).content);
 					if ((sc as SkinState).content is MovieClip)
 					{
@@ -77,9 +84,15 @@ package org.wvxvws.gui.skins
 				}
 			}
 			sc = _states[value];
+			var isStateEmpty:Boolean;
 			if (sc is SkinState) sc = (sc as SkinState).content;
+			if (sc is SkinState) isStateEmpty = true;
 			_content = sc;
-			if (wasInit)
+			if (parent && !isStateEmpty && !wasStateEmpty) 
+			{
+				_bounds = previousBounds;
+			}
+			if (wasNotInit && !isStateEmpty && _bounds)
 			{
 				sc.width = _bounds.width;
 				sc.height = _bounds.height;
@@ -126,6 +139,30 @@ package org.wvxvws.gui.skins
 			_id = id;
 		}
 		
+		public function clone():Skin
+		{
+			var clonedStates:Array = [];
+			var clonedSkin:Skin = new Skin();
+			var cs:DisplayObject;
+			var st:SkinState;
+			for (var p:String in _states)
+			{
+				cs = _states[p];
+				if (cs is SkinState)
+				{
+					st = (cs as SkinState).clone();
+					st.initialized(this, st.event);
+				}
+				else
+				{
+					st = new SkinState();
+					st.event = p;
+					st.source = (cs as Object).constructor as Class;
+				}
+				clonedStates.push(st);
+			}
+			clonedSkin.states = clonedStates as Object;
+			return clonedSkin;
+		}
 	}
-	
 }
