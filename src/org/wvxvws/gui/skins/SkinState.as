@@ -86,32 +86,12 @@ package org.wvxvws.gui.skins
 			dispatchEvent(new Event("contentChange"));
 		}
 		
-		public function get source():Object { return _source; }
+		public function get source():Class { return _source; }
 		
-		public function set source(value:Object):void 
+		public function set source(value:Class):void 
 		{
-			var sourceFromClass:DisplayObject;
-			if (value is Class)
-			{
-				sourceFromClass = new (value as Class)();
-				if (sourceFromClass)
-				{
-					_source = sourceFromClass;
-				}
-			}
-			else if (value is DisplayObject)
-			{
-				_source = value;
-			}
-			else if (value is String)
-			{
-				// TODO: load resource at runtime.
-				trace("not implemented");
-			}
-			else
-			{
-				throw new Error("Improper source type.");
-			}
+			_content = new (value as Class)() as DisplayObject;
+			if (!_content) _content = this;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -122,7 +102,7 @@ package org.wvxvws.gui.skins
 		
 		protected var _event:String;
 		protected var _content:DisplayObject;
-		protected var _source:Object;
+		protected var _source:Class;
 		protected var _document:Skin;
 		protected var _id:String;
 		
@@ -144,7 +124,6 @@ package org.wvxvws.gui.skins
 		
 		public function initialized(document:Object, id:String):void
 		{
-			trace(this, document is Skin);
 			if (document is Skin) _document = document as Skin;
 			_id = id;
 		}
