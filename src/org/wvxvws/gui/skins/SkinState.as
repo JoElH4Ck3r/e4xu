@@ -92,6 +92,7 @@ package org.wvxvws.gui.skins
 		{
 			_content = new (value as Class)() as DisplayObject;
 			if (!_content) _content = this;
+			_source = value;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -120,6 +121,12 @@ package org.wvxvws.gui.skins
 		
 		public function SkinState() { super(); }
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
+		
 		/* INTERFACE mx.core.IMXMLObject */
 		
 		public function initialized(document:Object, id:String):void
@@ -128,11 +135,14 @@ package org.wvxvws.gui.skins
 			_id = id;
 		}
 		
-		//--------------------------------------------------------------------------
-		//
-		//  Public methods
-		//
-		//--------------------------------------------------------------------------
+		public function clone():SkinState
+		{
+			var st:SkinState = new SkinState();
+			st.event = _event;
+			if (!_content || _content == this) return st;
+			st.source = _source;
+			return st;
+		}
 		
 		//--------------------------------------------------------------------------
 		//
