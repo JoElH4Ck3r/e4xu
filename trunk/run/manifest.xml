@@ -1,11 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <!-- xmlns:utils="http://e4xu.googlecode.com" -->
 <componentPackage>
-	<!-- MODEL -->
-	<component id="InteractiveModel" class="org.wvxvws.xmlutils.InteractiveModel"/>
-	<!-- CORE -->
-	<component id="SystemManager" class="mx.managers.SystemManager"/>
-	<!-- EVENTS -->
+	<!-- MAPPING -->
 	<component id="CallBack" class="org.wvxvws.mapping.CallBack"/>
 	<component id="Dispatcher" class="org.wvxvws.mapping.Dispatcher"/>
 	<component id="Handler" class="org.wvxvws.mapping.Handler"/>
@@ -18,24 +14,23 @@
 	<component id="ServiceMethod" class="org.wvxvws.net.ServiceMethod"/>
 	<component id="ServiceArguments" class="org.wvxvws.net.ServiceArguments"/>
 	<component id="TXTService" class="org.wvxvws.net.TXTService"/>
-	<!-- Resources -->
+	<!-- RESOURCES -->
 	<component id="Resource" class="org.wvxvws.resources.Resource"/>
-	<component id="ResourceManager" class="org.wvxvws.resources.ResourceManager"/>
+	<component id="ResourceManager" class="org.wvxvws.managers.ResourceManager"/>
 	<!-- UI -->
-	<component id="Column" class="org.wvxvws.gui.Column"/>
+	<component id="Column" class="org.wvxvws.gui.containers.Column"/>
 	<component id="DIV" class="org.wvxvws.gui.DIV"/>
 	<component id="FrameOne" class="org.wvxvws.base.FrameOne"/>
 	<component id="FrameTwo" class="org.wvxvws.base.FrameTwo"/>
 	<component id="Preloader" class="org.wvxvws.gui.Preloader"/>
 	<component id="SPAN" class="org.wvxvws.gui.SPAN"/>
-	<component id="Renderer" class="org.wvxvws.gui.Renderer"/>
-	<component id="ImageRenderer" class="org.wvxvws.gui.ImageRenderer"/>
-	<component id="SkinnableControl" class="org.wvxvws.gui.SkinnableControl"/>
+	<component id="Renderer" class="org.wvxvws.gui.renderers.Renderer"/>
+	<component id="ImageRenderer" class="org.wvxvws.gui.renderers.ImageRenderer"/>
 	<component id="SkinnableButton" class="org.wvxvws.gui.SkinnableButton"/>
 	<component id="Scroller" class="org.wvxvws.gui.Scroller"/>
-	<component id="Table" class="org.wvxvws.gui.Table"/>
-	<component id="TiledPanel" class="org.wvxvws.gui.TiledPanel"/>
-	<component id="Tris" class="org.wvxvws.gui.Tris"/>
+	<component id="Table" class="org.wvxvws.gui.containers.Table"/>
+	<component id="TiledPanel" class="org.wvxvws.gui.containers.TiledPanel"/>
+	<component id="Tris" class="org.wvxvws.gui.containers.Tris"/>
 	<!-- CSS -->
 	<component id="STYLE" class="org.wvxvws.gui.styles.STYLE"/>
 	<!-- GEOMETRY -->
