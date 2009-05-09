@@ -101,7 +101,7 @@ package org.wvxvws.gui
 		
 		public function set minHandle(value:DisplayObject):void 
 		{
-		   if (_minHandle == value) return;
+		   if (_minHandle === value) return;
 		   _minHandle = value;
 		   invalidLayout = true;
 		   dispatchEvent(new Event("minHandleChange"));
@@ -122,8 +122,9 @@ package org.wvxvws.gui
 		
 		public function set maxHandle(value:DisplayObject):void 
 		{
-		   if (_maxHandle == value) return;
+		   if (_maxHandle === value) return;
 		   _maxHandle = value;
+		   if (_maxHandle is ISkin) (_maxHandle as ISkin).state = MouseEvent.MOUSE_UP;
 		   invalidLayout = true;
 		   dispatchEvent(new Event("maxHandleChange"));
 		}
@@ -218,6 +219,18 @@ package org.wvxvws.gui
 		override public function validateLayout(event:Event = null):void 
 		{
 			super.validateLayout(event);
+			if ((_minHandle is ISkin) && !(_minHandle as ISkin).state)
+			{
+				(_minHandle as ISkin).state = MouseEvent.MOUSE_UP;
+			}
+			if ((_maxHandle is ISkin) && !(_maxHandle as ISkin).state)
+			{
+				(_maxHandle as ISkin).state = MouseEvent.MOUSE_UP;
+			}
+			if ((_handle is ISkin) && !(_handle as ISkin).state)
+			{
+				(_handle as ISkin).state = MouseEvent.MOUSE_UP;
+			}
 			if (_direction)
 			{
 				_minHandle.width = width;
@@ -231,7 +244,9 @@ package org.wvxvws.gui
 			else
 			{
 				_minHandle.width = height;
+				_minHandle.height = 10;
 				_maxHandle.width = height;
+				_maxHandle.height = 10;
 				_handle.width = width;
 				_handle.rotation = -90;
 				_handle.y = height;
@@ -433,15 +448,24 @@ package org.wvxvws.gui
 		
 		protected function initUI():void
 		{
-			(_minHandle as Sprite).graphics.beginFill(0);
-			(_minHandle as Sprite).graphics.drawRect(0, 0, 10, 10);
-			(_minHandle as Sprite).graphics.endFill();
-			(_maxHandle as Sprite).graphics.beginFill(0);
-			(_maxHandle as Sprite).graphics.drawRect(0, 0, 10, 10);
-			(_maxHandle as Sprite).graphics.endFill();
-			(_handle as Sprite).graphics.beginFill(0xFF);
-			(_handle as Sprite).graphics.drawRect(0, 0, 10, 10);
-			(_handle as Sprite).graphics.endFill();
+			if (_minHandle is Sprite)
+			{
+				(_minHandle as Sprite).graphics.beginFill(0);
+				(_minHandle as Sprite).graphics.drawRect(0, 0, 10, 10);
+				(_minHandle as Sprite).graphics.endFill();
+			}
+			if (_maxHandle is Sprite)
+			{
+				(_maxHandle as Sprite).graphics.beginFill(0);
+				(_maxHandle as Sprite).graphics.drawRect(0, 0, 10, 10);
+				(_maxHandle as Sprite).graphics.endFill();
+			}
+			if (_handle is Sprite)
+			{
+				(_handle as Sprite).graphics.beginFill(0xFF);
+				(_handle as Sprite).graphics.drawRect(0, 0, 10, 10);
+				(_handle as Sprite).graphics.endFill();
+			}
 			if (_minHandle is ISkin) (_minHandle as ISkin).state = MouseEvent.MOUSE_UP;
 			if (_maxHandle is ISkin) (_maxHandle as ISkin).state = MouseEvent.MOUSE_UP;
 			if (_handle is ISkin) (_handle as ISkin).state = MouseEvent.MOUSE_UP;

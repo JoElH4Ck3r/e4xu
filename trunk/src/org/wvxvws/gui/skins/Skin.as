@@ -55,9 +55,10 @@ package org.wvxvws.gui.skins
 		public function set state(value:String):void 
 		{
 			if (_state == value) return;
-			if (!_states[state]) return;
-			if (!(_states[state] is DisplayObject)) return;
+			if (!_states[value]) return;
+			if (!(_states[value] is DisplayObject)) return;
 			_bounds = getBounds(this);
+			var wasInit:Boolean = numChildren > 0;
 			var sc:DisplayObject;
 			for each (sc in _states)
 			{
@@ -75,12 +76,16 @@ package org.wvxvws.gui.skins
 					}
 				}
 			}
-			sc = _states[state];
+			sc = _states[value];
 			if (sc is SkinState) sc = (sc as SkinState).content;
-			sc.width = _bounds.width;
-			sc.height = _bounds.height;
-			sc.x = _bounds.x;
-			sc.y = _bounds.y;
+			_content = sc;
+			if (wasInit)
+			{
+				sc.width = _bounds.width;
+				sc.height = _bounds.height;
+				sc.x = _bounds.x;
+				sc.y = _bounds.y;
+			}
 			addChildAt(sc, 0);
 			_state = value;
 			dispatchEvent(new Event("stateChange"));
@@ -109,6 +114,7 @@ package org.wvxvws.gui.skins
 		protected var _bounds:Rectangle;
 		protected var _document:Object;
 		protected var _id:String;
+		protected var _content:DisplayObject;
 		
 		public function Skin() { super(); }
 		
