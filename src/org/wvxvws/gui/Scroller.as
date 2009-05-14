@@ -14,7 +14,7 @@
 //  
 //  You should have received a copy of the GNU General Public License
 //  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+//  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02116-1301, USA.
 //  Or visit http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -34,7 +34,7 @@ package org.wvxvws.gui
 	* Scroller class.
 	* @author wvxvw
 	* @langVersion 3.0
-	* @playerVersion 10.0.12.36
+	* @playerVersion 16.0.12.36
 	*/
 	public class Scroller extends DIV
 	{
@@ -202,16 +202,17 @@ package org.wvxvws.gui
 		//--------------------------------------------------------------------------
 		
 		protected var _target:DisplayObject;
-		protected var _area:Rectangle = new Rectangle(0, 0, 100, 100);
+		protected var _area:Rectangle = new Rectangle(0, 0, 160, 160);
 		protected var _minHandle:DisplayObject = new Sprite() as DisplayObject;
 		protected var _maxHandle:DisplayObject = new Sprite() as DisplayObject;
 		protected var _handle:DisplayObject = new Sprite() as DisplayObject;
 		protected var _body:DisplayObject = new Sprite() as DisplayObject;
 		
 		protected var _direction:Boolean;
-		protected var _path:Number = 100;
-		protected var _handleSize:int = 10;
-		protected var _minMaxHandleSize:int = 10;
+		protected var _path:Number = 160;
+		protected var _handleSize:int = 16;
+		protected var _minMaxHandleSize:int = 16;
+		protected var _gutter:int = 7;
 		
 		protected var _moveFunction:Function;
 		protected var _handleShift:Number;
@@ -256,41 +257,47 @@ package org.wvxvws.gui
 			{
 				(_handle as ISkin).state = MouseEvent.MOUSE_UP;
 			}
+			if ((_body is ISkin) && !(_body as ISkin).state)
+			{
+				(_body as ISkin).state = MouseEvent.MOUSE_UP;
+			}
 			if (_direction)
 			{
 				_minHandle.width = width;
+				_minHandle.height = 25;
 				_maxHandle.width = width;
+				_maxHandle.height = 25;
 				_handle.width = width;
 				_maxHandle.y = height - _maxHandle.height;
 				_path = height - (_minHandle.height + _maxHandle.height);
-				_handle.height = handleRatio() * _path;
-				_handle.y = _minHandle.height + (_path - _handle.height) * _position;
+				_handle.height = handleRatio() * _path + _gutter * 2;
+				_handle.y = _minHandle.height + (_path - _handle.height) * _position - _gutter;
 				_body.width = width;
-				_body.height = _path;
-				_body.y = _minHandle.height;
+				_body.height = height;
+				//_body.y = _minHandle.height;
 			}
 			else
 			{
 				_minHandle.width = height;
-				_minHandle.height = 10;
+				_minHandle.height = 25;
 				_maxHandle.width = height;
-				_maxHandle.height = 10;
-				_handle.width = width;
-				_handle.rotation = -90;
-				_handle.y = height;
+				_maxHandle.height = 25;
 				_minHandle.rotation = -90;
 				_minHandle.y = height;
 				_maxHandle.rotation = -90;
 				_maxHandle.y = height;
 				_path = width - (_minHandle.width + _maxHandle.width);
-				_maxHandle.x = width - _maxHandle.height;
-				_handle.height = handleRatio() * _path;
-				_handle.x = _minHandle.height + (_path - _handle.height) * _position;
+				_maxHandle.x = width - _maxHandle.width;
+				_handle.width = 16; // width;
+				_handle.height = handleRatio() * _path + _gutter * 2;
+				_handle.rotation = -90;
+				_handle.x = _minHandle.width + (_path - _handle.height) * _position - _gutter;
+				_body.height = width;
+				_handle.y = height;
+				_body.width = 16;
 				_body.rotation = -90;
-				_body.x = _minHandle.width;
+				//_body.x = _minHandle.width;
 				_body.y = height;
-				_body.width = width;
-				_body.height = _path;
 			}
 			if (!super.contains(_body)) super.addChild(_body);
 			if (!super.contains(_minHandle)) super.addChild(_minHandle);
@@ -344,8 +351,20 @@ package org.wvxvws.gui
 		
 		public function scrollTo(value:Number):void
 		{
+			if (value < 0) value = 0;
+			if (value > 1) value = 1;
+			//trace(value);
 			var limit:Number;
 			var shift:Number;
+			var hBounds:Rectangle = _handle.getBounds(this);
+			var minBounds:Rectangle = _minHandle.getBounds(this);
+			var maxBounds:Rectangle = _maxHandle.getBounds(this);
+			var hWidth:int = hBounds.width;
+			var hHeight:int = hBounds.height;
+			var minWidth:int = minBounds.width;
+			var minHeight:int = minBounds.height;
+			var maxWidth:int = maxBounds.width;
+			var maxHeight:int = maxBounds.height;
 			if (_direction)
 			{
 				limit = _target.height - _area.height;
@@ -353,16 +372,18 @@ package org.wvxvws.gui
 				_area.y = shift;
 				_target.scrollRect = _area;
 				_position = value;
-				_handle.y = _minHandle.height + (_path - _handle.height) * value;
+				_handle.y = (minHeight - _gutter) + (_path + _gutter * 2 - hHeight) * value;
 			}
 			else
 			{
+				_path = width - (minWidth + maxWidth);
 				limit = _target.width - _area.width;
 				shift = value * limit;
 				_area.x = shift;
 				_target.scrollRect = _area;
 				_position = value;
-				_handle.x = _minHandle.height + (_path - _handle.width) * value;
+				//trace(_handle.height, _handle.width, _handle.getBounds(_handle));
+				_handle.x = (minWidth - _gutter) + (_path + _gutter * 2 - hWidth) * value;
 			}
 		}
 		
@@ -397,7 +418,15 @@ package org.wvxvws.gui
 		protected function handle_mouseDownHandler(event:MouseEvent):void
 		{
 			if (event.currentTarget is ISkin) (event.currentTarget as ISkin).state = event.type;
-			_handleShift = _handle.mouseY * _handle.scaleY;
+			var handleBounds:Rectangle = _handle.getBounds(this);
+			if (_direction)
+			{
+				_handleShift = mouseY - handleBounds.y;
+			}
+			else
+			{
+				_handleShift = mouseX - handleBounds.x;
+			}
 			_moveFunction = moveAreaUpDown;
 			stage.addEventListener(MouseEvent.MOUSE_UP, stage_mouseUpHandler, false, 0, true);
 			addEventListener(Event.ENTER_FRAME, enterFrameHandler, false, 0, true);
@@ -432,44 +461,48 @@ package org.wvxvws.gui
 		protected function moveAreaUp():void
 		{
 			var cs:Number = _position - .01;
-			if (cs < 0) cs = 0;
 			scrollTo(cs);
 		}
 		
 		protected function moveAreaDown():void
 		{
 			var cs:Number = _position + .01;
-			if (cs > 1) cs = 1;
 			scrollTo(cs);
 		}
 		
 		protected function moveAreaUpDown():void
 		{
+			var hBounds:Rectangle = _handle.getBounds(this);
+			var minBounds:Rectangle = _minHandle.getBounds(this);
+			var maxBounds:Rectangle = _maxHandle.getBounds(this);
+			var distAvailable:int;
 			if (_direction)
 			{
+				distAvailable = height - (minBounds.height + maxBounds.height);
 				var toBeY:Number = mouseY - _handleShift;
-				if (toBeY < _minHandle.height)
+				if (toBeY < minBounds.height)
 				{
-					toBeY = _minHandle.height;
+					toBeY = minBounds.height;
 				}
-				else if (toBeY > _maxHandle.y - _handle.height)
+				else if (toBeY > maxBounds.y - hBounds.height)
 				{
-					toBeY = _maxHandle.y - _handle.height;
+					toBeY = maxBounds.y - hBounds.height;
 				}
-				scrollTo((toBeY - _maxHandle.height) / (_path - _handle.height));
+				scrollTo((toBeY - maxBounds.height) / (distAvailable - hBounds.height));
 			}
 			else
 			{
+				distAvailable = width - (minBounds.width + maxBounds.width);
 				var toBeX:Number = mouseX - _handleShift;
-				if (toBeX < _minHandle.width)
+				if (toBeX < minBounds.width)
 				{
-					toBeX = _minHandle.width;
+					toBeX = minBounds.width;
 				}
-				else if (toBeX > _maxHandle.x - _handle.width)
+				else if (toBeX > maxBounds.x - hBounds.width)
 				{
-					toBeX = _maxHandle.x - _handle.width;
+					toBeX = maxBounds.x - hBounds.width;
 				}
-				scrollTo((toBeX - _maxHandle.width) / (_path - _handle.width));
+				scrollTo((toBeX - maxBounds.width) / (distAvailable - hBounds.width));
 			}
 		}
 		
@@ -485,25 +518,25 @@ package org.wvxvws.gui
 			if (_minHandle is Sprite)
 			{
 				(_minHandle as Sprite).graphics.beginFill(0);
-				(_minHandle as Sprite).graphics.drawRect(0, 0, 10, 10);
+				(_minHandle as Sprite).graphics.drawRect(0, 0, 16, 25);
 				(_minHandle as Sprite).graphics.endFill();
 			}
 			if (_maxHandle is Sprite)
 			{
 				(_maxHandle as Sprite).graphics.beginFill(0);
-				(_maxHandle as Sprite).graphics.drawRect(0, 0, 10, 10);
+				(_maxHandle as Sprite).graphics.drawRect(0, 0, 16, 25);
 				(_maxHandle as Sprite).graphics.endFill();
 			}
 			if (_handle is Sprite)
 			{
 				(_handle as Sprite).graphics.beginFill(0xFF);
-				(_handle as Sprite).graphics.drawRect(0, 0, 10, 10);
+				(_handle as Sprite).graphics.drawRect(0, 0, 16, 16);
 				(_handle as Sprite).graphics.endFill();
 			}
 			if (_body is Sprite)
 			{
 				(_body as Sprite).graphics.beginFill(0xFF00);
-				(_body as Sprite).graphics.drawRect(0, 0, 10, 10);
+				(_body as Sprite).graphics.drawRect(0, 0, 16, 16);
 				(_body as Sprite).graphics.endFill();
 			}
 			if (_minHandle is ISkin) (_minHandle as ISkin).state = MouseEvent.MOUSE_UP;

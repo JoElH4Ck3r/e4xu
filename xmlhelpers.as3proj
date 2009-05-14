@@ -45,6 +45,8 @@
   <!-- SWC Libraries -->
   <libraryPaths>
     <element path="lib\styles.swc" />
+    <element path="lib\scroller-skin\scroller_skin.swc" />
+    <element path="lib\button-skin\button_skin.swc" />
   </libraryPaths>
   <!-- External Libraries -->
   <externalLibraryPaths>

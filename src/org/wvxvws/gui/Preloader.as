@@ -21,12 +21,16 @@
 
 package org.wvxvws.gui 
 {
+	import flash.display.BitmapData;
 	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
+	import flash.filters.DropShadowFilter;
+	import flash.filters.GlowFilter;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	import flash.geom.Transform;
 	
 	[Event(name="complete", type="flash.events.Event")]
@@ -111,6 +115,7 @@ package org.wvxvws.gui
 		protected var _radius:int = 32;
 		protected var _circleRadius:int = 6;
 		protected var _circleColor:uint = 0xA8874E;
+		protected var _highlightColor:uint = 0xFFB833;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -179,6 +184,7 @@ package org.wvxvws.gui
 		
 		protected function init(numCircles:int = 12):void
 		{
+			drawPatternedBacground();
 			var step:int = numCircles / 2;
 			if (_container && contains(_container))
 			{
@@ -193,6 +199,8 @@ package org.wvxvws.gui
 			}
 			_container.x = _preTX = width >> 1;
 			_container.y = _preTY = height >> 1;
+			_container.filters = [new DropShadowFilter(_radius >> 1, 90, 0, .2, 8, 8, 1.8),
+									new GlowFilter(0, .6, 4, 4, 2, 1, true)];
 			addChild(_container);
 			_cTransform = new Transform(_container);
 		}
@@ -210,7 +218,13 @@ package org.wvxvws.gui
 		protected function drawCircle(where:Point):Shape
 		{
 			var s:Shape = new Shape();
-			s.graphics.beginFill(_circleColor);
+			var m:Matrix = new Matrix();
+			m.createGradientBox(_circleRadius * 2, _circleRadius * 2);
+			m.tx = where.x;
+			m.ty = where.y;
+			s.graphics.beginGradientFill("radial", 
+										[_highlightColor, _circleColor, _circleColor, _highlightColor],
+										[1, 1, .6, 1], [50, 100, 200, 255], m, "pad", "rgb", .5);
 			s.graphics.drawCircle(where.x, where.y, _circleRadius);
 			s.graphics.endFill();
 			return _container.addChild(s) as Shape;
@@ -219,6 +233,29 @@ package org.wvxvws.gui
 		protected function completeHandler(event:Event):void 
 		{
 			dispatchEvent(event);
+		}
+		
+		protected function drawPatternedBacground():void
+		{
+			var cl:uint = _backgroundColor;
+			var pattern:BitmapData = new BitmapData(50, 50, false, _backgroundColor);
+			pattern.fillRect(new Rectangle(0, 0, pattern.width / 2, pattern.height), 0x47361F);
+			var i:int = pattern.height;
+			var line:Rectangle = new Rectangle(0, 0, parent.width / 2, 1);
+			while (i >= 0)
+			{
+				pattern.fillRect(line, _backgroundColor);// 0x47361F);
+				line.y = i;
+				i -= 5;
+			}
+			var pWidth:int = width;
+			var pHeight:int = height;
+			var mtx:Matrix = new Matrix();
+			mtx.rotate(Math.PI / 4);
+			graphics.clear();
+			graphics.beginBitmapFill(pattern, mtx, true, true);
+			graphics.drawRect(0, 0, pWidth, pHeight);
+			graphics.endFill();
 		}
 		
 		//--------------------------------------------------------------------------
