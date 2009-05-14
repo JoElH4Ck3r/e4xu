@@ -39,6 +39,117 @@ package org.wvxvws.gui.skins
 	 */
 	public class Skin extends Sprite implements IMXMLObject, ISkin
 	{
+		override public function get y():Number
+		{
+			if (_content && _content !== this) return _content.y;
+			return _y;
+		}
+		
+		override public function set y(value:Number):void 
+		{
+			//trace("setting Y from setter:", value);
+			if (_content && _content !== this)
+			{
+				_content.y = value;
+			}
+			_y = value;
+			_wasYChange = true;
+		}
+		override public function get x():Number
+		{
+			if (_content && _content !== this) return _content.x;
+			return _x;
+		}
+		
+		override public function set x(value:Number):void 
+		{
+			if (_content && _content !== this)
+			{
+				_content.x = value;
+			}
+			_x = value;
+			_wasXChange = true;
+		}
+		
+		override public function get width():Number
+		{
+			if (_content && _content !== this) return _content.width;
+			return _width;
+		}
+		
+		override public function set width(value:Number):void 
+		{
+			if (_content && _content !== this)
+			{
+				_content.width = value;
+			}
+			_width = value;
+			_wasWidthChange = true;
+		}
+		
+		override public function get height():Number
+		{
+			if (_content && _content !== this) return _content.height;
+			return _height;
+		}
+		
+		override public function set height(value:Number):void 
+		{
+			if (_content && _content !== this)
+			{
+				_content.height = value;
+			}
+			_height = value;
+			_wasHeightChange = true;
+		}
+		
+		override public function get rotation():Number
+		{
+			if (_content && _content !== this) return _content.rotation;
+			return _rotation;
+		}
+		
+		override public function set rotation(value:Number):void 
+		{
+			if (_content && _content !== this)
+			{
+				_content.rotation = value;
+			}
+			_rotation = value;
+			_wasRotated = true;
+		}
+		
+		override public function get scaleX():Number
+		{
+			if (_content && _content !== this) return _content.scaleX;
+			return _scaleX;
+		}
+		
+		override public function set scaleX(value:Number):void 
+		{
+			if (_content && _content !== this)
+			{
+				_content.scaleX = value;
+			}
+			_scaleX = value;
+			//_wasRotated = true;
+		}
+		
+		override public function get scaleY():Number
+		{
+			if (_content && _content !== this) return _content.scaleY;
+			return _scaleY;
+		}
+		
+		override public function set scaleY(value:Number):void 
+		{
+			if (_content && _content !== this)
+			{
+				_content.scaleY = value;
+			}
+			_scaleY = value;
+		}
+		
 		//------------------------------------
 		//  Public property state
 		//------------------------------------
@@ -57,26 +168,28 @@ package org.wvxvws.gui.skins
 			if (_state == value) return;
 			if (!_states[value]) return;
 			if (!(_states[value] is DisplayObject)) return;
+			//trace("Enter state: ", value);
 			var sc:DisplayObject;
-			var wasNotInit:Boolean = numChildren > 0;
-			var wasStateEmpty:Boolean = true;
-			var previousBounds:Rectangle;
+			//var wasNotInit:Boolean = numChildren > 0;
+			//var wasStateEmpty:Boolean = true;
+			//var previousBounds:Rectangle;
+			var previousState:DisplayObject;
 			for each (sc in _states)
 			{
 				if (contains(sc))
 				{
-					previousBounds = getBounds(this);
-					removeChild(sc);
+					//previousBounds = getBounds(this);
+					previousState = removeChild(sc);
 					if (sc is MovieClip) (sc as MovieClip).gotoAndStop(1);
 				}
 				else if (sc is SkinState && contains((sc as SkinState).content))
 				{
-					if ((sc as SkinState).content !== sc)
-					{
-						wasStateEmpty = false;
-					}
-					previousBounds = getBounds(this);
-					removeChild((sc as SkinState).content);
+					//if ((sc as SkinState).content !== sc)
+					//{
+						//wasStateEmpty = false;
+					//}
+					//previousBounds = getBounds(this);
+					previousState = removeChild((sc as SkinState).content);
 					if ((sc as SkinState).content is MovieClip)
 					{
 						((sc as SkinState).content as MovieClip).gotoAndStop(1);
@@ -84,22 +197,51 @@ package org.wvxvws.gui.skins
 				}
 			}
 			sc = _states[value];
-			var isStateEmpty:Boolean;
+			//var isStateEmpty:Boolean;
 			if (sc is SkinState) sc = (sc as SkinState).content;
-			if (sc is SkinState) isStateEmpty = true;
+			//if (sc is SkinState) isStateEmpty = true;
 			_content = sc;
-			if (parent && !isStateEmpty && !wasStateEmpty) 
-			{
-				_bounds = previousBounds;
-			}
-			if (wasNotInit && !isStateEmpty && _bounds)
-			{
-				sc.width = _bounds.width;
-				sc.height = _bounds.height;
-				sc.x = _bounds.x;
-				sc.y = _bounds.y;
-			}
 			addChildAt(sc, 0);
+			//trace("is same state?", sc, previousState);
+			if (sc === previousState)
+			{
+				return;
+			}
+			//trace("is same state? >>>", sc.height, sc.width);
+			if (previousState)
+			{
+				//trace("previousState", previousState, sc);
+				sc.x = previousState.x;
+				sc.y = previousState.y;
+				sc.rotation = previousState.rotation;
+				sc.width = previousState.width;
+				sc.height = previousState.height;
+			}
+			else
+			{
+				//trace("new state", sc);
+				if (_wasHeightChange) 
+				{
+					sc.height = _height;
+				}
+				if (_wasWidthChange) 
+				{
+					sc.width = _width;
+				}
+				if (_wasRotated) 
+				{
+					sc.rotation = _rotation;
+				}
+				if (_wasYChange)
+				{
+					trace("Set Y to:", _y);
+					sc.y = _y;
+				}
+				if (_wasXChange)
+				{
+					sc.x = _x;
+				}
+			}
 			_state = value;
 			dispatchEvent(new Event("stateChange"));
 		}
@@ -128,6 +270,18 @@ package org.wvxvws.gui.skins
 		protected var _document:Object;
 		protected var _id:String;
 		protected var _content:DisplayObject;
+		protected var _rotation:int;
+		protected var _width:int;
+		protected var _height:int;
+		protected var _x:int;
+		protected var _y:int;
+		protected var _wasRotated:Boolean;
+		protected var _wasWidthChange:Boolean;
+		protected var _wasHeightChange:Boolean;
+		protected var _wasXChange:Boolean;
+		protected var _wasYChange:Boolean;
+		protected var _scaleX:Number;
+		protected var _scaleY:Number;
 		
 		public function Skin() { super(); }
 		

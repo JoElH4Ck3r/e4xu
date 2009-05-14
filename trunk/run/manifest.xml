@@ -26,7 +26,7 @@
 	<component id="SPAN" class="org.wvxvws.gui.SPAN"/>
 	<component id="Renderer" class="org.wvxvws.gui.renderers.Renderer"/>
 	<component id="ImageRenderer" class="org.wvxvws.gui.renderers.ImageRenderer"/>
-	<component id="SkinnableButton" class="org.wvxvws.gui.SkinnableButton"/>
+	<component id="ButtonS" class="org.wvxvws.gui.ButtonS"/>
 	<component id="Scroller" class="org.wvxvws.gui.Scroller"/>
 	<component id="Table" class="org.wvxvws.gui.containers.Table"/>
 	<component id="TiledPanel" class="org.wvxvws.gui.containers.TiledPanel"/>
