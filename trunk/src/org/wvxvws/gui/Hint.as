@@ -171,7 +171,7 @@
 		//--------------------------------------------------------------------------
 		
 		protected var _target:DisplayObject;
-		protected var _point:Point = new Point();
+		protected var _point:Point;
 		protected var _hasInstance:Boolean;
 		protected var _factory:Class;
 		protected var _text:String;
@@ -224,6 +224,7 @@
 			if (!_target.stage) return null;
 			if (!text) text = _text;
 			var bounds:Rectangle = _target.getBounds(_target.stage);
+			var hp:Point;
 			var p:Point = _target.localToGlobal(new Point(_target.mouseX * _target.scaleX, 
 														_target.mouseY * _target.scaleY));
 			if (!bounds.containsPoint(p)) return null;
@@ -238,7 +239,9 @@
 			}
 			else
 			{
-				ht = drawDefaultHint(htBase, p, text);
+				if (_point) hp = _target.localToGlobal(_point);
+				else hp = p;
+				ht = drawDefaultHint(htBase, hp, text);
 			}
 			_instance = htBase.addChild(ht);
 			_hideTimer.start();
