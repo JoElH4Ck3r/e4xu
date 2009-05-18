@@ -55,37 +55,64 @@ package org.wvxvws.gui
 		{
 			super();
 			_currentState = MouseEvent.MOUSE_UP;
-			addEventListener(MouseEvent.ROLL_OUT, rollOutHandler, false, 0, true);
-			addEventListener(MouseEvent.ROLL_OVER, rollOverHandler, false, 0, true);
-			addEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler, false, 0, true);
-			addEventListener(MouseEvent.MOUSE_UP, mouseUpHandler, false, 0, true);
+			addEventListener(MouseEvent.ROLL_OUT, rollOutHandler, false, int.MAX_VALUE, true);
+			addEventListener(MouseEvent.MOUSE_OUT, disableHelper, false, int.MAX_VALUE, true);
+			addEventListener(MouseEvent.ROLL_OVER, rollOverHandler, false, int.MAX_VALUE, true);
+			addEventListener(MouseEvent.MOUSE_OVER, disableHelper, false, int.MAX_VALUE, true);
+			addEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler, false, int.MAX_VALUE, true);
+			addEventListener(MouseEvent.MOUSE_UP, mouseUpHandler, false, int.MAX_VALUE, true);
+			addEventListener(MouseEvent.CLICK, disableHelper, false, int.MAX_VALUE, true);
+			addEventListener(MouseEvent.DOUBLE_CLICK, disableHelper, false, int.MAX_VALUE, true);
+			addEventListener(MouseEvent.MOUSE_WHEEL, disableHelper, false, int.MAX_VALUE, true);
+			addEventListener(MouseEvent.MOUSE_MOVE, disableHelper, false, int.MAX_VALUE, true);
 			_labelField.defaultTextFormat = _labelFormat;
 			_labelField.autoSize = TextFieldAutoSize.LEFT;
 			mouseChildren = false;
 			buttonMode = true;
 		}
 		
+		protected function disableHelper(event:MouseEvent):void 
+		{
+			if (_disabled) event.stopImmediatePropagation();
+		}
+		
 		protected function mouseDownHandler(event:MouseEvent):void 
 		{
-			if (_disabled) return;
+			if (_disabled)
+			{
+				event.stopImmediatePropagation();
+				return;
+			}
 			currentState = event.type;
 		}
 		
 		protected function mouseUpHandler(event:MouseEvent):void 
 		{
-			if (_disabled) return;
+			if (_disabled)
+			{
+				event.stopImmediatePropagation();
+				return;
+			}
 			currentState = event.type;
 		}
 		
 		protected function rollOverHandler(event:MouseEvent):void 
 		{
-			if (_disabled) return;
+			if (_disabled)
+			{
+				event.stopImmediatePropagation();
+				return;
+			}
 			currentState = event.type;
 		}
 		
 		protected function rollOutHandler(event:MouseEvent):void 
 		{
-			if (_disabled) return;
+			if (_disabled)
+			{
+				event.stopImmediatePropagation();
+				return;
+			}
 			currentState = MouseEvent.MOUSE_UP;
 		}
 		
