@@ -2,6 +2,7 @@
 {
 	import flash.utils.ByteArray;
 	import flash.utils.Endian;
+	import org.wvxvws.encoding.tags.DefineSound;
 	
 	/**
 	 * ...
@@ -68,9 +69,8 @@
 			}
 
 			var ds:DefineSound = new DefineSound();
-			ds.format = 2; // MP3
-			ds.writeBytes(sound);
-			ds.size = 1; // always 16-bit for compressed formats
+			ds.soundFormat = 2; // MP3
+			ds.soundSize = 1; // always 16-bit for compressed formats
 			ds.name = className;
 
 			/**
@@ -79,8 +79,8 @@
 			 * 2 - version 2
 			 * 3 - version 1
 			 */
-			ds.position = 3; // MB 2?
-			var version:int = ds.readUnsignedByte() >> 3 & 0x3;
+			sound.position = 3; // MB 2?
+			var version:int = sound.readUnsignedByte() >> 3 & 0x3;
 
 			/**
 			 * 0 - reserved
@@ -88,11 +88,11 @@
 			 * 2 - layer II  => 1152 samples
 			 * 3 - layer I   => 384  samples
 			 */
-			ds.position = 3; // MB 2?
-			var layer:int = ds.readUnsignedByte() >> 1 & 0x3;
+			sound.position = 3; // MB 2?
+			var layer:int = sound.readUnsignedByte() >> 1 & 0x3;
 			
-			ds.position = 4; // MB 3?
-			var samplingRate:int = ds.readUnsignedByte() >> 2 & 0x3;
+			sound.position = 4; // MB 3?
+			var samplingRate:int = sound.readUnsignedByte() >> 2 & 0x3;
 
 			/**
 			 * 0 - stereo
@@ -100,8 +100,8 @@
 			 * 2 - dual channel
 			 * 3 - single channel
 			 */
-			ds.position = 5; // MB 4?
-			var channelMode:int = ds.readUnsignedByte() >> 6 & 0x3;
+			sound.position = 5; // MB 4?
+			var channelMode:int = sound.readUnsignedByte() >> 6 & 0x3;
 
 			var frequency:int = mp3frequencies[samplingRate][version];
 
@@ -113,13 +113,13 @@
 			switch (frequency)
 			{
 				case 11025:
-					ds.rate = 1;
+					ds.soundRate = 1;
 					break;
 				case 22050:
-					ds.rate = 2;
+					ds.soundRate = 2;
 					break;
 				case 44100:
-					ds.rate = 3;
+					ds.soundRate = 3;
 					break;
 				default:
 					throw new Error("Frequency " + frequency + " not supported");
@@ -129,26 +129,26 @@
 			 * 0 - mono
 			 * 1 - stereo
 			 */
-			ds.type = channelMode == 3 ? 0 : 1;
+			ds.soundType = channelMode == 3 ? 0 : 1;
 
 			/**
 			 * assume that the whole thing plays in one SWF frame
 			 *
 			 * sample count = number of MP3 frames * number of samples per MP3
 			 */
-			ds.sampleCount = countFrames(ds) * (layer == 3 ? 384 : 1152);
+			ds.sampleCount = countFrames(sound) * (layer == 3 ? 384 : 1152);
 
 			if (ds.sampleCount < 0)
 			{
 				// frame count == -1, error!
 				throw new Error("Could not determine sample frame count");
 			}
-			return ds;
+			sound.position = 0;
+			return ds.compile(sound);
 		}
 		
 		private static function readFully(input:ByteArray, inLength:int):ByteArray
 		{
-			//BufferedInputStream in = new BufferedInputStream(inputStream);
 			var baos:ByteArray = new ByteArray();
 			baos.endian = Endian.LITTLE_ENDIAN;
 			// write 2 bytes - number of frames to skip...
@@ -292,30 +292,5 @@
 			}
 			return count;
 		}
-	}
-}
-
-import flash.utils.ByteArray;
-import flash.utils.Endian;
-
-internal final class DefineSound extends ByteArray
-{
-	public var code:int;
-	public var format:int;
-	public var rate:int;
-	public var size:int;
-	public var type:int;
-	public var sampleCount:uint; // U32
-	public var name:String;
-	
-	public function DefineSound()
-	{
-		super();
-		endian = Endian.LITTLE_ENDIAN;
-	}
-	
-	public function compile():ByteArray
-	{
-		return this;
 	}
 }
