@@ -4,39 +4,19 @@
 	import flash.utils.Endian;
 	
 	/**
-	 * ...
+	 * SWFTag class.
 	 * @author wvxvw
 	 */
 	public class SWFTag
 	{
-		private var _code:int;
-		private var _data:ByteArray;
-		private var _length:uint;
+		public var name:String;
 		
-		public function SWFTag(code:int) 
-		{
-			super();
-			_code = code;
-		}
+		private static var _generator:int;
 		
-		public function compile(bytes:ByteArray):ByteArray
-		{
-			_data = new ByteArray()
-			_data.endian = Endian.LITTLE_ENDIAN;
-			_data.position = 0;
-			_length = bytes.length;
-			if (_length < 63)
-			{
-				_data.writeShort((_code << 10) | _length);
-			}
-			else
-			{
-				_data.writeShort((_code << 10) | 63);
-				_data.writeUnsignedInt(_length);
-			}
-			_data.writeBytes(bytes, _data.length, bytes.length);
-			return _data;
-		}
+		protected var _code:int;
+		protected var _data:ByteArray;
+		protected var _length:uint;
+		protected var _symbolID:uint;
 		
 		public function get code():int { return _code; }
 		
@@ -44,6 +24,46 @@
 		
 		public function get data():ByteArray { return _data; }
 		
+		public function SWFTag(code:int) 
+		{
+			super();
+			_code = code;
+			_symbolID = generateSymbolID();
+		}
+		
+		public function compile(bytes:ByteArray = null):ByteArray
+		{
+			_data = new ByteArray()
+			_data.endian = Endian.LITTLE_ENDIAN;
+			var temp:ByteArray = new ByteArray();
+			temp.endian = Endian.LITTLE_ENDIAN;
+			_data.writeShort(_symbolID);
+			compileTagParams();
+			if (bytes) _data.writeBytes(bytes);
+			//_data.writeUTFBytes(name);
+			_length = _data.length;
+			_data.position = 0;
+			if (_length < 63)
+			{
+				temp.writeShort((_code << 6) | _length);
+			}
+			else
+			{
+				temp.writeShort((_code << 6) | 63);
+				temp.writeUnsignedInt(_length);
+			}
+			temp.writeBytes(_data);
+			temp.position = 0;
+			return temp;
+		}
+		
+		/**
+		 * Override this function in extending classes to
+		 * place additional tag header data here.
+		 */
+		protected virtual function compileTagParams():void { }
+		
+		private static function generateSymbolID():uint { return ++_generator; }
 	}
 	
 }
