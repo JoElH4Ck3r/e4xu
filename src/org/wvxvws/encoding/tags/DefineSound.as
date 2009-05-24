@@ -24,6 +24,8 @@
 			u = (soundRate | (u << 2)); // write 2 bits <SoundRate>
 			u = (soundSize | (u << 1)); // write 1 bit <SoundSize>
 			u = (soundType | (u << 1)); // write 1 bit <SoundType>
+			_data.writeShort(symbolID);
+			trace("_symbolID", symbolID);
 			_data.writeByte(u);
 			_data.writeUnsignedInt(sampleCount);
 		}

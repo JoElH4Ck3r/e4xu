@@ -13,7 +13,8 @@
 		// TODO: Implement real bytecode parsing and writting
 		// this is a temproraly fix that will allow 
 		// embedding sounds only!
-		private var dataStart:String = "\xbf\x14\xbc\x00\x00\x00\x01\x00\x00\x00\x00\x10\x00\x2e\x00\x00\x00\x00\x08\x00\x08";
+		// \xbf\x14\xbc\x00\x00\x00
+		private var dataStart:String = "\x01\x00\x00\x00\x00\x10\x00\x2e\x00\x00\x00\x00\x08\x00\x08";
 		
 		public var embeddedSoundName:String = ""; // Should be ASCII, 8 chars long only!
 		
@@ -35,7 +36,7 @@
 			//_data.writeUnsignedInt(flags);
 			var i:int = -1;
 			var concatenated:String = dataStart + embeddedSoundName + dataEnd;
-			while (i++ < 194)
+			while (i++ < 188)
 			{
 				_data.writeByte(concatenated.charCodeAt(i));
 			}
