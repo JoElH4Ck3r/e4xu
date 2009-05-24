@@ -51,14 +51,7 @@
 		
 		public function MP3Transcoder() { super(); }
 		
-		public static function transcode(source:ByteArray, className:String):ByteArray
-		{
-			var results:ByteArray;
-			results = mp3(source, className);
-			return results;
-		}
-		
-		private static function mp3(input:ByteArray, className:String):ByteArray
+		public static function transcode(input:ByteArray):DefineSound
 		{
 			var size:int = input.length;
 			var sound:ByteArray = readFully(input, size);
@@ -71,7 +64,7 @@
 			var ds:DefineSound = new DefineSound();
 			ds.soundFormat = 2; // MP3
 			ds.soundSize = 1; // always 16-bit for compressed formats
-			ds.name = className;
+			//ds.name = className;
 
 			/**
 			 * 0 - version 2.5
@@ -144,7 +137,8 @@
 				throw new Error("Could not determine sample frame count");
 			}
 			sound.position = 0;
-			return ds.compile(sound);
+			ds.compile(sound)
+			return ds;
 		}
 		
 		private static function readFully(input:ByteArray, inLength:int):ByteArray
