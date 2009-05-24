@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<mx:WindowedApplication 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	applicationComplete="init()"
+	>
+	<mx:Script>
+		<![CDATA[
+			import flash.display.Loader;
+			import flash.display.LoaderInfo;
+			import flash.events.Event;
+			import flash.filesystem.File;
+			import flash.filesystem.FileMode;
+			import flash.filesystem.FileStream;
+			import flash.net.FileFilter;
+			import flash.system.LoaderContext;
+			import flash.utils.ByteArray;
+			import flash.utils.Endian;
+			import org.wvxvws.encoding.SWFCompiler;
+			
+			private var _mp3:ByteArray;
+			private var _location:String;
+			private var _swf:ByteArray;
+			
+			private function init():void
+			{
+				compileButton.enabled = false;
+				testleButton.enabled = false;
+			}
+			
+			private function selectMP3():void
+			{
+				var file:File = new File();
+				var asFilter:FileFilter = new FileFilter("Audio MP3", "*.mp3");
+				try 
+				{
+					file.browseForOpen("Open", [asFilter]);
+					file.addEventListener(Event.SELECT, fileSelected);
+				}
+				catch (error:Error)
+				{
+					trace("Failed:", error.message);
+				}
+			}
+			
+			private function fileSelected(event:Event):void 
+			{
+				var stream:FileStream = new FileStream();
+				var fName:String = (event.target as File).name.replace(/\..+$/g, "").replace(/\W/g, "_");
+				_mp3 = new ByteArray();
+				_mp3.endian = Endian.LITTLE_ENDIAN;
+				stream.open(event.target as File, FileMode.READ);
+				stream.readBytes(_mp3, 0, stream.bytesAvailable);
+				_location = (event.target as File).nativePath;
+				_swf = SWFCompiler.compileMP3SWF(_mp3, fName);
+				compileButton.enabled = true;
+				testleButton.enabled = true;
+			}
+			
+			private function testSWF():void
+			{
+				var loader:Loader = new Loader();
+				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, completeHandler);
+				var context:LoaderContext = new LoaderContext(false, loaderInfo.applicationDomain);
+				context.allowLoadBytesCodeExecution = true;
+				loader.loadBytes(_swf, context);
+				trace("loadbytes called");
+			}
+			
+			private function completeHandler(event:Event):void 
+			{
+				trace("complete handler");
+				(event.target as LoaderInfo).removeEventListener(Event.COMPLETE, completeHandler);
+				var loader:Loader = (event.target as LoaderInfo).loader;
+				var soundClass:Class = loader.content.loaderInfo.applicationDomain.getDefinition("Sound001") as Class;
+				trace("Succeeded in reading sound class", soundClass);
+			}
+			
+			private function compileSWF():void
+			{
+				trace(_location.replace(/\.mp3$/i, ".swf"));
+				var file:File = new File(_location.replace(/\.mp3$/i, ".swf"));
+				_swf.position = 0;
+				trace(_swf.length);
+				file.save(_swf);
+				
+			}
+		]]>
+	</mx:Script>
+	<mx:Button 
+		id="selectButton"
+		label="Select MP3"
+		click="selectMP3()"
+		/>
+	<mx:Button 
+		id="compileButton"
+		label="Compile SWF"
+		click="compileSWF()"
+		/>
+	<mx:Button 
+		id="testleButton"
+		label="Test"
+		click="testSWF()"
+		/>
+</mx:WindowedApplication>
