@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<mx:WindowedApplication 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	applicationComplete="init()"
+	width="200" height="120">
+	<mx:Script>
+		<![CDATA[
+			import flash.display.Loader;
+			import flash.display.LoaderInfo;
+			import flash.events.Event;
+			import flash.filesystem.File;
+			import flash.filesystem.FileStream;
+			import flash.net.FileFilter;
+			import flash.system.LoaderContext;
+			import flash.utils.ByteArray;
+			
+			private var _processedFile:ByteArray;
+			private var _location:String;
+			
+			private function init():void
+			{
+				saveBTN.enabled = false;
+			}
+			
+			private function load():void
+			{
+				saveBTN.enabled = false;
+				var file:File = new File();
+				var swfFilter:FileFilter = new FileFilter("Flash", "*.swf");
+				try 
+				{
+					file.browseForOpen("Open", [swfFilter]);
+					file.addEventListener(Event.SELECT, fileSelected);
+				}
+				catch (error:Error)
+				{
+					trace("Failed:", error.message);
+				}
+			}
+			
+			private function fileSelected(event:Event):void 
+			{
+				var stream:FileStream = new FileStream();
+				stream.open(event.target as File, FileMode.READ);
+				_processedFile = new ByteArray();
+				stream.readBytes(_processedFile, 0, stream.bytesAvailable);
+				var loader:Loader = new Loader();
+				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, loader_completeHandler);
+				_location = (event.target as File).nativePath;
+				var context:LoaderContext = new LoaderContext(false, loaderInfo.applicationDomain);
+				context.allowLoadBytesCodeExecution = true;
+				loader.loadBytes(_processedFile, context);
+			}
+			
+			private function loader_completeHandler(event:Event):void 
+			{
+				_processedFile = (event.target as LoaderInfo).bytes;
+				(event.target as LoaderInfo).removeEventListener(Event.COMPLETE, loader_completeHandler);
+				saveBTN.enabled = true;
+			}
+			
+			private function save():void
+			{
+				var file:File = new File(_location.replace(/\.swf$/i, ".swf-expanded"));
+				file.save(_processedFile);
+			}
+		]]>
+	</mx:Script>
+	<mx:Button id="loadBTN" label="Load" click="load()" />
+	<mx:Button id="saveBTN" label="Save" click="save()" />
+</mx:WindowedApplication>
