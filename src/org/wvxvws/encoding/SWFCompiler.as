@@ -9,6 +9,7 @@
 	import org.wvxvws.encoding.tags.FrameLabel;
 	import org.wvxvws.encoding.tags.ScriptLimits;
 	import org.wvxvws.encoding.tags.SetBackgroundColor;
+	import org.wvxvws.encoding.tags.SoundStreamHead2;
 	import org.wvxvws.encoding.tags.SymbolClass;
 	
 	//{imports
@@ -31,8 +32,9 @@
 		public static var signature:String = "\x46\x57\x53";
 		public static var version:uint = 0x9;
 		public static var fileLength:uint = 0;
-		public static var frameRect:String = "\x78\x00\x07\xD0\x00\x00\x17\x70\x00";
-		public static var frameRate:uint = 0x1F;
+		public static var frameRect:String = "\x78\x00\x06\x40\x00\x00\x12\xc0\x00";
+		//"\x78\x00\x07\xD0\x00\x00\x17\x70\x00";
+		public static var frameRate:uint = 0x1900;
 		public static var frameCount:uint = 0x1;
 		
 		//--------------------------------------------------------------------------
@@ -56,6 +58,7 @@
 		private static var scriptLimits:ScriptLimits = new ScriptLimits();
 		private static var setBackgroundColor:SetBackgroundColor = new SetBackgroundColor();
 		private static var symbolClass:SymbolClass = new SymbolClass();
+		private static var soundStreamHead2:SoundStreamHead2 = new SoundStreamHead2();
 		private static var _generator:uint;
 		
 		//--------------------------------------------------------------------------
@@ -78,12 +81,27 @@
 			swf.endian = Endian.LITTLE_ENDIAN;
 			writeHeader(swf, toFile);
 			defineSound = MP3Transcoder.transcode(input);
+			
+			soundStreamHead2.playBackSoundRate = defineSound.soundRate;
+			soundStreamHead2.playBackSoundSize = defineSound.soundSize;
+			soundStreamHead2.playBackSoundType = defineSound.soundType;
+			
+			//soundStreamHead2.streamSoundCompression = defineSound.soundFormat;
+			trace("defineSound.sampleCount", defineSound.sampleCount);
+			//soundStreamHead2.streamSoundSampleCount = defineSound.sampleCount;
+			//soundStreamHead2.streamSoundRate = defineSound.soundRate;
+			//soundStreamHead2.streamSoundSize = defineSound.soundSize;
+			//soundStreamHead2.streamSoundType = defineSound.soundType;
+			
 			doABC.embeddedSoundName = generateMP3Name();
 			swf.writeBytes(doABC.compile());
 			swf.writeBytes(defineSound.data);
 			symbolClass.classNames = [doABC.embeddedSoundName];
 			symbolClass.tagIDs = [1];
+			symbolClass.numSymbols = 1;
 			swf.writeBytes(symbolClass.compile());
+			swf.writeBytes(soundStreamHead2.compile());
+			
 			writeEnd(swf);
 			swf.position = 4;
 			swf.writeUnsignedInt(swf.length);
