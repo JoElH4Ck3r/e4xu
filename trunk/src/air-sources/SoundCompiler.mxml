@@ -11,6 +11,7 @@
 			import flash.filesystem.File;
 			import flash.filesystem.FileMode;
 			import flash.filesystem.FileStream;
+			import flash.media.Sound;
 			import flash.net.FileFilter;
 			import flash.system.LoaderContext;
 			import flash.utils.ByteArray;
@@ -73,6 +74,9 @@
 				var loader:Loader = (event.target as LoaderInfo).loader;
 				var soundClass:Class = loader.content.loaderInfo.applicationDomain.getDefinition("Sound001") as Class;
 				trace("Succeeded in reading sound class", soundClass);
+				var s:Sound = new soundClass() as Sound;
+				trace(s.bytesTotal);
+				s.play();
 			}
 			
 			private function compileSWF():void

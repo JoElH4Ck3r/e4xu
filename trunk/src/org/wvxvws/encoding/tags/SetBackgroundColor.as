@@ -8,7 +8,7 @@
 	 */
 	public class SetBackgroundColor extends SWFTag
 	{
-		public var color:uint; //U24
+		public var color:uint = 0xFFFFFF; //U24
 		
 		public function SetBackgroundColor() { super(9); }
 		
