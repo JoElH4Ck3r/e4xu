@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>  
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute">  
+    
+     <mx:Script>  
+         <![CDATA[  
+             import mx.controls.ProgressBar;  
+   
+             public function addBar():void {  
+                 var myBar:ProgressBar = new ProgressBar();  
+                 myHBox.addChild(myBar);  
+             }  
+         ]]>  
+     </mx:Script>  
+   
+     <mx:HBox id="myHBox">  
+         <mx:Button label="Add Bar" click="addBar()"/>  
+     </mx:HBox>  
+   
+   
+</mx:Application>
