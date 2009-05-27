@@ -2,6 +2,7 @@
 {
 	//{imports
 	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	//}
 	
@@ -48,12 +49,13 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public function InventoryMap(width:int, height:int, cellSize:Point)
+		public function InventoryMap(width:int, height:int, cellSize:Point, autoFill:Boolean = true)
 		{
 			super();
 			_width = width;
 			_height = height;
 			_cellSize = cellSize;
+			if (autoFill) populate();
 		}
 		
 		//--------------------------------------------------------------------------
@@ -148,9 +150,55 @@
 			return null;
 		}
 		
-		public function findSpaceAtPoint(point:Point):InventoryCell
+		public function findSpaceAtPoint(rect:Rectangle):InventoryCell
 		{
-			return null;
+			var ic:InventoryCell;
+			var pt:Point = new Point(rect.x, rect.y);
+			var obj:Object;
+			var fic:InventoryCell;
+			for (obj in this)
+			{
+				ic = obj as InventoryCell;
+				if (ic.containsPoint(pt) && !ic.filled)
+				{
+					fic = ic;
+					break;
+				}
+			}
+			if (!fic) return null;
+			var aic:InventoryCell;
+			var space:Rectangle = rect.clone();
+			space.x = ic.x;
+			space.y = ic.y;
+			var ectsToFill:Array = [ic];
+			for (obj in this)
+			{
+				aic = obj as InventoryCell;
+				if (space.intersects(aic) && !aic.filled && aic !== ic)
+				{
+					ectsToFill.push(aic);
+				}
+			}
+			if (ectsToFill.length < int(rect.width / ic.width) * int(rect.height / ic.height))
+			{
+				return null;
+			}
+			else
+			{
+				for each(aic in ectsToFill) aic.filled = true;
+			}
+			return ic;
+		}
+		
+		public function populate():void
+		{
+			var i:int = _width * _height;
+			while (i--) addCell(new InventoryCell());
+		}
+		
+		public function clear():void
+		{
+			for (var obj:Object in this) delete this[obj];
 		}
 		
 		//--------------------------------------------------------------------------
