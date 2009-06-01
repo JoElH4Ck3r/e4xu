@@ -2,7 +2,7 @@
 <mx:WindowedApplication 
 	xmlns:mx="http://www.adobe.com/2006/mxml"
 	applicationComplete="init()"
-	width="200" height="120">
+	width="200" height="150">
 	<mx:Script>
 		<![CDATA[
 			import flash.display.Loader;
@@ -13,13 +13,19 @@
 			import flash.net.FileFilter;
 			import flash.system.LoaderContext;
 			import flash.utils.ByteArray;
+			import flash.utils.Endian;
+			import org.wvxvws.encoding.SWFTagReader;
 			
 			private var _processedFile:ByteArray;
 			private var _location:String;
 			
+			[Bindable]
+			private var _meta:String = "";
+			
 			private function init():void
 			{
 				saveBTN.enabled = false;
+				reportBTN.enabled = false;
 			}
 			
 			private function load():void
@@ -43,29 +49,42 @@
 				var stream:FileStream = new FileStream();
 				stream.open(event.target as File, FileMode.READ);
 				_processedFile = new ByteArray();
+				_processedFile.endian = Endian.LITTLE_ENDIAN;
 				stream.readBytes(_processedFile, 0, stream.bytesAvailable);
-				var loader:Loader = new Loader();
-				loader.contentLoaderInfo.addEventListener(Event.COMPLETE, loader_completeHandler);
+				_processedFile.position = 0;
+				var uncompressed:ByteArray = new ByteArray();
+				uncompressed.endian = Endian.LITTLE_ENDIAN;
+				_processedFile.position = 8;
+				_processedFile.readBytes(uncompressed, 0, _processedFile.bytesAvailable);
+				uncompressed.position = 0;
+				uncompressed.uncompress();
 				_location = (event.target as File).nativePath;
-				var context:LoaderContext = new LoaderContext(false, loaderInfo.applicationDomain);
-				context.allowLoadBytesCodeExecution = true;
-				loader.loadBytes(_processedFile, context);
-			}
-			
-			private function loader_completeHandler(event:Event):void 
-			{
-				_processedFile = (event.target as LoaderInfo).bytes;
-				(event.target as LoaderInfo).removeEventListener(Event.COMPLETE, loader_completeHandler);
+				_processedFile.position = 0;
+				_processedFile.writeUTFBytes("FWS");
+				_processedFile.position = 8;
+				uncompressed.position = 0;
+				uncompressed.readBytes(_processedFile, 8, uncompressed.bytesAvailable);
+				_processedFile.position = 8;
 				saveBTN.enabled = true;
+				reportBTN.enabled = true;
 			}
 			
 			private function save():void
 			{
+				_processedFile.position = 0;
 				var file:File = new File(_location.replace(/\.swf$/i, ".swf-expanded"));
 				file.save(_processedFile);
+			}
+			
+			private function generateReport():void
+			{
+				var xml:XML = SWFTagReader.generateReport(_processedFile);
+				var file:File = new File(_location.replace(/\.swf$/i, "-report.xml"));
+				file.save(xml);
 			}
 		]]>
 	</mx:Script>
 	<mx:Button id="loadBTN" label="Load" click="load()" />
 	<mx:Button id="saveBTN" label="Save" click="save()" />
+	<mx:Button id="reportBTN" label="Generate Report" click="generateReport()" />
 </mx:WindowedApplication>
