@@ -189,7 +189,7 @@
 }
 
 import flash.net.URLRequest;
-import assets.SpriteSheetLoader;
+import com.ayumilove.assets.SpriteSheetLoader;
 
 internal final class Queve
 {

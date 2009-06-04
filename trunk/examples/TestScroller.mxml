@@ -1,0 +1,215 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<o:DIV 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:o="http://e4xu.googlecode.com"
+	width="800" height="600"
+	initialized="testMe()"
+	>
+	<mx:Script>
+		<![CDATA[
+		import BodyAST;
+		import flash.events.Event;
+		import MinMaxAST;
+		import MinMaxRefAST;
+		import MinMax2AST;
+		import MinMax2RefAST;
+		import org.wvxvws.gui.ScrollerHandle;
+		
+		private function testMe():void
+		{
+			trace("testMe");
+			button1.disabled = true;
+		}
+		
+		private function mouseDownHandler(event:Event):void
+		{
+			trace("click");
+		}
+		]]>
+	</mx:Script>
+	<o:STYLE>
+		<![CDATA[
+		Scroller
+		{
+			backgroundColor: 0x3E2F1B;
+			backgroundAlpha: 1
+		}
+		]]>
+	</o:STYLE>
+	<o:STYLE>
+		<![CDATA[
+		SPAN
+		{
+			backgroundColor: 0xA8874E;
+			backgroundAlpha: 1;
+		}
+		]]>
+	</o:STYLE>
+	<o:Skin id="maxHandleSkin">
+		<o:SkinState 
+			event="mouseUp" 
+			source="{MinMaxAST}"
+			/>
+		<o:SkinState
+			event="mouseDown"
+			source="{MinMax2AST}"
+			/>
+		<o:SkinState event="disabled"/>
+		<o:SkinState
+			event="mouseOver"
+			source="{MinMax2AST}"
+			/>
+	</o:Skin>
+	<o:Skin id="minHandleSkin">
+		<o:SkinState 
+			event="mouseUp" 
+			source="{MinMaxRefAST}"
+			/>
+		<o:SkinState
+			event="mouseDown"
+			source="{MinMax2RefAST}"
+			/>
+		<o:SkinState event="disabled"/>
+		<o:SkinState
+			event="mouseOver"
+			source="{MinMax2RefAST}"
+			/>
+	</o:Skin>
+	<o:Skin id="bodySkin">
+		<o:SkinState 
+			event="mouseUp" 
+			source="{BodyAST}"
+			/>
+		<o:SkinState
+			event="mouseDown"
+			source="{BodyAST}"
+			/>
+		<o:SkinState
+			event="disabled"
+			source="{BodyAST}"
+			/>
+		<o:SkinState
+			event="mouseOver"
+			source="{BodyAST}"
+			/>
+	</o:Skin>
+	<o:Skin id="handleSkin">
+		<o:SkinState 
+			event="mouseUp" 
+			source="{ScrollerHandle}"
+			/>
+		<o:SkinState
+			event="mouseDown"
+			source="{ScrollerHandle}"
+			/>
+		<o:SkinState event="disabled"/>
+		<o:SkinState
+			event="mouseOver"
+			source="{ScrollerHandle}"
+			/>
+	</o:Skin>
+	<o:Skin id="buttonSkin">
+		<o:SkinState 
+			event="mouseUp" 
+			source="{ButtonUPAST}"
+			/>
+		<o:SkinState
+			event="mouseDown"
+			source="{ButtonDOWNAST}"
+			/>
+		<o:SkinState
+			event="disabled"
+			source="{ButtonDISABLEDAST}"
+			/>
+		<o:SkinState
+			event="rollOver"
+			source="{ButtonOVERAST}"
+			/>
+	</o:Skin>
+	<o:SPAN 
+		id="testSPAN" 
+		width="300" 
+		height="300" 
+		>
+		<![CDATA[
+			Test Test Test Test Test Test Test
+			Test Test Test Test Test
+			Test Test Test Test Test Test
+			Test Test Test Test Test
+			Test Test Test Test Test Test Test
+			Test Test Test
+			Foo Test Test Test Test
+			Bar Test Test
+			111111 Test Test Test Test Test Test
+		]]>
+		</o:SPAN>
+	<o:Rect 
+		id="rect" 
+		x="0" 
+		y="0" 
+		width="200" 
+		height="100"
+		/>
+	<o:Scroller 
+		direction="true" 
+		width="16" 
+		height="100"
+		x="200"
+		backgroundColor="0xCCCCCC"
+		backgroundAlpha="1"
+		target="{testSPAN}"
+		area="{rect}"
+		maxHandle="{maxHandleSkin.clone()}"
+		minHandle="{minHandleSkin.clone()}"
+		body="{bodySkin.clone()}"
+		handle="{handleSkin.clone()}"
+		/>
+	<o:Scroller 
+		direction="false" 
+		width="300" 
+		height="16"
+		x="0"
+		y="250"
+		backgroundAlpha="1"
+		target="{testSPAN}"
+		area="{rect}"
+		maxHandle="{maxHandleSkin.clone()}"
+		minHandle="{minHandleSkin.clone()}"
+		body="{bodySkin.clone()}"
+		handle="{handleSkin.clone()}"
+		/>
+	<o:Preloader
+		width="300"
+		height="300"
+		x="300"
+		y="10"
+		/>
+	<o:ButtonS
+		id="button1"
+		width="100"
+		height="25"
+		x="300"
+		y="340"
+		label="Test"
+		skin="{buttonSkin.clone()}"
+		mouseDown="mouseDownHandler(event)"
+		/>
+	<o:ButtonS
+		id="button2"
+		width="100"
+		height="25"
+		x="300"
+		y="370"
+		label="~ Test Very Long Button Name ~"
+		skin="{buttonSkin.clone()}"
+		/>
+	<o:Hint
+		target="{button2}"
+		text="Test hint button2"
+		/>
+	<o:Hint
+		target="{button1}"
+		text="Test hint button1"
+		point="{new Point()}"
+		/>
+</o:DIV>
