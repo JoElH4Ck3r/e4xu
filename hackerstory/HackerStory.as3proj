@@ -2,7 +2,7 @@
 <project>
   <!-- Output SWF options -->
   <output>
-    <movie disabled="False" />
+    <movie disabled="True" />
     <movie input="" />
     <movie path="bin/HackerStory.swf" />
     <movie fps="30" />
