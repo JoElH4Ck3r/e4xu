@@ -1,4 +1,4 @@
-﻿package inventory 
+﻿package com.ayumilove.inventory 
 {
 	//{imports
 	import flash.geom.Point;

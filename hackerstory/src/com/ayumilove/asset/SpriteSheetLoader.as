@@ -1,4 +1,4 @@
-﻿package assets 
+﻿package com.ayumilove.assets 
 {
 	//{imports
 	import flash.display.BitmapData;

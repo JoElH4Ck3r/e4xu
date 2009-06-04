@@ -1,4 +1,4 @@
-﻿package com.ayumilove.asset 
+﻿package com.ayumilove.assets
 {
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
