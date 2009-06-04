@@ -1,14 +1,14 @@
 ﻿package  
 {
 	//{imports
+	import com.ayumilove.inventory.Item;
+	import com.ayumilove.inventory.ICell;
+	import com.ayumilove.inventory.Inventory;
+	import com.ayumilove.inventory.InventoryCell;
+	import com.ayumilove.inventory.InventoryMap;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
-	import inventory.ICell;
-	import inventory.Inventory;
-	import inventory.InventoryCell;
-	import inventory.InventoryMap;
-	import inventory.Item;
 	//}
 	
 	/**
