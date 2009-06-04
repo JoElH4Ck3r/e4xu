@@ -1,8 +1,8 @@
 ﻿package 
 {
-	import assets.SpriteSheet;
-	import assets.SpriteSheetEvent;
-	import assets.SpriteSheetLoader;
+	import com.ayumilove.assets.SpriteSheet;
+	import com.ayumilove.assets.SpriteSheetEvent;
+	import com.ayumilove.assets.SpriteSheetLoader;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.net.URLRequest;
