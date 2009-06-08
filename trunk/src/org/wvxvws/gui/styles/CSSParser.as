@@ -168,17 +168,18 @@ package org.wvxvws.gui.styles
 		
 		public static function applyMetaData(client:Object, style:Object):void
 		{
+			if (!style) return;
 			var applicableStyles:XMLList = 
 				describeType(client).*.(localName().match(/(^accessor$)|(^variable$)/) &&
-				valueOf().hasOwnProperty("@access") && @access == "readwrite" && canBeStyled(@type));
+				valueOf().hasOwnProperty("@access") && @access == "readwrite" && canBeStyled(@type) && style.hasOwnProperty(@name));
 			var description:XML;
 			var type:Class;
-			for each(var p:String in conversionTable)
+			for (var p:String in style)
 			{
 				if (client.hasOwnProperty(p))
 				{
 					description = applicableStyles.(@name == p)[0];
-					type = types[description.@type.toString()];
+					type = conversionTable[description.@type.toString()];
 					client[p] = stringToType(style[description.@name.toString()], type);
 				}
 			}
