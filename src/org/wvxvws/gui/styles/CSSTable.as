@@ -229,6 +229,11 @@ internal final dynamic class CSSProxy extends Proxy implements ICSSClass
 		return prop;
 	}
 	
+	flash_proxy override function hasProperty(name:*):Boolean
+	{
+		return  _theStyle.indexOf(String(name)) > -1;
+	}
+	
 	flash_proxy override function deleteProperty(name:*):Boolean
 	{
 		var index:int = _theStyle.indexOf(String(name));
