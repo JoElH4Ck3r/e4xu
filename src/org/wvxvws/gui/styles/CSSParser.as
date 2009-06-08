@@ -48,20 +48,19 @@ package org.wvxvws.gui.styles
 		//
 		//--------------------------------------------------------------------------
 		
-		public static const conversionTable:Function = function():Object
+		public static const conversionTable:Object =
 		{
-			this["Array"] = Array;
-			this["Boolean"] = Boolean;
-			this["Class"] = Class;
-			this["flash.geom::ColorTransform"] = ColorTransform;
-			this["int"] = int;
-			this["Number"] = Number;
-			this["flash.geom::Matrix"] = Matrix;
-			this["flash.geom::Point"] = Point;
-			this["flash.geom::Rectangle"] = Rectangle;
-			this["flash.text::TextFormat"] = TextFormat;
-			this["uint"] = uint;
-			return this;
+			"Array" : Array,
+			"Boolean" : Boolean,
+			"Class" : Class,
+			"flash.geom::ColorTransform" : ColorTransform,
+			"int" : int,
+			"Number" : Number,
+			"flash.geom::Matrix" : Matrix,
+			"flash.geom::Point" : Point,
+			"flash.geom::Rectangle" : Rectangle,
+			"flash.text::TextFormat" : TextFormat,
+			"uint" : uint
 		}
 		
 		public static function get parsed():Boolean { return Boolean(_table); }
@@ -174,8 +173,7 @@ package org.wvxvws.gui.styles
 				valueOf().hasOwnProperty("@access") && @access == "readwrite" && canBeStyled(@type));
 			var description:XML;
 			var type:Class;
-			var types:Object = conversionTable();
-			for each(var p:String in style)
+			for each(var p:String in conversionTable)
 			{
 				if (client.hasOwnProperty(p))
 				{
@@ -188,8 +186,7 @@ package org.wvxvws.gui.styles
 		
 		static private function canBeStyled(className:String):Boolean
 		{
-			var types:Object = conversionTable();
-			return types.hasOwnProperty(className);
+			return (className in conversionTable);
 		}
 		
 		public static function processClient(client:ICSSClient):void
