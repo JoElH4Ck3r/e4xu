@@ -78,6 +78,7 @@
 		}
 		
 		private static var _report:XML;
+		private static var _meta:String;
 		private static var _bitPosition:int;
 		private static var _currentByte:int;
 		private static var _bytes:ByteArray;
@@ -99,7 +100,7 @@
 				if (onTag != null)
 				{
 					swf.readBytes(data, 0, tagLongLNT);
-					onTag(tagID, tagLongLNT, data);
+					onTag(tagID, tagLongLNT, position + tagLongLNT + 6, data);
 				}
 			}
 			else
@@ -107,7 +108,7 @@
 				if (onTag != null)
 				{
 					swf.readBytes(data, 0, tagShortLNT);
-					onTag(tagID, tagShortLNT, data);
+					onTag(tagID, tagShortLNT, position + tagShortLNT + 2, data);
 				}
 			}
 			return position + tagLongLNT + 2 + (tagLongLNT ? 4 : tagShortLNT);
@@ -122,8 +123,18 @@
 			rect.right = readBits(dataSize, true) * TWIPS_TO_PIXELS;
 			rect.top = readBits(dataSize, true) * TWIPS_TO_PIXELS;
 			rect.bottom = readBits(dataSize, true) * TWIPS_TO_PIXELS;
-			trace(rect);
-			return _bytes.position;
+			//trace(rect);
+			var ret:uint;
+			do
+			{
+				if (_bytes.readUnsignedByte() !== 0)
+				{
+					ret = _bytes.position;
+					break;
+				}
+			}
+			while (true);
+			return ret;
 		}
 		
 		static private function nextBitByte():void
@@ -163,6 +174,36 @@
 			return uint(value);
 		}
 		
+		public static function readMetaData(swf:ByteArray):String
+		{
+			var position:uint = 8;
+			_meta = "";
+			_bytes = swf;
+			_bytes.position = position;
+			position += readRect();
+			do
+			{
+				try
+				{
+					position = readTag(swf, position, checkForMeta);
+				}
+				catch (error:Error)
+				{
+					//trace("Was not able to read the tag at position", position);
+					break;
+				}
+				if (_meta) break;
+			}
+			while (position < swf.length);
+			return _meta;
+		}
+		
+		private static function checkForMeta(id:int, length:int, position:int, data:ByteArray):void
+		{
+			if (id != 77) return;
+			_meta = data.readUTFBytes(length - 1);
+		}
+		
 		public static function generateReport(swf:ByteArray):XML
 		{
 			var position:uint = 8;
@@ -172,16 +213,24 @@
 			position += readRect();
 			do
 			{
-				position = readTag(swf, position, onTagCallback);
+				try
+				{
+					position = readTag(swf, position, onTagCallback);
+				}
+				catch (error:Error)
+				{
+					//trace("Was not able to read the tag at position", position);
+					break;
+				}
 			}
 			while (position < swf.length);
 			return _report;
 		}
 		
-		static private function onTagCallback(id:int, length:int, data:ByteArray):void
+		static private function onTagCallback(id:int, length:int, position:int, data:ByteArray):void
 		{
-			trace(TYPES[id], id);
-			_report.appendChild(<tag id={ TYPES[id] ? TYPES[id] : id } lenght={ length }/>);
+			//trace(TYPES[id], id);
+			_report.appendChild(<tag id={ TYPES[id] ? TYPES[id] : id } position={ position } lenght={ length }/>);
 		}
 	}
 	
