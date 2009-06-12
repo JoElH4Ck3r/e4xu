@@ -171,7 +171,8 @@ package org.wvxvws.gui.styles
 			if (!style) return;
 			var applicableStyles:XMLList = 
 				describeType(client).*.(localName().match(/(^accessor$)|(^variable$)/) &&
-				valueOf().hasOwnProperty("@access") && @access == "readwrite" && canBeStyled(@type) && style.hasOwnProperty(@name));
+				valueOf().hasOwnProperty("@access") && @access == "readwrite" && 
+				canBeStyled(@type) && style.hasOwnProperty(@name));
 			var description:XML;
 			var type:Class;
 			for (var p:String in style)
