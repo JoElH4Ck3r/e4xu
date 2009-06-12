@@ -21,6 +21,7 @@
 			private var _mp3:ByteArray;
 			private var _location:String;
 			private var _swf:ByteArray;
+			private var _format:int;
 			
 			private function init():void
 			{
@@ -36,6 +37,23 @@
 				{
 					file.browseForOpen("Open", [asFilter]);
 					file.addEventListener(Event.SELECT, fileSelected);
+					_format = SWFCompiler.MP3;
+				}
+				catch (error:Error)
+				{
+					trace("Failed:", error.message);
+				}
+			}
+			
+			private function selectWAVE():void
+			{
+				var file:File = new File();
+				var asFilter:FileFilter = new FileFilter("Audio WAVE", "*.wav");
+				try 
+				{
+					file.browseForOpen("Open", [asFilter]);
+					file.addEventListener(Event.SELECT, fileSelected);
+					_format = SWFCompiler.WAVE;
 				}
 				catch (error:Error)
 				{
@@ -52,7 +70,7 @@
 				stream.open(event.target as File, FileMode.READ);
 				stream.readBytes(_mp3, 0, stream.bytesAvailable);
 				_location = (event.target as File).nativePath;
-				_swf = SWFCompiler.compileMP3SWF(_mp3, fName);
+				_swf = SWFCompiler.compileSoundSWF(_mp3, fName, _format);
 				compileButton.enabled = true;
 				testleButton.enabled = true;
 			}
@@ -81,8 +99,8 @@
 			
 			private function compileSWF():void
 			{
-				trace(_location.replace(/\.mp3$/i, ".swf"));
-				var file:File = new File(_location.replace(/\.mp3$/i, ".swf"));
+				trace(_location.replace(/\.(mp3|vaw)$/i, ".swf"));
+				var file:File = new File(_location.replace(/\.(mp3|vaw)$/i, ".swf"));
 				_swf.position = 0;
 				trace(_swf.length);
 				file.save(_swf);
@@ -94,6 +112,11 @@
 		id="selectButton"
 		label="Select MP3"
 		click="selectMP3()"
+		/>
+	<mx:Button 
+		id="selectButton2"
+		label="Select WAVE"
+		click="selectWAVE()"
 		/>
 	<mx:Button 
 		id="compileButton"
