@@ -29,6 +29,9 @@
 		//
 		//--------------------------------------------------------------------------
 		
+		public static const MP3:int = 2;
+		public static const WAVE:int = 0;
+		
 		public static var signature:String = "\x46\x57\x53";
 		public static var version:uint = 0x9;
 		public static var fileLength:uint = 0;
@@ -92,6 +95,44 @@
 			//soundStreamHead2.streamSoundRate = defineSound.soundRate;
 			//soundStreamHead2.streamSoundSize = defineSound.soundSize;
 			//soundStreamHead2.streamSoundType = defineSound.soundType;
+			
+			doABC.embeddedSoundName = generateMP3Name();
+			swf.writeBytes(doABC.compile());
+			swf.writeBytes(defineSound.data);
+			symbolClass.classNames = [doABC.embeddedSoundName];
+			symbolClass.tagIDs = [1];
+			symbolClass.numSymbols = 1;
+			swf.writeBytes(symbolClass.compile());
+			swf.writeBytes(soundStreamHead2.compile());
+			
+			writeEnd(swf);
+			swf.position = 4;
+			swf.writeUnsignedInt(swf.length);
+			swf.position = 0;
+			return swf;
+		}
+		
+		public static function compileSoundSWF(input:ByteArray, toFile:String, soundType:int):ByteArray
+		{
+			var swf:ByteArray = new ByteArray();
+			swf.endian = Endian.LITTLE_ENDIAN;
+			writeHeader(swf, toFile);
+			switch (soundType)
+			{
+				case MP3:
+					defineSound = MP3Transcoder.transcode(input);
+					break;
+				case WAVE:
+					defineSound = WAVETranscoder.transcode(input);
+					break;
+				default:
+					throw new Error("Wrong sound type");
+					return;
+			}
+			
+			soundStreamHead2.playBackSoundRate = defineSound.soundRate;
+			soundStreamHead2.playBackSoundSize = defineSound.soundSize;
+			soundStreamHead2.playBackSoundType = defineSound.soundType;
 			
 			doABC.embeddedSoundName = generateMP3Name();
 			swf.writeBytes(doABC.compile());
