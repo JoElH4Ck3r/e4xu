@@ -148,7 +148,7 @@ package org.wvxvws.gui.containers
 		protected override function createChild(xml:XML):DisplayObject
 		{
 			var child:DisplayObject = super.createChild(xml);
-			if (!child) return;
+			if (!child) return null;
 			child.width = _cellSize.x;
 			child.height = _cellSize.y;
 			child.x = (_currentItem % _rowCount) * _cellSize.x;

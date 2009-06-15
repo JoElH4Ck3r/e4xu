@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<e4xu:DIV 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:e4xu="http://e4xu.googlecode.com"
+	width="800" height="600">
+	
+	<mx:Script>
+		<![CDATA[
+			import flash.display.DisplayObject;
+			import flash.display.Sprite;
+			import flash.events.Event;
+			import flash.events.MouseEvent;
+			import org.wvxvws.managers.DragManager;
+			import org.wvxvws.gui.renderers.ImageRenderer;
+			//import org.wvxvws.gui.TiledPanel;
+			
+			private var _lastActiveRenderer:DisplayObject;
+			private var _lastActiveIndex:int;
+			
+			private function childrenCreatedHandler(event:Event):void 
+			{
+				data.*.(addRendererHandlers(valueOf()));
+				stage.addEventListener(MouseEvent.MOUSE_UP, stage_mouseUpHandler);
+			}
+			
+			private function addRendererHandlers(xml:XML):void
+			{
+				var renderer:DisplayObject = testPanel.getItemForNode(xml);
+				renderer.addEventListener(MouseEvent.MOUSE_DOWN, renderer_mouseDownHandler);
+			}
+			
+			private function stage_mouseUpHandler(event:MouseEvent):void 
+			{
+				var overRow:int = testPanel.mouseX / testPanel.cellSize.x;
+				var overColumn:int = testPanel.mouseY / testPanel.cellSize.y;
+				var newItemPosition:int = testPanel.rowCount * overColumn + overRow - 1;
+				if (newItemPosition < 0) newItemPosition = 0;
+				if (newItemPosition > data.*.length() - 1) newItemPosition = data.*.length() - 1;
+				DragManager.drop();
+				var currentNode:XML = testPanel.getNodeForItem(_lastActiveRenderer);
+				data.insertChildAfter(data.*[newItemPosition], currentNode);
+				_lastActiveRenderer.visible = true;
+			}
+			
+			private function renderer_mouseDownHandler(event:MouseEvent):void 
+			{
+				_lastActiveRenderer = event.currentTarget as DisplayObject;
+				_lastActiveIndex = testPanel.getIndexForItem(_lastActiveRenderer);
+				DragManager.setDragTarget(_lastActiveRenderer);
+				_lastActiveRenderer.visible = false;
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:XML id="data">
+		<data>
+			<test src="resources/blood300.jpg"/>
+			<test src="resources/clock.jpg"/>
+			<test src="resources/corsair.gif"/>
+			<test src="resources/fly.gif"/>
+			<test src="resources/moghican.jpg"/>
+			<test src="resources/moghican.jpg"/>
+			<test src="resources/moghican.jpg"/>
+			<test src="resources/moghican.jpg"/>
+			<test src="resources/moghican.jpg"/>
+			<test src="resources/moghican.jpg"/>
+		</data>
+	</mx:XML>
+	
+	<e4xu:TiledPanel 
+		id="testPanel" 
+		width="100" 
+		height="100"
+		rendererFactory="{ImageRenderer}"
+		dataProvider="{data}"
+		childrenCreated="childrenCreatedHandler(event)"
+		/>
+	
+</e4xu:DIV>
