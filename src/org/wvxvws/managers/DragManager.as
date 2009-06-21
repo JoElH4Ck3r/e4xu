@@ -78,10 +78,12 @@ package org.wvxvws.managers
 			_targetData = new BitmapData(target.width, target.height, true, 0x00FFFFFF);
 			_targetData.draw(target, null, null, null, null, true);
 			var matrix:Matrix = new Matrix();
-			matrix.translate(target.width / -2, target.height / -2);
+			var halfWidth:int = target.width / -2;
+			var halfHeight:int = target.height / -2;
+			matrix.translate(halfWidth, halfHeight);
 			_target.graphics.beginBitmapFill(_targetData, matrix);
-			_target.graphics.drawRect(target.width / -2, target.height / -2, 
-													target.width, target.height);
+			_target.graphics.drawRect(halfWidth, halfHeight, 
+											target.width >> 0, target.height >> 0);
 			_target.graphics.endFill();
 			_stage = target.stage;
 			if (!_stage) throw new Error("Cannot drag objects not on display list!");

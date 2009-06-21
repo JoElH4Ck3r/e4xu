@@ -6,6 +6,7 @@
 	
 	/**
 	 * SWFTagReader class.
+	 * Dumps SWF contents.
 	 * @author wvxvw
 	 */
 	public class SWFTagReader 
@@ -85,6 +86,20 @@
 		
 		public function SWFTagReader() { super(); }
 		
+		/**
+		 * Reads the SWF tag and invokes the <code>onTag</code> function
+		 * with extracted data.
+		 * 
+		 * @param	swf			The bytearray containing all tags (the SWF file).
+		 * 
+		 * @param	position	The position to start reading form <code>swf</code>.
+		 * 
+		 * @param	onTag		Function to invoke once the tag is read.
+		 * 			Implement this function with the following signature:
+		 * 			<code>function onTag(tagID:int, tagLength:int, tagPosition:int, tagData:ByteArray):void</code>
+		 * 
+		 * @return	Returns the position of the tag last read.
+		 */
 		public static function readTag(swf:ByteArray, position:uint, onTag:Function = null):uint
 		{
 			swf.position = position;
@@ -114,6 +129,10 @@
 			return position + tagLongLNT + 2 + (tagLongLNT ? 4 : tagShortLNT);
 		}
 		
+		/**
+		 * @private
+		 * @return
+		 */
 		private static function readRect():uint
 		{
 			nextBitByte();
@@ -137,13 +156,21 @@
 			return ret;
 		}
 		
+		/**
+		 * @private
+		 */
 		static private function nextBitByte():void
 		{
 			_currentByte = _bytes.readByte();
 			_bitPosition = 0;
 		}
-
 		
+		/**
+		 * @private
+		 * @param	numBits
+		 * @param	signed
+		 * @return
+		 */
 		static private function readBits(numBits:uint, signed:Boolean = false):Number
 		{
 			var value:Number = 0; // int or uint
@@ -174,6 +201,13 @@
 			return uint(value);
 		}
 		
+		/**
+		 * Reads MetaData tag from supplied SWF.
+		 * 
+		 * @param	swf	The bytes of the SWF file.
+		 * 
+		 * @return	The contents of the metadata.
+		 */
 		public static function readMetaData(swf:ByteArray):String
 		{
 			var position:uint = 8;
@@ -198,12 +232,26 @@
 			return _meta;
 		}
 		
+		/**
+		 * @private
+		 * @param	id
+		 * @param	length
+		 * @param	position
+		 * @param	data
+		 */
 		private static function checkForMeta(id:int, length:int, position:int, data:ByteArray):void
 		{
 			if (id != 77) return;
 			_meta = data.readUTFBytes(length - 1);
 		}
 		
+		/**
+		 * Dumps all tags found in SWF into XML format.
+		 * 
+		 * @param	swf	Bytes of SWF file.
+		 * 
+		 * @return	XML containing description for each tag in SWF.
+		 */
 		public static function generateReport(swf:ByteArray):XML
 		{
 			var position:uint = 8;
@@ -227,6 +275,13 @@
 			return _report;
 		}
 		
+		/**
+		 * @private
+		 * @param	id
+		 * @param	length
+		 * @param	position
+		 * @param	data
+		 */
 		static private function onTagCallback(id:int, length:int, position:int, data:ByteArray):void
 		{
 			//trace(TYPES[id], id);

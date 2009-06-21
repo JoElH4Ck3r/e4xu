@@ -5,7 +5,7 @@
 	import org.wvxvws.encoding.tags.DefineSound;
 	
 	/**
-	 * ...
+	 * MP3Transcoder class.
 	 * @author wvxvw 
 	 * port of Clement Wong's SoundTranscoder.java
 	 * at http://opensource.adobe.com/svn/opensource/flex/sdk/trunk/modules/compiler/src/java/flex2/compiler/media/SoundTranscoder.java
