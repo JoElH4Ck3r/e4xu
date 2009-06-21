@@ -71,15 +71,26 @@ package org.wvxvws.managers
 		//
 		//--------------------------------------------------------------------------
 		
-		public static function setDragTarget(target:DisplayObject):void
+		public static function setDragTarget(target:DisplayObject, 
+														dragPoint:Point = null):void
 		{
 			_target = new Sprite();
 			if (_targetData) _targetData.dispose();
 			_targetData = new BitmapData(target.width, target.height, true, 0x00FFFFFF);
 			_targetData.draw(target, null, null, null, null, true);
 			var matrix:Matrix = new Matrix();
-			var halfWidth:int = target.width / -2;
-			var halfHeight:int = target.height / -2;
+			var halfWidth:int;
+			var halfHeight:int;
+			if (dragPoint)
+			{
+				halfWidth = dragPoint.x * -1;
+				halfHeight = dragPoint.y * -1;
+			}
+			else
+			{
+				halfWidth = target.width / -2;
+				halfHeight = target.height / -2;
+			}
 			matrix.translate(halfWidth, halfHeight);
 			_target.graphics.beginBitmapFill(_targetData, matrix);
 			_target.graphics.drawRect(halfWidth, halfHeight, 
