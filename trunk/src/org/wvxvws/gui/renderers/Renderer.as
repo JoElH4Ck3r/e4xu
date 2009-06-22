@@ -66,12 +66,22 @@ package org.wvxvws.gui.renderers
 			_field.selectable = false;
 		}
 		
-		/* INTERFACE org.wvxvws.gui.IRenderer */
+		/* INTERFACE org.wvxvws.gui.renderers.IRenderer */
 		
 		public function initialized(document:Object, id:String):void
 		{
 			_document = document;
 			_id = id;
+		}
+		
+		public function set labelFunction(value:Function):void
+		{
+			// TODO:
+		}
+		
+		public function set labelField(value:String):String
+		{
+			// TODO:
 		}
 		
 		public function get data():XML { return _data; }

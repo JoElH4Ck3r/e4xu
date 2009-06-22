@@ -35,8 +35,10 @@ package org.wvxvws.gui
 		public static const VALIDATED:String = "validated";
 		public static const CHILDREN_CREATED:String = "childrenCreated";
 		public static const DISABLED:String = "disabled";
+		public static const SELECTED:String = "selected";
 		
-		public function GUIEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) 
+		public function GUIEvent(type:String, bubbles:Boolean = false, 
+								cancelable:Boolean = false)
 		{ 
 			super(type, bubbles, cancelable);
 			

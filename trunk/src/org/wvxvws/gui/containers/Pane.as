@@ -35,6 +35,40 @@
 			invalidLayout = true;
 		}
 		
+		[Bindable("labelFieldChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>labelFieldChange</code> event.
+		*/
+		public function get labelField():String { return _labelField; }
+		
+		public function set labelField(value:String):void 
+		{
+			if (_labelField === value) return;
+			_labelField = value;
+			invalidLayout = true;
+			dispatchEvent(new Event("labelFieldChange"));
+		}
+		
+		[Bindable("labelFunctionChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>labelFunctionChange</code> event.
+		*/
+		public function get labelFunction():Function { return _labelFunction; }
+		
+		public function set labelFunction(value:Function):void 
+		{
+			if (_labelFunction === value) return;
+			_labelFunction = value;
+			invalidLayout = true;
+			dispatchEvent(new Event("labelFunctionChange"));
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
@@ -46,6 +80,8 @@
 		protected var _currentItem:int;
 		protected var _removedChildren:Array;
 		protected var _rendererFactory:Class;
+		protected var _labelFunction:Function;
+		protected var _labelField:String = "@label";
 		
 		//--------------------------------------------------------------------------
 		//
@@ -139,6 +175,7 @@
 		{
 			if (_dataProvider === null) return;
 			if (!_dataProvider.*.length()) return;
+			if (!_rendererFactory) return;
 			_currentItem = 0;
 			_removedChildren = [];
 			var i:int;
@@ -171,6 +208,8 @@
 			}
 			if (!child) return null;
 			if (!(child is IRenderer)) return null;
+			(child as IRenderer).labelField = _labelField;
+			(child as IRenderer).labelFunction = _labelFunction;
 			if (!recycledChild) (child as IRenderer).data = xml;
 			super.addChild(child);
 			_currentItem++;

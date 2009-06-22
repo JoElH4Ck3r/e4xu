@@ -67,6 +67,16 @@ package org.wvxvws.gui.renderers
 			return _src == _data.@src;
 		}
 		
+		public function set labelFunction(value:Function):void
+		{
+			// TODO:
+		}
+		
+		public function set labelField(value:String):String
+		{
+			// TODO:
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
