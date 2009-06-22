@@ -33,6 +33,9 @@ package org.wvxvws.gui.renderers
 	{
 		function get isValid():Boolean;
 		
+		function set labelFunction(value:Function):void;
+		function set labelField(value:String):void;
+		
 		function get data():XML;
 		function set data(value:XML):void;
 		

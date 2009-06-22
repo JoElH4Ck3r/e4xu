@@ -73,7 +73,7 @@ package org.wvxvws.gui
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>styleChange</code> event.
+		* When this property is modified, it dispatches the <code>xChange</code> event.
 		*/
 		override public function get x():Number { return _transformMatrix.tx; }
 		
@@ -90,7 +90,7 @@ package org.wvxvws.gui
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>styleChange</code> event.
+		* When this property is modified, it dispatches the <code>yChange</code> event.
 		*/
 		override public function get y():Number { return _transformMatrix.ty; }
 		
@@ -107,7 +107,7 @@ package org.wvxvws.gui
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>styleChange</code> event.
+		* When this property is modified, it dispatches the <code>widthChange</code> event.
 		*/
 		override public function get width():Number { return _bounds.x; }
 		
@@ -124,7 +124,7 @@ package org.wvxvws.gui
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>styleChange</code> event.
+		* When this property is modified, it dispatches the <code>heightChange</code> event.
 		*/
 		override public function get height():Number { return _bounds.y; }
 		
@@ -141,7 +141,7 @@ package org.wvxvws.gui
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>styleChange</code> event.
+		* When this property is modified, it dispatches the <code>scaleXChange</code> event.
 		*/
 		override public function get scaleX():Number { return _transformMatrix.a; }
 		
@@ -158,7 +158,7 @@ package org.wvxvws.gui
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>styleChange</code> event.
+		* When this property is modified, it dispatches the <code>scaleYChange</code> event.
 		*/
 		override public function get scaleY():Number { return _transformMatrix.d; }
 		
@@ -175,7 +175,7 @@ package org.wvxvws.gui
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>styleChange</code> event.
+		* When this property is modified, it dispatches the <code>transformChange</code> event.
 		*/
 		override public function get transform():Transform
 		{
