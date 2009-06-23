@@ -23,9 +23,9 @@ package org.wvxvws.gui.containers
 {
 	import flash.events.Event;
 	import org.wvxvws.gui.GUIEvent;
-	import org.wvxvws.gui.renderers.IBrunchRenderer;
+	import org.wvxvws.gui.renderers.IBranchRenderer;
 	import org.wvxvws.gui.renderers.IRenderer;
-	import org.wvxvws.gui.renderers.NestBrunchRenderer;
+	import org.wvxvws.gui.renderers.NestBranchRenderer;
 	import org.wvxvws.gui.renderers.NestLeafRenderer;
 	import flash.display.DisplayObject;
 	
@@ -37,22 +37,22 @@ package org.wvxvws.gui.containers
 	 */
 	public class Nest extends Pane
 	{
-		protected var _brunchRenderer:Class = NestBrunchRenderer;
+		protected var _branchRenderer:Class = NestBranchRenderer;
 		protected var _leafRenderer:Class = NestLeafRenderer;
 		protected var _nextY:int;
 		protected var _selectedItem:XML;
 		protected var _selectedChild:IRenderer;
 		
-		protected var _brunchLabelField:String = "@label";
+		protected var _branchLabelField:String = "@label";
 		protected var _leafLabelField:String = "@label";
 		
-		protected var _brunchLabelFunction:Function = defaultLabelFunction;
+		protected var _branchLabelFunction:Function = defaultLabelFunction;
 		protected var _leafLabelFunction:Function = defaultLabelFunction;
 		
 		public function Nest()
 		{
 			super();
-			_rendererFactory = _brunchRenderer;
+			_rendererFactory = _branchRenderer;
 			addEventListener(GUIEvent.SELECTED, selectedHandler);
 		}
 		
@@ -61,14 +61,14 @@ package org.wvxvws.gui.containers
 			_selectedChild = event.target as IRenderer;
 			if (!_selectedChild) return;
 			_selectedItem = _selectedChild.data;
-			if (event.target === this || !(event.target is _brunchRenderer)) return;
+			if (event.target === this || !(event.target is _branchRenderer)) return;
 			_nextY = 0;
 			layOutChildren();
 		}
 		
 		protected override function createChild(xml:XML):DisplayObject
 		{
-			var isBrunch:Boolean;
+			var isbranch:Boolean;
 			if (xml.hasSimpleContent())
 			{
 				_rendererFactory = _leafRenderer;
@@ -77,17 +77,17 @@ package org.wvxvws.gui.containers
 			}
 			else
 			{
-				_rendererFactory = _brunchRenderer;
-				_labelFunction = _brunchLabelFunction;
-				_labelField = _brunchLabelField;
-				isBrunch = true;
+				_rendererFactory = _branchRenderer;
+				_labelFunction = _branchLabelFunction;
+				_labelField = _branchLabelField;
+				isbranch = true;
 			}
 			var child:DisplayObject = super.createChild(xml);
 			if (!child) return null;
-			if (isBrunch)
+			if (isbranch)
 			{
-				(child as IBrunchRenderer).leafLabelField = _leafLabelField;
-				(child as IBrunchRenderer).leafLabelFunction = _leafLabelFunction;
+				(child as IBranchRenderer).leafLabelField = _leafLabelField;
+				(child as IBranchRenderer).leafLabelFunction = _leafLabelFunction;
 			}
 			child.y = _nextY;
 			_nextY += child.height;
@@ -100,21 +100,21 @@ package org.wvxvws.gui.containers
 		
 		public function get selectedChild():IRenderer { return _selectedChild; }
 		
-		[Bindable("brunchLabelFieldChange")]
+		[Bindable("branchLabelFieldChange")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>brunchLabelFieldChange</code> event.
+		* When this property is modified, it dispatches the <code>branchLabelFieldChange</code> event.
 		*/
-		public function get brunchLabelField():String { return _brunchLabelField; }
+		public function get branchLabelField():String { return _branchLabelField; }
 		
-		public function set brunchLabelField(value:String):void 
+		public function set branchLabelField(value:String):void 
 		{
-			if (_brunchLabelField === value) return;
-			_brunchLabelField = value;
+			if (_branchLabelField === value) return;
+			_branchLabelField = value;
 			invalidLayout = true;
-			dispatchEvent(new Event("brunchLabelFieldChange"));
+			dispatchEvent(new Event("branchLabelFieldChange"));
 		}
 		
 		[Bindable("leafLabelFieldChange")]
@@ -151,21 +151,21 @@ package org.wvxvws.gui.containers
 			dispatchEvent(new Event("leafLabelFunctionChange"));
 		}
 		
-		[Bindable("brunchLabelFunctionChange")]
+		[Bindable("branchLabelFunctionChange")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>brunchLabelFunctionChange</code> event.
+		* When this property is modified, it dispatches the <code>branchLabelFunctionChange</code> event.
 		*/
-		public function get brunchLabelFunction():Function { return _brunchLabelFunction; }
+		public function get branchLabelFunction():Function { return _branchLabelFunction; }
 		
-		public function set brunchLabelFunction(value:Function):void 
+		public function set branchLabelFunction(value:Function):void 
 		{
-			if (_brunchLabelFunction === value) return;
-			_brunchLabelFunction = value;
+			if (_branchLabelFunction === value) return;
+			_branchLabelFunction = value;
 			invalidLayout = true;
-			dispatchEvent(new Event("brunchLabelFunctionChange"));
+			dispatchEvent(new Event("branchLabelFunctionChange"));
 		}
 	}
 	
