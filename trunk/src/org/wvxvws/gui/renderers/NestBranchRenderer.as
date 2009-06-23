@@ -21,12 +21,16 @@
 
 package org.wvxvws.gui.renderers 
 {
+	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
+	import flash.display.InteractiveObject;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.geom.Rectangle;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
+	import flash.text.TextFormat;
 	import flash.utils.Dictionary;
 	import org.wvxvws.gui.GUIEvent;
 	
@@ -51,12 +55,23 @@ package org.wvxvws.gui.renderers
 		protected var _leafRenderer:Class = NestLeafRenderer;
 		protected var _indent:int;
 		protected var _nestLevel:uint;
-		protected var _icon:Sprite;
+		protected var _icon:DisplayObject;
+		protected var _openCloseIcon:DisplayObject;
 		protected var _field:TextField;
 		protected var _labelField:String = "@label";
 		protected var _labelFunction:Function;
 		protected var _leafLabelFunction:Function;
 		protected var _leafLabelField:String;
+		protected var _textFormat:TextFormat = new TextFormat("_sans", 11);
+		protected var _gutter:int = 6;
+		protected var _padding:int = 2;
+		protected var _bitmapLines:Sprite;
+		protected var _lineBitmap:BitmapData = new BitmapData(2, 2, true, 0x00FFFFFF);
+		
+		protected var _folderIcon:Class;
+		protected var _closedIcon:Class;
+		protected var _openIcon:Class;
+		protected var _docIcon:Class;
 		
 		private var _childIDGenerator:uint;
 		
@@ -93,6 +108,10 @@ package org.wvxvws.gui.renderers
 		
 		protected function displayChildren():void
 		{
+			if (_bitmapLines && contains(_bitmapLines))
+			{
+				removeChild(_bitmapLines);
+			}
 			_data.*.(addRenderer(valueOf(), childIndex()));
 			var unused:Dictionary = new Dictionary();
 			var renderer:Object;
@@ -104,7 +123,59 @@ package org.wvxvws.gui.renderers
 				}
 			}
 			for (renderer in unused) delete _children[renderer];
+			if (_bitmapLines) addChild(_bitmapLines);
+			drawLines();
 			dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED, true));
+		}
+		
+		protected function drawLines():void
+		{
+			if (!_openCloseIcon) return;
+			var openedHeight:int;
+			if (!_bitmapLines)
+			{
+				_bitmapLines = new Sprite();
+				addChild(_bitmapLines);
+				_lineBitmap.setPixel32(0, 0, 0xFF999999);
+				_lineBitmap.setPixel32(1, 1, 0xFF999999);
+			}
+			_bitmapLines.graphics.clear();
+			_bitmapLines.graphics.beginBitmapFill(_lineBitmap);
+			_bitmapLines.graphics.drawRect((_openCloseIcon.x + 
+								_openCloseIcon.width / 2) >> 0,
+								_openCloseIcon.y + _openCloseIcon.height, 1, height - 
+								(_openCloseIcon.y + _openCloseIcon.height));
+			_bitmapLines.graphics.drawRect(_openCloseIcon.x + _openCloseIcon.width,
+					(_openCloseIcon.y + _openCloseIcon.height / 2) >> 0, _gutter, 1);
+			if (_opened)
+			{
+				for (var obj:Object in _children)
+				{
+					openedHeight = Math.max(openedHeight, 
+							(obj as DisplayObject).y + 
+							(obj as DisplayObject).height / 2);
+					if (obj is NestBranchRenderer)
+					{
+						_bitmapLines.graphics.drawRect(((_icon.x + 
+									_icon.width / 2) >> 0) + 1,
+									((obj as DisplayObject).y + _openCloseIcon.y + 
+									_openCloseIcon.height / 2) >> 0,
+									_field.x - (_icon.x + _icon.width / 2) >> 0, 1);
+					}
+					else
+					{
+						_bitmapLines.graphics.drawRect(((_icon.x + 
+									_icon.width / 2) >> 0) + 1,
+									((obj as DisplayObject).y + 
+									(obj as DisplayObject).height / 2) >> 0,
+									_field.x - (_icon.x + _icon.width / 2) >> 0, 1);
+					}
+				}
+				openedHeight = openedHeight - (_icon.y + _icon.height);
+				_bitmapLines.graphics.drawRect((_icon.x + _icon.width / 2) >> 0, 
+											_icon.y + _icon.height, 1, openedHeight);
+			}
+			_bitmapLines.graphics.endFill();
 		}
 		
 		protected function addRenderer(xml:XML, index:uint):void
@@ -139,11 +210,19 @@ package org.wvxvws.gui.renderers
 			{
 				(renderer as IBranchRenderer).leafLabelField = _leafLabelField;
 				(renderer as IBranchRenderer).leafLabelFunction = _leafLabelFunction;
+				(renderer as IBranchRenderer).folderIcon = _folderIcon;
+				(renderer as IBranchRenderer).openIcon = _openIcon;
+				(renderer as IBranchRenderer).closedIcon = _closedIcon;
+				(renderer as IBranchRenderer).docIcon = _docIcon;
+			}
+			else if (renderer is NestLeafRenderer)
+			{
+				(renderer as NestLeafRenderer).iconClass = _docIcon;
 			}
 			(renderer as IRenderer).data = xml;
 			_children[renderer] = childIDGenerator();
-			renderer.y = super.height;
-			renderer.x = DEFAULT_INDENT;
+			renderer.y = super.height + _padding;
+			renderer.x = _field.x;
 			super.addChildAt(renderer, index);
 		}
 		
@@ -166,23 +245,51 @@ package org.wvxvws.gui.renderers
 			{
 				removeChild(child as DisplayObject);
 			}
+			drawLines();
 		}
 		
-		protected function drawIcon():Sprite
+		protected function drawIcon():DisplayObject
 		{
-			var s:Sprite = new Sprite();
-			s.graphics.beginFill(0);
-			s.graphics.drawRect(0, 0, 10, 10);
-			s.graphics.endFill();
+			var c:Class = _folderIcon ? _folderIcon : Sprite;
+			var s:DisplayObject = new c();
+			var u:Sprite;
+			if (c === Sprite)
+			{
+				(s as Sprite).graphics.beginFill(0);
+				(s as Sprite).graphics.drawRect(0, 0, 20, 20);
+				(s as Sprite).graphics.endFill();
+			}
+			if (!(s is InteractiveObject))
+			{
+				u = new Sprite();
+				u.addChild(s);
+				s = u;
+			}
+			return s;
+		}
+		
+		protected function drawOpenCloseIcon():DisplayObject
+		{
+			if ((_opened && !_openIcon) ||
+				(!_opened && !_closedIcon)) return new Sprite();
+			var s:DisplayObject;
+			if (_opened) s = new _openIcon();
+			else s = new _closedIcon();
+			if (!(s is InteractiveObject))
+			{
+				var u:Sprite = new Sprite();
+				u.addChild(s);
+				s = u;
+			}
 			return s;
 		}
 		
 		protected function drawField():TextField
 		{
 			var t:TextField = new TextField();
+			t.defaultTextFormat = _textFormat;
 			t.autoSize = TextFieldAutoSize.LEFT;
 			t.height = 10;
-			t.border = true;
 			return t;
 		}
 		
@@ -215,22 +322,7 @@ package org.wvxvws.gui.renderers
 				_nestLevel++;
 			}
 			_indent = _nestLevel * DEFAULT_INDENT;
-			if (_icon && super.contains(_icon))
-			{
-				_icon.removeEventListener(MouseEvent.CLICK, icon_mouseClickHandler);
-				super.removeChild(_icon);
-			}
-			_icon = drawIcon();
-			_icon.addEventListener(MouseEvent.CLICK, icon_mouseClickHandler);
-			super.addChild(_icon);
-			if (_field && super.contains(_field))
-			{
-				super.removeChild(_field);
-			}
-			_field = drawField();
-			_field.x = _icon.width + 5;
-			rendrerText();
-			super.addChild(_field);
+			draw();
 			displayChildren();
 		}
 		
@@ -261,9 +353,44 @@ package org.wvxvws.gui.renderers
 			}
 		}
 		
+		protected function draw():void
+		{
+			if (_openCloseIcon && super.contains(_openCloseIcon))
+			{
+				_openCloseIcon.removeEventListener(MouseEvent.CLICK, icon_mouseClickHandler);
+				super.removeChild(_openCloseIcon);
+			}
+			_openCloseIcon = drawOpenCloseIcon();
+			_openCloseIcon.addEventListener(MouseEvent.CLICK, icon_mouseClickHandler);
+			
+			if (_icon && super.contains(_icon))
+			{
+				_icon.removeEventListener(MouseEvent.CLICK, icon_mouseClickHandler);
+				super.removeChild(_icon);
+			}
+			_icon = drawIcon();
+			_icon.y = 20 - _icon.height >> 1;
+			_icon.addEventListener(MouseEvent.CLICK, icon_mouseClickHandler);
+			super.addChild(_icon);
+			
+			_icon.x = _openCloseIcon.width + _gutter;
+			_openCloseIcon.y = _icon.y + (_icon.width - _openCloseIcon.width) >> 1;
+			super.addChild(_openCloseIcon);
+			if (_field && super.contains(_field))
+			{
+				super.removeChild(_field);
+			}
+			_field = drawField();
+			_field.x = _icon.width + _icon.x + _gutter;
+			rendrerText();
+			_field.scrollRect = new Rectangle(0, 0, _field.width, 20);
+			super.addChild(_field);
+		}
+		
 		protected function icon_mouseClickHandler(event:MouseEvent):void 
 		{
 			opened = !opened;
+			draw();
 			dispatchEvent(new GUIEvent(GUIEvent.SELECTED, true));
 		}
 		
@@ -311,6 +438,62 @@ package org.wvxvws.gui.renderers
 			return ++_childIDGenerator;
 		}
 		
+		/* INTERFACE org.wvxvws.gui.renderers.IBranchRenderer */
+		
+		public function get folderIcon():Class { return _folderIcon; }
+		
+		public function set folderIcon(value:Class):void
+		{
+			if (_folderIcon === value) return;
+			_folderIcon = value;
+			draw();
+			for (var obj:Object in _children)
+			{
+				if ((obj as DisplayObject).parent)
+				{
+					hideChildren();
+					displayChildren();
+					break;
+				}
+			}
+		}
+		
+		public function get closedIcon():Class { return _closedIcon; }
+		
+		public function set closedIcon(value:Class):void
+		{
+			if (_closedIcon === value) return;
+			_closedIcon = value;
+			draw();
+			for (var obj:Object in _children)
+			{
+				if ((obj as DisplayObject).parent)
+				{
+					hideChildren();
+					displayChildren();
+					break;
+				}
+			}
+		}
+		
+		public function get openIcon():Class { return _openIcon; }
+		
+		public function set openIcon(value:Class):void
+		{
+			if (_openIcon === value) return;
+			_openIcon = value;
+			draw();
+			for (var obj:Object in _children)
+			{
+				if ((obj as DisplayObject).parent)
+				{
+					hideChildren();
+					displayChildren();
+					break;
+				}
+			}
+		}
+		
 		/* INTERFACE org.wvxvws.gui.renderers.IRenderer */
 		
 		public function get labelField():String { return _labelField; }
@@ -339,8 +522,17 @@ package org.wvxvws.gui.renderers
 		public function set leafLabelField(value:String):void 
 		{
 			if (_leafLabelField === value) return;
-			trace("leafLabelField", _leafLabelField);
 			_leafLabelField = value;
+			hideChildren();
+			displayChildren();
+		}
+		
+		public function get docIcon():Class { return _docIcon; }
+		
+		public function set docIcon(value:Class):void 
+		{
+			if (_docIcon === value) return;
+			_docIcon = value;
 			hideChildren();
 			displayChildren();
 		}

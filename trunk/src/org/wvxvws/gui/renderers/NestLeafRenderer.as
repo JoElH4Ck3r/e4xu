@@ -21,10 +21,13 @@
 
 package org.wvxvws.gui.renderers 
 {
+	import flash.display.DisplayObject;
+	import flash.display.InteractiveObject;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
+	import flash.text.TextFormat;
 	import org.wvxvws.gui.GUIEvent;
 	
 	[Event(name="selected", type="org.wvxvws.gui.GUIEvent")]
@@ -39,10 +42,13 @@ package org.wvxvws.gui.renderers
 		protected var _id:String;
 		protected var _data:XML;
 		protected var _dataCopy:XML;
-		protected var _icon:Sprite;
+		protected var _icon:DisplayObject;
 		protected var _field:TextField;
 		protected var _labelField:String = "@label";
 		protected var _labelFunction:Function;
+		protected var _textFormat:TextFormat = new TextFormat("_sans", 11);
+		protected var _gutter:int = 6;
+		protected var _iconClass:Class;
 		
 		public function NestLeafRenderer() { super(); }
 		
@@ -54,21 +60,37 @@ package org.wvxvws.gui.renderers
 			_id = id;
 		}
 		
-		protected function drawIcon():Sprite
+		protected function drawIcon():DisplayObject
 		{
-			var s:Sprite = new Sprite();
-			s.graphics.beginFill(0);
-			s.graphics.drawRect(0, 0, 10, 10);
-			s.graphics.endFill();
+			var s:DisplayObject;
+			if (_iconClass)
+			{
+				trace("has icon class");
+				s = new _iconClass();
+			}
+			else
+			{
+				trace("no icon class");
+				s = new Sprite();
+				(s as Sprite).graphics.beginFill(0);
+				(s as Sprite).graphics.drawRect(0, 0, 10, 10);
+				(s as Sprite).graphics.endFill();
+			}
+			if (!(s is InteractiveObject))
+			{
+				var u:Sprite = new Sprite();
+				u.addChild(s);
+				s = u;
+			}
 			return s;
 		}
 		
 		protected function drawField():TextField
 		{
 			var t:TextField = new TextField();
+			t.defaultTextFormat = _textFormat;
 			t.autoSize = TextFieldAutoSize.LEFT;
 			t.height = 10;
-			t.border = true;
 			return t;
 		}
 		
@@ -85,6 +107,11 @@ package org.wvxvws.gui.renderers
 			if (isValid && _data === value) return;
 			_data = value;
 			_dataCopy = value.copy();
+			render();
+		}
+		
+		protected function render():void
+		{
 			if (_icon && super.contains(_icon))
 			{
 				_icon.removeEventListener(MouseEvent.CLICK, icon_mouseClickHandler);
@@ -99,8 +126,7 @@ package org.wvxvws.gui.renderers
 			}
 			_field = drawField();
 			super.addChild(_field);
-			_field.x = _icon.width + 5;
-			//trace("_labelField", _labelField);
+			_field.x = _icon.width + _gutter;
 			rendrerText();
 		}
 		
@@ -150,6 +176,16 @@ package org.wvxvws.gui.renderers
 		{
 			_labelFunction = value;
 			if (_data) rendrerText();
+		}
+		
+		public function get iconClass():Class { return _iconClass; }
+		
+		public function set iconClass(value:Class):void 
+		{
+			if (_iconClass === value) return;
+			_iconClass = value;
+			trace("icon class set");
+			render();
 		}
 	}
 	
