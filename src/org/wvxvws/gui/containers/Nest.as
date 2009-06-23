@@ -49,6 +49,11 @@ package org.wvxvws.gui.containers
 		protected var _branchLabelFunction:Function = defaultLabelFunction;
 		protected var _leafLabelFunction:Function = defaultLabelFunction;
 		
+		protected var _folderIcon:Class;
+		protected var _closedIcon:Class;
+		protected var _openIcon:Class;
+		protected var _docIcon:Class;
+		
 		public function Nest()
 		{
 			super();
@@ -88,6 +93,14 @@ package org.wvxvws.gui.containers
 			{
 				(child as IBranchRenderer).leafLabelField = _leafLabelField;
 				(child as IBranchRenderer).leafLabelFunction = _leafLabelFunction;
+				(child as IBranchRenderer).folderIcon = _folderIcon;
+				(child as IBranchRenderer).closedIcon = _closedIcon;
+				(child as IBranchRenderer).openIcon = _openIcon;
+				(child as IBranchRenderer).docIcon = _docIcon;
+			}
+			else if (child is NestLeafRenderer)
+			{
+				(child as NestLeafRenderer).iconClass = _docIcon;
 			}
 			child.y = _nextY;
 			_nextY += child.height;
@@ -166,6 +179,42 @@ package org.wvxvws.gui.containers
 			_branchLabelFunction = value;
 			invalidLayout = true;
 			dispatchEvent(new Event("branchLabelFunctionChange"));
+		}
+		
+		public function get folderIcon():Class { return _folderIcon; }
+		
+		public function set folderIcon(value:Class):void 
+		{
+			if (_folderIcon === value) return;
+			_folderIcon = value;
+			invalidLayout = true;
+		}
+		
+		public function get closedIcon():Class { return _closedIcon; }
+		
+		public function set closedIcon(value:Class):void 
+		{
+			if (_closedIcon === value) return;
+			_closedIcon = value;
+			invalidLayout = true;
+		}
+		
+		public function get openIcon():Class { return _openIcon; }
+		
+		public function set openIcon(value:Class):void 
+		{
+			if (_openIcon === value) return;
+			_openIcon = value;
+			invalidLayout = true;
+		}
+		
+		public function get docIcon():Class { return _docIcon; }
+		
+		public function set docIcon(value:Class):void 
+		{
+			if (_docIcon === value) return;
+			_docIcon = value;
+			invalidLayout = true;
 		}
 	}
 	
