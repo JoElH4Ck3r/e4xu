@@ -65,12 +65,10 @@ package org.wvxvws.gui.renderers
 			var s:DisplayObject;
 			if (_iconClass)
 			{
-				trace("has icon class");
 				s = new _iconClass();
 			}
 			else
 			{
-				trace("no icon class");
 				s = new Sprite();
 				(s as Sprite).graphics.beginFill(0);
 				(s as Sprite).graphics.drawRect(0, 0, 10, 10);
@@ -184,7 +182,6 @@ package org.wvxvws.gui.renderers
 		{
 			if (_iconClass === value) return;
 			_iconClass = value;
-			trace("icon class set");
 			render();
 		}
 	}

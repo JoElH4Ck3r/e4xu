@@ -71,7 +71,7 @@ package org.wvxvws.gui.renderers
 		protected var _folderIcon:Class;
 		protected var _closedIcon:Class;
 		protected var _openIcon:Class;
-		protected var _docIcon:Class;
+		protected var _docIconFactory:Function;
 		
 		private var _childIDGenerator:uint;
 		
@@ -213,11 +213,12 @@ package org.wvxvws.gui.renderers
 				(renderer as IBranchRenderer).folderIcon = _folderIcon;
 				(renderer as IBranchRenderer).openIcon = _openIcon;
 				(renderer as IBranchRenderer).closedIcon = _closedIcon;
-				(renderer as IBranchRenderer).docIcon = _docIcon;
+				(renderer as IBranchRenderer).docIconFactory = _docIconFactory;
 			}
-			else if (renderer is NestLeafRenderer)
+			else if (renderer is NestLeafRenderer && _docIconFactory !== null)
 			{
-				(renderer as NestLeafRenderer).iconClass = _docIcon;
+				(renderer as NestLeafRenderer).iconClass = 
+												_docIconFactory(xml) as Class;
 			}
 			(renderer as IRenderer).data = xml;
 			_children[renderer] = childIDGenerator();
@@ -299,6 +300,46 @@ package org.wvxvws.gui.renderers
 		{
 			_document = document;
 			_id = id;
+		}
+		
+		public function nodeToRenderer(node:XML):IRenderer
+		{
+			if (_data === node) return this;
+			var ret:IRenderer;
+			for (var obj:Object in _children)
+			{
+				if (obj is IBranchRenderer)
+				{
+					if ((obj as IBranchRenderer).data === node)
+						return obj as IRenderer;
+					ret = (obj as IBranchRenderer).nodeToRenderer(node);
+					if (ret) return ret;
+				}
+				else if (obj is IRenderer)
+				{
+					if ((obj as IRenderer).data === node)
+					{
+						return obj as IRenderer;
+					}
+				}
+			}
+			return null;
+		}
+		
+		public function rendererToXML(renderer:IRenderer):XML
+		{
+			if (renderer === this) return _data;
+			var ret:XML;
+			for (var obj:Object in _children)
+			{
+				if (obj === renderer) return (obj as IRenderer).data;
+				else if (obj is IBranchRenderer)
+				{
+					ret = (obj as IBranchRenderer).rendererToXML(renderer);
+					if (ret) return ret;
+				}
+			}
+			return null;
 		}
 		
 		public function get isValid():Boolean
@@ -527,12 +568,12 @@ package org.wvxvws.gui.renderers
 			displayChildren();
 		}
 		
-		public function get docIcon():Class { return _docIcon; }
+		public function get docIconFactory():Function { return _docIconFactory; }
 		
-		public function set docIcon(value:Class):void 
+		public function set docIconFactory(value:Function):void 
 		{
-			if (_docIcon === value) return;
-			_docIcon = value;
+			if (_docIconFactory === value) return;
+			_docIconFactory = value;
 			hideChildren();
 			displayChildren();
 		}

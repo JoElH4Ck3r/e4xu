@@ -29,6 +29,11 @@ package org.wvxvws.gui.containers
 	import org.wvxvws.gui.renderers.NestLeafRenderer;
 	import flash.display.DisplayObject;
 	
+	[Exclude(name="addChild", kind="property")]
+	[Exclude(name="addChildAt", kind="property")]
+	[Exclude(name="removeChild", kind="property")]
+	[Exclude(name="removeChildAt", kind="property")]
+	
 	[Event(name="selected", type="org.wvxvws.gui.GUIEvent")]
 	
 	/**
@@ -48,11 +53,15 @@ package org.wvxvws.gui.containers
 		
 		protected var _branchLabelFunction:Function = defaultLabelFunction;
 		protected var _leafLabelFunction:Function = defaultLabelFunction;
+		protected var _docIconFactory:Function = defaultDocFactory;
 		
 		protected var _folderIcon:Class;
 		protected var _closedIcon:Class;
 		protected var _openIcon:Class;
 		protected var _docIcon:Class;
+		
+		protected var _cumulativeHeight:int;
+		protected var _cumulativeWidth:int;
 		
 		public function Nest()
 		{
@@ -69,6 +78,17 @@ package org.wvxvws.gui.containers
 			if (event.target === this || !(event.target is _branchRenderer)) return;
 			_nextY = 0;
 			layOutChildren();
+		}
+		
+		protected override function layOutChildren():void 
+		{
+			_cumulativeHeight = 0;
+			_cumulativeWidth = 0;
+			_nextY = 0;
+			super.layOutChildren();
+			super.width = _cumulativeWidth;
+			super.height = _cumulativeHeight;
+			trace("super.height", super.height, _cumulativeWidth);
 		}
 		
 		protected override function createChild(xml:XML):DisplayObject
@@ -96,18 +116,61 @@ package org.wvxvws.gui.containers
 				(child as IBranchRenderer).folderIcon = _folderIcon;
 				(child as IBranchRenderer).closedIcon = _closedIcon;
 				(child as IBranchRenderer).openIcon = _openIcon;
-				(child as IBranchRenderer).docIcon = _docIcon;
+				(child as IBranchRenderer).docIconFactory = _docIconFactory;
 			}
 			else if (child is NestLeafRenderer)
 			{
-				(child as NestLeafRenderer).iconClass = _docIcon;
+				(child as NestLeafRenderer).iconClass = _docIconFactory((child as NestLeafRenderer).data);
 			}
 			child.y = _nextY;
 			_nextY += child.height;
+			_cumulativeHeight += child.height;
+			_cumulativeWidth = Math.max(_cumulativeWidth, child.width);
 			return child;
 		}
 		
 		protected function defaultLabelFunction(input:String):String { return input; }
+		
+		protected function defaultDocFactory(input:String):Class { return _docIcon; }
+		
+		public function nodeToRenderer(node:XML):IRenderer
+		{
+			var ret:IRenderer;
+			for each(var renderer:DisplayObject in super._removedChildren)
+			{
+				if (renderer is IRenderer)
+				{
+					if (renderer is IBranchRenderer)
+					{
+						if ((renderer as IBranchRenderer).data === node)
+							return renderer as IRenderer;
+						ret = (renderer as IBranchRenderer).nodeToRenderer(node);
+						if (ret) return ret;
+					}
+					else
+					{
+						if ((renderer as IRenderer).data === node)
+							return renderer as IRenderer;
+					}
+				}
+			}
+			return null;
+		}
+		
+		public function rendererToXML(renderer:IRenderer):XML
+		{
+			var ret:XML;
+			for each(var rend:DisplayObject in super._removedChildren)
+			{
+				if (renderer === rend) return (rend as IRenderer).data;
+				if (rend is IBranchRenderer)
+				{
+					ret = (rend as IBranchRenderer).rendererToXML(renderer);
+					if (ret) return ret;
+				}
+			}
+			return null;
+		}
 		
 		public function get selectedItem():XML { return _selectedItem; }
 		
@@ -214,6 +277,15 @@ package org.wvxvws.gui.containers
 		{
 			if (_docIcon === value) return;
 			_docIcon = value;
+			invalidLayout = true;
+		}
+		
+		public function get docIconFactory():Function { return _docIconFactory; }
+		
+		public function set docIconFactory(value:Function):void 
+		{
+			if (_docIconFactory === value) return;
+			_docIconFactory = value;
 			invalidLayout = true;
 		}
 	}
