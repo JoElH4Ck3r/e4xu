@@ -1,6 +1,7 @@
 ﻿package org.wvxvws.gui 
 {
 	//{imports
+	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.geom.Matrix;
 	//}
@@ -64,15 +65,48 @@
 			draw();
 		}
 		
+		public function get minFactory():Function { return _minFactory; }
+		
+		public function set minFactory(value:Function):void 
+		{
+			if (value === _minFactory) return;
+			_minFactory = value;
+			_needRedraw = true;
+			draw();
+		}
+		
+		public function get maxFactory():Function { return _maxFactory; }
+		
+		public function set maxFactory(value:Function):void 
+		{
+			if (value === _maxFactory) return;
+			_maxFactory = value;
+			_needRedraw = true;
+			draw();
+		}
+		
+		public function get middleFactory():Function { return _middleFactory; }
+		
+		public function set middleFactory(value:Function):void 
+		{
+			if (value === _middleFactory) return;
+			_middleFactory = value;
+			_needRedraw = true;
+			draw();
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
 		//
 		//--------------------------------------------------------------------------
 		
-		protected var _min:Sprite = new HandleRefAST() as Sprite;
-		protected var _max:Sprite = new HandleAST() as Sprite;
-		protected var _middle:Sprite = new HandleBodyAST() as Sprite;
+		protected var _min:DisplayObject;
+		//= new HandleRefAST() as Sprite;
+		protected var _max:DisplayObject;
+		//= new HandleAST() as Sprite;
+		protected var _middle:DisplayObject;
+		//= new HandleBodyAST() as Sprite;
 		protected var _rotation:int;
 		protected var _direction:Boolean = true;
 		protected var _height:int;
@@ -81,6 +115,12 @@
 		protected var _scaleY:Number;
 		protected var _nativeWidth:int;
 		protected var _nativeHeight:int;
+		
+		protected var _minFactory:Function = defaultFactory;
+		protected var _maxFactory:Function = defaultFactory;
+		protected var _middleFactory:Function = defaultFactory;
+		
+		protected var _needRedraw:Boolean = true;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -97,12 +137,6 @@
 		public function ScrollerHandle()
 		{
 			super();
-			addChild(_min);
-			addChild(_max);
-			addChild(_middle);
-			_nativeWidth = _width = _min.width;
-			_nativeHeight = _height = _min.height + _middle.height + _max.height;
-			//trace(_min.height, _middle.height, _max.height);
 			draw();
 		}
 		
@@ -114,6 +148,21 @@
 		
 		public function draw():void
 		{
+			if (_needRedraw)
+			{
+				if (_min && contains(_min)) removeChild(_min);
+				if (_max && contains(_max)) removeChild(_max);
+				if (_middle && contains(_middle)) removeChild(_middle);
+				_min = _minFactory() as DisplayObject; 
+				_max = _maxFactory() as DisplayObject; 
+				_middle = _middleFactory() as DisplayObject; 
+				addChild(_min);
+				addChild(_max);
+				addChild(_middle);
+				_nativeWidth = _width = _min.width;
+				_nativeHeight = _height = _min.height + _middle.height + _max.height;
+				_needRedraw = false;
+			}
 			if (_direction)
 			{
 				_middle.y = _min.height >> 0;
@@ -135,7 +184,6 @@
 				_middle.x = _min.width;
 				_max.x = (_middle.width + _middle.x) >> 0;
 				_max.y = _middle.y = 0;
-				//trace("_middle.height, _middle.width", _middle.height, _width, _middle.width, _middle.rotation, _middle.scaleX, _middle.scaleY);
 			}
 		}
 		
@@ -144,6 +192,15 @@
 		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
+		
+		protected function defaultFactory():Sprite
+		{
+			var s:Sprite = new Sprite();
+			s.graphics.beginFill(0);
+			s.graphics.drawRect(0, 0, 20, 10);
+			s.graphics.endFill();
+			return s;
+		}
 		
 		//--------------------------------------------------------------------------
 		//

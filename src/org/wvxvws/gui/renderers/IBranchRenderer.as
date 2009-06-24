@@ -1,6 +1,5 @@
 ﻿package org.wvxvws.gui.renderers 
 {
-	
 	/**
 	 * IBranchRenderer interface.
 	 * @author wvxvw
@@ -17,7 +16,11 @@
 		
 		function set openIcon(value:Class):void;
 		
-		function set docIcon(value:Class):void;
+		function set docIconFactory(value:Function):void;
+		
+		function nodeToRenderer(node:XML):IRenderer;
+		
+		function rendererToXML(renderer:IRenderer):XML;
 	}
 	
 }

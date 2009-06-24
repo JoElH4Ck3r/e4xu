@@ -125,7 +125,8 @@ package org.wvxvws.gui
 		{
 			if (_maxHandle === value) return;
 			_maxHandle = value;
-			if (_maxHandle is ISkin) (_maxHandle as ISkin).state = MouseEvent.MOUSE_UP;
+			if (_maxHandle is ISkin) 
+				(_maxHandle as ISkin).state = MouseEvent.MOUSE_UP;
 			invalidLayout = true;
 			dispatchEvent(new Event("maxHandleChange"));
 		}
@@ -189,10 +190,61 @@ package org.wvxvws.gui
 		
 		public function set direction(value:Boolean):void 
 		{
-			if (_direction == value) return;
+			if (_direction === value) return;
 			_direction = value;
 			invalidLayout = true;
 			dispatchEvent(new Event("directionChange"));
+		}
+		
+		[Bindable("handleWidthChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>handleWidthChange</code> event.
+		*/
+		public function get handleWidth():int { return _handleWidth; }
+		
+		public function set handleWidth(value:int):void 
+		{
+			if (_handleWidth === value) return;
+			_handleWidth = value;
+			invalidLayout = true;
+			dispatchEvent(new Event("handleWidthChange"));
+		}
+		
+		[Bindable("minMaxHandleSizeChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>minMaxHandleSizeChange</code> event.
+		*/
+		public function get minMaxHandleSize():int { return _minMaxHandleSize; }
+		
+		public function set minMaxHandleSize(value:int):void 
+		{
+			if (_minMaxHandleSize === value) return;
+			_minMaxHandleSize = value;
+			invalidLayout = true;
+			dispatchEvent(new Event("minMaxHandleSizeChange"));
+		}
+		
+		[Bindable("gutterChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>gutterChange</code> event.
+		*/
+		public function get gutter():int { return _gutter; }
+		
+		public function set gutter(value:int):void 
+		{
+			if (_gutter === value) return;
+			_gutter = value;
+			invalidLayout = true;
+			dispatchEvent(new Event("gutterChange"));
 		}
 		
 		//--------------------------------------------------------------------------
@@ -210,7 +262,7 @@ package org.wvxvws.gui
 		
 		protected var _direction:Boolean;
 		protected var _path:Number = 160;
-		protected var _handleSize:int = 16;
+		protected var _handleWidth:int = 25;
 		protected var _minMaxHandleSize:int = 16;
 		protected var _gutter:int = 7;
 		
@@ -264,14 +316,15 @@ package org.wvxvws.gui
 			if (_direction)
 			{
 				_minHandle.width = width;
-				_minHandle.height = 25;
+				_minHandle.height = _handleWidth;
 				_maxHandle.width = width;
-				_maxHandle.height = 25;
+				_maxHandle.height = _handleWidth;
 				_handle.width = width;
 				_maxHandle.y = height - _maxHandle.height;
 				_path = height - (_minHandle.height + _maxHandle.height);
 				_handle.height = handleRatio() * _path + _gutter * 2;
-				_handle.y = _minHandle.height + (_path - _handle.height) * _position - _gutter;
+				_handle.y = _minHandle.height + 
+							(_path - _handle.height) * _position - _gutter;
 				_body.width = width;
 				_body.height = height;
 				//_body.y = _minHandle.height;
@@ -279,22 +332,23 @@ package org.wvxvws.gui
 			else
 			{
 				_minHandle.width = height;
-				_minHandle.height = 25;
+				_minHandle.height = _handleWidth;
 				_maxHandle.width = height;
-				_maxHandle.height = 25;
+				_maxHandle.height = _handleWidth;
 				_minHandle.rotation = -90;
 				_minHandle.y = height;
 				_maxHandle.rotation = -90;
 				_maxHandle.y = height;
 				_path = width - (_minHandle.width + _maxHandle.width);
 				_maxHandle.x = width - _maxHandle.width;
-				_handle.width = 16; // width;
+				_handle.width = _minMaxHandleSize; // width;
 				_handle.height = handleRatio() * _path + _gutter * 2;
 				_handle.rotation = -90;
-				_handle.x = _minHandle.width + (_path - _handle.height) * _position - _gutter;
+				_handle.x = _minHandle.width + 
+							(_path - _handle.height) * _position - _gutter;
 				_body.height = width;
 				_handle.y = height;
-				_body.width = 16;
+				_body.width = _minMaxHandleSize;
 				_body.rotation = -90;
 				//_body.x = _minHandle.width;
 				_body.y = height;
@@ -336,21 +390,24 @@ package org.wvxvws.gui
 				_handle.addEventListener(MouseEvent.MOUSE_OUT, 
 									skinnables_mouseOutHandler, false, 0, true);
 			}
-			_target.scrollRect = _area;
+			if (_area && _target) _target.scrollRect = _area;
 		}
 		
 		protected function skinnables_mouseOverHandler(event:MouseEvent):void
 		{
-			if (event.currentTarget is ISkin) (event.currentTarget as ISkin).state = MouseEvent.MOUSE_OVER;
+			if (event.currentTarget is ISkin) 
+				(event.currentTarget as ISkin).state = MouseEvent.MOUSE_OVER;
 		}
 		
 		protected function skinnables_mouseOutHandler(event:MouseEvent):void
 		{
-			if (event.currentTarget is ISkin) (event.currentTarget as ISkin).state = MouseEvent.MOUSE_UP;
+			if (event.currentTarget is ISkin) 
+				(event.currentTarget as ISkin).state = MouseEvent.MOUSE_UP;
 		}
 		
 		public function scrollTo(value:Number):void
 		{
+			if (!_target) return;
 			if (value < 0) value = 0;
 			if (value > 1) value = 1;
 			//trace(value);
@@ -372,7 +429,8 @@ package org.wvxvws.gui
 				_area.y = shift;
 				_target.scrollRect = _area;
 				_position = value;
-				_handle.y = (minHeight - _gutter) + (_path + _gutter * 2 - hHeight) * value;
+				_handle.y = (minHeight - _gutter) + 
+							(_path + _gutter * 2 - hHeight) * value;
 			}
 			else
 			{
@@ -383,7 +441,8 @@ package org.wvxvws.gui
 				_target.scrollRect = _area;
 				_position = value;
 				//trace(_handle.height, _handle.width, _handle.getBounds(_handle));
-				_handle.x = (minWidth - _gutter) + (_path + _gutter * 2 - hWidth) * value;
+				_handle.x = (minWidth - _gutter) + 
+							(_path + _gutter * 2 - hWidth) * value;
 			}
 		}
 		
@@ -395,7 +454,8 @@ package org.wvxvws.gui
 		
 		protected function minmax_mouseDownHandler(event:MouseEvent):void
 		{
-			if (event.currentTarget is ISkin) (event.currentTarget as ISkin).state = event.type;
+			if (event.currentTarget is ISkin) 
+				(event.currentTarget as ISkin).state = event.type;
 			if (event.currentTarget === _maxHandle)
 			{
 				_moveFunction = moveAreaUp;
@@ -404,20 +464,23 @@ package org.wvxvws.gui
 			{
 				_moveFunction = moveAreaDown;
 			}
-			stage.addEventListener(MouseEvent.MOUSE_UP, stage_mouseUpHandler, false, 0, true);
+			stage.addEventListener(MouseEvent.MOUSE_UP, 
+									stage_mouseUpHandler, false, 0, true);
 			addEventListener(Event.ENTER_FRAME, enterFrameHandler, false, 0, true);
 		}
 		
 		protected function minmax_mouseUpHandler(event:MouseEvent):void
 		{
-			if (event.currentTarget is ISkin) (event.currentTarget as ISkin).state = event.type;
+			if (event.currentTarget is ISkin) 
+				(event.currentTarget as ISkin).state = event.type;
 			removeEventListener(Event.ENTER_FRAME, enterFrameHandler);
 			stage.removeEventListener(MouseEvent.MOUSE_UP, stage_mouseUpHandler);
 		}
 		
 		protected function handle_mouseDownHandler(event:MouseEvent):void
 		{
-			if (event.currentTarget is ISkin) (event.currentTarget as ISkin).state = event.type;
+			if (event.currentTarget is ISkin) 
+				(event.currentTarget as ISkin).state = event.type;
 			var handleBounds:Rectangle = _handle.getBounds(this);
 			if (_direction)
 			{
@@ -428,13 +491,15 @@ package org.wvxvws.gui
 				_handleShift = mouseX - handleBounds.x;
 			}
 			_moveFunction = moveAreaUpDown;
-			stage.addEventListener(MouseEvent.MOUSE_UP, stage_mouseUpHandler, false, 0, true);
+			stage.addEventListener(MouseEvent.MOUSE_UP, 
+											stage_mouseUpHandler, false, 0, true);
 			addEventListener(Event.ENTER_FRAME, enterFrameHandler, false, 0, true);
 		}
 		
 		protected function handle_mouseUpHandler(event:MouseEvent):void
 		{
-			if (event.currentTarget is ISkin) (event.currentTarget as ISkin).state = event.type;
+			if (event.currentTarget is ISkin) 
+				(event.currentTarget as ISkin).state = event.type;
 			removeEventListener(Event.ENTER_FRAME, enterFrameHandler);
 			stage.removeEventListener(MouseEvent.MOUSE_UP, stage_mouseUpHandler);
 		}
@@ -488,7 +553,8 @@ package org.wvxvws.gui
 				{
 					toBeY = maxBounds.y - hBounds.height;
 				}
-				scrollTo((toBeY - maxBounds.height) / (distAvailable - hBounds.height));
+				scrollTo((toBeY - maxBounds.height) / 
+						(distAvailable - hBounds.height));
 			}
 			else
 			{
@@ -518,25 +584,29 @@ package org.wvxvws.gui
 			if (_minHandle is Sprite)
 			{
 				(_minHandle as Sprite).graphics.beginFill(0);
-				(_minHandle as Sprite).graphics.drawRect(0, 0, 16, 25);
+				(_minHandle as Sprite).graphics.drawRect(0, 0, 
+									_minMaxHandleSize, _handleWidth);
 				(_minHandle as Sprite).graphics.endFill();
 			}
 			if (_maxHandle is Sprite)
 			{
 				(_maxHandle as Sprite).graphics.beginFill(0);
-				(_maxHandle as Sprite).graphics.drawRect(0, 0, 16, 25);
+				(_maxHandle as Sprite).graphics.drawRect(0, 0, 
+									_minMaxHandleSize, _handleWidth);
 				(_maxHandle as Sprite).graphics.endFill();
 			}
 			if (_handle is Sprite)
 			{
 				(_handle as Sprite).graphics.beginFill(0xFF);
-				(_handle as Sprite).graphics.drawRect(0, 0, 16, 16);
+				(_handle as Sprite).graphics.drawRect(0, 0, 
+									_minMaxHandleSize, _minMaxHandleSize);
 				(_handle as Sprite).graphics.endFill();
 			}
 			if (_body is Sprite)
 			{
 				(_body as Sprite).graphics.beginFill(0xFF00);
-				(_body as Sprite).graphics.drawRect(0, 0, 16, 16);
+				(_body as Sprite).graphics.drawRect(0, 0, 
+									_minMaxHandleSize, _minMaxHandleSize);
 				(_body as Sprite).graphics.endFill();
 			}
 			if (_minHandle is ISkin) (_minHandle as ISkin).state = MouseEvent.MOUSE_UP;
