@@ -21,7 +21,10 @@
 
 package org.wvxvws.gui.containers 
 {
+	import flash.display.BlendMode;
+	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.geom.Rectangle;
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.renderers.IBranchRenderer;
 	import org.wvxvws.gui.renderers.IRenderer;
@@ -63,6 +66,8 @@ package org.wvxvws.gui.containers
 		protected var _cumulativeHeight:int;
 		protected var _cumulativeWidth:int;
 		
+		protected var _selection:Sprite = new Sprite();
+		
 		public function Nest()
 		{
 			super();
@@ -75,7 +80,11 @@ package org.wvxvws.gui.containers
 			_selectedChild = event.target as IRenderer;
 			if (!_selectedChild) return;
 			_selectedItem = _selectedChild.data;
-			if (event.target === this || !(event.target is _branchRenderer)) return;
+			if (event.target === this || !(event.target is _branchRenderer))
+			{
+				drawSelection();
+				return;
+			}
 			_nextY = 0;
 			layOutChildren();
 		}
@@ -85,10 +94,28 @@ package org.wvxvws.gui.containers
 			_cumulativeHeight = 0;
 			_cumulativeWidth = 0;
 			_nextY = 0;
+			if (contains(_selection)) removeChild(_selection);
 			super.layOutChildren();
 			super.width = _cumulativeWidth;
 			super.height = _cumulativeHeight;
-			trace("super.height", super.height, _cumulativeWidth);
+			if (_selectedChild) drawSelection();
+		}
+		
+		protected function drawSelection():void
+		{
+			var bounds:Rectangle = (_selectedChild as DisplayObject).getBounds(this);
+			if (_selectedChild is IBranchRenderer)
+			{
+				bounds.height = (_selectedChild as IBranchRenderer).closedHeight;
+			}
+			bounds.width = Math.max(_cumulativeWidth, scrollRect.width);
+			_selection.graphics.clear();
+			_selection.graphics.beginFill(0);
+			_selection.graphics.drawRect(0, bounds.y - 1, 
+					bounds.width, bounds.height);
+			addChild(_selection);
+			_selection.mouseEnabled = false;
+			_selection.blendMode = BlendMode.INVERT;
 		}
 		
 		protected override function createChild(xml:XML):DisplayObject
