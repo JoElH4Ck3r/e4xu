@@ -26,6 +26,7 @@ package org.wvxvws.gui
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
 	import org.wvxvws.gui.skins.ISkin;
 	//}
@@ -169,6 +170,7 @@ package org.wvxvws.gui
 		public function set body(value:DisplayObject):void 
 		{
 			if (_body === value) return;
+			if (_body && contains(_body)) removeChild(_body);
 			_body = value;
 			if (_body is ISkin) (_body as ISkin).state = MouseEvent.MOUSE_UP;
 			invalidLayout = true;
@@ -323,6 +325,10 @@ package org.wvxvws.gui
 				_maxHandle.y = height - _maxHandle.height;
 				_path = height - (_minHandle.height + _maxHandle.height);
 				_handle.height = handleRatio() * _path + _gutter * 2;
+				if (_handle.height > height - (_handleWidth + _gutter) * 2)
+				{
+					_handle.height = height - (_handleWidth + _gutter) * 2
+				}
 				_handle.y = _minHandle.height + 
 							(_path - _handle.height) * _position - _gutter;
 				_body.width = width;
@@ -346,18 +352,20 @@ package org.wvxvws.gui
 				_handle.rotation = -90;
 				_handle.x = _minHandle.width + 
 							(_path - _handle.height) * _position - _gutter;
-				_body.height = width;
 				_handle.y = height;
-				_body.width = _minMaxHandleSize;
 				_body.rotation = -90;
-				//_body.x = _minHandle.width;
+				_body.scaleY = 1;
+				_body.scaleX = 1;
+				_body.width = height;
+				_body.height = width;
+				_body.scaleX = height / _body.getBounds(_body).height;
 				_body.y = height;
 			}
 			if (!super.contains(_body)) super.addChild(_body);
 			if (!super.contains(_minHandle)) super.addChild(_minHandle);
 			if (!super.contains(_maxHandle)) super.addChild(_maxHandle);
 			if (!super.contains(_handle)) super.addChild(_handle);
-			if (!_minHandle.willTrigger(MouseEvent.MOUSE_DOWN))
+			if (!_minHandle.hasEventListener(MouseEvent.MOUSE_DOWN))
 			{
 				_minHandle.addEventListener(MouseEvent.MOUSE_DOWN, 
 									minmax_mouseDownHandler, false, 0, true);
@@ -368,7 +376,7 @@ package org.wvxvws.gui
 				_minHandle.addEventListener(MouseEvent.MOUSE_OUT, 
 									skinnables_mouseOutHandler, false, 0, true);
 			}
-			if (!_maxHandle.willTrigger(MouseEvent.MOUSE_DOWN))
+			if (!_maxHandle.hasEventListener(MouseEvent.MOUSE_DOWN))
 			{
 				_maxHandle.addEventListener(MouseEvent.MOUSE_DOWN, 
 									minmax_mouseDownHandler, false, 0, true);
@@ -379,7 +387,7 @@ package org.wvxvws.gui
 				_maxHandle.addEventListener(MouseEvent.MOUSE_OUT, 
 									skinnables_mouseOutHandler, false, 0, true);
 			}
-			if (!_handle.willTrigger(MouseEvent.MOUSE_DOWN))
+			if (!_handle.hasEventListener(MouseEvent.MOUSE_DOWN))
 			{
 				_handle.addEventListener(MouseEvent.MOUSE_DOWN, 
 									handle_mouseDownHandler, false, 0, true);

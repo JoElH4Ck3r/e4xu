@@ -179,6 +179,8 @@
 				//_middle.height = _width;
 				_middle.height = 1 + (_height - (_min.height + _max.height)) >> 0;
 				//(_height - (_min.width + _max.width)) >> 0;
+				_middle.scaleY = (1 + (_height - (_min.height + _max.height)) >> 0) / _middle.getBounds(_middle).height
+				//trace(_middle.height, 1 + (_height - (_min.height + _max.height)) >> 0, _middle.scaleX, _middle.scaleY);
 				_middle.scaleX = 1;
 				_middle.y = _min.y;
 				_middle.x = _min.width;

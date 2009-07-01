@@ -577,6 +577,12 @@ package org.wvxvws.gui.renderers
 			hideChildren();
 			displayChildren();
 		}
+		
+		public function get closedHeight():int
+		{
+			return Math.max(_icon.y + _icon.height, 
+							_openCloseIcon.y + _openCloseIcon.height) + 3;
+		}
 	}
 	
 }
