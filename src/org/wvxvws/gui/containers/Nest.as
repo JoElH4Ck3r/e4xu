@@ -22,9 +22,11 @@
 package org.wvxvws.gui.containers 
 {
 	import flash.display.BlendMode;
+	import flash.display.DisplayObjectContainer;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.geom.Rectangle;
+	import flash.utils.Dictionary;
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.renderers.IBranchRenderer;
 	import org.wvxvws.gui.renderers.IRenderer;
@@ -75,6 +77,24 @@ package org.wvxvws.gui.containers
 			addEventListener(GUIEvent.SELECTED, selectedHandler);
 		}
 		
+		public function isRendererVisible(renderer:IRenderer):Boolean
+		{
+			var rParent:DisplayObject = (renderer as DisplayObject).parent;
+			if (rParent === this) return true;
+			if (!rParent) return false;
+			while (rParent !== this)
+			{
+				if (rParent is IBranchRenderer && 
+					!(rParent as IBranchRenderer).opened)
+				{
+					return false;
+				}
+				rParent = rParent.parent;
+				if (!rParent) return false;
+			}
+			return true;
+		}
+		
 		protected function selectedHandler(event:GUIEvent):void 
 		{
 			_selectedChild = event.target as IRenderer;
@@ -108,7 +128,11 @@ package org.wvxvws.gui.containers
 			{
 				bounds.height = (_selectedChild as IBranchRenderer).closedHeight;
 			}
-			bounds.width = Math.max(_cumulativeWidth, scrollRect.width);
+			if (scrollRect)
+			{
+				bounds.width = Math.max(scrollRect.width, _cumulativeWidth);
+			}
+			else bounds.width = _cumulativeWidth;
 			_selection.graphics.clear();
 			_selection.graphics.beginFill(0);
 			_selection.graphics.drawRect(0, bounds.y - 1, 
@@ -160,7 +184,7 @@ package org.wvxvws.gui.containers
 		
 		protected function defaultDocFactory(input:String):Class { return _docIcon; }
 		
-		public function nodeToRenderer(node:XML):IRenderer
+		public override function getItemForNode(node:XML):DisplayObject
 		{
 			var ret:IRenderer;
 			for each(var renderer:DisplayObject in super._removedChildren)
@@ -170,14 +194,14 @@ package org.wvxvws.gui.containers
 					if (renderer is IBranchRenderer)
 					{
 						if ((renderer as IBranchRenderer).data === node)
-							return renderer as IRenderer;
+							return renderer;
 						ret = (renderer as IBranchRenderer).nodeToRenderer(node);
-						if (ret) return ret;
+						if (ret) return ret as DisplayObject;
 					}
 					else
 					{
 						if ((renderer as IRenderer).data === node)
-							return renderer as IRenderer;
+							return renderer;
 					}
 				}
 			}
