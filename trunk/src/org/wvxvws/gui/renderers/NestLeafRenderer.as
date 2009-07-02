@@ -130,6 +130,7 @@ package org.wvxvws.gui.renderers
 		
 		protected function rendrerText():void
 		{
+			if (!_data) return;
 			if (_labelField && _data.hasOwnProperty(_labelField))
 			{
 				if (_labelFunction !== null)

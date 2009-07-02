@@ -36,6 +36,8 @@ package org.wvxvws.gui
 		public static const CHILDREN_CREATED:String = "childrenCreated";
 		public static const DISABLED:String = "disabled";
 		public static const SELECTED:String = "selected";
+		public static const DATA_CHANGED:String = "dataChanged";
+		public static const SCROLLED:String = "scrolled";
 		
 		public function GUIEvent(type:String, bubbles:Boolean = false, 
 								cancelable:Boolean = false)

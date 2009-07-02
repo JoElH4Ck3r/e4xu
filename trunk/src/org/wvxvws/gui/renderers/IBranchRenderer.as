@@ -8,6 +8,8 @@
 	{
 		function get closedHeight():int;
 		
+		function get opened():Boolean;
+		
 		function set leafLabelFunction(value:Function):void;
 		
 		function set leafLabelField(value:String):void;

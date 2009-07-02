@@ -23,6 +23,7 @@ package org.wvxvws.gui.renderers
 {
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
+	import flash.display.DisplayObjectContainer;
 	import flash.display.InteractiveObject;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -32,6 +33,7 @@ package org.wvxvws.gui.renderers
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import flash.utils.Dictionary;
+	import org.wvxvws.gui.containers.Nest;
 	import org.wvxvws.gui.GUIEvent;
 	
 	[Event(name="childrenCreated", type="org.wvxvws.gui.GUIEvent")]
@@ -73,18 +75,42 @@ package org.wvxvws.gui.renderers
 		protected var _openIcon:Class;
 		protected var _docIconFactory:Function;
 		
+		protected var _invalid:Boolean;
+		
 		private var _childIDGenerator:uint;
 		
 		public function NestBranchRenderer()
 		{
 			super();
 			addEventListener(GUIEvent.SELECTED, selectedHandler);
+			addEventListener(GUIEvent.CHILDREN_CREATED, childrenCreatedHandler);
+		}
+		
+		protected function childrenCreatedHandler(event:GUIEvent):void 
+		{
+			if (event.target === this) return;
+			invalid = true;
+		}
+		
+		protected function enterFrameHandler(event:Event):void 
+		{
+			hideChildren();
+			if (_opened) displayChildren();
+			invalid = false;
 		}
 		
 		protected function selectedHandler(event:GUIEvent):void 
 		{
 			if (event.target === this || !(event.target is _branchRenderer)) return;
 			hideChildren();
+			if (!_opened) return;
+			var pt:DisplayObjectContainer = parent;
+			while (pt && !(pt is Nest))
+			{
+				pt = pt.parent;
+				if ((pt is IBranchRenderer) && !(pt as IBranchRenderer).opened)
+					return;
+			}
 			displayChildren();
 		}
 		
@@ -101,17 +127,19 @@ package org.wvxvws.gui.renderers
 		{
 			if (_opened === value) return;
 			_opened = value;
-			if (value) displayChildren();
-			else hideChildren();
+			if (!value) hideChildren();
+			invalid = true;
 			dispatchEvent(new Event("openedChange"));
 		}
 		
 		protected function displayChildren():void
 		{
+			if (!_opened) return;
 			if (_bitmapLines && contains(_bitmapLines))
 			{
 				removeChild(_bitmapLines);
 			}
+			if (!_data) return;
 			_data.*.(addRenderer(valueOf(), childIndex()));
 			var unused:Dictionary = new Dictionary();
 			var renderer:Object;
@@ -180,7 +208,6 @@ package org.wvxvws.gui.renderers
 		
 		protected function addRenderer(xml:XML, index:uint):void
 		{
-			//trace("adding renderer", index);
 			var renderer:DisplayObject;
 			var func:Function;
 			var field:String;
@@ -244,7 +271,8 @@ package org.wvxvws.gui.renderers
 		{
 			for (var child:Object in _children)
 			{
-				removeChild(child as DisplayObject);
+				if (contains(child as DisplayObject))
+					removeChild(child as DisplayObject);
 			}
 			drawLines();
 		}
@@ -355,20 +383,13 @@ package org.wvxvws.gui.renderers
 			if (isValid && _data === value) return;
 			_data = value;
 			_dataCopy = value.copy();
-			var p:XML = _data.parent() as XML;
-			_nestLevel = 0;
-			while (p)
-			{
-				p = p.parent() as XML;
-				_nestLevel++;
-			}
-			_indent = _nestLevel * DEFAULT_INDENT;
 			draw();
-			displayChildren();
+			invalid = true;
 		}
 		
 		protected function rendrerText():void
 		{
+			if (!_data) return;
 			if (_labelField && _data.hasOwnProperty(_labelField))
 			{
 				if (_labelFunction !== null)
@@ -430,7 +451,7 @@ package org.wvxvws.gui.renderers
 		
 		protected function icon_mouseClickHandler(event:MouseEvent):void 
 		{
-			opened = !opened;
+			opened = !_opened;
 			draw();
 			dispatchEvent(new GUIEvent(GUIEvent.SELECTED, true));
 		}
@@ -465,19 +486,7 @@ package org.wvxvws.gui.renderers
 			_leafRenderer = value;
 		}
 		
-		public function get indent():int { return _indent; }
-		
-		public function get nestLevel():uint { return _nestLevel; }
-		
-		public function set nestLevel(value:uint):void 
-		{
-			_nestLevel = value;
-		}
-		
-		private function childIDGenerator():uint
-		{
-			return ++_childIDGenerator;
-		}
+		private function childIDGenerator():uint { return ++_childIDGenerator; }
 		
 		/* INTERFACE org.wvxvws.gui.renderers.IBranchRenderer */
 		
@@ -492,8 +501,7 @@ package org.wvxvws.gui.renderers
 			{
 				if ((obj as DisplayObject).parent)
 				{
-					hideChildren();
-					displayChildren();
+					invalid = true;
 					break;
 				}
 			}
@@ -510,8 +518,7 @@ package org.wvxvws.gui.renderers
 			{
 				if ((obj as DisplayObject).parent)
 				{
-					hideChildren();
-					displayChildren();
+					invalid = true;
 					break;
 				}
 			}
@@ -528,8 +535,7 @@ package org.wvxvws.gui.renderers
 			{
 				if ((obj as DisplayObject).parent)
 				{
-					hideChildren();
-					displayChildren();
+					invalid = true;
 					break;
 				}
 			}
@@ -555,17 +561,14 @@ package org.wvxvws.gui.renderers
 		{
 			if (_leafLabelFunction === value) return;
 			_leafLabelFunction = value;
-			hideChildren();
-			displayChildren();
+			invalid = true;
 		}
-		
 		
 		public function set leafLabelField(value:String):void 
 		{
 			if (_leafLabelField === value) return;
 			_leafLabelField = value;
-			hideChildren();
-			displayChildren();
+			invalid = true;
 		}
 		
 		public function get docIconFactory():Function { return _docIconFactory; }
@@ -574,14 +577,23 @@ package org.wvxvws.gui.renderers
 		{
 			if (_docIconFactory === value) return;
 			_docIconFactory = value;
-			hideChildren();
-			displayChildren();
+			invalid = true;
 		}
 		
 		public function get closedHeight():int
 		{
 			return Math.max(_icon.y + _icon.height, 
 							_openCloseIcon.y + _openCloseIcon.height) + 3;
+		}
+		
+		public function get invalid():Boolean { return _invalid; }
+		
+		public function set invalid(value:Boolean):void 
+		{
+			if (_invalid === value) return;
+			if (value) addEventListener(Event.ENTER_FRAME, enterFrameHandler);
+			else removeEventListener(Event.ENTER_FRAME, enterFrameHandler);
+			_invalid = value;
 		}
 	}
 	

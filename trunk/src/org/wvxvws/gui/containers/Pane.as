@@ -9,6 +9,7 @@
 	//}
 	
 	[Event(name="childrenCreated", type="org.wvxvws.gui.GUIEvent")]
+	[Event(name="dataChanged", type="org.wvxvws.gui.GUIEvent")]
 	
 	/**
 	* Pane class.
@@ -33,6 +34,7 @@
 			_dataProviderCopy = value.copy();
 			_dataProvider.setNotification(providerNotifier);
 			invalidLayout = true;
+			dispatchEvent(new GUIEvent(GUIEvent.DATA_CHANGED));
 		}
 		
 		[Bindable("labelFieldChange")]
@@ -293,6 +295,7 @@
 						break;
 			}
 			_dataProviderCopy = _dataProvider.copy();
+			dispatchEvent(new GUIEvent(GUIEvent.DATA_CHANGED));
 		}
 		
 		//--------------------------------------------------------------------------

@@ -31,6 +31,8 @@ package org.wvxvws.gui
 	import org.wvxvws.gui.skins.ISkin;
 	//}
 	
+	[Event(name="scrolled", type="org.wvxvws.gui.GUIEvent")]
+	
 	/**
 	* Scroller class.
 	* @author wvxvw
@@ -452,6 +454,7 @@ package org.wvxvws.gui
 				_handle.x = (minWidth - _gutter) + 
 							(_path + _gutter * 2 - hWidth) * value;
 			}
+			dispatchEvent(new GUIEvent(GUIEvent.SCROLLED));
 		}
 		
 		//--------------------------------------------------------------------------
