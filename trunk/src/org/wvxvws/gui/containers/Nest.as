@@ -73,12 +73,13 @@ package org.wvxvws.gui.containers
 		protected var _closedNodes:Dictionary = new Dictionary();
 		
 		protected var _selection:Sprite = new Sprite();
+		protected var _selectedEvent:GUIEvent;
 		
 		public function Nest()
 		{
 			super();
 			_rendererFactory = _branchRenderer;
-			addEventListener(GUIEvent.SELECTED, selectedHandler);
+			addEventListener(GUIEvent.SELECTED, selectedHandler, false, int.MAX_VALUE);
 		}
 		
 		public function isRendererVisible(renderer:IRenderer):Boolean
@@ -103,7 +104,9 @@ package org.wvxvws.gui.containers
 		{
 			_selectedChild = event.target as IRenderer;
 			if (!_selectedChild) return;
+			event.stopImmediatePropagation();
 			_selectedItem = _selectedChild.data;
+			_selectedEvent = event;
 			if (event.target === this || !(event.target is _branchRenderer))
 			{
 				drawSelection();
@@ -122,7 +125,17 @@ package org.wvxvws.gui.containers
 			super.layOutChildren();
 			super.width = _cumulativeWidth;
 			super.height = _cumulativeHeight;
-			if (_selectedChild) drawSelection();
+			if (_selectedChild && !super._invalidLayout) drawSelection();
+			if (_selectedEvent)
+			{
+				_selectedChild = _selectedEvent.target as IRenderer;
+				_selectedItem = _selectedChild.data;
+				if (!super._invalidLayout)
+				{
+					dispatchEvent(_selectedEvent.clone());
+					_selectedEvent = null;
+				}
+			}
 		}
 		
 		protected function drawSelection():void
@@ -138,12 +151,12 @@ package org.wvxvws.gui.containers
 			}
 			else bounds.width = _cumulativeWidth;
 			_selection.graphics.clear();
-			_selection.graphics.beginFill(0);
+			_selection.graphics.beginFill(0x161630);
 			_selection.graphics.drawRect(0, bounds.y - 1, 
 					bounds.width, bounds.height);
 			addChild(_selection);
 			_selection.mouseEnabled = false;
-			_selection.blendMode = BlendMode.INVERT;
+			_selection.blendMode = BlendMode.SUBTRACT;
 		}
 		
 		protected override function createChild(xml:XML):DisplayObject
@@ -183,10 +196,6 @@ package org.wvxvws.gui.containers
 				(child as IBranchRenderer).docIconFactory = _docIconFactory;
 				(child as IEventDispatcher).addEventListener("openedChange", 
 																openCloseListener);
-				if (_lastOpened > -1 && _lastOpened === ci)
-				{
-					trace("need set to closed");
-				}
 			}
 			else if (child is NestLeafRenderer)
 			{
@@ -255,6 +264,16 @@ package org.wvxvws.gui.containers
 			delete _pendingChildren[event.target];
 			for (var obj:Object in _pendingChildren) return;
 			dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED, false, true));
+			if (_selectedEvent)
+			{
+				if (!super._invalidLayout)
+				{
+					dispatchEvent(_selectedEvent);
+					_selectedEvent = null;
+				}
+				_selectedChild = _selectedEvent.target as IRenderer;
+				_selectedItem = _selectedChild.data;
+			}
 		}
 		
 		protected function defaultLabelFunction(input:String):String { return input; }

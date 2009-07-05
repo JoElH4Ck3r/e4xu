@@ -27,6 +27,7 @@ package org.wvxvws.managers
 	import flash.display.Stage;
 	import flash.events.MouseEvent;
 	import flash.geom.Matrix;
+	import flash.geom.Point;
 	
 	/**
 	* DragManager class.

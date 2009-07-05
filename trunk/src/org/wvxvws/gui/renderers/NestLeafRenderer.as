@@ -74,12 +74,13 @@ package org.wvxvws.gui.renderers
 				(s as Sprite).graphics.drawRect(0, 0, 10, 10);
 				(s as Sprite).graphics.endFill();
 			}
-			if (!(s is InteractiveObject))
+			if (!(s is Sprite))
 			{
 				var u:Sprite = new Sprite();
 				u.addChild(s);
 				s = u;
 			}
+			(s as Sprite).mouseChildren = false;
 			return s;
 		}
 		
@@ -112,16 +113,14 @@ package org.wvxvws.gui.renderers
 		{
 			if (_icon && super.contains(_icon))
 			{
-				_icon.removeEventListener(MouseEvent.CLICK, icon_mouseClickHandler);
+				_icon.removeEventListener(MouseEvent.MOUSE_DOWN, icon_mouseDownHandler);
 				super.removeChild(_icon);
 			}
 			_icon = drawIcon();
-			_icon.addEventListener(MouseEvent.CLICK, icon_mouseClickHandler);
+			_icon.addEventListener(MouseEvent.MOUSE_DOWN, 
+										icon_mouseDownHandler, false, int.MAX_VALUE);
 			super.addChild(_icon);
-			if (_field && super.contains(_field))
-			{
-				super.removeChild(_field);
-			}
+			if (_field && super.contains(_field)) super.removeChild(_field);
 			_field = drawField();
 			super.addChild(_field);
 			_field.x = _icon.width + _gutter;
@@ -164,7 +163,7 @@ package org.wvxvws.gui.renderers
 			_labelField = value;
 		}
 		
-		protected function icon_mouseClickHandler(event:MouseEvent):void 
+		protected function icon_mouseDownHandler(event:MouseEvent):void 
 		{
 			dispatchEvent(new GUIEvent(GUIEvent.SELECTED, true));
 		}
