@@ -75,14 +75,13 @@ package org.wvxvws.gui.renderers
 		protected var _closedIcon:Class;
 		protected var _openIcon:Class;
 		protected var _docIconFactory:Function;
-		protected var _dispatchCreated:Boolean;
 		protected var _hasDelayedChildren:Boolean;
 		protected var _dispatchSelected:Boolean;
-		
+		protected var _nest:Nest;
+		protected var _mouseDownEvent:MouseEvent;
 		protected var _invalid:Boolean;
 		
 		private var _childIDGenerator:uint;
-		private var _nest:Nest;
 		
 		public function NestBranchRenderer()
 		{
@@ -100,8 +99,7 @@ package org.wvxvws.gui.renderers
 				delete _deferredChildren[renderer];
 			}
 			invalid = true;
-			for (var obj:Object in _deferredChildren) return;
-			_dispatchCreated = true;
+			//for (var obj:Object in _deferredChildren) return;
 		}
 		
 		protected function enterFrameHandler(event:Event):void 
@@ -109,26 +107,31 @@ package org.wvxvws.gui.renderers
 			hideChildren();
 			if (_opened) displayChildren();
 			invalid = false;
-			if (_dispatchCreated)
-			{
-				_dispatchCreated = false;
+			//if (_dispatchCreated)
+			//{
+				//_dispatchCreated = false;
 				if (hasEventListener(GUIEvent.CHILDREN_CREATED))
 				{
-					dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED, false, true));
+					dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED));
 				}
 				else if (parent is NestBranchRenderer)
 				{
 					(parent as NestBranchRenderer).invalid = true;
 				}
-			}
+			//}
 			if (_dispatchSelected)
 			{
 				_dispatchSelected = false;
-				icon_mouseClickHandler(null);
+				icon_mouseDownHandler(null);
 				if (_nest.selectedItem === _data)
 				{
 					dispatchEvent(new GUIEvent(GUIEvent.SELECTED, true));
 				}
+			}
+			if (_mouseDownEvent)
+			{
+				dispatchEvent(_mouseDownEvent);
+				_mouseDownEvent = null;
 			}
 		}
 		
@@ -343,12 +346,13 @@ package org.wvxvws.gui.renderers
 				(s as Sprite).graphics.drawRect(0, 0, 20, 20);
 				(s as Sprite).graphics.endFill();
 			}
-			if (!(s is InteractiveObject))
+			if (!(s is Sprite))
 			{
 				u = new Sprite();
 				u.addChild(s);
 				s = u;
 			}
+			(s as Sprite).mouseChildren = false;
 			return s;
 		}
 		
@@ -359,12 +363,13 @@ package org.wvxvws.gui.renderers
 			var s:DisplayObject;
 			if (_opened) s = new _openIcon();
 			else s = new _closedIcon();
-			if (!(s is InteractiveObject))
+			if (!(s is Sprite))
 			{
 				var u:Sprite = new Sprite();
 				u.addChild(s);
 				s = u;
 			}
+			(s as Sprite).mouseChildren = false;
 			return s;
 		}
 		
@@ -507,20 +512,23 @@ package org.wvxvws.gui.renderers
 		{
 			if (_openCloseIcon && super.contains(_openCloseIcon))
 			{
-				_openCloseIcon.removeEventListener(MouseEvent.CLICK, icon_mouseClickHandler);
+				_openCloseIcon.removeEventListener(MouseEvent.MOUSE_DOWN,
+															icon_mouseDownHandler);
 				super.removeChild(_openCloseIcon);
 			}
 			_openCloseIcon = drawOpenCloseIcon();
-			_openCloseIcon.addEventListener(MouseEvent.CLICK, icon_mouseClickHandler);
+			_openCloseIcon.addEventListener(MouseEvent.MOUSE_DOWN, 
+										icon_mouseDownHandler, false, int.MAX_VALUE);
 			
 			if (_icon && super.contains(_icon))
 			{
-				_icon.removeEventListener(MouseEvent.CLICK, icon_mouseClickHandler);
+				_icon.removeEventListener(MouseEvent.MOUSE_DOWN, icon_mouseDownHandler);
 				super.removeChild(_icon);
 			}
 			_icon = drawIcon();
 			_icon.y = 20 - _icon.height >> 1;
-			_icon.addEventListener(MouseEvent.CLICK, icon_mouseClickHandler);
+			_icon.addEventListener(MouseEvent.MOUSE_DOWN,
+										icon_mouseDownHandler, false, int.MAX_VALUE);
 			super.addChild(_icon);
 			
 			_icon.x = _openCloseIcon.width + _gutter;
@@ -537,11 +545,20 @@ package org.wvxvws.gui.renderers
 			super.addChild(_field);
 		}
 		
-		protected function icon_mouseClickHandler(event:MouseEvent):void 
+		protected function icon_mouseDownHandler(event:MouseEvent):void 
 		{
 			opened = !_opened;
 			draw();
-			if (event) dispatchEvent(new GUIEvent(GUIEvent.SELECTED, true));
+			if (event)
+			{
+				dispatchEvent(new GUIEvent(GUIEvent.SELECTED, true));
+				_mouseDownEvent = event.clone() as MouseEvent;
+				event.stopImmediatePropagation();
+			}
+			else
+			{
+				_mouseDownEvent = null;
+			}
 		}
 		
 		public function get hasPendingChildren():Boolean
