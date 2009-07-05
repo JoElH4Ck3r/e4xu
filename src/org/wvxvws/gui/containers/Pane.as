@@ -84,6 +84,7 @@
 		protected var _rendererFactory:Class;
 		protected var _labelFunction:Function;
 		protected var _labelField:String = "@label";
+		protected var _dispatchCreated:Boolean;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -185,15 +186,17 @@
 			{
 				_removedChildren.push(super.removeChildAt(0));
 			}
+			_dispatchCreated = false;
 			_dataProvider.*.(createChild(valueOf()));
-			dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED));
+			if (_dispatchCreated) 
+				dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED, false, true));
 		}
 		
 		protected function createChild(xml:XML):DisplayObject
 		{
 			var child:DisplayObject;
 			var recycledChild:DisplayObject;
-			for each(var ir:IRenderer in _removedChildren)
+			for each (var ir:IRenderer in _removedChildren)
 			{
 				if (ir.data === xml && ir.isValid)
 				{
@@ -206,6 +209,7 @@
 			}
 			else
 			{
+				_dispatchCreated = true;
 				child = new _rendererFactory() as DisplayObject;
 			}
 			if (!child) return null;
@@ -228,7 +232,7 @@
 					case "attributeChanged":
 					case "attributeRemoved":
 						renderer = getItemForNode(target as XML) as IRenderer;
-						renderer.data = target as XML;
+						if (renderer) renderer.data = target as XML;
 						break;
 					case "nodeAdded":
 						{

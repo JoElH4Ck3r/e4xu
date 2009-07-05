@@ -9,6 +9,7 @@
 		function get closedHeight():int;
 		
 		function get opened():Boolean;
+		function set opened(value:Boolean):void;
 		
 		function set leafLabelFunction(value:Function):void;
 		
@@ -25,6 +26,8 @@
 		function nodeToRenderer(node:XML):IRenderer;
 		
 		function rendererToXML(renderer:IRenderer):XML;
+		
+		function indexForItem(item:IRenderer):int;
 	}
 	
 }
