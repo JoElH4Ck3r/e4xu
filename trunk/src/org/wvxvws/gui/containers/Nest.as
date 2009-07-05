@@ -25,6 +25,7 @@ package org.wvxvws.gui.containers
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.events.IEventDispatcher;
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	import org.wvxvws.gui.GUIEvent;
@@ -67,6 +68,9 @@ package org.wvxvws.gui.containers
 		
 		protected var _cumulativeHeight:int;
 		protected var _cumulativeWidth:int;
+		protected var _pendingChildren:Dictionary = new Dictionary();
+		protected var _lastOpened:int = -1;
+		protected var _closedNodes:Dictionary = new Dictionary();
 		
 		protected var _selection:Sprite = new Sprite();
 		
@@ -159,25 +163,98 @@ package org.wvxvws.gui.containers
 				isbranch = true;
 			}
 			var child:DisplayObject = super.createChild(xml);
+			_dispatchCreated = false;
 			if (!child) return null;
+			var ci:int = getIndexForItem(child);
 			if (isbranch)
 			{
+				if (child is NestBranchRenderer)
+				{
+					(child as NestBranchRenderer).addEventListener(
+						GUIEvent.CHILDREN_CREATED, renderer_childrenCreatedHnadler);
+					_pendingChildren[child] = _currentItem;
+					(child as NestBranchRenderer).nest = this;
+				}
 				(child as IBranchRenderer).leafLabelField = _leafLabelField;
 				(child as IBranchRenderer).leafLabelFunction = _leafLabelFunction;
 				(child as IBranchRenderer).folderIcon = _folderIcon;
 				(child as IBranchRenderer).closedIcon = _closedIcon;
 				(child as IBranchRenderer).openIcon = _openIcon;
 				(child as IBranchRenderer).docIconFactory = _docIconFactory;
+				(child as IEventDispatcher).addEventListener("openedChange", 
+																openCloseListener);
+				if (_lastOpened > -1 && _lastOpened === ci)
+				{
+					trace("need set to closed");
+				}
 			}
 			else if (child is NestLeafRenderer)
 			{
-				(child as NestLeafRenderer).iconClass = _docIconFactory((child as NestLeafRenderer).data);
+				(child as NestLeafRenderer).iconClass = 
+					_docIconFactory((child as NestLeafRenderer).data);
 			}
 			child.y = _nextY;
 			_nextY += child.height;
 			_cumulativeHeight += child.height;
 			_cumulativeWidth = Math.max(_cumulativeWidth, child.width);
 			return child;
+		}
+		
+		private function openCloseListener(event:Event):void 
+		{
+			var i:int = getIndexForItem(event.target as DisplayObject);
+			if ((event.target as IBranchRenderer).opened)
+			{
+				_lastOpened = -1;
+				delete _closedNodes[i];
+			}
+			else
+			{
+				_lastOpened = i;
+				_closedNodes[i] = i;
+			}
+		}
+		
+		public override function getIndexForItem(renderer:DisplayObject):int 
+		{
+			var index:int;
+			var xml:XML = (renderer as IRenderer).data;
+			var list:XMLList = _dataProvider..*;
+			var arr:Array = [];
+			list.(arr.push(valueOf()));
+			for each (var item:XML in arr)
+			{
+				if (item === xml) return index;
+				index++;
+			}
+			return -1;
+		}
+		
+		public function nodeIsClosed(index:int):Boolean
+		{
+			return (index in _closedNodes);
+		}
+		
+		override public function getIndexForNode(node:XML, position:int = -1):int 
+		{
+			var index:int;
+			var list:XMLList = _dataProvider..*;
+			var arr:Array = [];
+			list.(arr.push(valueOf()));
+			for each (var item:XML in arr)
+			{
+				if (item === node) return index;
+				index++;
+			}
+			return -1;
+		}
+		
+		protected function renderer_childrenCreatedHnadler(event:GUIEvent):void
+		{
+			if ((event.target as NestBranchRenderer).hasPendingChildren) return;
+			delete _pendingChildren[event.target];
+			for (var obj:Object in _pendingChildren) return;
+			dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED, false, true));
 		}
 		
 		protected function defaultLabelFunction(input:String):String { return input; }
@@ -339,6 +416,8 @@ package org.wvxvws.gui.containers
 			_docIconFactory = value;
 			invalidLayout = true;
 		}
+		
+		public function get lastOpened():int { return _lastOpened; }
 	}
 	
 }

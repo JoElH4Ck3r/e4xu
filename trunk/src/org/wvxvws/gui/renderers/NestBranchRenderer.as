@@ -69,27 +69,39 @@ package org.wvxvws.gui.renderers
 		protected var _padding:int = 2;
 		protected var _bitmapLines:Sprite;
 		protected var _lineBitmap:BitmapData = new BitmapData(2, 2, true, 0x00FFFFFF);
+		protected var _deferredChildren:Dictionary = new Dictionary();
 		
 		protected var _folderIcon:Class;
 		protected var _closedIcon:Class;
 		protected var _openIcon:Class;
 		protected var _docIconFactory:Function;
+		protected var _dispatchCreated:Boolean;
+		protected var _hasDelayedChildren:Boolean;
+		protected var _dispatchSelected:Boolean;
 		
 		protected var _invalid:Boolean;
 		
 		private var _childIDGenerator:uint;
+		private var _nest:Nest;
 		
 		public function NestBranchRenderer()
 		{
 			super();
 			addEventListener(GUIEvent.SELECTED, selectedHandler);
-			addEventListener(GUIEvent.CHILDREN_CREATED, childrenCreatedHandler);
 		}
 		
 		protected function childrenCreatedHandler(event:GUIEvent):void 
 		{
-			if (event.target === this) return;
+			var renderer:NestBranchRenderer = event.target as NestBranchRenderer;
+			if (renderer in _deferredChildren)
+			{
+				if (renderer.hasPendingChildren) return;
+				renderer.removeEventListener(GUIEvent.CHILDREN_CREATED, childrenCreatedHandler);
+				delete _deferredChildren[renderer];
+			}
 			invalid = true;
+			for (var obj:Object in _deferredChildren) return;
+			_dispatchCreated = true;
 		}
 		
 		protected function enterFrameHandler(event:Event):void 
@@ -97,6 +109,27 @@ package org.wvxvws.gui.renderers
 			hideChildren();
 			if (_opened) displayChildren();
 			invalid = false;
+			if (_dispatchCreated)
+			{
+				_dispatchCreated = false;
+				if (hasEventListener(GUIEvent.CHILDREN_CREATED))
+				{
+					dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED, false, true));
+				}
+				else if (parent is NestBranchRenderer)
+				{
+					(parent as NestBranchRenderer).invalid = true;
+				}
+			}
+			if (_dispatchSelected)
+			{
+				_dispatchSelected = false;
+				icon_mouseClickHandler(null);
+				if (_nest.selectedItem === _data)
+				{
+					dispatchEvent(new GUIEvent(GUIEvent.SELECTED, true));
+				}
+			}
 		}
 		
 		protected function selectedHandler(event:GUIEvent):void 
@@ -129,7 +162,7 @@ package org.wvxvws.gui.renderers
 			_opened = value;
 			if (!value) hideChildren();
 			invalid = true;
-			dispatchEvent(new Event("openedChange"));
+			dispatchEvent(new Event("openedChange", true));
 		}
 		
 		protected function displayChildren():void
@@ -153,7 +186,8 @@ package org.wvxvws.gui.renderers
 			for (renderer in unused) delete _children[renderer];
 			if (_bitmapLines) addChild(_bitmapLines);
 			drawLines();
-			dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED, true));
+			if (!_hasDelayedChildren) 
+				dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED, false, true));
 		}
 		
 		protected function drawLines():void
@@ -248,8 +282,29 @@ package org.wvxvws.gui.renderers
 												_docIconFactory(xml) as Class;
 			}
 			(renderer as IRenderer).data = xml;
+			if (renderer is NestBranchRenderer)
+			{
+				(renderer as NestBranchRenderer).nest = _nest;
+			}
+			if (renderer is NestBranchRenderer && 
+				(renderer as NestBranchRenderer).invalid)
+			{
+				_hasDelayedChildren = true;
+				(renderer as NestBranchRenderer).addEventListener(
+					GUIEvent.CHILDREN_CREATED, childrenCreatedHandler);
+				_deferredChildren[renderer] = index;
+			}
 			_children[renderer] = childIDGenerator();
-			renderer.y = super.height + _padding;
+			var totalHeight:int = _field.height;
+			var i:int = numChildren;
+			var child:DisplayObject;
+			while (i--)
+			{
+				child = getChildAt(i);
+				if (!(child is IRenderer)) continue;
+				totalHeight += child.height + _padding;
+			}
+			renderer.y = totalHeight;
 			renderer.x = _field.x;
 			super.addChildAt(renderer, index);
 		}
@@ -370,6 +425,27 @@ package org.wvxvws.gui.renderers
 			return null;
 		}
 		
+		public function indexForItem(renderer:IRenderer):int
+		{
+			if (renderer === this) return 0;
+			var index:int = -1;
+			var list:Array = [];
+			_data.*.(list.push(nodeToRenderer(valueOf())));
+			for (var obj:Object in _children)
+			{
+				if (obj === renderer)
+				{
+					return list.indexOf(renderer);
+				}
+				else if (obj is IBranchRenderer)
+				{
+					index = (obj as IBranchRenderer).indexForItem(renderer);
+					if (index > -1) return list.indexOf(obj) + index;
+				}
+			}
+			return -1;
+		}
+		
 		public function get isValid():Boolean
 		{
 			if (!_data) return false;
@@ -384,6 +460,18 @@ package org.wvxvws.gui.renderers
 			_data = value;
 			_dataCopy = value.copy();
 			draw();
+			invalid = true;
+		}
+		
+		public function set nest(value:Nest):void
+		{
+			if (_nest === value) return;
+			_nest = value;
+			var myIndex:int = _nest.getIndexForNode(_data);
+			if (_nest.nodeIsClosed(myIndex))
+			{
+				_dispatchSelected = true;
+			}
 			invalid = true;
 		}
 		
@@ -453,7 +541,13 @@ package org.wvxvws.gui.renderers
 		{
 			opened = !_opened;
 			draw();
-			dispatchEvent(new GUIEvent(GUIEvent.SELECTED, true));
+			if (event) dispatchEvent(new GUIEvent(GUIEvent.SELECTED, true));
+		}
+		
+		public function get hasPendingChildren():Boolean
+		{
+			for (var obj:Object in _deferredChildren) return true;
+			return false;
 		}
 		
 		[Bindable("branchRendererChange")]
@@ -469,6 +563,8 @@ package org.wvxvws.gui.renderers
 		{
 			if (_branchRenderer === value) return;
 			_branchRenderer = value;
+			invalid = true;
+			dispatchEvent(new Event("branchRendererChange"));
 		}
 		
 		[Bindable("leafRendererChange")]
@@ -593,6 +689,14 @@ package org.wvxvws.gui.renderers
 			if (_invalid === value) return;
 			if (value) addEventListener(Event.ENTER_FRAME, enterFrameHandler);
 			else removeEventListener(Event.ENTER_FRAME, enterFrameHandler);
+			if ((parent is NestBranchRenderer) && value)
+			{
+				(parent as NestBranchRenderer).invalid = value;
+			}
+			else if ((parent is Nest) && value)
+			{
+				(parent as Nest).invalidLayout = true;
+			}
 			_invalid = value;
 		}
 	}
