@@ -209,6 +209,35 @@ package org.wvxvws.gui.containers
 			return child;
 		}
 		
+		public function positionToRenderer(position:int):DisplayObject
+		{
+			var list:XMLList = _dataProvider..*;
+			var renderers:Array = [];
+			list.(renderers.push(getItemForNode(valueOf())));
+			var b:Rectangle;
+			var ret:DisplayObject;
+			var foundBounds:Rectangle;
+			for each (var r:DisplayObject in renderers)
+			{
+				if (!r) continue;
+				b = r.getRect(this);
+				if (b.top <= position && b.bottom >= position)
+				{
+					if (foundBounds && foundBounds.height > b.height && r.stage)
+					{
+						foundBounds = b;
+						ret = r;
+					}
+					else if (!foundBounds)
+					{
+						foundBounds = b;
+						ret = r;
+					}
+				}
+			}
+			return ret;
+		}
+		
 		private function openCloseListener(event:Event):void 
 		{
 			var i:int = getIndexForItem(event.target as DisplayObject);
