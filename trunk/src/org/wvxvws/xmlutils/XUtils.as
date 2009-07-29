@@ -464,7 +464,7 @@ package org.wvxvws.xmlutils
 			rest[0] = rest[0].replace(/xmlns[^"]+\"[^"]+\"/g, "");
 			var attrs:Array = rest[0].match(/\"[^"]*\"/g);
 			rest[0] = rest[0].replace(/\"[^"]*\"/g, ATTRIBUTE_VALUE);
-			rest[0] = rest[0].replace(/(<\/?|\s)\w+\:/g, "$1");
+			rest[0] = rest[0].replace(/(<\/?|\s)[\w-]+\:/g, "$1");
 			while (rest[0].indexOf(ATTRIBUTE_VALUE) > 0)
 			{
 				rest[0] = rest[0].replace(ATTRIBUTE_VALUE, attrs.shift());

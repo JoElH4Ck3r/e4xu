@@ -309,7 +309,7 @@ package org.wvxvws.gui.renderers
 			}
 			renderer.y = totalHeight;
 			renderer.x = _field.x;
-			super.addChildAt(renderer, index);
+			super.addChildAt(renderer, Math.min(index, numChildren));
 		}
 		
 		protected function unusedRenderer(xml:XML):DisplayObject
