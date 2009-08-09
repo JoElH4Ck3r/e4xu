@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Text;
 using System.ComponentModel;
 using WeifenLuo.WinFormsUI.Docking;
 using ExportHTML.Resources;
@@ -11,6 +12,8 @@ using PluginCore.Managers;
 using PluginCore.Helpers;
 using PluginCore;
 using System.Text.RegularExpressions;
+using FlashDevelop;
+using FlashDevelop.Docking;
 
 namespace ExportHTML
 {
@@ -23,6 +26,9 @@ namespace ExportHTML
         private String pluginAuth = "Oleg Sivokon";
         private String settingFilename;
         private Settings settingObject;
+
+        private System.Windows.Forms.ToolStripMenuItem copyHTMLItem;
+
         //private DockContent pluginPanel;
         //private PluginUI pluginUI;
         //private Image pluginImage;
@@ -114,6 +120,17 @@ namespace ExportHTML
             string docName = PluginBase.MainForm.CurrentDocument.ToString();
             if (!isASDocument.IsMatch(docName)) saveHTML.Enabled = false;
             else saveHTML.Enabled = true;
+            TabbedDocument document = (TabbedDocument)PluginBase.MainForm.CurrentDocument;
+            if (PluginBase.MainForm.EditorMenu == null) return;
+            if (this.copyHTMLItem == null)
+            {
+                this.copyHTMLItem = new ToolStripMenuItem("Copy as HTML", 
+                                           null, 
+                                           new EventHandler(this.CopyAsHTML),
+                                           this.settingObject.CopyHTMLShortcut);
+                PluginBase.MainForm.EditorMenu.Items.Add(this.copyHTMLItem);
+                PluginBase.MainForm.IgnoredKeys.Add(this.settingObject.CopyHTMLShortcut);
+            }
             //switch (e.Type)
             //{
             //    case EventType.FileClose:
@@ -126,11 +143,42 @@ namespace ExportHTML
             //        break;
             //}
 		}
-		
+
 		#endregion
 
         #region Custom Methods
-       
+
+        public void CopyAsHTML(Object sender, System.EventArgs e)
+        {
+            string clipContent =
+                SciHTMLExporter.ConvertToHTML(PluginBase.MainForm.CurrentDocument);
+            String nativeHTMLString =
+                "Version:0.9\rStartHTML:<<<<<<<1\rEndHTML:<<<<<<<2\r" + 
+                "StartFragment:<<<<<<<3\rEndFragment:<<<<<<<4\r" + 
+                "SourceURL:file:///";
+
+
+            string utf8EncodedHTMLString
+                = Encoding.GetEncoding(0).GetString(Encoding.UTF8.GetBytes(nativeHTMLString)) +
+                PluginBase.MainForm.CurrentDocument.FileName.Replace('\\', '/') + "\r" +
+                clipContent;
+            StringBuilder sb = new StringBuilder();
+            sb.Append(utf8EncodedHTMLString);
+            sb.Replace("<<<<<<<1",
+            (utf8EncodedHTMLString.IndexOf("<HTML>") + "<HTML>".Length).ToString("D8"));
+            sb.Replace("<<<<<<<2",
+            (utf8EncodedHTMLString.IndexOf("</HTML>")).ToString("D8"));
+            sb.Replace("<<<<<<<3",
+            (utf8EncodedHTMLString.IndexOf("<!--StartFragment-->") + "<!--StartFragment-->".Length).ToString("D8"));
+            sb.Replace("<<<<<<<4",
+            (utf8EncodedHTMLString.IndexOf("<!--EndFragment-->")).ToString("D8"));
+            string clipboardString = sb.ToString();
+
+            Clipboard.Clear();
+            System.Console.WriteLine(clipboardString);
+            Clipboard.SetText(clipboardString, TextDataFormat.Html);
+        }
+		
         /// <summary>
         /// Initializes important variables
         /// </summary>
@@ -139,7 +187,6 @@ namespace ExportHTML
             String dataPath = Path.Combine(PathHelper.DataDir, "ExportHTML");
             if (!Directory.Exists(dataPath)) Directory.CreateDirectory(dataPath);
             this.settingFilename = Path.Combine(dataPath, "Settings.fdb");
-            //this.pluginImage = PluginBase.MainForm.FindImage("50");
         }
 
         /// <summary>

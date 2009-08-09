@@ -24,6 +24,7 @@ namespace ExportHTML
         private Color foregroundColor = Color.FromArgb(0x00, 0x00, 0x00);
 
         private Keys menuShortcut = Keys.Control | Keys.Alt | Keys.Shift | Keys.S;
+        private Keys copyHTMLShortcut = Keys.Control | Keys.Alt | Keys.Shift | Keys.C;
 
         /// <summary> 
         /// Defines the color of line comments
@@ -146,13 +147,23 @@ namespace ExportHTML
         }
 
         /// <summary> 
-        /// Get and sets the sampleShortcut
+        /// Get and sets the menuShortcut
         /// </summary>
-        [Description("Shortcut setting."), DefaultValue(Keys.Control | Keys.Alt | Keys.Shift | Keys.S)]
+        [Description("Save as HTML shortcut."), DefaultValue(Keys.Control | Keys.Alt | Keys.Shift | Keys.S)]
         public Keys MenuShortcut
         {
             get { return this.menuShortcut; }
             set { this.menuShortcut = value; }
+        }
+
+        /// <summary> 
+        /// Get and sets the copyHTMLShortcut
+        /// </summary>
+        [Description("Copy as HTML shortcut."), DefaultValue(Keys.Control | Keys.Alt | Keys.Shift | Keys.C)]
+        public Keys CopyHTMLShortcut
+        {
+            get { return this.copyHTMLShortcut; }
+            set { this.copyHTMLShortcut = value; }
         }
 
     }
