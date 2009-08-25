@@ -94,4 +94,7 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\template.html" />
+  </ItemGroup>
 </Project>

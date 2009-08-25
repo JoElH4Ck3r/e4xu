@@ -23,6 +23,8 @@ namespace ExportHTML
         private Color bacgroundEvenColor = Color.FromArgb(0xFF, 0xFF, 0xFF);
         private Color foregroundColor = Color.FromArgb(0x00, 0x00, 0x00);
 
+        private string trmplateLocation = "$(PluginFolder)/html-templates/template.html";
+
         private Keys menuShortcut = Keys.Control | Keys.Alt | Keys.Shift | Keys.S;
         private Keys copyHTMLShortcut = Keys.Control | Keys.Alt | Keys.Shift | Keys.C;
 
@@ -166,6 +168,15 @@ namespace ExportHTML
             set { this.copyHTMLShortcut = value; }
         }
 
+        /// <summary> 
+        /// HTML template location
+        /// </summary>
+        [Description("HTML template location."), DefaultValue("$(PluginFolder)/html-templates/template.html")]
+        public string TemplateLocation
+        {
+            get { return this.trmplateLocation; }
+            set { this.trmplateLocation = value; }
+        }
     }
 
 }
