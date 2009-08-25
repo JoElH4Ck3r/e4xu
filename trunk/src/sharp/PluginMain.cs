@@ -26,6 +26,7 @@ namespace ExportHTML
         private String pluginAuth = "Oleg Sivokon";
         private String settingFilename;
         private Settings settingObject;
+        private string templateLocation;
 
         private System.Windows.Forms.ToolStripMenuItem copyHTMLItem;
 
@@ -176,7 +177,10 @@ namespace ExportHTML
 
             Clipboard.Clear();
             System.Console.WriteLine(clipboardString);
-            Clipboard.SetText(clipboardString, TextDataFormat.Html);
+            DataObject data = new DataObject();
+            data.SetText(PluginBase.MainForm.CurrentDocument.SciControl.SelText, TextDataFormat.UnicodeText);
+            data.SetText(clipboardString, TextDataFormat.Html);
+            Clipboard.SetDataObject(data);
         }
 		
         /// <summary>
@@ -276,6 +280,17 @@ namespace ExportHTML
                 Object obj = ObjectSerializer.Deserialize(this.settingFilename, this.settingObject);
                 this.settingObject = (Settings)obj;
             }
+            templateLocation = this.settingObject.TemplateLocation;
+            if (templateLocation == string.Empty)
+            {
+                this.templateLocation = "$(PluginFolder)/html-templates/template.html";
+                this.settingObject.TemplateLocation = this.templateLocation;
+            }
+            if (templateLocation.IndexOf("$(PluginFolder)") > -1)
+            {
+                this.templateLocation = templateLocation.Replace(
+                                        "$(PluginFolder)", PathHelper.PluginDir);
+            }
         }
 
         /// <summary>
@@ -331,5 +346,5 @@ namespace ExportHTML
 		#endregion
 
 	}
-	
+
 }

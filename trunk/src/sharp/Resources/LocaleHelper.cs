@@ -30,7 +30,6 @@ namespace ExportHTML.Resources
             //TraceManager.Add("ExportHTML GetString " + identifier);
             return resources.GetString(identifier);
         }
-
     }
 
 }

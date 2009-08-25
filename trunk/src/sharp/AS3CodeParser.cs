@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Drawing;
+using System.IO;
+using System.Windows.Forms;
+using ExportHTML.Resources;
+using PluginCore.Helpers;
 
 namespace ExportHTML
 {
@@ -123,47 +127,64 @@ namespace ExportHTML
 
         public static string GenerateHTML(string input)
         {
-            string html =
-                "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">" +
-                "<html>\n" +
-                "<head>\n" +
-                "	<title>Code example</title>\n" +
-                "	<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n" +
-                "	<meta name=\"language\" content=\"en\" />\n" +
-                "	<meta name=\"description\" content=\"\" />\n" +
-                "	<meta name=\"keywords\" content=\"\" />\n" +
-                "</head>\n" +
-                "<style type=\"text/css\">" +
-                "	.codeOL { color: #fafaf3;\n" +
-                "			background-color: #afaf9f;\n" +
-                "			padding: 0px 0px 0px 40px; margin: 0px; }\n" +
-                "	.c { font-family: monospace;\n" +
-                "		font-size: 12px;\n" +
-                "		padding-left: 5px;\n" +
-                "		color: #fafaf3; }\n" +
-                "	.cd { color: #" + ToSixPlacesHex(settings.ForegroundColor) + "; }\n" +
-                "	.odd { background-color: #" + ToSixPlacesHex(settings.BackgroundOddColor) + "}\n" +
-                "	.even { background-color: #" + ToSixPlacesHex(settings.BackgroundEvenColor) + "}\n" +
-                "	.s00 { color:#" + ToSixPlacesHex(settings.JavaCommentColor) + "}\n" +
-                "	.s01 { color:#" + ToSixPlacesHex(settings.LineCommentColor) + "}\n" +
-                "	.s02 { color:#" + ToSixPlacesHex(settings.StringColor) + "}\n" +
-                "	.s03 { color:#" + ToSixPlacesHex(settings.NumberColor) + "}\n" +
-                "	.s04 { color:#" + ToSixPlacesHex(settings.RegexColor) + "}\n" +
-                "	.s05 { color:#" + ToSixPlacesHex(settings.XmlColor) + "}\n" +
-                "	.s06 { color:#" + ToSixPlacesHex(settings.KeyWordColor) + "}\n" +
-                "	.s07 { color:#" + ToSixPlacesHex(settings.BuiltInColor) + "}\n" +
-                "	.s08 { color:#" + ToSixPlacesHex(settings.JdockKeywordColor) + "}\n" +
-                "	.codeDiv { width: 550px; height: 800px; \n" +
-                "		overflow: scroll; display:block; \n" +
-                "		padding: 0px; margin: 0px; }\n" +
-                "	.insideCodeDiv { width: 300%; overflow: visible;\n" +
-                "		display:block; padding: 0px; margin: 0px; }\n" +
-                "</style>\n" +
-                "<body>\n" +
-                "<div class=\"codeDiv\"><div class=\"insideCodeDiv codeOL\">\n" +
-                input + "</div></div>\n" +
-                "</body>\n" +
-                "</html>]]></html>\n";
+            string html = string.Empty;
+            Exception ex = null;
+            string templateLocation = settings.TemplateLocation;
+            if (templateLocation == string.Empty)
+            {
+                templateLocation = "$(PluginFolder)/html-templates/template.html";
+            }
+            if (templateLocation.IndexOf("$(PluginFolder)") > -1)
+            {
+                templateLocation = templateLocation.Replace(
+                                        "$(PluginFolder)", PathHelper.PluginDir);
+            }
+            try
+            {
+                using (StreamReader sr = new StreamReader(templateLocation))
+                {
+                    html = sr.ReadToEnd();
+                }
+            }
+            catch (Exception e)
+            {
+                if (!File.Exists(templateLocation))
+                {
+                    if (!File.Exists(Path.GetDirectoryName(templateLocation)))
+                    {
+                        string directoryPath = Path.GetDirectoryName(templateLocation);
+                        Directory.CreateDirectory(directoryPath);
+                    }
+                    using (FileStream fs = File.Create(templateLocation))
+                    {
+                        UTF8Encoding enc = new UTF8Encoding();
+                        string template = LocaleHelper.GetString("HTML.Template");
+                        byte[] templateBytes = enc.GetBytes(template);
+                        fs.Write(templateBytes, 0, enc.GetByteCount(template));
+                    }
+                    return GenerateHTML(input);
+                }
+                ex = e;
+            }
+            if (ex != null)
+            {
+                MessageBox.Show(null, "Cannot find HTML template: " + ex.Message, "Error");
+                return input;
+            }
+            html = html.Replace("%ForegroundColor%", ToSixPlacesHex(settings.ForegroundColor));
+            html = html.Replace("%BackgroundOddColor%", ToSixPlacesHex(settings.BackgroundOddColor));
+            html = html.Replace("%BackgroundEvenColor%", ToSixPlacesHex(settings.BackgroundEvenColor));
+            html = html.Replace("%JavaCommentColor%", ToSixPlacesHex(settings.JavaCommentColor));
+            html = html.Replace("%LineCommentColor%", ToSixPlacesHex(settings.LineCommentColor));
+            html = html.Replace("%StringColor%", ToSixPlacesHex(settings.StringColor));
+            html = html.Replace("%NumberColor%", ToSixPlacesHex(settings.NumberColor));
+            html = html.Replace("%RegexColor%", ToSixPlacesHex(settings.RegexColor));
+            html = html.Replace("%XmlColor%", ToSixPlacesHex(settings.XmlColor));
+            html = html.Replace("%KeyWordColor%", ToSixPlacesHex(settings.KeyWordColor));
+            html = html.Replace("%BuiltInColor%", ToSixPlacesHex(settings.BuiltInColor));
+            html = html.Replace("%JdockKeywordColor%", ToSixPlacesHex(settings.JdockKeywordColor));
+            html = html.Replace("%Code%", input);
+                
             return html;
         }
 
@@ -172,7 +193,7 @@ namespace ExportHTML
             string s = input.ToArgb().ToString("X");
             if (s.Length > 6) s = s.Substring(s.Length - 6);
             while (s.Length < 6) s = '0' + s;
-            return s;
+            return '#' + s;
         }
 
         #endregion
