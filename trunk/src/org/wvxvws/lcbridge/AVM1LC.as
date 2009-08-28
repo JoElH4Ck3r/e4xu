@@ -21,8 +21,6 @@
 
 package org.wvxvws.lcbridge
 {
-	import flash.display.DisplayObjectContainer;
-	import flash.display.Loader;
 	import flash.events.SecurityErrorEvent;
 	import flash.net.LocalConnection;
 	import flash.events.Event;
@@ -47,28 +45,23 @@ package org.wvxvws.lcbridge
 		private var _receivingConnection:String;
 		private var _sendingConnection:String;
 		
-		private var _bytesLoader:Loader;
-		private var _parent:DisplayObjectContainer;
+		private var _bytesLoader:AVM1Loader;
 		
 		private var _a:Array = []; // will hold the try_lc.swf in byte sequence
 		private var _ba:ByteArray = new ByteArray();
 		
-		public function AVM1LC(parent:DisplayObjectContainer)
+		public function AVM1LC(loader:AVM1Loader)
 		{
 			super();
-			_parent = parent;
 			for each(var i:int in _a) _ba.writeByte(i);
-			_bytesLoader = new Loader();
-			_parent.addChild(_bytesLoader);
+			_bytesLoader = loader;
 			_bytesLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, loadHandler);
 			client = this;
 			super.addEventListener(StatusEvent.STATUS, statusHandler);
 			super.addEventListener(AsyncErrorEvent.ASYNC_ERROR, errorHandler);
 			super.addEventListener(SecurityErrorEvent.SECURITY_ERROR, errorHandler);
 			//_bytesLoader.loadBytes(_ba);
-			//_receivingConnection = LC_NAME;
-			_bytesLoader.load(new URLRequest("bridge.swf"));
-			_parent.addChild(_bytesLoader);
+			_bytesLoader.$load(new URLRequest("bridge.swf"));
 		}
 		
 		private function loadHandler(event:Event):void
