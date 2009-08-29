@@ -228,8 +228,15 @@ package org.wvxvws.lcbridge
 				_queved = command;
 				if (command.type === AVM1Command.CALL_METHOD)
 				{
-					callMethod.apply(this, [command.scope, 
+					if (command.methodArguments)
+					{
+						callMethod.apply(this, [command.scope, 
 								command.method, null].concat(command.methodArguments));
+					}
+					else
+					{
+						callMethod(command.scope, command.method, null);
+					}
 				}
 				else if (command.type === AVM1Command.SET_PROPERTY)
 				{
