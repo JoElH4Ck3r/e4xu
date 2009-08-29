@@ -31,7 +31,8 @@ package org.wvxvws.lcbridge
 	import flash.utils.getTimer;
 	
 	/**
-	 * ...
+	 * AVM1LC class. This class is created in AVM1Loader class and it's instance is
+	 * accessible through AVM1Loader.lc property.
 	 * @author wvxvw
 	 * @langVersion 3.0
 	 * @playerVersion 10.0.12.36
@@ -42,6 +43,29 @@ package org.wvxvws.lcbridge
 		public static const LC_SEND_NAME:String = "__LC_SEND";
 		public static const LC_RECEIVE_NAME:String = "__LC_RECEIVE";
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Public properties
+		//
+		//--------------------------------------------------------------------------
+		
+		public function get receivingConnection():String { return _receivingConnection; }
+		
+		public function get sendingConnection():String { return _sendingConnection; }
+		
+		public function get defaultCallBack():Function { return _defaultCallBack; }
+		public function set defaultCallBack(value:Function):void
+		{
+			if (value == null) return;
+			_defaultCallBack = value;
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Public properties
+		//
+		//--------------------------------------------------------------------------
+		
 		private var _receivingConnection:String;
 		private var _sendingConnection:String;
 		
@@ -50,12 +74,21 @@ package org.wvxvws.lcbridge
 		private var _a:Array = []; // will hold the try_lc.swf in byte sequence
 		private var _ba:ByteArray = new ByteArray();
 		
+		private var _defaultCallBack:Function = function (...rest):void { };
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+		
 		public function AVM1LC(loader:AVM1Loader)
 		{
 			super();
 			for each(var i:int in _a) _ba.writeByte(i);
 			_bytesLoader = loader;
-			_bytesLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, loadHandler);
+			_bytesLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, 
+										loadHandler, false, int.MAX_VALUE);
 			client = this;
 			super.addEventListener(StatusEvent.STATUS, statusHandler);
 			super.addEventListener(AsyncErrorEvent.ASYNC_ERROR, errorHandler);
@@ -64,8 +97,94 @@ package org.wvxvws.lcbridge
 			_bytesLoader.$load(new URLRequest("bridge.swf"));
 		}
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		 * Calls the <code>method</code> with arbitrary number of parameters 
+		 * on the loaded AVM1Movie in the scope specified by <code>scope</code> 
+		 * parameter. If the AVM1 function returns non-null value
+		 * the <code>receiver</code> function will be called when the AVM1LC receives
+		 * the response.
+		 * When the operation completes, the AVM1LC dispatches 
+		 * <code>AVM1Event.LC_READY</code> event.
+		 * 
+		 * @param	scope		The context where to invoke the AVM1 function. 
+		 * 						You can specify <code>AVM1Protocol.GLOBAL</code>, 
+		 * 						<code>AVM1Protocol.CONTENT</code>, 
+		 * 						<code>AVM1Protocol.NULL</code>, 
+		 * 						<code>AVM1Protocol.ROOT</code> or
+		 * 						<code>AVM1Protocol.THIS</code> as well as any 
+		 * 						expression valid to be used in <code>eval()</code>.
+		 * 
+		 * @see		AVM1Protocol
+		 * 
+		 * @param	method		The name of the method to invoke. If the <code>scope</code>
+		 * 						is <code>AVM1Protocol.NULL</code>, the function will
+		 * 						be called in no context.
+		 * 
+		 * @param	receiver	This function is called when the AVM1 methods returns 
+		 * 						non-null value. However, if you want to receive null
+		 * 						values, you will need to define <code>defaultCallBack</code>
+		 * 						for this AVM1LC. If you don't want to receive the 
+		 * 						returned value pass <code>null</code>.
+		 * 
+		 * @see		#defaultCallBack
+		 * 
+		 * @param	...params	An arbitrary number of arguments to be passed to the
+		 * 						AVM1Movie. Note that arguments are serialized using AMF0
+		 * 						format compatible with AVM1. This means, that, for
+		 * 						example ByteArray is not valid, while BitmapData is.
+		 * 
+		 * @see 	#setProperty
+		 */
+		public function callMethod(scope:String, method:String, 
+									receiver:Function, ...params):void
+		{
+			// TODO: implement
+		}
+		
+		/**
+		 * Sets the property <code>property</code> on <code>scope</code> object.
+		 * When the operation completes, the AVM1LC dispatches 
+		 * <code>AVM1Event.LC_READY</code> event.
+		 * 
+		 * @param	scope		The context where you want to set the AVM1 property. 
+		 * 						You can specify <code>AVM1Protocol.GLOBAL</code>, 
+		 * 						<code>AVM1Protocol.CONTENT</code>, 
+		 * 						<code>AVM1Protocol.NULL</code>, 
+		 * 						<code>AVM1Protocol.ROOT</code> or
+		 * 						<code>AVM1Protocol.THIS</code> as well as any 
+		 * 						expression valid to be used in <code>eval()</code>.
+		 * 
+		 * @param	property	The name of the property you want to set.
+		 * 
+		 * @param	value		The value to assign to the <code>property</code> property.
+		 * 						Note that values are serialized using AMF0 format.
+		 * 
+		 * @see 	#callMethod
+		 */
+		public function setProperty(scope:String, property:String, value:*):void
+		{
+			// TODO: implement
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Private methods
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		 * @private
+		 * @param	event
+		 */
 		private function loadHandler(event:Event):void
 		{
+			event.stopImmediatePropagation();
 			_receivingConnection = LC_RECEIVE_NAME + new Date().time;
 			_sendingConnection = LC_SEND_NAME + new Date().time;
 			var message:Object = 
@@ -87,16 +206,28 @@ package org.wvxvws.lcbridge
 			trace("init");
 		}
 		
+		/**
+		 * @private
+		 * @param	event
+		 */
 		private function statusHandler(event:StatusEvent):void
 		{
 			trace("AS3 statusHandler " + event);
 		}
 		
+		/**
+		 * @private
+		 * @param	event
+		 */
 		private function errorHandler(event:Event):void
 		{
 			trace("AS3 errorHandler " + event);
 		}
 		
+		/**
+		 * @private
+		 * @param	message
+		 */
 		public function as3recieve(message:Object):void
 		{
 			var kind:int = message.kind;
@@ -137,10 +268,6 @@ package org.wvxvws.lcbridge
 			var message:Object = { kind: AVM1Event.LC_COMMAND, data: "ld|" + request.url };
 			this.send(_receivingConnection, "as2recieve", message);
 		}
-		
-		public function get receivingConnection():String { return _receivingConnection; }
-		
-		public function get sendingConnection():String { return _sendingConnection; }
 		
 	}
 	
