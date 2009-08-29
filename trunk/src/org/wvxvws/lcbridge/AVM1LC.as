@@ -93,6 +93,7 @@ package org.wvxvws.lcbridge
 		
 		protected var _defaultCallBack:Function = function (...rest):void { };
 		protected var _commands:Dictionary = new Dictionary();
+		protected var _commandsPool:Dictionary = new Dictionary();
 		protected var _sending:Boolean;
 		protected var _queved:AVM1Command;
 		
@@ -339,8 +340,9 @@ package org.wvxvws.lcbridge
 						finished.operationResult = message.result;
 						if (!_commands[finished])
 						{
-							delete _commands[finished];
+							_commandsPool[finished] = true;
 						}
+						delete _commands[finished];
 					}
 					if (next) sendCommand(next, _commands[next]);
 					break;
