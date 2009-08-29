@@ -53,6 +53,18 @@
 		
 		public function get operationResult():* { return _operationResult; }
 		
+		public function set operationResult(value:*):void 
+		{
+			_operationResult = value;
+		}
+		
+		public function get propertyValue():* { return _propertyValue; }
+		
+		public function set propertyValue(value:*):void 
+		{
+			_propertyValue = value;
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties

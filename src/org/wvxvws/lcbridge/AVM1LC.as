@@ -28,6 +28,7 @@ package org.wvxvws.lcbridge
 	import flash.events.AsyncErrorEvent;
 	import flash.net.URLRequest;
 	import flash.utils.ByteArray;
+	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
 	
 	/**
@@ -72,7 +73,7 @@ package org.wvxvws.lcbridge
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Public properties
+		//  Private properties
 		//
 		//--------------------------------------------------------------------------
 		
@@ -84,7 +85,16 @@ package org.wvxvws.lcbridge
 		private var _a:Array = []; // will hold the try_lc.swf in byte sequence
 		private var _ba:ByteArray = new ByteArray();
 		
-		private var _defaultCallBack:Function = function (...rest):void { };
+		//--------------------------------------------------------------------------
+		//
+		//  Protected properties
+		//
+		//--------------------------------------------------------------------------
+		
+		protected var _defaultCallBack:Function = function (...rest):void { };
+		protected var _commands:Dictionary = new Dictionary();
+		protected var _sending:Boolean;
+		protected var _queved:AVM1Command;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -116,6 +126,12 @@ package org.wvxvws.lcbridge
 		//  Public methods
 		//
 		//--------------------------------------------------------------------------
+		
+		override public function send(connectionName:String, methodName:String, ...args):void 
+		{
+			_sending = true;
+			super.send.apply(super, [connectionName, methodName].concat(args));
+		}
 		
 		/**
 		 * Calls the <code>method</code> with arbitrary number of parameters 
@@ -179,11 +195,47 @@ package org.wvxvws.lcbridge
 		 * @param	value		The value to assign to the <code>property</code> property.
 		 * 						Note that values are serialized using AMF0 format.
 		 * 
+		 * @param	receiver	This function is called when the operation completes.
+		 * @default	<code>null</code>
+		 * 
 		 * @see 	#callMethod
 		 */
-		public function setProperty(scope:String, property:String, value:*):void
+		public function setProperty(scope:String, property:String, 
+									value:*, receiver:Function = null):void
 		{
 			// TODO: implement
+		}
+		
+		/**
+		 * Sends the <code>AVM1Command</code> to the loaded AVM1Movie.
+		 * If the command is expected to return results from AVM1Movie, add listener
+		 * for <code>Event.COMPLETE</code> event to the <code>command</command>.
+		 * 
+		 * @param	command			The AVM1Command that encapsulates the command
+		 * 							to be performed by AVM1Movie.
+		 * 
+		 * @param	weakReference	If <code>true</code>, will let GC to remove it
+		 * 							after operation finishes.
+		 * @default	<code>true</code>
+		 */
+		public function sendCommand(command:AVM1Command, 
+									weakReference:Boolean = true):void
+		{
+			if (weakReference) _commands[command] = true;
+			else _commands[command] = false;
+			if (!_sending)
+			{
+				_queved = command;
+				if (command.type === AVM1Command.CALL_METHOD)
+				{
+					callMethod.apply(this, [command.scope, 
+								command.method, null].concat(command.methodArguments));
+				}
+				else if (command.type === AVM1Command.SET_PROPERTY)
+				{
+					setProperty(command.scope, command.property, command.propertyValue);
+				}
+			}
 		}
 		
 		//--------------------------------------------------------------------------
@@ -244,9 +296,14 @@ package org.wvxvws.lcbridge
 		 */
 		public function as3recieve(message:Object):void
 		{
+			_sending = false;
 			var kind:int = message.kind;
 			var kindStr:String = AVM1Event.codes[kind];
 			trace("as3recieve", kindStr);
+			var com:Object;
+			var command:AVM1Command;
+			var finished:AVM1Command;
+			var next:AVM1Command;
 			
 			switch (kindStr)
 			{
@@ -263,6 +320,22 @@ package org.wvxvws.lcbridge
 				case AVM1Event.LC_READY:
 					trace("AS3 as2 reported reconnection", this._receivingConnection);
 					dispatchEvent(new AVM1Event(AVM1Event.LC_READY));
+					for (com in _commands)
+					{
+						command = com as AVM1Command;
+						if (_queved === command) finished = command;
+						else next = command;
+						if (next && finished) break;
+					}
+					if (finished)
+					{
+						finished.operationResult = message.result;
+						if (!_commands[finished])
+						{
+							delete _commands[finished];
+						}
+					}
+					if (next) sendCommand(next, _commands[next]);
 					break;
 				case AVM1Event.LC_RECEIVED:
 				case AVM1Event.LC_RECONNECT:
