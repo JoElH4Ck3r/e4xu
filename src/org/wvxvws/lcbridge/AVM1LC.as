@@ -92,6 +92,10 @@ package org.wvxvws.lcbridge
 		//
 		//--------------------------------------------------------------------------
 		
+		/**
+		 * @private
+		 * @param	loader
+		 */
 		public function AVM1LC(loader:AVM1Loader)
 		{
 			super();
