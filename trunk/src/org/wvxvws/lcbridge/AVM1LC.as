@@ -39,9 +39,9 @@ package org.wvxvws.lcbridge
 	 */
 	public class AVM1LC extends LocalConnection
 	{
-		public static const LC_NAME:String = "__LC645F8553-33B1-47D1-996F-5EDFB4863061";
-		public static const LC_SEND_NAME:String = "__LC_SEND";
-		public static const LC_RECEIVE_NAME:String = "__LC_RECEIVE";
+		private static const LC_NAME:String = "__LC645F8553-33B1-47D1-996F-5EDFB4863061";
+		private static const LC_SEND_NAME:String = "__LC_SEND";
+		private static const LC_RECEIVE_NAME:String = "__LC_RECEIVE";
 		
 		//--------------------------------------------------------------------------
 		//
@@ -49,10 +49,20 @@ package org.wvxvws.lcbridge
 		//
 		//--------------------------------------------------------------------------
 		
+		/**
+		 * The name of the connection, where this LocalConnection listens.
+		 */
 		public function get receivingConnection():String { return _receivingConnection; }
 		
+		/**
+		 * The name of the connection, where this LocalConnection sends data.
+		 */
 		public function get sendingConnection():String { return _sendingConnection; }
 		
+		/**
+		 * Set this property to the function which should be invoken 
+		 * on each connection operation.
+		 */
 		public function get defaultCallBack():Function { return _defaultCallBack; }
 		public function set defaultCallBack(value:Function):void
 		{
@@ -262,6 +272,10 @@ package org.wvxvws.lcbridge
 			}
 		}
 		
+		/**
+		 * @private
+		 * @param	request
+		 */
 		internal function loadAVM1Movie(request:URLRequest):void
 		{
 			trace("loadAVM1Movie");
