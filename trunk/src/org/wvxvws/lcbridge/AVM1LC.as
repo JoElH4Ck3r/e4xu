@@ -212,18 +212,17 @@ package org.wvxvws.lcbridge
 		 * If the command is expected to return results from AVM1Movie, add listener
 		 * for <code>Event.COMPLETE</code> event to the <code>command</command>.
 		 * 
-		 * @param	command			The AVM1Command that encapsulates the command
-		 * 							to be performed by AVM1Movie.
+		 * @param	command		The AVM1Command that encapsulates the command
+		 * 						to be performed by AVM1Movie.
 		 * 
-		 * @param	weakReference	If <code>true</code>, will let GC to remove it
-		 * 							after operation finishes.
+		 * @param	recicle		If <code>true</code>, this command will be reused to
+		 * 						send other messages.
 		 * @default	<code>true</code>
 		 */
 		public function sendCommand(command:AVM1Command, 
-									weakReference:Boolean = true):void
+									recicle:Boolean = true):void
 		{
-			if (weakReference) _commands[command] = true;
-			else _commands[command] = false;
+			_commands[command] = recicle;
 			if (!_sending)
 			{
 				_queved = command;
