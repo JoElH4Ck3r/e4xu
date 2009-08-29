@@ -48,8 +48,11 @@ package org.wvxvws.lcbridge
 	 */
 	public class AVM1Loader extends Loader
 	{
-		private var _connection:AVM1LC;
-		private var _request:URLRequest;
+		
+		public function get connection():AVM1LC { return _connection; }
+		
+		protected var _connection:AVM1LC;
+		protected var _request:URLRequest;
 		protected var _context:LoaderContext;
 		protected var _content:DisplayObject;
 		
@@ -61,10 +64,11 @@ package org.wvxvws.lcbridge
 			if (_request) load(_request, _context);
 		}
 		
-		private function contentCompleteHandler(event:Event):void
-		{
-			event.stopImmediatePropagation();
-		}
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
 		
 		public override function load(request:URLRequest, context:LoaderContext = null):void
 		{
@@ -81,39 +85,75 @@ package org.wvxvws.lcbridge
 			}
 		}
 		
+		override public function unload():void 
+		{
+			// TODO: Also close LocalConnection.
+			super.unload();
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Private methods
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		 * @private
+		 * @param	request
+		 * @param	context
+		 */
 		internal final function $load(request:URLRequest, context:LoaderContext = null):void
 		{
 			super.load(request, context);
 		}
 		
+		/**
+		 * @private
+		 * @param	event
+		 */
 		private function readyHandler(event:AVM1Event):void 
 		{
 			_connection.loadAVM1Movie(_request);
 		}
 		
+		/**
+		 * @private
+		 * @param	event
+		 */
 		private function loadedHandler(event:AVM1Event):void 
 		{
 			trace("Loader: as2 movie loaded");
 		}
 		
+		/**
+		 * @private
+		 * @param	event
+		 */
 		private function reconnectHandler(event:AVM1Event):void 
 		{
 			
 		}
 		
+		/**
+		 * @private
+		 * @param	event
+		 */
 		private function receivedHandler(event:AVM1Event):void 
 		{
 			trace("redispatching ");
 			//_connection.removeEventListener(AVM1Event.MESSAGE_RECIEVED, messageHandler);
 		}
 		
+		/**
+		 * @private
+		 * @param	event
+		 */
 		private function errorHandler(event:Event):void
 		{
 			event.stopImmediatePropagation();
 			trace(">>> failied to load AVM1 movie: " + _request, event);
 			// handle error here
 		}
-		
 	}
 	
 }
