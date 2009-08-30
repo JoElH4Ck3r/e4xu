@@ -1,3 +1,5 @@
+import org.wvxvws.lcbridge.AVM1Command;
+import org.wvxvws.lcbridge.AVM1Protocol;
 import org.wvxvws.lcbridge.LCMessage;
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -29,8 +31,6 @@ import org.wvxvws.lcbridge.LCMessage;
  */
 class org.wvxvws.lcbridge.LC extends LocalConnection
 {
-	public static var LC_CONNECTED:String = "lcConnected";
-	public static var LC_FAILED:String = "lcFailed";
 	public static var LC_NAME:String = "__LC645F8553-33B1-47D1-996F-5EDFB4863061";
 	
 	public static var COLON:String = ":";
@@ -42,19 +42,9 @@ class org.wvxvws.lcbridge.LC extends LocalConnection
 	public static var EQUALS:String = "=";
 	public static var PIPE:String = "|";
 	
-	// Commands
-	public static var LD:String = "ld";
-	public static var INTERNAL:String = "internal";
-	public static var GLOBAL:String = "global";
-	public static var ROOT:String = "root";
-	public static var SET:String = "set";
-	public static var CALLBACK:String = "callback";
-	public static var RETURN:String = "return";
-	public static var ERROR:String = "error";
-	
-	public function broadcastMessage() { };
-	public function addListener() { };
-	public function removeListener() { };
+	//Events
+	public static var ON_ERROR:String = "onError";
+	public static var ON_STATUS:String = "onStatus";
 	
 	private var _receivingConnection:String;
 	private var _sendingConnection:String;
@@ -68,7 +58,12 @@ class org.wvxvws.lcbridge.LC extends LocalConnection
 	private var _clipLoader:MovieClipLoader;
 	private var _loaderContent:MovieClip;
 	private var _prop:String = "";
-	private var _itr:Number = 0;
+	
+	//------------------------------------------------------------------------------
+	//
+	//  Constructor
+	//
+	//------------------------------------------------------------------------------
 	
 	public function LC()
 	{
@@ -80,227 +75,150 @@ class org.wvxvws.lcbridge.LC extends LocalConnection
 		this.connect(LC_NAME);
 	}
 	
-	public function connect(s:String):Void
-	{
-		if (super.connect(s))
-		{
-			broadcastMessage(LC_CONNECTED);
-		}
-		else
-		{
-			broadcastMessage(LC_FAILED);
-			trace("AS2 connection to: " + s + " failed!");
-		}
-	}
+	//------------------------------------------------------------------------------
+	//
+	//  Private methods
+	//
+	//------------------------------------------------------------------------------
 	
-	public function send():Void
+	private function parseMethod(command:AVM1Command):Void
 	{
-		trace("AS2 sending attempt " + _receivingConnection + " :: " + arguments);
-		var message:LCMessage = new LCMessage(_messageKind, null, arguments);
-		super.send(_receivingConnection, "as3recieve", message);
-	}
-	
-	public function as2recieve(message:Object):Void
-	{
-		var s:String = message.data;
-		trace("AS2 recieved >>> " + message.kind);
-		var code:Number;
-		for (var i:Number = 0; i < LCMessage.codes.length; i++)
-		{
-			//trace([LCMessage.codes[i], message.kind]);
-			if (LCMessage.codes[i] == message.kind)
-			{
-				code = i;
-				break;
-			}
-		}
-		switch (code)
-		{
-			case LCMessage.LC_COMMAND:
-				parseCommand(message.data);
-				break;
-			case LCMessage.LC_CUSTOM:
-			case LCMessage.LC_ERROR:
-			case LCMessage.LC_LOAD_START:
-			case LCMessage.LC_LOADED:
-			case LCMessage.LC_READY:
-			case LCMessage.LC_RECEIVED:
-				break;
-			case LCMessage.LC_RECONNECT:
-				reconnect(message.data);
-				break;
-			case LCMessage.LC_RETURN:
-			
-				break;
-			default:
-				_messageKind = LCMessage.LC_ERROR;
-				this.send("1 Protocol error: " + code);
-				break;
-		}
-	}
-	
-	private function parseCommand(input:String):Void
-	{
-		var parts:Array = input.split("|");
-		_messageCommand = parts[0];
-		if (!_messageCommand)
-		{
-			_messageKind = LCMessage.LC_ERROR;
-			this.send("2 Protocol Error: " + input);
-			return;
-		}
-		_messageContext = eval(parts[1]);
-		_messageFunction = eval(parts[1] + "." + parts[2]);
-		_messageArguments = parseArguments(parts[3]);
+		var scope:Object = getScope(command.scope);
+		var method:Function;
 		
-		switch (_messageCommand)
+		if (scope) method = scope[command.method];
+		else method = eval(command.method);
+		if (method != null)
 		{
-			case LD:
-				loadContent(parts[1]);
-				break;
-			case INTERNAL:
-			case GLOBAL:
-			case ROOT:
-			case SET:
-			case CALLBACK:
-			case RETURN:
-			case ERROR:
-				break;
-			default:
-				_messageKind = LCMessage.LC_ERROR;
-				this.send("3 Protocol Error: " + input);
-				break;
+			command.operationResult = method.apply(scope, command.methodArguments);
 		}
-	}
-	
-	private function parseArguments(input:String):Array
-	{
-		// TODO: Need real eval
-		var temp:Array = input.split(",");
-		return temp;
-	}
-	
-	private function buildEval(s:String, flag:String):Boolean
-	{
-		switch (flag)
-		{
-			case COLON:
-				if (_messageCommand == "") _messageCommand = s;
-				switch(s)
-				{
-					case INTERNAL:
-						_messageContext = this;
-						break;
-					case GLOBAL:
-						_messageContext = _global;
-						break;
-					case ROOT:
-						if (!_loaderContent._width) 
-							_loaderContent = 
-							_root.createEmptyMovieClip("_loaderContent", 0);
-						_messageContext = _loaderContent;
-						break;
-					case SET:
-						if (!_loaderContent._width) 
-							_loaderContent = 
-							_root.createEmptyMovieClip("_loaderContent", 0);
-						_messageContext = _loaderContent;
-						break;
-					case LD:
-						_loaderContent.removeMovieClip();
-						_loaderContent = 
-						_root.createEmptyMovieClip("_loaderContent", 0);
-						return false;
-					case RETURN:
-						if (!_loaderContent._width) 
-							_loaderContent = 
-							_root.createEmptyMovieClip("_loaderContent", 0);
-						_messageContext = _loaderContent;
-						break;
-				}
-				break;
-			case DOT:
-				if (_messageCommand != LD) _messageContext = this;
-				else _messageContext = _messageContext[s];
-				break;
-			case LP:
-				_messageFunction = _messageContext[s];
-				break;
-			case RP:
-			case COMA:
-				_messageArguments.push(s);
-				break;
-			case EQUALS:
-				_prop = s;
-				break;
-		}
-		return true;
-	}
-	
-	private function exec(command:String):Void
-	{
-		switch (_messageCommand)
-		{
-			case LD:
-				loadContent(command);
-				break;
-			case SET:
-				_messageContext[_prop] = _messageArguments[0];
-				break;
-			case RETURN:
-				this.send(_messageContext[_messageArguments[0]]);
-				break;
-			default:
-				_messageFunction.apply(_messageContext, _messageArguments);
-				break;
-		}
+		this.send(command);
+		broadcastMessage(ON_STATUS);
 	}
 	
 	private function loadContent(which:String):Void
 	{
 		if (!_loaderContent._width)
 		{
-			_loaderContent = 
-							_root.createEmptyMovieClip("_loaderContent", 0);
+			_loaderContent = _root.createEmptyMovieClip("_loaderContent", 0);
 		}
 		_clipLoader.loadClip(which, _loaderContent);
 	}
 	
-	public function onLoadError(mc:MovieClip, s:String, n:Number):Void
+	private function parseProperty(command:AVM1Command):Void
 	{
-		arguments.unshift(ERROR);
-		arguments.push(_file);
-		_messageKind = LCMessage.LC_ERROR;
-		this.send(arguments);
+		var scope:Object = getScope(command.scope);
+		var property:String;
+		if (!scope) return;
+		scope[command.property] = command.propertyValue;
+		broadcastMessage(ON_STATUS);
 	}
 	
-	public function onLoadStart(mc:MovieClip, s:String, n:Number):Void
+	private function getScope(scope:String):Object
 	{
-		arguments.unshift("loadStart");
-		arguments.push(_file);
-		_messageKind = LCMessage.LC_LOAD_START;
-		this.send(arguments);
+		switch (scope)
+		{
+			case AVM1Protocol.CONTENT:
+				return _loaderContent;
+			case AVM1Protocol.GLOBAL:
+				return _global;
+			case AVM1Protocol.NULL:
+				return null;
+			case AVM1Protocol.ROOT:
+				return _root;
+			case AVM1Protocol.THIS:
+				return this;
+			default:
+				return eval(scope);
+		}
+		return null;
 	}
 	
-	public function onLoadInit(mc:MovieClip):Void
+	//------------------------------------------------------------------------------
+	//
+	//  Overloaded methods
+	//
+	//------------------------------------------------------------------------------
+	
+	public function connect(connectionName:String):Boolean
+	{
+		var ret:Boolean;
+		if (ret = super.connect(connectionName))
+		{
+			broadcastMessage(ON_STATUS);
+		}
+		else
+		{
+			broadcastMessage(ON_ERROR);
+			trace("AS2 connection to: " + connectionName + " failed!");
+		}
+		return ret;
+	}
+	
+	public function send(command:AVM1Command):Boolean
+	{
+		trace("AS2 sending attempt " + _receivingConnection + " :: " + arguments);
+		return super.send(_receivingConnection, "as3recieve", command.toAMF0Object());
+	}
+	
+	//------------------------------------------------------------------------------
+	//
+	//  Public methods
+	//
+	//------------------------------------------------------------------------------
+	
+	public function as2recieve(message:Object):Void
+	{
+		var command:AVM1Command = AVM1Command.parseFromAMF0(message);
+		
+		switch (command.type)
+		{
+			case AVM1Command.CALL_METHOD:
+				parseMethod(command);
+				break;
+			case AVM1Command.SET_PROPERTY:
+				parseProperty(command);
+				break;
+			case AVM1Command.LOAD_CONTENT:
+				loadContent(command.contentURL);
+			case AVM1Command.ERROR:
+				broadcastMessage(ON_ERROR);
+				break;
+			case AVM1Command.NOOP:
+			default:
+				broadcastMessage(ON_STATUS);
+				break;
+		}
+	}
+	
+	public function broadcastMessage(message:String):Void { };
+	
+	public function addListener(listener:Object):Void { };
+	
+	public function removeListener(listener:Object):Void { };
+	
+	public function onLoadError(clip:MovieClip, errorText:String, 
+												errorNumber:Number):Void
+	{
+		this.send(new AVM1Command(AVM1Command.ERROR, AVM1Protocol.NULL));
+	}
+	
+	public function onLoadInit(clip:MovieClip):Void
 	{
 		trace("AS2 content loaded");
-		arguments.push(_file);
-		_messageKind = LCMessage.LC_LOADED;
-		this.send(arguments);
+		this.send(new AVM1Command(AVM1Command.NOOP, AVM1Protocol.NULL));
 	}
 	
-	public function reconnect(s:String):Void
+	public function reconnect(newNames:String):Void
 	{
-		trace("AS2 reconnecting " + s);
+		trace("AS2 reconnecting " + newNames);
 		super.close();
-		_messageKind = LCMessage.LC_READY;
-		var names:Array = s.split(PIPE);
+		var names:Array = newNames.split("|");
 		_receivingConnection = names[1];
 		_sendingConnection = names[0];
 		super.connect(_sendingConnection);
-		this.send();
+		this.send(new AVM1Command(AVM1Command.NOOP, AVM1Protocol.NULL));
 	}
 	
-	public function toMyString():String { return "[LC]"; }
+	public function toString():String { return "[LC]"; }
 }

@@ -95,6 +95,7 @@ package org.wvxvws.lcbridge
 		protected var _commands:Dictionary = new Dictionary();
 		protected var _commandsPool:Dictionary = new Dictionary();
 		protected var _sending:Boolean;
+		protected var _loading:Boolean;
 		protected var _queved:AVM1Command;
 		
 		//--------------------------------------------------------------------------
@@ -260,9 +261,9 @@ package org.wvxvws.lcbridge
 			event.stopImmediatePropagation();
 			_receivingConnection = LC_RECEIVE_NAME + new Date().time;
 			_sendingConnection = LC_SEND_NAME + new Date().time;
-			var message:Object = 
-				{ kind: AVM1Event.LC_RECONNECT, 
-				data: _receivingConnection + "|" + _sendingConnection };
+			var command:AVM1Command = new AVM1Command(AVM1Command.CALL_METHOD, 
+							AVM1Protocol.THIS, "reconnect", null, null, 
+							[_receivingConnection + "|" + _sendingConnection]);
 			try
 			{
 				this.close();
@@ -275,7 +276,7 @@ package org.wvxvws.lcbridge
 				}
 			}
 			this.connect(_sendingConnection);
-			this.send(LC_NAME, "as2recieve", message);
+			this.send(LC_NAME, "as2recieve", command.toAMF0Object());
 			trace("init");
 		}
 		
@@ -304,29 +305,31 @@ package org.wvxvws.lcbridge
 		public function as3recieve(message:Object):void
 		{
 			_sending = false;
-			var kind:int = message.kind;
-			var kindStr:String = AVM1Event.codes[kind];
-			trace("as3recieve", kindStr);
+			var rec:AVM1Command = AVM1Command.parseFromAMF0(message);
+			trace("as3recieve", rec.type);
 			var com:Object;
 			var command:AVM1Command;
 			var finished:AVM1Command;
 			var next:AVM1Command;
 			
-			switch (kindStr)
+			switch (rec.type)
 			{
-				case AVM1Event.LC_ERROR:
-					trace("AS2 reported error >>> " + message.message);
+				case AVM1Command.CALL_METHOD:
+					trace("AS2 called method >>> ", rec.method, rec.methodArguments, rec.operationResult);
+					dispatchEvent(new AVM1Event(AVM1Event.LC_READY));
 					break;
-				case AVM1Event.LC_LOADED:
-					trace("AS2 loaded file >>> " + message.message);
+				case AVM1Command.SET_PROPERTY:
+					trace("AS2 set property >>> ", rec.property, rec.propertyValue);
+					dispatchEvent(new AVM1Event(AVM1Event.LC_READY));
+					break;
+				case AVM1Command.LOAD_CONTENT:
 					dispatchEvent(new AVM1Event(AVM1Event.LC_LOADED));
 					break;
-				case AVM1Event.LC_COMMAND:
-				case AVM1Event.LC_CUSTOM:
+				case AVM1Command.ERROR:
+					dispatchEvent(new AVM1Event(AVM1Event.LC_ERROR));
 					break;
-				case AVM1Event.LC_READY:
+				case AVM1Command.NOOP:
 					trace("AS3 as2 reported reconnection", this._receivingConnection);
-					dispatchEvent(new AVM1Event(AVM1Event.LC_READY));
 					for (com in _commands)
 					{
 						command = com as AVM1Command;
@@ -336,23 +339,18 @@ package org.wvxvws.lcbridge
 					}
 					if (finished)
 					{
-						finished.operationResult = message.result;
-						if (!_commands[finished])
+						finished.operationResult = rec.operationResult;
+						if (_commands[finished])
 						{
 							_commandsPool[finished] = true;
 						}
 						delete _commands[finished];
 					}
 					if (next) sendCommand(next, _commands[next]);
-					break;
-				case AVM1Event.LC_RECEIVED:
-				case AVM1Event.LC_RECONNECT:
-				case AVM1Event.LC_RETURN:
-				case AVM1Event.LC_LOAD_START:
-				case AVM1Event.LC_DISCONNECT:
-					trace("AS3 recieve >>> " + kindStr);
+					dispatchEvent(new AVM1Event(AVM1Event.LC_READY));
 					break;
 				default:
+					trace("AS3 recieve >>> " + rec.type);
 					trace("AS3 protocol error");
 			}
 		}
@@ -364,8 +362,11 @@ package org.wvxvws.lcbridge
 		internal function loadAVM1Movie(request:URLRequest):void
 		{
 			trace("loadAVM1Movie");
-			var message:Object = { kind: AVM1Event.LC_COMMAND, data: "ld|" + request.url };
-			this.send(_receivingConnection, "as2recieve", message);
+			if (_loading) return;
+			_loading = true;
+			var command:AVM1Command = new AVM1Command(AVM1Command.LOAD_CONTENT, 
+							AVM1Protocol.THIS, null, null, null, null, request.url);
+			this.send(_receivingConnection, "as2recieve", command.toAMF0Object());
 		}
 		
 	}
