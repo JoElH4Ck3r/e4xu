@@ -24,15 +24,16 @@
 			if (input.length < 9) 
 			{
 				_error = new Error("Not enough bytes");
-				return;
+				return null;
 			}
 			_frames = [];
 			if ((fileStart = readHeader(input)) < 9) 
 			{
 				_error = new Error("Cannot read header");
-				return;
+				return null;
 			}
 			input.position = fileStart;
+			trace("_version", _version, "_hasVideo", _hasVideo, "_hasAudio", _hasAudio);
 			_error = readBody(input);
 			if (!_error) return _frames;
 			return null;
@@ -60,6 +61,7 @@
 			{
 				_version = input.readUnsignedByte();
 				headerChars = input.readUnsignedByte().toString(2);
+				while (headerChars.length < 8) headerChars = "0" + headerChars;
 				if (headerChars.charAt(5) !== "0")
 				{
 					_hasAudio = true;
@@ -92,11 +94,14 @@
 		private static function readBody(input:ByteArray):Error
 		{
 			var nextTagStart:uint = input.position + 4;
-			var tagByres:ByteArray = new ByteArray();
-			var tagLength:int;
-			while (tagLength = readTag(tagByres.writeBytes(input, nextTagStart, tagLength)))
+			var tagLength:uint;
+			var previousTag:uint;
+			while (tagLength = readTag(input, nextTagStart))
 			{
-				nextTagStart += nextTagStart; 
+				nextTagStart += tagLength + 4;
+				previousTag = input.readUnsignedInt();
+				trace("trying to read bytes from:", nextTagStart, 
+					"bytes read", tagLength, "checksum", previousTag);
 			}
 			return null;
 		}
@@ -129,12 +134,24 @@
 		 */
 		private static function readTag(input:ByteArray, from:uint):uint
 		{
-			if (!input.length) return 0;
-			var tagType:int;
-			var dataSize:int;
-			var timeStamp:uint;
+			if (from + 11 >= input.length) return 0;
+			input.position = from;
+			var tagType:int = input.readUnsignedByte();
+			if (tagType !== 8 && tagType !== 9 && tagType !== 18) return 0;
+			var dataSize:int = ((input.readUnsignedByte() << 8) | 
+								input.readUnsignedByte() << 8) | 
+								input.readUnsignedByte();
+			var timeStamp:uint = ((input.readUnsignedByte() << 8) | 
+								input.readUnsignedByte() << 8) | 
+								input.readUnsignedByte();
+			var timestampExtended:uint = input.readUnsignedByte();
 			var data:ByteArray;
-			
+			var streamID:uint = ((input.readUnsignedByte() << 8) | 
+								input.readUnsignedByte() << 8) | 
+								input.readUnsignedByte();
+			trace("tagType", tagType, "dataSize", dataSize, 
+				"timeStamp", timeStamp, "timestampExtended", 
+				timestampExtended, "streamID", streamID);
 			return 11 + dataSize;
 		}
 		
