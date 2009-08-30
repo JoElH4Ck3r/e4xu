@@ -60,12 +60,17 @@
 		 */
 		public var codecID:int;
 		
-		
 		public function DefineVideoStream() { super(60); }
 		
-		override public function compile(bytes:ByteArray = null):ByteArray
+		protected override function compileTagParams():void
 		{
-			
+			_data.writeShort(characterID);
+			_data.writeShort(numFrames);
+			_data.writeShort(width);
+			_data.writeShort(height);
+			var flags:uint = (videoFlagsDeblocking << 3) | videoFlagsSmoothing;
+			_data.writeByte(flags);
+			_data.writeByte(codecID);
 		}
 	}
 	

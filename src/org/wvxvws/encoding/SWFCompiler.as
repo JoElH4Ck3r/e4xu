@@ -4,13 +4,17 @@
 	import flash.utils.Endian;
 	import org.wvxvws.encoding.tags.DefineSceneAndFrameLabelData;
 	import org.wvxvws.encoding.tags.DefineSound;
+	import org.wvxvws.encoding.tags.DefineVideoStream;
 	import org.wvxvws.encoding.tags.DoABC;
 	import org.wvxvws.encoding.tags.FileAttributes;
 	import org.wvxvws.encoding.tags.FrameLabel;
+	import org.wvxvws.encoding.tags.PlaceObject2;
 	import org.wvxvws.encoding.tags.ScriptLimits;
 	import org.wvxvws.encoding.tags.SetBackgroundColor;
+	import org.wvxvws.encoding.tags.ShowFrame;
 	import org.wvxvws.encoding.tags.SoundStreamHead2;
 	import org.wvxvws.encoding.tags.SymbolClass;
+	import org.wvxvws.encoding.tags.VideoFrame;
 	
 	//{imports
 	
@@ -77,6 +81,24 @@
 		//  Public methods
 		//
 		//--------------------------------------------------------------------------
+		
+		public static function compileEmbeddedVideo(input:ByteArray, toFile:String):ByteArray
+		{
+			var videoStream:DefineVideoStream = new DefineVideoStream();
+			var placeObject:PlaceObject2 = new PlaceObject2();
+			var videoFrame:VideoFrame = new VideoFrame();
+			var showFrame:ShowFrame = new ShowFrame();
+			var frames:Array = FLVTranscoder.read(input);
+			var swf:ByteArray = new ByteArray();
+			swf.endian = Endian.LITTLE_ENDIAN;
+			writeHeader(swf, toFile);
+			return null;
+		}
+		
+		private static function vriteVideoFrame():void
+		{
+			
+		}
 		
 		public static function compileMP3SWF(input:ByteArray, toFile:String):ByteArray
 		{

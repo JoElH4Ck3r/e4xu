@@ -8,9 +8,18 @@
 	 */
 	public class FLVTranscoder 
 	{
+		public static const CODEC_JPEG:int = 1;
+		public static const CODEC_H263:int = 2;
+		public static const CODEC_SCREEN_VIDEO:int = 3;
+		public static const CODEC_VP6:int = 4;
+		public static const CODEC_VP6_ALPHA:int = 5;
+		public static const CODEC_SCREEN_VIDEO_2:int = 6;
+		public static const CODEC_AVC:int = 7;
+		
 		private static var _version:int;
 		private static var _hasVideo:Boolean;
 		private static var _hasAudio:Boolean;
+		private static var _videoCodec:int;
 		
 		private static var _pointer:int;
 		private static var _error:Error;
@@ -35,6 +44,7 @@
 			input.position = fileStart;
 			trace("_version", _version, "_hasVideo", _hasVideo, "_hasAudio", _hasAudio);
 			_error = readBody(input);
+			trace("_videoCodec", _videoCodec);
 			if (!_error) return _frames;
 			return null;
 		}
@@ -100,8 +110,6 @@
 			{
 				nextTagStart += tagLength + 4;
 				previousTag = input.readUnsignedInt();
-				trace("trying to read bytes from:", nextTagStart, 
-					"bytes read", tagLength, "checksum", previousTag);
 			}
 			return null;
 		}
@@ -149,54 +157,74 @@
 			var streamID:uint = ((input.readUnsignedByte() << 8) | 
 								input.readUnsignedByte() << 8) | 
 								input.readUnsignedByte();
-			trace("tagType", tagType, "dataSize", dataSize, 
-				"timeStamp", timeStamp, "timestampExtended", 
-				timestampExtended, "streamID", streamID);
+			switch (tagType)
+			{
+				case 8:
+					readAudio(input, input.position, dataSize);
+					break;
+				case 9:
+					readVideo(input, input.position, dataSize);
+					break;
+				case 18:
+					readScript(input, input.position, dataSize);
+					break;
+			}
 			return 11 + dataSize;
 		}
 		
-		private static function readAudio(input:ByteArray):void
+		private static function readAudio(input:ByteArray, from:uint, lenght:uint):void
 		{
 			
 		}
 		
 		/*
-		 * FrameType UB[4] 1: keyframe (for AVC, a seekable frame)
-		 * 2: inter frame (for AVC, a nonseekable frame)
-		 * 3: disposable inter frame (H.263 only)
-		 * 4: generated keyframe (reserved for server use only)
-		 * 5: video info/command frame
-		 * CodecID UB[4] 1: JPEG (currently unused)
-		 * 2: Sorenson H.263
-		 * 3: Screen video
-		 * 4: On2 VP6
-		 * 5: On2 VP6 with alpha channel
-		 * 6: Screen video version 2
-		 * 7: AVC
-		 * VideoData If CodecID = 2
-		 * H263VIDEOPACKET
+		 * FrameType UB[4] 
+		 * 		1: keyframe (for AVC, a seekable frame)
+		 * 		2: inter frame (for AVC, a nonseekable frame)
+		 * 		3: disposable inter frame (H.263 only)
+		 * 		4: generated keyframe (reserved for server use only)
+		 * 		5: video info/command frame
+		 * CodecID UB[4] 
+		 * 		1: JPEG (currently unused)
+		 * 		2: Sorenson H.263
+		 * 		3: Screen video
+		 * 		4: On2 VP6
+		 * 		5: On2 VP6 with alpha channel
+		 * 		6: Screen video version 2
+		 * 		7: AVC
+		 * VideoData 
+		 * If CodecID = 2
+		 * 		H263VIDEOPACKET
 		 * If CodecID = 3
-		 * SCREENVIDEOPACKET
+		 * 		SCREENVIDEOPACKET
 		 * If CodecID = 4
-		 * VP6FLVVIDEOPACKET
+		 * 		VP6FLVVIDEOPACKET
 		 * If CodecID = 5
-		 * VP6FLVALPHAVIDEOPACKET
+		 * 		VP6FLVALPHAVIDEOPACKET
 		 * If CodecID = 6
-		 * SCREENV2VIDEOPACKET
+		 * 		SCREENV2VIDEOPACKET
 		 * if CodecID = 7
-		 * AVCVIDEOPACKET
-		 * Video frame payload
-		 * (see note following table)
+		 * 		AVCVIDEOPACKET
 		 */
-		private static function readVideo(input:ByteArray):void
+		private static function readVideo(input:ByteArray, from:uint, lenght:uint):void
+		{
+			input.position = from;
+			var flags:uint = input.readUnsignedByte(); //00100100
+			var frameType:int = flags >> 4;
+			var codecID:int = flags & 0xF;
+			_videoCodec = codecID;
+			var videoData:ByteArray = new ByteArray();
+			videoData.writeBytes(input, from + 1, lenght);
+			videoData.position = 0;
+			_frames.push(videoData);
+		}
+		
+		private static function readScript(input:ByteArray, from:uint, lenght:uint):void
 		{
 			
 		}
 		
-		private static function readScript(input:ByteArray):void
-		{
-			
-		}
+		static public function get videoCodec():int { return _videoCodec; }
 	}
 	
 }
