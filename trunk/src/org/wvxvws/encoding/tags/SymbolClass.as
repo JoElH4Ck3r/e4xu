@@ -36,7 +36,7 @@
 			return temp;
 		}
 		
-		override protected function compileTagParams():void 
+		protected override function compileTagParams():void 
 		{
 			var i:int;
 			var il:int = tagIDs.length;

@@ -35,9 +35,12 @@
 		
 		public function VideoFrame() { super(61); }
 		
-		override public function compile(bytes:ByteArray = null):ByteArray
+		protected override function compileTagParams():void
 		{
-			
+			_data.writeShort(streamID);
+			_data.writeShort(frameNum);
+			videoData.position = 0;
+			_data.writeBytes(videoData);
 		}
 	}
 	
