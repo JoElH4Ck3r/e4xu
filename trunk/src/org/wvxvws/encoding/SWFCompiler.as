@@ -92,6 +92,20 @@
 			var swf:ByteArray = new ByteArray();
 			swf.endian = Endian.LITTLE_ENDIAN;
 			writeHeader(swf, toFile);
+			videoStream.characterID = 1;
+			videoStream.codecID = FLVTranscoder.videoCodec;
+			videoStream.height = FLVTranscoder.height;
+			videoStream.width = FLVTranscoder.width;
+			videoStream.numFrames = frames.length;
+			//videoStream.videoFlagsDeblocking
+			//videoStream.videoFlagsSmoothing
+			var ba:ByteArray = videoStream.compile();
+			ba.position = 0;
+			while (ba.position < ba.length)
+			{
+				trace("\\x" + ba.readUnsignedByte().toString(16));
+			}
+			// "\x0a\x0f\x01\x00\x9e\x01\xf0\x00\x40\x01\x00\x04"
 			return null;
 		}
 		
