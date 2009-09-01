@@ -20,6 +20,10 @@
 		private static var _hasVideo:Boolean;
 		private static var _hasAudio:Boolean;
 		private static var _videoCodec:int;
+		private static var _deblocking:int;
+		private static var _smoothing:int;
+		private static var _width:int = 320;
+		private static var _height:int = 240;
 		
 		private static var _pointer:int;
 		private static var _error:Error;
@@ -221,10 +225,18 @@
 		
 		private static function readScript(input:ByteArray, from:uint, lenght:uint):void
 		{
-			
+			trace("reading script", from, lenght);
 		}
 		
-		static public function get videoCodec():int { return _videoCodec; }
+		public static function get videoCodec():int { return _videoCodec; }
+		
+		public static function get deblocking():int { return _deblocking; }
+		
+		public static function get smoothing():int { return _smoothing; }
+		
+		public static function get width():int { return _width; }
+		
+		public static function get height():int { return _height; }
 	}
 	
 }
