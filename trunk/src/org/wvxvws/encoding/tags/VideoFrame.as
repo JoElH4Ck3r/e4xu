@@ -35,6 +35,8 @@
 		
 		public function VideoFrame() { super(61); }
 		
+		// \x7F\x0F\x51\x0D\x00\x00 | \x01\x00 | \x00\x00 |
+		// |----- RECORDHEADER -----|--- id ---|- frame --|
 		protected override function compileTagParams():void
 		{
 			_data.writeShort(streamID);
