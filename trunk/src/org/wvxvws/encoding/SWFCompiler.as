@@ -120,6 +120,7 @@
 			
 			var swf:ByteArray = new ByteArray();
 			swf.endian = Endian.LITTLE_ENDIAN;
+			frameCount = frames.length;
 			writeHeader(swf, toFile);
 			swf.writeBytes(sbgColor.compile());
 			//swf.writeBytes(defSLData.compile());
