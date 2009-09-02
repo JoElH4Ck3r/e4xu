@@ -49,6 +49,7 @@
 			trace("_version", _version, "_hasVideo", _hasVideo, "_hasAudio", _hasAudio);
 			_error = readBody(input);
 			trace("_videoCodec", _videoCodec);
+			trace("_error", _error);
 			if (!_error) return _frames;
 			return null;
 		}
@@ -218,8 +219,10 @@
 			var codecID:int = flags & 0xF;
 			_videoCodec = codecID;
 			var videoData:ByteArray = new ByteArray();
-			videoData.writeBytes(input, from + 1, lenght);
+			// CHECK!
+			videoData.writeBytes(input, from + 2, lenght - 1);
 			videoData.position = 0;
+			trace("reading video", from);
 			_frames.push(videoData);
 		}
 		

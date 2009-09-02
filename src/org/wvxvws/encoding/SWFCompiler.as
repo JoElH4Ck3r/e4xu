@@ -114,6 +114,7 @@
 			var poBA:ByteArray = placeObject.compile();
 			
 			var videoFrame:VideoFrame = new VideoFrame();
+			videoFrame.streamID = 1;
 			
 			var showFrame:ShowFrame = new ShowFrame();
 			var sfBA:ByteArray = showFrame.compile();
@@ -122,20 +123,43 @@
 			swf.endian = Endian.LITTLE_ENDIAN;
 			frameCount = frames.length;
 			writeHeader(swf, toFile);
-			swf.writeBytes(sbgColor.compile());
+			//swf.writeBytes(sbgColor.compile());
 			//swf.writeBytes(defSLData.compile());
 			//swf.writeBytes(symbol.compile());
 			swf.writeBytes(videoStream.compile());
 			
 			var i:int;
+			trace("frames", frames);
+			var fakePlaceObject:ByteArray = new ByteArray();
+			fakePlaceObject.endian = Endian.LITTLE_ENDIAN;
+			fakePlaceObject.writeByte(0x85);
+			fakePlaceObject.writeByte(0x06);
+			fakePlaceObject.writeByte(0x11);
+			fakePlaceObject.writeByte(0x01);
+			fakePlaceObject.writeByte(0x00);
+			fakePlaceObject.writeByte(0x00);
+			fakePlaceObject.writeByte(0x00);
+			fakePlaceObject.position = 0;
+			
 			for each (var arr:ByteArray in frames)
 			{
-				videoFrame.frameNum = i;
+				i++;
+				trace("writing frame", i);
+				videoFrame.frameNum = i - 1;
 				videoFrame.videoData = arr;
 				
-				poBA.position = 0;
-				swf.writeBytes(poBA);
-				
+				if (i === 1)
+				{
+					poBA.position = 0;
+					swf.writeBytes(poBA);
+				}
+				else
+				{
+					fakePlaceObject.position = 5;
+					fakePlaceObject.writeShort(i - 1);
+					fakePlaceObject.position = 0;
+					swf.writeBytes(fakePlaceObject);
+				}
 				swf.writeBytes(videoFrame.compile());
 				
 				sfBA.position = 0;
@@ -147,11 +171,6 @@
 			swf.writeUnsignedInt(swf.length);
 			swf.position = 0;
 			return swf;
-		}
-		
-		private static function vriteVideoFrame():void
-		{
-			
 		}
 		
 		public static function compileMP3SWF(input:ByteArray, toFile:String):ByteArray
@@ -219,6 +238,8 @@
 			swf.writeBytes(symbolClass.compile());
 			swf.writeBytes(soundStreamHead2.compile());
 			
+			swf.writeByte(0x40);
+			swf.writeByte(0);
 			writeEnd(swf);
 			swf.position = 4;
 			swf.writeUnsignedInt(swf.length);
@@ -250,13 +271,13 @@
 			input.writeBytes(setBackgroundColor.compile());
 			frameLabel.label = "Scene 1"; // frameClassName;
 			//input.writeBytes(frameLabel.compile());
-			input.writeBytes(defineSceneAndFrameLabelData.compile());
+			//input.writeBytes(defineSceneAndFrameLabelData.compile());
 		}
 		
 		public static function writeEnd(input:ByteArray):void
 		{
-			input.writeByte(0x40);
-			input.writeByte(0);
+			//input.writeByte(0x40);
+			//input.writeByte(0);
 			input.writeByte(0);
 			input.writeByte(0);
 		}

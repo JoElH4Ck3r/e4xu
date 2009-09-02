@@ -1,6 +1,7 @@
 ﻿package org.wvxvws.encoding.tags 
 {
 	import flash.utils.ByteArray;
+	import flash.utils.Endian;
 	import org.wvxvws.encoding.SWFTag;
 	
 	/**
@@ -61,6 +62,25 @@
 		public var codecID:int;
 		
 		public function DefineVideoStream() { super(60); }
+		
+		
+		public override function compile(bytes:ByteArray = null):ByteArray
+		{
+			_data = new ByteArray()
+			_data.endian = Endian.LITTLE_ENDIAN;
+			var temp:ByteArray = new ByteArray();
+			temp.endian = Endian.LITTLE_ENDIAN;
+			compileTagParams();
+			if (bytes) _data.writeBytes(bytes);
+			_length = _data.length;
+			_data.position = 0;
+			temp.writeShort((_code << 6) | 63);
+			temp.writeUnsignedInt(_length);
+			temp.writeBytes(_data);
+			temp.position = 0;
+			_data = temp;
+			return temp;
+		}
 		
 		// \x0a\x0f                 | \x01\x00 | \x9e\x01 | \x40\x01  | \xf0\x00 | \x00  | \x04" |
 		// \x3F\x0F\x0A\x00\x00\x00 | \x01\x00 | \x9E\x01 | \x40\x01  | \xF0\x00 | \x00  | \x04" |
