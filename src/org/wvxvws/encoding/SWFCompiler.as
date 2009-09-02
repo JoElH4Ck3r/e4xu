@@ -1,5 +1,7 @@
 ﻿package org.wvxvws.encoding 
 {
+	//{imports
+	import flash.geom.Matrix;
 	import flash.utils.ByteArray;
 	import flash.utils.Endian;
 	import org.wvxvws.encoding.tags.DefineSceneAndFrameLabelData;
@@ -15,10 +17,8 @@
 	import org.wvxvws.encoding.tags.SoundStreamHead2;
 	import org.wvxvws.encoding.tags.SymbolClass;
 	import org.wvxvws.encoding.tags.VideoFrame;
-	
-	//{imports
-	
 	//}
+	
 	/**
 	* SWFCompiler class.
 	* @author wvxvw
@@ -84,14 +84,19 @@
 		
 		public static function compileEmbeddedVideo(input:ByteArray, toFile:String):ByteArray
 		{
-			var videoStream:DefineVideoStream = new DefineVideoStream();
-			var placeObject:PlaceObject2 = new PlaceObject2();
-			var videoFrame:VideoFrame = new VideoFrame();
-			var showFrame:ShowFrame = new ShowFrame();
+			var sbgColor:SetBackgroundColor = new SetBackgroundColor();
+			sbgColor.color = 0xFF;
+			
+			var defSLData:DefineSceneAndFrameLabelData = new DefineSceneAndFrameLabelData();
+			//defSLData.frameLabelCount
+			
+			var symbol:SymbolClass = new SymbolClass();
+			symbol.classNames = ["embedded_fla.MainTimeline"];
+			symbol.numSymbols = 1;
+			symbol.tagIDs = [1];
+			
 			var frames:Array = FLVTranscoder.read(input);
-			var swf:ByteArray = new ByteArray();
-			swf.endian = Endian.LITTLE_ENDIAN;
-			writeHeader(swf, toFile);
+			var videoStream:DefineVideoStream = new DefineVideoStream();
 			videoStream.characterID = 1;
 			videoStream.codecID = FLVTranscoder.videoCodec;
 			videoStream.height = FLVTranscoder.height;
@@ -99,14 +104,48 @@
 			videoStream.numFrames = frames.length;
 			//videoStream.videoFlagsDeblocking
 			//videoStream.videoFlagsSmoothing
-			var ba:ByteArray = videoStream.compile();
-			ba.position = 0;
-			while (ba.position < ba.length)
+			
+			var placeObject:PlaceObject2 = new PlaceObject2();
+			placeObject.characterId = 1;
+			placeObject.depth = 1;
+			placeObject.placeFlagHasCharacter = true;
+			placeObject.placeFlagHasMatrix = true;
+			placeObject.matrix = SWFUtils.writeMatrix(new Matrix());
+			var poBA:ByteArray = placeObject.compile();
+			
+			var videoFrame:VideoFrame = new VideoFrame();
+			
+			var showFrame:ShowFrame = new ShowFrame();
+			var sfBA:ByteArray = showFrame.compile();
+			
+			var swf:ByteArray = new ByteArray();
+			swf.endian = Endian.LITTLE_ENDIAN;
+			writeHeader(swf, toFile);
+			swf.writeBytes(sbgColor.compile());
+			//swf.writeBytes(defSLData.compile());
+			//swf.writeBytes(symbol.compile());
+			swf.writeBytes(videoStream.compile());
+			
+			var i:int;
+			for each (var arr:ByteArray in frames)
 			{
-				trace("\\x" + ba.readUnsignedByte().toString(16));
+				videoFrame.frameNum = i;
+				videoFrame.videoData = arr;
+				
+				poBA.position = 0;
+				swf.writeBytes(poBA);
+				
+				swf.writeBytes(videoFrame.compile());
+				
+				sfBA.position = 0;
+				swf.writeBytes(sfBA);
 			}
-			// "\x0a\x0f\x01\x00\x9e\x01\xf0\x00\x40\x01\x00\x04"
-			return null;
+			
+			writeEnd(swf);
+			swf.position = 4;
+			swf.writeUnsignedInt(swf.length);
+			swf.position = 0;
+			return swf;
 		}
 		
 		private static function vriteVideoFrame():void

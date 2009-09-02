@@ -17,6 +17,21 @@
 		public var tagIDs:Array /* of uint */;
 		public var classNames:Array /* of String */;
 		
+		/*
+		 * \x3F\x13\x1E\x00\x00\x00  - RECORDHEADER
+		 * \x01\x00 				 - numSymbols
+		 * [\x00\x00] 				 - tagIDs
+		 * ----------------------------------------
+		 * [\x65\x6D\x62\x65\x64\x64 - classNames
+		 *   e    m   b   e   d   d
+		 *  \x65\x64\x5F\x66\x6C\x61
+		 *    e   d   _   f   l   a
+		 *  \x2E\x4D\x61\x69\x6E\x54
+		 *    .   M   a   i   n   T 
+		 *  \x69\x6D\x65\x6C\x69\x6E\x65
+		 *    i   m   e   l   i   n   e
+		 * \x00]
+		 */
 		public function SymbolClass() { super(76); }
 		
 		override public function compile(bytes:ByteArray = null):ByteArray 

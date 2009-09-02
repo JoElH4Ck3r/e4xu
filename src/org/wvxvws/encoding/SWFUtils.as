@@ -14,6 +14,60 @@
 		public function SWFUtils() { super(); }
 		
 		/**
+		 * @author Clement Wong 
+		 * <a href="http://stopcoding.wordpress.com/">http://stopcoding.wordpress.com/</a>
+		 * @author lordofduct 
+		 * <a href="http://www.lordofduct.com/">http://www.lordofduct.com/</a>
+		 * @param	m
+		 * @return
+		 */
+		public function matrixToByteStream(m:Matrix):ByteArray
+		{
+			var hasScale:Boolean = m.a != 1 || m.d != 1;
+			
+			var sX:int = int(m.a * 65536);
+			var sY:int = int(m.d * 65536);
+			var sBits:int = ByteStreamEncoder.minBits(Math.max(sX, sY), 1);
+			
+			var hasRotate:Boolean = m.c != 0 || m.b != 0;
+			
+			var r0:int = int(m.b * 65536);
+			var r1:int = int(m.c * 65536);
+			var rBits:int = ByteStreamEncoder.minBits(Math.max(r0, r1), 1);
+			
+			var tx:int = int(m.tx * 65536);
+			var ty:int = int(m.ty * 65536);
+			var tBits:int = ByteStreamEncoder.minBits(Math.max(tx, ty), 1);
+			
+			var enc:ByteStreamEncoder = new ByteStreamEncoder();
+			
+			//write the scale
+			enc.writeBit(hasScale);
+			if (hasScale)
+			{
+				enc.writeBits(sBits, 5);
+				enc.writeBits(sX, sBits);
+				enc.writeBits(sY, sBits);
+			}
+			
+			//write the rotation
+			enc.writeBit(hasRotate);
+			if (hasRotate)
+			{
+				enc.writeBits(rBits, 5);
+				enc.writeBits(r0, rBits);
+				enc.writeBits(r1, rBits);
+			}
+			
+			//write translation
+			enc.writeBits(tBits, 5);
+			enc.writeBits(tx, tBits);
+			enc.writeBits(ty, tBits);
+			
+			return enc.getByteArray();
+		}
+		
+		/**
 		 * HasScale 						UB[1] Has scale values if equal to 1.
 		 * NScaleBits If HasScale = 1, 		UB[5] Bits in each scale value field.
 		 * ScaleX If HasScale = 1, 			FB[NScaleBits] x scale value.
