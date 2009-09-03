@@ -143,12 +143,10 @@
 			
 			for each (var arr:ByteArray in frames)
 			{
-				i++;
-				trace("writing frame", i);
-				videoFrame.frameNum = i - 1;
+				videoFrame.frameNum = i;
 				videoFrame.videoData = arr;
 				
-				if (i === 1)
+				if (i === 0)
 				{
 					poBA.position = 0;
 					swf.writeBytes(poBA);
@@ -156,7 +154,7 @@
 				else
 				{
 					fakePlaceObject.position = 5;
-					fakePlaceObject.writeShort(i - 1);
+					fakePlaceObject.writeShort(i);
 					fakePlaceObject.position = 0;
 					swf.writeBytes(fakePlaceObject);
 				}
@@ -164,6 +162,7 @@
 				
 				sfBA.position = 0;
 				swf.writeBytes(sfBA);
+				i++;
 			}
 			
 			writeEnd(swf);
