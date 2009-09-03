@@ -129,7 +129,6 @@
 			swf.writeBytes(videoStream.compile());
 			
 			var i:int;
-			trace("frames", frames);
 			var fakePlaceObject:ByteArray = new ByteArray();
 			fakePlaceObject.endian = Endian.LITTLE_ENDIAN;
 			fakePlaceObject.writeByte(0x85);
@@ -177,6 +176,8 @@
 			var swf:ByteArray = new ByteArray();
 			swf.endian = Endian.LITTLE_ENDIAN;
 			writeHeader(swf, toFile);
+			input.writeBytes(frameLabel.compile());
+			input.writeBytes(defineSceneAndFrameLabelData.compile());
 			defineSound = MP3Transcoder.transcode(input);
 			
 			soundStreamHead2.playBackSoundRate = defineSound.soundRate;
@@ -199,6 +200,8 @@
 			swf.writeBytes(symbolClass.compile());
 			swf.writeBytes(soundStreamHead2.compile());
 			
+			swf.writeByte(0x40);
+			swf.writeByte(0);
 			writeEnd(swf);
 			swf.position = 4;
 			swf.writeUnsignedInt(swf.length);
@@ -211,6 +214,8 @@
 			var swf:ByteArray = new ByteArray();
 			swf.endian = Endian.LITTLE_ENDIAN;
 			writeHeader(swf, toFile);
+			input.writeBytes(frameLabel.compile());
+			input.writeBytes(defineSceneAndFrameLabelData.compile());
 			switch (soundType)
 			{
 				case MP3:
