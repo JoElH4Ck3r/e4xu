@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<flex-config>
+  <compiler>
+    <source-path append="true">
+      <path-element>C:\www\projects\xmlhelpers\src</path-element>
+      <path-element>C:\Program Files\FlashDevelop\Library\AS3\classes</path-element>
+    </source-path>
+	<namespaces>
+		<namespace>
+			<uri>http://e4xu.googlecode.com</uri>
+			<manifest>C:\www\projects\xmlhelpers\run\manifest.xml</manifest>
+		</namespace>
+	</namespaces>
+  </compiler>
+  <include-classes>
+	<class>org.wvxvws.gui.styles.CSSParser</class>
+	<class>org.wvxvws.gui.styles.CSSTable</class>
+	<class>org.wvxvws.gui.styles.ICSSClass</class>
+	<class>org.wvxvws.gui.styles.ICSSClient</class>
+	<class>org.wvxvws.gui.styles.STYLE</class>
+  </include-classes>
+</flex-config>

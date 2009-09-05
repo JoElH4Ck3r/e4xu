@@ -227,22 +227,7 @@ package org.wvxvws.lcbridge
 			if (!_sending)
 			{
 				_queved = command;
-				if (command.type === AVM1Command.CALL_METHOD)
-				{
-					if (command.methodArguments)
-					{
-						callMethod.apply(this, [command.scope, 
-								command.method, null].concat(command.methodArguments));
-					}
-					else
-					{
-						callMethod(command.scope, command.method, null);
-					}
-				}
-				else if (command.type === AVM1Command.SET_PROPERTY)
-				{
-					setProperty(command.scope, command.property, command.propertyValue);
-				}
+				this.send(_receivingConnection, "as2recieve", command.toAMF0Object());
 			}
 		}
 		
