@@ -32,49 +32,65 @@ package org.wvxvws.lcbridge
 	 */
 	public class AVM1Event extends Event
 	{
+		/**
+		 * Currently not used. Reserved for future use.
+		 */
 		public static const LC_CUSTOM:String = "lcCustom";
+		
+		/**
+		 * Dispatched by AVM1Loader every time the AVM1Movie responds.
+		 */
 		public static const LC_RECEIVED:String = "lcReceived";
+		
+		/**
+		 * Dispatched by AVM1Loader when connection or protocol error occures.
+		 */
 		public static const LC_ERROR:String = "lcError";
+		
+		/**
+		 * Dispatched by AVM1Loader when proxying AVM1Movie has loaded the targeted AVM1Movie.
+		 */
 		public static const LC_LOADED:String = "lcLoaded";
+		
+		/**
+		 * Dispatched by AVM1Loader when connection with the proxying AVM1Movie establishes.
+		 */
 		public static const LC_READY:String = "lcReady";
+		
+		/**
+		 * Dispatched by AVM1Loader when proxying AVM1Movie reconnects.
+		 */
 		public static const LC_RECONNECT:String = "lcReconnect";
+		
+		/**
+		 * Dispatched by AVM1Loader when proxying AVM1Movie asks to execute a command.
+		 */
 		public static const LC_COMMAND:String = "lcCommand";
-		public static const LC_RETURN:String = "lcReturn";
-		public static const LC_LOAD_START:String = "lcLoadStart";
+		
+		/**
+		 * Dispatched by AVM1Loader when proxying AVM1Movie disconnects.
+		 */
 		public static const LC_DISCONNECT:String = "lcDisconnect";
 		
-		public static const codes:Object = 
-		{
-			"-1" : "lcCustom",
-			"0" : "lcReceived",
-			"1" : "lcError",
-			"2" : "lcLoaded",
-			"3" : "lcReady",
-			"4" : "lcReconnect",
-			"5" : "lcCommand",
-			"6" : "lcReturn",
-			"7" : "lcLoadStart",
-			"8" : "lcDisconnect"
-		};
+		private var _command:AVM1Command;
 		
-		public var message:String = "";
-		
-		public function AVM1Event(type:String, bubbles:Boolean = false, 
-								cancelable:Boolean = false, message:String = null)
+		public function AVM1Event(type:String, command:AVM1Command)
 		{ 
-			super(type, bubbles, cancelable);
-			this.message = message;
+			super(type);
+			_command = command;
 		} 
 		
 		public override function clone():Event
 		{ 
-			return new AVM1Event(type, bubbles, cancelable);
+			return new AVM1Event(type, _command);
 		} 
 		
 		public override function toString():String
 		{ 
-			return formatToString("AVM1Event", "type"); 
+			return formatToString("AVM1Event", "type", "command"); 
 		}
+		
+		public function get command():AVM1Command { return _command; }
 		
 	}
 	

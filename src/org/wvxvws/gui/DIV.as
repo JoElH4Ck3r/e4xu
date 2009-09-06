@@ -327,19 +327,19 @@ package org.wvxvws.gui
 		
 		protected function initStyles():void
 		{
-			var styleParser:Class;
+			var styleParser:Object;
 			try
 			{
-				styleParser = getDefinitionByName("org.wvxvws.gui.styles.CSSParser") as Class;
+				styleParser = getDefinitionByName("org.wvxvws.gui.styles.CSSParser");
 			}
 			catch (refError:Error) { return; };
-			if (Object(styleParser).parsed)
+			if (styleParser.parsed)
 			{
-				Object(styleParser).processClient(this);
+				styleParser.processClient(this);
 			}
 			else
 			{
-				Object(styleParser).addPendingClient(this);
+				styleParser.addPendingClient(this);
 			}
 		}
 		

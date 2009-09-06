@@ -23,21 +23,19 @@ package org.wvxvws.lcbridge
 {
 	import flash.display.DisplayObject;
 	import flash.display.Loader;
-	import flash.events.Event;
-	import flash.events.IOErrorEvent;
-	import flash.display.Sprite;
-	import flash.events.SecurityErrorEvent;
 	import flash.net.URLRequest;
 	import flash.system.LoaderContext;
 	
-	[Event(name="lcReady", type="org.wvxvws.AVM1Event")]
-	[Event(name="lcReceived", type="org.wvxvws.AVM1Event")]
-	[Event(name="lcReconnect", type="org.wvxvws.AVM1Event")]
-	[Event(name="lcLoaded", type="org.wvxvws.AVM1Event")]
-	[Event(name="lcError", type="org.wvxvws.AVM1Event")]
 	[Event(name="lcCustom", type="org.wvxvws.AVM1Event")]
-	[Event(name="lcLoadStart", type="org.wvxvws.AVM1Event")]
+	[Event(name="lcReceived", type="org.wvxvws.AVM1Event")]
+	[Event(name="lcError", type="org.wvxvws.AVM1Event")]
+	[Event(name="lcLoaded", type="org.wvxvws.AVM1Event")]
+	[Event(name="lcReady", type="org.wvxvws.AVM1Event")]
+	[Event(name="lcReconnect", type="org.wvxvws.AVM1Event")]
+	[Event(name="lcCommand", type="org.wvxvws.AVM1Event")]
 	[Event(name="lcDisconnect", type="org.wvxvws.AVM1Event")]
+	
+	[Event(name="connectionError", type="org.wvxvws.AVM1ErrorEvent")]
 	
 	/**
 	 * AVM1Loader class. This class loads AS2 content and establishes the local 
@@ -55,6 +53,7 @@ package org.wvxvws.lcbridge
 		protected var _request:URLRequest;
 		protected var _context:LoaderContext;
 		protected var _content:DisplayObject;
+		protected var _hasAVM1Content:Boolean;
 		
 		public function AVM1Loader(request:URLRequest = null, context:LoaderContext = null)
 		{
@@ -74,21 +73,28 @@ package org.wvxvws.lcbridge
 		{
 			_request = request;
 			_context = context;
+			_hasAVM1Content = false;
 			if (!_connection)
 			{
 				_connection = new AVM1LC(this);
-				_connection.addEventListener(AVM1Event.LC_RECEIVED, receivedHandler);
-				_connection.addEventListener(AVM1Event.LC_RECONNECT, reconnectHandler);
-				_connection.addEventListener(AVM1Event.LC_LOADED, loadedHandler);
+				_connection.addEventListener(AVM1Event.LC_CUSTOM, lcEventHandler);
+				_connection.addEventListener(AVM1Event.LC_RECEIVED, lcEventHandler);
+				_connection.addEventListener(AVM1Event.LC_RECONNECT, lcEventHandler);
+				_connection.addEventListener(AVM1Event.LC_LOADED, lcEventHandler);
+				_connection.addEventListener(AVM1Event.LC_COMMAND, lcEventHandler);
+				_connection.addEventListener(AVM1Event.LC_DISCONNECT, lcEventHandler);
+				
 				_connection.addEventListener(AVM1Event.LC_ERROR, errorHandler);
+				
 				_connection.addEventListener(AVM1Event.LC_READY, readyHandler);
 			}
 		}
 		
 		override public function unload():void 
 		{
-			// TODO: Also close LocalConnection.
+			_connection.close();
 			super.unload();
+			_hasAVM1Content = false;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -102,7 +108,8 @@ package org.wvxvws.lcbridge
 		 * @param	request
 		 * @param	context
 		 */
-		internal final function $load(request:URLRequest, context:LoaderContext = null):void
+		internal final function $load(request:URLRequest, 
+									context:LoaderContext = null):void
 		{
 			super.load(request, context);
 		}
@@ -113,46 +120,39 @@ package org.wvxvws.lcbridge
 		 */
 		private function readyHandler(event:AVM1Event):void 
 		{
-			_connection.loadAVM1Movie(_request);
+			if (!_hasAVM1Content)
+				_connection.loadAVM1Movie(_request);
+			super.dispatchEvent(event);
 		}
 		
 		/**
 		 * @private
 		 * @param	event
 		 */
-		private function loadedHandler(event:AVM1Event):void 
+		private function lcEventHandler(event:AVM1Event):void 
 		{
-			trace("Loader: as2 movie loaded");
+			if (event.type === AVM1Event.LC_LOADED) _hasAVM1Content = true;
+			super.dispatchEvent(event);
 		}
 		
 		/**
 		 * @private
 		 * @param	event
 		 */
-		private function reconnectHandler(event:AVM1Event):void 
-		{
-			
-		}
-		
-		/**
-		 * @private
-		 * @param	event
-		 */
-		private function receivedHandler(event:AVM1Event):void 
-		{
-			trace("redispatching ");
-			//_connection.removeEventListener(AVM1Event.MESSAGE_RECIEVED, messageHandler);
-		}
-		
-		/**
-		 * @private
-		 * @param	event
-		 */
-		private function errorHandler(event:Event):void
+		private function errorHandler(event:AVM1Event):void
 		{
 			event.stopImmediatePropagation();
-			trace(">>> failied to load AVM1 movie: " + _request, event);
-			// handle error here
+			switch (_connection.errorID)
+			{
+				case 1:
+					super.dispatchEvent(new AVM1ErrorEvent(
+								AVM1ErrorEvent.CONNECTION_ERROR, 
+								"Failed to load URL " + _request.url, 1));
+					break;
+				default:
+					super.dispatchEvent(event);
+					break;
+			}
 		}
 	}
 	
