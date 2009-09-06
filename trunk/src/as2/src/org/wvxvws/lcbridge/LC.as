@@ -92,7 +92,13 @@ class org.wvxvws.lcbridge.LC extends LocalConnection
 		{
 			command.operationResult = method.apply(scope, command.methodArguments);
 		}
-		this.send(command);
+		command.type = AVM1Command.NOOP;
+		var reply:AVM1Command = new AVM1Command(AVM1Command.NOOP, AVM1Protocol.NULL, 
+									command.method, command.property, 
+									command.propertyValue, command.methodArguments, 
+									command.contentURL);
+		reply.operationResult = command.operationResult;
+		this.send(reply);
 		broadcastMessage(ON_STATUS);
 	}
 	
@@ -143,21 +149,13 @@ class org.wvxvws.lcbridge.LC extends LocalConnection
 	public function connect(connectionName:String):Boolean
 	{
 		var ret:Boolean;
-		if (ret = super.connect(connectionName))
-		{
-			broadcastMessage(ON_STATUS);
-		}
-		else
-		{
-			broadcastMessage(ON_ERROR);
-			trace("AS2 connection to: " + connectionName + " failed!");
-		}
+		if (ret = super.connect(connectionName)) broadcastMessage(ON_STATUS);
+		else broadcastMessage(ON_ERROR);
 		return ret;
 	}
 	
 	public function send(command:AVM1Command):Boolean
 	{
-		trace("AS2 sending attempt " + _receivingConnection + " :: " + arguments);
 		return super.send(_receivingConnection, "as3recieve", command.toAMF0Object());
 	}
 	
@@ -205,19 +203,22 @@ class org.wvxvws.lcbridge.LC extends LocalConnection
 	
 	public function onLoadInit(clip:MovieClip):Void
 	{
-		trace("AS2 content loaded");
-		this.send(new AVM1Command(AVM1Command.NOOP, AVM1Protocol.NULL));
+		this.send(new AVM1Command(AVM1Command.LOAD_CONTENT, AVM1Protocol.NULL));
 	}
 	
 	public function reconnect(newNames:String):Void
 	{
-		trace("AS2 reconnecting " + newNames);
 		super.close();
 		var names:Array = newNames.split("|");
 		_receivingConnection = names[1];
 		_sendingConnection = names[0];
 		super.connect(_sendingConnection);
-		this.send(new AVM1Command(AVM1Command.NOOP, AVM1Protocol.NULL));
+	}
+	
+	public function disconnect():Void
+	{
+		this.send(new AVM1Command(AVM1Command.NOOP, AVM1Protocol.THIS, "disconnect"));
+		super.close();
 	}
 	
 	public function toString():String { return "[LC]"; }

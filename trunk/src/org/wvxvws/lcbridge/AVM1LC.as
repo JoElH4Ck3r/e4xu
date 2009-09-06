@@ -85,6 +85,8 @@ package org.wvxvws.lcbridge
 		private var _a:Array = []; // will hold the try_lc.swf in byte sequence
 		private var _ba:ByteArray = new ByteArray();
 		
+		internal var errorID:int;
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
@@ -129,10 +131,20 @@ package org.wvxvws.lcbridge
 		//
 		//--------------------------------------------------------------------------
 		
-		override public function send(connectionName:String, methodName:String, ...args):void 
+		public override function send(connectionName:String, 
+										methodName:String, ...args):void 
 		{
 			_sending = true;
 			super.send.apply(super, [connectionName, methodName].concat(args));
+		}
+		
+		public override function close():void 
+		{
+			var command:AVM1Command = new AVM1Command(AVM1Command.CALL_METHOD, 
+							AVM1Protocol.THIS, "disconnect");
+			this.send(_receivingConnection, "as2recieve", command.toAMF0Object());
+			super.close();
+			super.dispatchEvent(new AVM1Event(AVM1Event.LC_DISCONNECT, null));
 		}
 		
 		/**
@@ -251,7 +263,7 @@ package org.wvxvws.lcbridge
 							[_receivingConnection + "|" + _sendingConnection]);
 			try
 			{
-				this.close();
+				super.close();
 			}
 			catch (error:Error)
 			{
@@ -262,26 +274,19 @@ package org.wvxvws.lcbridge
 			}
 			this.connect(_sendingConnection);
 			this.send(LC_NAME, "as2recieve", command.toAMF0Object());
-			trace("init");
 		}
 		
 		/**
 		 * @private
 		 * @param	event
 		 */
-		private function statusHandler(event:StatusEvent):void
-		{
-			trace("AS3 statusHandler " + event);
-		}
+		private function statusHandler(event:StatusEvent):void { }
 		
 		/**
 		 * @private
 		 * @param	event
 		 */
-		private function errorHandler(event:Event):void
-		{
-			trace("AS3 errorHandler " + event);
-		}
+		private function errorHandler(event:Event):void { }
 		
 		/**
 		 * @private
@@ -291,7 +296,6 @@ package org.wvxvws.lcbridge
 		{
 			_sending = false;
 			var rec:AVM1Command = AVM1Command.parseFromAMF0(message);
-			trace("as3recieve", rec.type);
 			var com:Object;
 			var command:AVM1Command;
 			var finished:AVM1Command;
@@ -300,21 +304,27 @@ package org.wvxvws.lcbridge
 			switch (rec.type)
 			{
 				case AVM1Command.CALL_METHOD:
-					trace("AS2 called method >>> ", rec.method, rec.methodArguments, rec.operationResult);
-					dispatchEvent(new AVM1Event(AVM1Event.LC_READY));
+					dispatchEvent(new AVM1Event(AVM1Event.LC_COMMAND, rec));
 					break;
 				case AVM1Command.SET_PROPERTY:
-					trace("AS2 set property >>> ", rec.property, rec.propertyValue);
-					dispatchEvent(new AVM1Event(AVM1Event.LC_READY));
+					dispatchEvent(new AVM1Event(AVM1Event.LC_COMMAND, rec));
 					break;
 				case AVM1Command.LOAD_CONTENT:
-					dispatchEvent(new AVM1Event(AVM1Event.LC_LOADED));
-					break;
-				case AVM1Command.ERROR:
-					dispatchEvent(new AVM1Event(AVM1Event.LC_ERROR));
+					dispatchEvent(new AVM1Event(AVM1Event.LC_LOADED, rec));
 					break;
 				case AVM1Command.NOOP:
-					trace("AS3 as2 reported reconnection", this._receivingConnection);
+					if (rec.method === "reconnect")
+					{
+						dispatchEvent(new AVM1Event(AVM1Event.LC_RECONNECT, rec));
+						dispatchEvent(new AVM1Event(AVM1Event.LC_READY, rec));
+						break;
+					}
+					if (rec.method === "disconnect")
+					{
+						super.close();
+						dispatchEvent(new AVM1Event(AVM1Event.LC_DISCONNECT, rec));
+						break;
+					}
 					for (com in _commands)
 					{
 						command = com as AVM1Command;
@@ -332,12 +342,13 @@ package org.wvxvws.lcbridge
 						delete _commands[finished];
 					}
 					if (next) sendCommand(next, _commands[next]);
-					dispatchEvent(new AVM1Event(AVM1Event.LC_READY));
+					_loading = false;
 					break;
+				case AVM1Command.ERROR:
 				default:
-					trace("AS3 recieve >>> " + rec.type);
-					trace("AS3 protocol error");
+					dispatchEvent(new AVM1Event(AVM1Event.LC_ERROR, rec));
 			}
+			dispatchEvent(new AVM1Event(AVM1Event.LC_RECEIVED, rec));
 		}
 		
 		/**
@@ -346,7 +357,6 @@ package org.wvxvws.lcbridge
 		 */
 		internal function loadAVM1Movie(request:URLRequest):void
 		{
-			trace("loadAVM1Movie");
 			if (_loading) return;
 			_loading = true;
 			var command:AVM1Command = new AVM1Command(AVM1Command.LOAD_CONTENT, 

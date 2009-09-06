@@ -176,20 +176,11 @@
 			}
 			_type = type;
 			_scope = scope;
-			if (_type === CALL_METHOD)
-			{
-				_method = method;
-				_methodArguments = methodArguments;
-			}
-			else if (_type === SET_PROPERTY)
-			{
-				_property = property;
-				_propertyValue = propertyValue;
-			}
-			else if (_type === LOAD_CONTENT)
-			{
-				_contentURL = contentURL;
-			}
+			_method = method;
+			_property = property;
+			_propertyValue = propertyValue;
+			_methodArguments = methodArguments;
+			_contentURL = contentURL;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -228,7 +219,8 @@
 					cmd.operationResult = object.r;
 					return cmd;
 				case NOOP:
-					cmd = new AVM1Command(NOOP, AVM1Protocol.NULL);
+					cmd = new AVM1Command(NOOP, object.s, 
+								object.m, object.p, object.v, object.a, object.u);
 					cmd.operationResult = object.r;
 					return cmd;
 				case ERROR:

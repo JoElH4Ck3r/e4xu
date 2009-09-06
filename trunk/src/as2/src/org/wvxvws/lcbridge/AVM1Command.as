@@ -162,20 +162,11 @@ class org.wvxvws.lcbridge.AVM1Command
 		}
 		_type = type;
 		_scope = scope;
-		if (_type === CALL_METHOD)
-		{
-			_method = method;
-			_methodArguments = methodArguments;
-		}
-		else if (_type === SET_PROPERTY)
-		{
-			_property = property;
-			_propertyValue = propertyValue;
-		}
-		else if (_type === LOAD_CONTENT)
-		{
-			_contentURL = contentURL;
-		}
+		_method = method;
+		_property = property;
+		_propertyValue = propertyValue;
+		_methodArguments = methodArguments;
+		_contentURL = contentURL;
 	}
 	
 	//------------------------------------------------------------------------------
@@ -246,24 +237,28 @@ class org.wvxvws.lcbridge.AVM1Command
 	public function toAMF0Object():Object
 	{
 		var o:Object = { t: _type, s: _scope, r: _operationResult };
-		if (_type == CALL_METHOD)
+		switch (_type)
 		{
-			o.m = _method;
-			if (_methodArguments)
-			{
-				o.a = _methodArguments;
-			}
+			case CALL_METHOD:
+				o.m = _method;
+				if (_methodArguments) o.a = _methodArguments;
+				return o;
+			case SET_PROPERTY:
+				o.p = _property;
+				o.v = _propertyValue;
+				return o;
+			case LOAD_CONTENT:
+				o.u = _contentURL;
+				return o;
+			case NOOP:
+			case ERROR:
+				o.m = _method;
+				if (_methodArguments) o.a = _methodArguments;
+				o.p = _property;
+				o.v = _propertyValue;
+				o.u = _contentURL;
+				return o;
 		}
-		else if (_type === SET_PROPERTY)
-		{
-			o.p = _property;
-			o.v = _propertyValue;
-		}
-		else if (_type === LOAD_CONTENT)
-		{
-			o.u = _contentURL;
-		} 
-		else delete o.s;
 		return o;
 	}
 	
