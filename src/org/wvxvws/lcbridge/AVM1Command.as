@@ -17,10 +17,31 @@
 	*/
 	public class AVM1Command extends EventDispatcher
 	{
+		/**
+		 * Reserved. There is no error handling implemented on AVM1 side side.
+		 */
 		public static const ERROR:int = -1;
+		
+		/**
+		 * Send this status whenever the call succeedes.
+		 */
 		public static const NOOP:int = 0;
+		
+		/**
+		 * Send this status whenever you need to call a function on AVM1Movie.
+		 */
 		public static const CALL_METHOD:int = 1;
+		
+		/**
+		 * Send this status whenever you need to set a property on AVM1Movie.
+		 */
 		public static const SET_PROPERTY:int = 2;
+		
+		/**
+		 * Send this status when you want to load the proxying AVM1Movie to load new content.
+		 * Note: This status is sent when you call AVM1Loader.load(), in general you will
+		 * not need to send this on your own.
+		 */
 		public static const LOAD_CONTENT:int = 3;
 		
 		//--------------------------------------------------------------------------
@@ -76,7 +97,7 @@
 		/**
 		 * If execution of the command will return an object, this property will
 		 * reference it.
-		 * This property is <code>undefined</code> until the <cod>Event.COMPLETE</code>
+		 * This property is <code>undefined</code> until the <code>Event.COMPLETE</code>
 		 * is dispatched.
 		 */
 		public function get operationResult():* { return _operationResult; }
@@ -163,7 +184,14 @@
 		 * 							<code>method</code> in the AVM1Movie.
 		 * @default <code>null</code>
 		 * 
+		 * @param	contentURL		Sent with the <code>AVM1Command.LOAD_CONTENT</code>
+		 * 							only.
+		 * @default	<code>""</code>
+		 * 
 		 * @throws <code>ArgumentError</code> "Must specify either method or property."
+		 * 			This error is thrown when you specify either <code>AVM1Command.CALL_METHOD</code>
+		 * 			or <code>AVM1Command.SET_PROPERTY</code>, but you don't specify 
+		 * 			neither method's name nor property name.
 		 */
 		public function AVM1Command(type:int, scope:String, method:String = "", 
 								property:String = "", propertyValue:* = undefined, 
@@ -278,12 +306,5 @@
 		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
-		
-		//--------------------------------------------------------------------------
-		//
-		//  Private methods
-		//
-		//--------------------------------------------------------------------------
 	}
-	
 }

@@ -1,6 +1,5 @@
 import org.wvxvws.lcbridge.AVM1Command;
 import org.wvxvws.lcbridge.AVM1Protocol;
-import org.wvxvws.lcbridge.LCMessage;
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (C) Oleg Sivokon email: olegsivokon@gmail.com
