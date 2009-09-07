@@ -82,8 +82,8 @@ package org.wvxvws.lcbridge
 		
 		private var _bytesLoader:AVM1Loader;
 		
-		private var _a:Array = []; // will hold the try_lc.swf in byte sequence
-		private var _ba:ByteArray = new ByteArray();
+		[Embed(source='../../../../assets/bridge.swf', mimeType='application/octet-stream')]
+		private static var _avm1SWF:Class;
 		
 		internal var errorID:int;
 		
@@ -113,7 +113,6 @@ package org.wvxvws.lcbridge
 		public function AVM1LC(loader:AVM1Loader)
 		{
 			super();
-			for each(var i:int in _a) _ba.writeByte(i);
 			_bytesLoader = loader;
 			_bytesLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, 
 										loadHandler, false, int.MAX_VALUE);
@@ -121,8 +120,7 @@ package org.wvxvws.lcbridge
 			super.addEventListener(StatusEvent.STATUS, statusHandler);
 			super.addEventListener(AsyncErrorEvent.ASYNC_ERROR, errorHandler);
 			super.addEventListener(SecurityErrorEvent.SECURITY_ERROR, errorHandler);
-			//_bytesLoader.loadBytes(_ba);
-			_bytesLoader.$load(new URLRequest("bridge.swf"));
+			_bytesLoader.loadBytes(new _avm1SWF() as ByteArray);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -131,6 +129,12 @@ package org.wvxvws.lcbridge
 		//
 		//--------------------------------------------------------------------------
 		
+		/**
+		 * @inheritDoc
+		 * @param	connectionName
+		 * @param	methodName
+		 * @param	...args
+		 */
 		public override function send(connectionName:String, 
 										methodName:String, ...args):void 
 		{
@@ -138,6 +142,9 @@ package org.wvxvws.lcbridge
 			super.send.apply(super, [connectionName, methodName].concat(args));
 		}
 		
+		/**
+		 * This will also try to terminate receiving connection.
+		 */
 		public override function close():void 
 		{
 			var command:AVM1Command = new AVM1Command(AVM1Command.CALL_METHOD, 
@@ -188,7 +195,25 @@ package org.wvxvws.lcbridge
 		public function callMethod(scope:String, method:String, 
 									receiver:Function, ...params):void
 		{
-			// TODO: implement
+			var cmd:AVM1Command;
+			for (var obj:Object in _commandsPool)
+			{
+				if ((obj as AVM1Command).type == AVM1Command.CALL_METHOD)
+				{
+					cmd = obj as AVM1Command;
+					break;
+				}
+			}
+			if (!cmd) 
+				cmd = new AVM1Command(AVM1Command.CALL_METHOD, 
+										scope, method, null, null, params);
+			else
+			{
+				cmd.method = method;
+				cmd.methodArguments = params;
+			}
+			if (receiver !== null) cmd.addEventListener(Event.COMPLETE, receiver);
+			sendCommand(cmd);
 		}
 		
 		/**
@@ -217,13 +242,29 @@ package org.wvxvws.lcbridge
 		public function setProperty(scope:String, property:String, 
 									value:*, receiver:Function = null):void
 		{
-			// TODO: implement
+			var cmd:AVM1Command;
+			for (var obj:Object in _commandsPool)
+			{
+				if ((obj as AVM1Command).type == AVM1Command.SET_PROPERTY)
+				{
+					cmd = obj as AVM1Command;
+					break;
+				}
+			}
+			if (!cmd) cmd = new AVM1Command(AVM1Command.SET_PROPERTY, scope, null, property, value);
+			else
+			{
+				cmd.property = property;
+				cmd.propertyValue = value;
+			}
+			if (receiver !== null) cmd.addEventListener(Event.COMPLETE, receiver);
+			sendCommand(cmd);
 		}
 		
 		/**
 		 * Sends the <code>AVM1Command</code> to the loaded AVM1Movie.
 		 * If the command is expected to return results from AVM1Movie, add listener
-		 * for <code>Event.COMPLETE</code> event to the <code>command</command>.
+		 * for <code>Event.COMPLETE</code> event to the <code>command</code>.
 		 * 
 		 * @param	command		The AVM1Command that encapsulates the command
 		 * 						to be performed by AVM1Movie.
@@ -340,11 +381,14 @@ package org.wvxvws.lcbridge
 							_commandsPool[finished] = true;
 						}
 						delete _commands[finished];
+						finished.dispatchEvent(new Event(Event.COMPLETE));
 					}
 					if (next) sendCommand(next, _commands[next]);
 					_loading = false;
 					break;
 				case AVM1Command.ERROR:
+					if (_loading) errorID = 1;
+					else errorID = 0;
 				default:
 					dispatchEvent(new AVM1Event(AVM1Event.LC_ERROR, rec));
 			}

@@ -19,6 +19,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @includeExample C:\www\projects\xmlhelpers\src\tests\AVM1Test.as
+ */
 package org.wvxvws.lcbridge
 {
 	import flash.display.DisplayObject;
@@ -26,15 +29,54 @@ package org.wvxvws.lcbridge
 	import flash.net.URLRequest;
 	import flash.system.LoaderContext;
 	
+	/**
+	 * Dispatched when receiving connection sends unrecognised command.
+	 */
 	[Event(name="lcCustom", type="org.wvxvws.AVM1Event")]
+	
+	/**
+	 * Dispatched after receiving connection responded.
+	 */
 	[Event(name="lcReceived", type="org.wvxvws.AVM1Event")]
+	
+	/**
+	 * Dispatched when connection error occures.
+	 * Note: when loading error occures <code>AVM1ErrorEvent.CONNECTION_ERROR</code>
+	 * @see #connectionError
+	 */
 	[Event(name="lcError", type="org.wvxvws.AVM1Event")]
+	
+	/**
+	 * Dispatched when targeted AVM1Movie loads.
+	 */
 	[Event(name="lcLoaded", type="org.wvxvws.AVM1Event")]
+	
+	/**
+	 * Dispatched after LocalConnection associated with this loader establishes
+	 * bilinear connection with the proxying AVM1Movie.
+	 */
 	[Event(name="lcReady", type="org.wvxvws.AVM1Event")]
+	
+	/**
+	 * Dispatched when proxying AVM1Movie reconnects.
+	 */
 	[Event(name="lcReconnect", type="org.wvxvws.AVM1Event")]
+	
+	/**
+	 * Dispatched when AVM1Movie request AVM2 movie to perform action 
+	 * such as call method or set property.
+	 */
 	[Event(name="lcCommand", type="org.wvxvws.AVM1Event")]
+	
+	/**
+	 * Dispatched when proxying AVM1Movie disconnects.
+	 */
 	[Event(name="lcDisconnect", type="org.wvxvws.AVM1Event")]
 	
+	/**
+	 * Dispatched when targeted AVM1Movie fails to load. You must handle this even
+	 * if you suspect loading errors.
+	 */
 	[Event(name="connectionError", type="org.wvxvws.AVM1ErrorEvent")]
 	
 	/**
@@ -46,7 +88,16 @@ package org.wvxvws.lcbridge
 	 */
 	public class AVM1Loader extends Loader
 	{
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
 		
+		/**
+		 * The reference to the LocalConnection object associated with this loader.
+		 * This propery is null until you call <code>load()</code>.
+		 */
 		public function get connection():AVM1LC { return _connection; }
 		
 		protected var _connection:AVM1LC;
@@ -55,6 +106,11 @@ package org.wvxvws.lcbridge
 		protected var _content:DisplayObject;
 		protected var _hasAVM1Content:Boolean;
 		
+		/**
+		 * Creates new AVM1Loader.
+		 * @param	request
+		 * @param	context
+		 */
 		public function AVM1Loader(request:URLRequest = null, context:LoaderContext = null)
 		{
 			super();
@@ -69,6 +125,17 @@ package org.wvxvws.lcbridge
 		//
 		//--------------------------------------------------------------------------
 		
+		/**
+		 * This will initiate LocalConnection associated with this loader on first call
+		 * and make it load proxying AVM1Movie. The events dispatched during the first
+		 * call and any further calls will slightly vary. For instance, 
+		 * <code>AVM1Event.LC_RECONNECT</code> will fire only first time.
+		 * 
+		 * @param	request	Note: only the <code>url</code> of this request will be used.
+		 * 			Data as well as headers will be ignored.
+		 * 
+		 * @param	context	Note: this parameter is not used.
+		 */
 		public override function load(request:URLRequest, context:LoaderContext = null):void
 		{
 			_request = request;
@@ -90,6 +157,9 @@ package org.wvxvws.lcbridge
 			}
 		}
 		
+		/**
+		 * This will also close the LocalConnection associated with this loader.
+		 */
 		override public function unload():void 
 		{
 			_connection.close();
