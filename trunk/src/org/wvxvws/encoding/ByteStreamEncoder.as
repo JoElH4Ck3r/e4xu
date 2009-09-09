@@ -53,18 +53,22 @@
                 }
             }
         }
-        
-        public function getByteArray():ByteArray
-        {
-            var bar:ByteArray = new ByteArray();
-            
-            for (var i:int = 0; i < _blocks.length; i++)
-            {
-                bar.writeByte(_blocks[i]);
-            }
-            
-            return bar;
-        }
+		
+		/**
+		 * Writes the stream to a byteArray, if no byteArray is passed a new one is made.
+		 * @param	bar
+		 * @return
+		 */
+		public function writeToByteArray(bar:ByteArray = null):ByteArray
+		{
+			if (!bar) bar = new ByteArray();
+			for (var i:int = 0; i < _blocks.length; i++)
+			{
+				bar.writeByte(_blocks[i]);
+			}
+			bar.writeByte(_currentBlock);
+			return bar;
+		}
         
         private function write(block:int):void
         {
