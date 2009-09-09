@@ -64,7 +64,7 @@
 			enc.writeBits(tx, tBits);
 			enc.writeBits(ty, tBits);
 			
-			return enc.getByteArray();
+			return enc.writeToByteArray();
 		}
 		
 		/**
