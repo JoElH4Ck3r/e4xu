@@ -34,6 +34,8 @@ package org.wvxvws.gui
 	import flash.utils.getDefinitionByName;
 	import flash.utils.getQualifiedClassName;
 	import mx.core.IMXMLObject;
+	import org.wvxvws.gui.layout.ILayoutClient;
+	import org.wvxvws.gui.layout.LayoutValidator;
 	import org.wvxvws.gui.styles.ICSSClient;
 	//}
 	
@@ -46,7 +48,7 @@ package org.wvxvws.gui
 	* @langVersion 3.0
 	* @playerVersion 10.0.12.36
 	*/
-	public class DIV extends Sprite implements IMXMLObject, ICSSClient
+	public class DIV extends Sprite implements IMXMLObject, ICSSClient, ILayoutClient
 	{
 		protected var _document:Object;
 		protected var _id:String;
@@ -61,6 +63,10 @@ package org.wvxvws.gui
 		protected var _children:Array = [];
 		protected var _style:IEventDispatcher;
 		protected var _className:String;
+		protected var _invalidProperties:Object = { };
+		protected var _layoutChildren:Vector.<ILayoutClient>;
+		protected var _layoutParent:ILayoutClient;
+		protected var _validator:LayoutValidator;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -290,6 +296,7 @@ package org.wvxvws.gui
 			_background.beginFill(_backgroundColor, _backgroundAlpha);
 			_background.drawRect(0, 0, _bounds.x, _bounds.y);
 			_background.endFill();
+			trace(_bounds, _backgroundColor, _backgroundAlpha);
 			if (_userTransform)
 			{
 				super.transform = _userTransform;
@@ -341,6 +348,71 @@ package org.wvxvws.gui
 			{
 				styleParser.addPendingClient(this);
 			}
+		}
+		
+		/* INTERFACE org.wvxvws.gui.layout.ILayoutClient */
+		
+		public function get validator():LayoutValidator { return _validator; }
+		
+		public function get invalidProperties():Object { return _invalidProperties; }
+		
+		public function get layoutParent():ILayoutClient { return _layoutParent; }
+		
+		public function set layoutParent(value:ILayoutClient):void
+		{
+			if (_layoutParent === value) return;
+			_layoutParent = value;
+		}
+		
+		public function get layoutChildren():Vector.<ILayoutClient>
+		{
+			return _layoutChildren;
+		}
+		
+		public function validate(properties:Object):void
+		{
+			if (!_document) _validator = new LayoutValidator();
+			else if (parent is ILayoutClient && !_validator)
+			{
+				_validator = (parent as ILayoutClient).validator;
+				_layoutParent = parent as ILayoutClient;
+				if ((parent as ILayoutClient).layoutChildren.indexOf(this) < 0)
+				{
+					(parent as ILayoutClient).layoutChildren.push(this);
+				}
+			}
+			if (!_validator) _validator = new LayoutValidator();
+			if (!_background) _background = graphics;
+			if (properties._backgroundColor !== undefined ||
+				properties._backgroundAlpha !== undefined ||
+				properties._bounds !== undefined)
+			{
+				_background.clear();
+				_background.beginFill(_backgroundColor, _backgroundAlpha);
+				_background.drawRect(0, 0, _bounds.x, _bounds.y);
+				_background.endFill();
+			}
+			if (properties._userTransform)
+			{
+				super.transform = _userTransform;
+			}
+			else if (properties._transformMatrix)
+			{
+				_nativeTransform.matrix = _transformMatrix;
+			}
+			if (!_document) 
+			{
+				_document = this;
+				initStyles();
+				dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
+			}
+			_invalidProperties = { };
+			dispatchEvent(new GUIEvent(GUIEvent.VALIDATED));
+		}
+		
+		public function invalidate(property:String, cleanValue:*):void
+		{
+			_invalidProperties[property] = cleanValue;
 		}
 		
 		//--------------------------------------------------------------------------
