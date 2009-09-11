@@ -36,6 +36,8 @@ package org.wvxvws.gui
 	import flash.utils.getDefinitionByName;
 	import flash.utils.getQualifiedClassName;
 	import mx.core.IMXMLObject;
+	import org.wvxvws.gui.layout.ILayoutClient;
+	import org.wvxvws.gui.layout.LayoutValidator;
 	import org.wvxvws.gui.styles.ICSSClient
 	//}
 	
@@ -48,46 +50,67 @@ package org.wvxvws.gui
 	 * TextSPAN class.
 	 * @author wvxvw
 	 */
-	public class SPAN extends TextField implements IMXMLObject, ICSSClient
+	public class SPAN extends TextField implements IMXMLObject, ICSSClient, ILayoutClient
 	{
-		protected var _document:Object;
-		protected var _id:String;
-		protected var _invalidLayout:Boolean;
-		protected var _transformMatrix:Matrix = new Matrix();
-		protected var _bounds:Point = new Point(100, 100);
-		protected var _nativeTransform:Transform;
-		protected var _userTransform:Transform;
-		protected var _backgroundColor:uint = 0x999999;
-		protected var _text:String = "";
-		protected var _autoSize:String = TextFieldAutoSize.LEFT;
-		protected var _textFormat:TextFormat = new TextFormat("_sans", 12, 0xFFFFFF);
-		protected var _className:String;
-		protected var _style:IEventDispatcher;
-		
 		//--------------------------------------------------------------------------
 		//
 		//  Public properties
 		//
 		//--------------------------------------------------------------------------
 		
+		//------------------------------------
+		//  Public property x
+		//------------------------------------
+		
+		[Bindable("xChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>xChange</code> event.
+		*/
 		override public function get x():Number { return _transformMatrix.tx; }
 		
 		override public function set x(value:Number):void 
 		{
 			if (_transformMatrix.tx == value) return;
 			_transformMatrix.tx = value;
-			invalidLayout = true;
+			invalidate("_transformMatrix", _transformMatrix, true);
+			dispatchEvent(new Event("xChange"));
 		}
 		
+		//------------------------------------
+		//  Public property y
+		//------------------------------------
+		
+		[Bindable("yChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>yChange</code> event.
+		*/
 		override public function get y():Number { return _transformMatrix.ty; }
 		
 		override public function set y(value:Number):void 
 		{
 			if (_transformMatrix.ty == value) return;
 			_transformMatrix.ty = value;
-			invalidLayout = true;
+			invalidate("_transformMatrix", _transformMatrix, true);
+			dispatchEvent(new Event("yChange"));
 		}
 		
+		//------------------------------------
+		//  Public property width
+		//------------------------------------
+		
+		[Bindable("widthChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>widthChange</code> event.
+		*/
 		override public function get width():Number { return _bounds.x; }
 		
 		override public function set width(value:Number):void 
@@ -95,9 +118,22 @@ package org.wvxvws.gui
 			if (_bounds.x == value) return;
 			_bounds.x = value;
 			_autoSize = TextFieldAutoSize.NONE;
-			invalidLayout = true;
+			invalidate("_bounds", _bounds, true);
+			invalidate("_autoSize", _autoSize, true);
+			dispatchEvent(new Event("widthChange"));
 		}
 		
+		//------------------------------------
+		//  Public property height
+		//------------------------------------
+		
+		[Bindable("heightChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>heightChange</code> event.
+		*/
 		override public function get height():Number { return _bounds.y; }
 		
 		override public function set height(value:Number):void 
@@ -105,61 +141,219 @@ package org.wvxvws.gui
 			if (_bounds.y == value) return;
 			_bounds.y = value;
 			_autoSize = TextFieldAutoSize.NONE;
-			invalidLayout = true;
+			invalidate("_bounds", _bounds, true);
+			invalidate("_autoSize", _autoSize, true);
+			dispatchEvent(new Event("heightChange"));
 		}
 		
+		//------------------------------------
+		//  Public property scaleX
+		//------------------------------------
+		
+		[Bindable("scaleXChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>scaleXChange</code> event.
+		*/
 		override public function get scaleX():Number { return _transformMatrix.a; }
 		
 		override public function set scaleX(value:Number):void 
 		{
 			if (_transformMatrix.a == value) return;
 			_transformMatrix.a = value;
-			invalidLayout = true;
+			invalidate("_transformMatrix", _transformMatrix, true);
+			dispatchEvent(new Event("scaleXChange"));
 		}
 		
+		//------------------------------------
+		//  Public property scaleY
+		//------------------------------------
+		
+		[Bindable("scaleYChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>scaleYChange</code> event.
+		*/
 		override public function get scaleY():Number { return _transformMatrix.d; }
 		
 		override public function set scaleY(value:Number):void 
 		{
 			if (_transformMatrix.d == value) return;
 			_transformMatrix.d = value;
-			invalidLayout = true;
+			invalidate("_transformMatrix", _transformMatrix, true);
+			dispatchEvent(new Event("scaleYChange"));
 		}
 		
+		//------------------------------------
+		//  Public property transform
+		//------------------------------------
+		
+		[Bindable("transformChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>transformChange</code> event.
+		*/
 		override public function get transform():Transform { return super.transform; }
 		
 		override public function set transform(value:Transform):void 
 		{
 			_userTransform = value;
-			invalidLayout = true;
+			invalidate("_userTransform", _userTransform, true);
+			dispatchEvent(new Event("transformChange"));
 		}
 		
+		//------------------------------------
+		//  Public property backgroundColor
+		//------------------------------------
+		
+		[Bindable("backgroundColorChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>backgroundColorChange</code> event.
+		*/
 		public override function get backgroundColor():uint { return _backgroundColor; }
 		
 		public override function set backgroundColor(value:uint):void 
 		{
 			if (value == _backgroundColor) return;
 			_backgroundColor = value;
-			invalidLayout = true;
+			invalidate("_backgroundColor", _backgroundColor, true);
+			dispatchEvent(new Event("backgroundColorChange"));
 		}
 		
+		//------------------------------------
+		//  Public property background
+		//------------------------------------
+		
+		[Bindable("backgroundChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>backgroundChange</code> event.
+		*/
+		public override function get background():Boolean { return _background; }
+		
+		public override function set background(value:Boolean):void 
+		{
+			if (value == _background) return;
+			_background = value;
+			invalidate("_background", _background, true);
+			dispatchEvent(new Event("backgroundChange"));
+		}
+		
+		//------------------------------------
+		//  Public property text
+		//------------------------------------
+		
+		[Bindable("textChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>textChange</code> event.
+		*/
 		override public function get text():String { return super.text; }
 		
 		override public function set text(value:String):void 
 		{
 			if (value == _text) return;
 			_text = value;
-			invalidLayout = true;
+			invalidate("_text", _text, true);
+			dispatchEvent(new Event("textChange"));
 		}
 		
+		//------------------------------------
+		//  Public property autoSize
+		//------------------------------------
+		
+		[Bindable("autoSizeChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>autoSizeChange</code> event.
+		*/
 		override public function get autoSize():String { return super.autoSize; }
 		
 		override public function set autoSize(value:String):void 
 		{
 			if (value == _autoSize) return;
 			_autoSize = value;
-			invalidLayout = true;
+			invalidate("_autoSize", _autoSize, true);
+			dispatchEvent(new Event("autoSizeChange"));
 		}
+		
+		//------------------------------------
+		//  Public property autoSize
+		//------------------------------------
+		
+		[Bindable("alignChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>alignChange</code> event.
+		*/
+		public function get align():String { return _textFormat.align; }
+		
+		public function set align(value:String):void 
+		{
+			if (value == _textFormat.align) return;
+			_textFormat.align = value;
+			invalidate("_textFormat", _textFormat, true);
+			dispatchEvent(new Event("alignChange"));
+		}
+		
+		/* INTERFACE org.wvxvws.gui.styles.ICSSClient */
+		
+		public function get className():String { return _className; }
+		
+		public function set className(value:String):void { _className = value; }
+		
+		public function get style():IEventDispatcher { return _style; }
+		
+		public function set style(value:IEventDispatcher):void { _style = value; }
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected properties
+		//
+		//--------------------------------------------------------------------------
+		
+		protected var _document:Object;
+		protected var _id:String;
+		protected var _transformMatrix:Matrix = new Matrix();
+		protected var _bounds:Point = new Point(100, 100);
+		protected var _nativeTransform:Transform;
+		protected var _userTransform:Transform;
+		protected var _backgroundColor:uint = 0x999999;
+		protected var _background:Boolean;
+		protected var _text:String = "";
+		protected var _autoSize:String = TextFieldAutoSize.LEFT;
+		protected var _textFormat:TextFormat = new TextFormat("_sans", 12, 0xFFFFFF);
+		protected var _className:String;
+		protected var _style:IEventDispatcher;
+		protected var _invalidProperties:Object = { };
+		protected var _childLayouts:Vector.<ILayoutClient> = new Vector.<ILayoutClient>(0, false);
+		protected var _layoutParent:ILayoutClient;
+		protected var _validator:LayoutValidator;
+		protected var _hasPendingValidation:Boolean;
+		protected var _hasPendingParentValidation:Boolean;
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
 		
 		public function SPAN()
 		{
@@ -167,8 +361,8 @@ package org.wvxvws.gui
 			var nm:Array = getQualifiedClassName(this).split("::");
 			_className = String(nm.pop());
 			_nativeTransform = new Transform(this);
-			invalidLayout = true;
 			super.autoSize = TextFieldAutoSize.LEFT;
+			invalidate("", undefined, true);
 		}
 		
 		/* INTERFACE mx.core.IMXMLObject */
@@ -180,83 +374,123 @@ package org.wvxvws.gui
 			if (_document is DisplayObjectContainer) 
 				(_document as DisplayObjectContainer).addChild(this);
 			_id = id;
-			invalidLayout = true;
+			if (_hasPendingValidation) validate(_invalidProperties);
 			dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
 		}
-		
-		public function set invalidLayout(value:Boolean):void 
+		//
+		//public function set invalidLayout(value:Boolean):void 
+		//{
+			//if (value == _invalidLayout) return;
+			//_invalidLayout = value;
+			//if (_invalidLayout) addEventListener(Event.ENTER_FRAME, validateLayout);
+			//else removeEventListener(Event.ENTER_FRAME, validateLayout);
+		//}
+		//
+		//public function validateLayout(event:Event = null):void
+		//{
+			//super.background = true;
+			//super.backgroundColor = _backgroundColor;
+			//super.autoSize = _autoSize;
+			//super.defaultTextFormat = _textFormat;
+			//super.text = _text;
+			//if (_autoSize == TextFieldAutoSize.NONE)
+			//{
+				//super.width = _bounds.x;
+				//super.height = _bounds.y;
+			//}
+			//if (_userTransform)
+			//{
+				//super.transform = _userTransform;
+				//_userTransform = null;
+			//}
+			//else
+			//{
+				//_nativeTransform.matrix = _transformMatrix;
+			//}
+			//invalidLayout = false;
+			//dispatchEvent(new GUIEvent(GUIEvent.VALIDATED));
+		//}
+		//
+		protected function initStyles():void
 		{
-			if (value == _invalidLayout) return;
-			_invalidLayout = value;
-			if (_invalidLayout) addEventListener(Event.ENTER_FRAME, validateLayout);
-			else removeEventListener(Event.ENTER_FRAME, validateLayout);
+			var styleParser:Object;
+			try
+			{
+				styleParser = getDefinitionByName("org.wvxvws.gui.styles.CSSParser");
+			}
+			catch (error:Error) { return; };
+			if (styleParser.parsed) styleParser.processClient(this);
+			else styleParser.addPendingClient(this);
 		}
 		
-		public function get align():String { return _textFormat.align; }
+		/* INTERFACE org.wvxvws.gui.layout.ILayoutClient */
 		
-		public function set align(value:String):void 
-		{
-			if (value == _textFormat.align) return;
-			_textFormat.align = value;
-			invalidLayout = true;
-		}
+		public function get validator():LayoutValidator { return _validator; }
 		
-		public function validateLayout(event:Event = null):void
+		public function get invalidProperties():Object { return _invalidProperties; }
+		
+		public function get layoutParent():ILayoutClient { return _layoutParent; }
+		
+		public function set layoutParent(value:ILayoutClient):void { _layoutParent = value; }
+		
+		public function get childLayouts():Vector.<ILayoutClient> { return _childLayouts; }
+		
+		public function validate(properties:Object):void
 		{
-			super.background = true;
-			super.backgroundColor = _backgroundColor;
-			super.autoSize = _autoSize;
-			super.defaultTextFormat = _textFormat;
-			super.text = _text;
+			trace("span validate");
+			if (!_document) _validator = new LayoutValidator();
+			else if (parent is ILayoutClient && !_validator)
+			{
+				_validator = (parent as ILayoutClient).validator;
+				_layoutParent = parent as ILayoutClient;
+				if ((parent as ILayoutClient).childLayouts.indexOf(this) < 0)
+				{
+					(parent as ILayoutClient).childLayouts.push(this);
+				}
+			}
+			if (!_validator) _validator = new LayoutValidator();
+			_validator.append(this, _layoutParent);
+			if (properties._background)
+				super.background = _background;
+			if (properties._backgroundColor) 
+				super.backgroundColor = _backgroundColor;
+			if (properties._autoSize) 
+				super.autoSize = _autoSize;
+			if (properties._textFormat)
+				super.defaultTextFormat = _textFormat;
+			if (properties._text)
+				super.text = _text;
 			if (_autoSize == TextFieldAutoSize.NONE)
 			{
 				super.width = _bounds.x;
 				super.height = _bounds.y;
 			}
-			if (_userTransform)
+			if (properties._userTransform)
 			{
-				super.transform = _userTransform;
-				_userTransform = null;
+				if (_userTransform)
+				{
+					super.transform = _userTransform;
+					_userTransform = null;
+					_nativeTransform = _userTransform;
+				}
 			}
-			else
+			else if (properties._transformMatrix)
 			{
 				_nativeTransform.matrix = _transformMatrix;
+				super.transform = _nativeTransform;
 			}
-			invalidLayout = false;
+			_invalidProperties = { };
 			dispatchEvent(new GUIEvent(GUIEvent.VALIDATED));
 		}
 		
-		/* INTERFACE org.wvxvws.gui.styles.ICSSClient */
-		
-		public function get className():String { return _className; }
-		
-		public function set className(value:String):void
+		public function invalidate(property:String, cleanValue:*, validateParent:Boolean):void
 		{
-			_className = value;
-		}
-		
-		public function get style():IEventDispatcher { return _style; }
-		
-		public function set style(value:IEventDispatcher):void
-		{
-			_style = value;
-		}
-		
-		protected function initStyles():void
-		{
-			try
-			{
-				var styleParser:Class = 
-					getDefinitionByName("org.wvxvws.gui.styles.CSSParser") as Class;
-			}
-			catch (error:Error) { return; };
-			if (Object(styleParser).parsed)
-			{
-				Object(styleParser).processClient(this);
-			}
+			_invalidProperties[property] = cleanValue;
+			if (_validator) _validator.requestValidation(this, validateParent);
 			else
 			{
-				Object(styleParser).addPendingClient(this);
+				_hasPendingValidation = true;
+				_hasPendingParentValidation = _hasPendingParentValidation || validateParent;
 			}
 		}
 	}

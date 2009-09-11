@@ -56,6 +56,10 @@ package org.wvxvws.gui
 		//
 		//--------------------------------------------------------------------------
 		
+		//------------------------------------
+		//  Public property x
+		//------------------------------------
+		
 		[Bindable("xChange")]
 		
 		/**
@@ -72,6 +76,10 @@ package org.wvxvws.gui
 			invalidate("_transformMatrix", _transformMatrix, true);
 			dispatchEvent(new Event("xChange"));
 		}
+		
+		//------------------------------------
+		//  Public property y
+		//------------------------------------
 		
 		[Bindable("yChange")]
 		
@@ -90,6 +98,10 @@ package org.wvxvws.gui
 			dispatchEvent(new Event("yChange"));
 		}
 		
+		//------------------------------------
+		//  Public property width
+		//------------------------------------
+		
 		[Bindable("widthChange")]
 		
 		/**
@@ -106,6 +118,10 @@ package org.wvxvws.gui
 			invalidate("_bounds", _bounds, true);
 			dispatchEvent(new Event("widthChange"));
 		}
+		
+		//------------------------------------
+		//  Public property height
+		//------------------------------------
 		
 		[Bindable("heightChange")]
 		
@@ -124,6 +140,10 @@ package org.wvxvws.gui
 			dispatchEvent(new Event("heightChange"));
 		}
 		
+		//------------------------------------
+		//  Public property scaleX
+		//------------------------------------
+		
 		[Bindable("scaleXChange")]
 		
 		/**
@@ -141,6 +161,10 @@ package org.wvxvws.gui
 			dispatchEvent(new Event("scaleXChange"));
 		}
 		
+		//------------------------------------
+		//  Public property scaleY
+		//------------------------------------
+		
 		[Bindable("scaleYChange")]
 		
 		/**
@@ -157,6 +181,10 @@ package org.wvxvws.gui
 			invalidate("_transformMatrix", _transformMatrix, true);
 			dispatchEvent(new Event("scaleYChange"));
 		}
+		
+		//------------------------------------
+		//  Public property transform
+		//------------------------------------
 		
 		[Bindable("transformChange")]
 		
@@ -198,6 +226,17 @@ package org.wvxvws.gui
 		   dispatchEvent(new Event("styleChange"));
 		}
 		
+		//------------------------------------
+		//  Public property style
+		//------------------------------------
+		
+		[Bindable("backgroundColorChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>backgroundColorChange</code> event.
+		*/
 		public function get backgroundColor():uint { return _backgroundColor; }
 		
 		public function set backgroundColor(value:uint):void 
@@ -205,8 +244,20 @@ package org.wvxvws.gui
 			if (value == _backgroundColor) return;
 			invalidate("_backgroundColor", _backgroundColor, false);
 			_backgroundColor = value;
+			dispatchEvent(new Event("backgroundColorChange"));
 		}
 		
+		//------------------------------------
+		//  Public property style
+		//------------------------------------
+		
+		[Bindable("backgroundAlphaChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>backgroundAlphaChange</code> event.
+		*/
 		public function get backgroundAlpha():Number { return _backgroundAlpha; }
 		
 		public function set backgroundAlpha(value:Number):void 
@@ -214,6 +265,7 @@ package org.wvxvws.gui
 			if (value == _backgroundAlpha) return;
 			invalidate("_backgroundAlpha", _backgroundAlpha, false);
 			_backgroundAlpha = value;
+			dispatchEvent(new Event("backgroundAlphaChange"));
 		}
 		
 		/* INTERFACE org.wvxvws.gui.styles.ICSSClient */
@@ -279,6 +331,7 @@ package org.wvxvws.gui
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
+		
 		public function DIV()
 		{
 			super();
@@ -308,24 +361,6 @@ package org.wvxvws.gui
 		//  Public methods
 		//
 		//--------------------------------------------------------------------------
-		
-		//--------------------------------------------------------------------------
-		//
-		//  Protected methods
-		//
-		//--------------------------------------------------------------------------
-		
-		protected function initStyles():void
-		{
-			var styleParser:Object;
-			try
-			{
-				styleParser = getDefinitionByName("org.wvxvws.gui.styles.CSSParser");
-			}
-			catch (refError:Error) { return; };
-			if (styleParser.parsed) styleParser.processClient(this);
-			else styleParser.addPendingClient(this);
-		}
 		
 		public function validate(properties:Object):void
 		{
@@ -376,6 +411,24 @@ package org.wvxvws.gui
 				_hasPendingValidation = true;
 				_hasPendingParentValidation = _hasPendingParentValidation || validateParent;
 			}
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
+		
+		protected function initStyles():void
+		{
+			var styleParser:Object;
+			try
+			{
+				styleParser = getDefinitionByName("org.wvxvws.gui.styles.CSSParser");
+			}
+			catch (refError:Error) { return; };
+			if (styleParser.parsed) styleParser.processClient(this);
+			else styleParser.addPendingClient(this);
 		}
 		
 		//--------------------------------------------------------------------------
