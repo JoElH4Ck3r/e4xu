@@ -124,7 +124,7 @@
 		
 		private function validateChildrenOf(dirtyParent:ILayoutClient):void
 		{
-			for each (var client:ILayoutClient in dirtyParent.layoutChildren)
+			for each (var client:ILayoutClient in dirtyParent.childLayouts)
 			{
 				validateChildrenOf(client);
 			}

@@ -50,24 +50,6 @@ package org.wvxvws.gui
 	*/
 	public class DIV extends Sprite implements IMXMLObject, ICSSClient, ILayoutClient
 	{
-		protected var _document:Object;
-		protected var _id:String;
-		protected var _invalidLayout:Boolean;
-		protected var _transformMatrix:Matrix = new Matrix();
-		protected var _bounds:Point = new Point(100, 100);
-		protected var _nativeTransform:Transform;
-		protected var _userTransform:Transform;
-		protected var _background:Graphics;
-		protected var _backgroundColor:uint = 0x999999;
-		protected var _backgroundAlpha:Number = 0;
-		protected var _children:Array = [];
-		protected var _style:IEventDispatcher;
-		protected var _className:String;
-		protected var _invalidProperties:Object = { };
-		protected var _layoutChildren:Vector.<ILayoutClient>;
-		protected var _layoutParent:ILayoutClient;
-		protected var _validator:LayoutValidator;
-		
 		//--------------------------------------------------------------------------
 		//
 		//  Public properties
@@ -87,7 +69,7 @@ package org.wvxvws.gui
 		{
 			if (_transformMatrix.tx == value) return;
 			_transformMatrix.tx = value;
-			invalidLayout = true;
+			invalidate("_transformMatrix", _transformMatrix, true);
 			dispatchEvent(new Event("xChange"));
 		}
 		
@@ -104,7 +86,7 @@ package org.wvxvws.gui
 		{
 			if (_transformMatrix.ty == value) return;
 			_transformMatrix.ty = value;
-			invalidLayout = true;
+			invalidate("_transformMatrix", _transformMatrix, true);
 			dispatchEvent(new Event("yChange"));
 		}
 		
@@ -121,7 +103,7 @@ package org.wvxvws.gui
 		{
 			if (_bounds.x == value) return;
 			_bounds.x = value;
-			invalidLayout = true;
+			invalidate("_bounds", _bounds, true);
 			dispatchEvent(new Event("widthChange"));
 		}
 		
@@ -138,7 +120,7 @@ package org.wvxvws.gui
 		{
 			if (_bounds.y == value) return;
 			_bounds.y = value;
-			invalidLayout = true;
+			invalidate("_bounds", _bounds, true);
 			dispatchEvent(new Event("heightChange"));
 		}
 		
@@ -155,7 +137,7 @@ package org.wvxvws.gui
 		{
 			if (_transformMatrix.a == value) return;
 			_transformMatrix.a = value;
-			invalidLayout = true;
+			invalidate("_transformMatrix", _transformMatrix, true);
 			dispatchEvent(new Event("scaleXChange"));
 		}
 		
@@ -172,7 +154,7 @@ package org.wvxvws.gui
 		{
 			if (_transformMatrix.d == value) return;
 			_transformMatrix.d = value;
-			invalidLayout = true;
+			invalidate("_transformMatrix", _transformMatrix, true);
 			dispatchEvent(new Event("scaleYChange"));
 		}
 		
@@ -190,8 +172,8 @@ package org.wvxvws.gui
 		
 		override public function set transform(value:Transform):void 
 		{
+			invalidate("_userTransform", _userTransform, true);
 			_userTransform = value;
-			invalidLayout = true;
 			dispatchEvent(new Event("transformChange"));
 		}
 		
@@ -211,8 +193,37 @@ package org.wvxvws.gui
 		public function set style(value:IEventDispatcher):void 
 		{
 		   if (_style == value) return;
+		   invalidate("_invalidProperties", _invalidProperties, true);
 		   _style = value;
 		   dispatchEvent(new Event("styleChange"));
+		}
+		
+		public function get backgroundColor():uint { return _backgroundColor; }
+		
+		public function set backgroundColor(value:uint):void 
+		{
+			if (value == _backgroundColor) return;
+			invalidate("_backgroundColor", _backgroundColor, false);
+			_backgroundColor = value;
+		}
+		
+		public function get backgroundAlpha():Number { return _backgroundAlpha; }
+		
+		public function set backgroundAlpha(value:Number):void 
+		{
+			if (value == _backgroundAlpha) return;
+			invalidate("_backgroundAlpha", _backgroundAlpha, false);
+			_backgroundAlpha = value;
+		}
+		
+		/* INTERFACE org.wvxvws.gui.styles.ICSSClient */
+		
+		public function get className():String { return _className; }
+		
+		public function set className(value:String):void
+		{
+			_className = value;
+			initStyles();
 		}
 		
 		//--------------------------------------------------------------------------
@@ -220,6 +231,26 @@ package org.wvxvws.gui
 		//  Protected properties
 		//
 		//--------------------------------------------------------------------------
+		
+		protected var _document:Object;
+		protected var _id:String;
+		protected var _invalidLayout:Boolean;
+		protected var _transformMatrix:Matrix = new Matrix();
+		protected var _bounds:Point = new Point(100, 100);
+		protected var _nativeTransform:Transform;
+		protected var _userTransform:Transform;
+		protected var _background:Graphics;
+		protected var _backgroundColor:uint = 0x999999;
+		protected var _backgroundAlpha:Number = 0;
+		protected var _children:Array = [];
+		protected var _style:IEventDispatcher;
+		protected var _className:String;
+		protected var _invalidProperties:Object = { };
+		protected var _childLayouts:Vector.<ILayoutClient> = new Vector.<ILayoutClient>(0, false);
+		protected var _layoutParent:ILayoutClient;
+		protected var _validator:LayoutValidator;
+		protected var _hasPendingValidation:Boolean;
+		protected var _hasPendingParentValidation:Boolean;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -238,7 +269,7 @@ package org.wvxvws.gui
 			var nm:Array = getQualifiedClassName(this).split("::");
 			_className = String(nm.pop());
 			_nativeTransform = new Transform(this);
-			invalidLayout = true;
+			invalidate("", undefined, true);
 		}
 		
 		/* INTERFACE mx.core.IMXMLObject */
@@ -252,36 +283,8 @@ package org.wvxvws.gui
 				(_document as DisplayObjectContainer).addChild(this);
 			}
 			_id = id;
-			invalidLayout = true;
+			if (_hasPendingValidation) validate(_invalidProperties);
 			dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
-		}
-		
-		public function get invalidLayout():Boolean { return _invalidLayout; }
-		
-		public function set invalidLayout(value:Boolean):void 
-		{
-			if (value == _invalidLayout) return;
-			_invalidLayout = value;
-			if (_invalidLayout) addEventListener(Event.ENTER_FRAME, validateLayout);
-			else removeEventListener(Event.ENTER_FRAME, validateLayout);
-		}
-		
-		public function get backgroundColor():uint { return _backgroundColor; }
-		
-		public function set backgroundColor(value:uint):void 
-		{
-			if (value == _backgroundColor) return;
-			_backgroundColor = value;
-			invalidLayout = true;
-		}
-		
-		public function get backgroundAlpha():Number { return _backgroundAlpha; }
-		
-		public function set backgroundAlpha(value:Number):void 
-		{
-			if (value == _backgroundAlpha) return;
-			_backgroundAlpha = value;
-			invalidLayout = true;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -289,42 +292,6 @@ package org.wvxvws.gui
 		//  Public methods
 		//
 		//--------------------------------------------------------------------------
-		public function validateLayout(event:Event = null):void
-		{
-			if (!_background) _background = graphics;
-			_background.clear();
-			_background.beginFill(_backgroundColor, _backgroundAlpha);
-			_background.drawRect(0, 0, _bounds.x, _bounds.y);
-			_background.endFill();
-			trace(_bounds, _backgroundColor, _backgroundAlpha);
-			if (_userTransform)
-			{
-				super.transform = _userTransform;
-				_userTransform = null;
-			}
-			else
-			{
-				_nativeTransform.matrix = _transformMatrix;
-			}
-			invalidLayout = false;
-			if (!_document) 
-			{
-				_document = this;
-				initStyles();
-				dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
-			}
-			dispatchEvent(new GUIEvent(GUIEvent.VALIDATED));
-		}
-		
-		/* INTERFACE org.wvxvws.gui.styles.ICSSClient */
-		
-		public function get className():String { return _className; }
-		
-		public function set className(value:String):void
-		{
-			_className = value;
-			initStyles();
-		}
 		
 		//--------------------------------------------------------------------------
 		//
@@ -364,21 +331,22 @@ package org.wvxvws.gui
 			_layoutParent = value;
 		}
 		
-		public function get layoutChildren():Vector.<ILayoutClient>
+		public function get childLayouts():Vector.<ILayoutClient>
 		{
-			return _layoutChildren;
+			return _childLayouts;
 		}
 		
 		public function validate(properties:Object):void
 		{
+			trace("validate");
 			if (!_document) _validator = new LayoutValidator();
 			else if (parent is ILayoutClient && !_validator)
 			{
 				_validator = (parent as ILayoutClient).validator;
 				_layoutParent = parent as ILayoutClient;
-				if ((parent as ILayoutClient).layoutChildren.indexOf(this) < 0)
+				if ((parent as ILayoutClient).childLayouts.indexOf(this) < 0)
 				{
-					(parent as ILayoutClient).layoutChildren.push(this);
+					(parent as ILayoutClient).childLayouts.push(this);
 				}
 			}
 			if (!_validator) _validator = new LayoutValidator();
@@ -410,9 +378,18 @@ package org.wvxvws.gui
 			dispatchEvent(new GUIEvent(GUIEvent.VALIDATED));
 		}
 		
-		public function invalidate(property:String, cleanValue:*):void
+		public function invalidate(property:String, cleanValue:*, validateParent:Boolean):void
 		{
 			_invalidProperties[property] = cleanValue;
+			if (_validator)
+			{
+				_validator.requestValidation(this, validateParent);
+			}
+			else
+			{
+				_hasPendingValidation = true;
+				_hasPendingParentValidation = _hasPendingParentValidation || validateParent;
+			}
 		}
 		
 		//--------------------------------------------------------------------------

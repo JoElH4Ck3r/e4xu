@@ -16,10 +16,10 @@
 		function get layoutParent():ILayoutClient;
 		function set layoutParent(value:ILayoutClient):void;
 		
-		function get layoutChildren():Vector.<ILayoutClient>;
+		function get childLayouts():Vector.<ILayoutClient>;
 		
 		function validate(properties:Object):void;
-		function invalidate(property:String, cleanValue:*):void;
+		function invalidate(property:String, cleanValue:*, validateParent:Boolean):void;
 		
 	}
 	
