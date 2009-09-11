@@ -226,6 +226,22 @@ package org.wvxvws.gui
 			initStyles();
 		}
 		
+		/* INTERFACE org.wvxvws.gui.layout.ILayoutClient */
+		
+		public function get validator():LayoutValidator { return _validator; }
+		
+		public function get invalidProperties():Object { return _invalidProperties; }
+		
+		public function get layoutParent():ILayoutClient { return _layoutParent; }
+		
+		public function set layoutParent(value:ILayoutClient):void
+		{
+			if (_layoutParent === value) return;
+			_layoutParent = value;
+		}
+		
+		public function get childLayouts():Vector.<ILayoutClient> { return _childLayouts; }
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
@@ -307,33 +323,8 @@ package org.wvxvws.gui
 				styleParser = getDefinitionByName("org.wvxvws.gui.styles.CSSParser");
 			}
 			catch (refError:Error) { return; };
-			if (styleParser.parsed)
-			{
-				styleParser.processClient(this);
-			}
-			else
-			{
-				styleParser.addPendingClient(this);
-			}
-		}
-		
-		/* INTERFACE org.wvxvws.gui.layout.ILayoutClient */
-		
-		public function get validator():LayoutValidator { return _validator; }
-		
-		public function get invalidProperties():Object { return _invalidProperties; }
-		
-		public function get layoutParent():ILayoutClient { return _layoutParent; }
-		
-		public function set layoutParent(value:ILayoutClient):void
-		{
-			if (_layoutParent === value) return;
-			_layoutParent = value;
-		}
-		
-		public function get childLayouts():Vector.<ILayoutClient>
-		{
-			return _childLayouts;
+			if (styleParser.parsed) styleParser.processClient(this);
+			else styleParser.addPendingClient(this);
 		}
 		
 		public function validate(properties:Object):void
@@ -350,6 +341,7 @@ package org.wvxvws.gui
 				}
 			}
 			if (!_validator) _validator = new LayoutValidator();
+			_validator.append(this, _layoutParent);
 			if (!_background) _background = graphics;
 			if (properties._backgroundColor !== undefined ||
 				properties._backgroundAlpha !== undefined ||
@@ -360,10 +352,7 @@ package org.wvxvws.gui
 				_background.drawRect(0, 0, _bounds.x, _bounds.y);
 				_background.endFill();
 			}
-			if (properties._userTransform)
-			{
-				super.transform = _userTransform;
-			}
+			if (properties._userTransform) super.transform = _userTransform;
 			else if (properties._transformMatrix)
 			{
 				_nativeTransform.matrix = _transformMatrix;
@@ -381,10 +370,7 @@ package org.wvxvws.gui
 		public function invalidate(property:String, cleanValue:*, validateParent:Boolean):void
 		{
 			_invalidProperties[property] = cleanValue;
-			if (_validator)
-			{
-				_validator.requestValidation(this, validateParent);
-			}
+			if (_validator) _validator.requestValidation(this, validateParent);
 			else
 			{
 				_hasPendingValidation = true;

@@ -60,7 +60,7 @@
 				{
 					client.layoutParent = toClient;
 				}
-				else if (this[toClient] === undefined)
+				else if (toClient && this[toClient] === undefined)
 				{
 					client.layoutParent = _chainRoot;
 				}
@@ -84,6 +84,7 @@
 		public function requestValidation(client:ILayoutClient, affectParent:Boolean):void
 		{
 			if (!this[client]) return;
+			trace("requestValidation");
 			this[client] = false;
 			this[client.layoutParent] = !affectParent;
 			_hasDirtyClients = true;
@@ -95,11 +96,12 @@
 			var suspect:ILayoutClient;
 			var suspectParent:ILayoutClient;
 			var bottomDirty:ILayoutClient;
+			trace("processValidation");
 			for (var obj:Object in this)
 			{
 				if (!this[obj])
 				{
-					topDirty = this[obj] as ILayoutClient;
+					topDirty = obj as ILayoutClient;
 					suspectParent = findDirtyParent(topDirty);
 					if (suspectParent) topDirty = suspectParent;
 					validateChildrenOf(topDirty);
