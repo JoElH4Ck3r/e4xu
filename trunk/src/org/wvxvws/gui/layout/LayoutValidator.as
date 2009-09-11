@@ -84,7 +84,6 @@
 		public function requestValidation(client:ILayoutClient, affectParent:Boolean):void
 		{
 			if (!this[client]) return;
-			trace("requestValidation");
 			this[client] = false;
 			this[client.layoutParent] = !affectParent;
 			_hasDirtyClients = true;
@@ -96,7 +95,6 @@
 			var suspect:ILayoutClient;
 			var suspectParent:ILayoutClient;
 			var bottomDirty:ILayoutClient;
-			trace("processValidation");
 			for (var obj:Object in this)
 			{
 				if (!this[obj])
