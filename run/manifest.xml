@@ -29,9 +29,13 @@
 	<component id="ImageRenderer" class="org.wvxvws.gui.renderers.ImageRenderer"/>
 	<component id="ButtonS" class="org.wvxvws.gui.ButtonS"/>
 	<component id="Scroller" class="org.wvxvws.gui.Scroller"/>
+	<!-- CONTAINERS -->
+	<component id="Nest" class="org.wvxvws.gui.containers.Nest"/>
 	<component id="Table" class="org.wvxvws.gui.containers.Table"/>
 	<component id="TiledPanel" class="org.wvxvws.gui.containers.TiledPanel"/>
 	<component id="Tris" class="org.wvxvws.gui.containers.Tris"/>
+	<!-- RENDERERS -->
+	<component id="Tris" class="org.wvxvws.gui.renderers.BranchRenderer"/>
 	<!-- CSS -->
 	<component id="STYLE" class="org.wvxvws.gui.styles.STYLE"/>
 	<!-- GEOMETRY -->

@@ -377,40 +377,7 @@ package org.wvxvws.gui
 			if (_hasPendingValidation) validate(_invalidProperties);
 			dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
 		}
-		//
-		//public function set invalidLayout(value:Boolean):void 
-		//{
-			//if (value == _invalidLayout) return;
-			//_invalidLayout = value;
-			//if (_invalidLayout) addEventListener(Event.ENTER_FRAME, validateLayout);
-			//else removeEventListener(Event.ENTER_FRAME, validateLayout);
-		//}
-		//
-		//public function validateLayout(event:Event = null):void
-		//{
-			//super.background = true;
-			//super.backgroundColor = _backgroundColor;
-			//super.autoSize = _autoSize;
-			//super.defaultTextFormat = _textFormat;
-			//super.text = _text;
-			//if (_autoSize == TextFieldAutoSize.NONE)
-			//{
-				//super.width = _bounds.x;
-				//super.height = _bounds.y;
-			//}
-			//if (_userTransform)
-			//{
-				//super.transform = _userTransform;
-				//_userTransform = null;
-			//}
-			//else
-			//{
-				//_nativeTransform.matrix = _transformMatrix;
-			//}
-			//invalidLayout = false;
-			//dispatchEvent(new GUIEvent(GUIEvent.VALIDATED));
-		//}
-		//
+		
 		protected function initStyles():void
 		{
 			var styleParser:Object;

@@ -712,7 +712,7 @@ package org.wvxvws.gui.renderers
 			}
 			else if ((parent is Nest) && value)
 			{
-				(parent as Nest).invalidLayout = true;
+				(parent as Nest).invalidate("", undefined, false);
 			}
 			_invalid = value;
 		}

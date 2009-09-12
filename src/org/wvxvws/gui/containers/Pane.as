@@ -33,7 +33,7 @@
 			_dataProvider = value;
 			_dataProviderCopy = value.copy();
 			_dataProvider.setNotification(providerNotifier);
-			invalidLayout = true;
+			invalidate("_dataProvider", _dataProvider, false);
 			dispatchEvent(new GUIEvent(GUIEvent.DATA_CHANGED));
 		}
 		
@@ -50,7 +50,7 @@
 		{
 			if (_labelField === value) return;
 			_labelField = value;
-			invalidLayout = true;
+			invalidate("_labelField", _labelField, false);
 			dispatchEvent(new Event("labelFieldChange"));
 		}
 		
@@ -67,7 +67,7 @@
 		{
 			if (_labelFunction === value) return;
 			_labelFunction = value;
-			invalidLayout = true;
+			invalidate("_labelFunction", _labelFunction, false);
 			dispatchEvent(new Event("labelFunctionChange"));
 		}
 		
@@ -162,10 +162,10 @@
 			return -1;
 		}
 		
-		override public function validateLayout(event:Event = null):void 
+		public override function validate(properties:Object):void 
 		{
-			super.validateLayout(event);
 			layOutChildren();
+			super.validate(properties);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -279,14 +279,14 @@
 									return;
 								}
 							}
-							invalidLayout = true;
+							invalidate("_dataProvider", _dataProvider, false);
 						}
 						break;
 					case "textSet":
 					case "nameSet":
 					case "nodeChanged":
 					case "nodeRemoved":
-						invalidLayout = true;
+						invalidate("_dataProvider", _dataProvider, false);
 						break;
 					case "namespaceAdded":
 						
