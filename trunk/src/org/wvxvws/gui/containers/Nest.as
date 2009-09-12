@@ -365,7 +365,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_branchLabelField === value) return;
 			_branchLabelField = value;
-			invalidLayout = true;
+			invalidate("_branchLabelField", _branchLabelField, false);
 			dispatchEvent(new Event("branchLabelFieldChange"));
 		}
 		
@@ -382,7 +382,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_leafLabelField === value) return;
 			_leafLabelField = value;
-			invalidLayout = true;
+			invalidate("_leafLabelField", _leafLabelField, false);
 			dispatchEvent(new Event("leafLabelFieldChange"));
 		}
 		
@@ -399,7 +399,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_leafLabelFunction === value) return;
 			_leafLabelFunction = value;
-			invalidLayout = true;
+			invalidate("_leafLabelFunction", _leafLabelFunction, false);
 			dispatchEvent(new Event("leafLabelFunctionChange"));
 		}
 		
@@ -416,7 +416,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_branchLabelFunction === value) return;
 			_branchLabelFunction = value;
-			invalidLayout = true;
+			invalidate("_branchLabelFunction", _branchLabelFunction, false);
 			dispatchEvent(new Event("branchLabelFunctionChange"));
 		}
 		
@@ -426,7 +426,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_folderIcon === value) return;
 			_folderIcon = value;
-			invalidLayout = true;
+			invalidate("_folderIcon", _folderIcon, false);
 		}
 		
 		public function get closedIcon():Class { return _closedIcon; }
@@ -435,7 +435,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_closedIcon === value) return;
 			_closedIcon = value;
-			invalidLayout = true;
+			invalidate("_closedIcon", _closedIcon, false);
 		}
 		
 		public function get openIcon():Class { return _openIcon; }
@@ -444,7 +444,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_openIcon === value) return;
 			_openIcon = value;
-			invalidLayout = true;
+			invalidate("_openIcon", _openIcon, false);
 		}
 		
 		public function get docIcon():Class { return _docIcon; }
@@ -453,7 +453,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_docIcon === value) return;
 			_docIcon = value;
-			invalidLayout = true;
+			invalidate("_docIcon", _docIcon, false);
 		}
 		
 		public function get docIconFactory():Function { return _docIconFactory; }
@@ -462,7 +462,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_docIconFactory === value) return;
 			_docIconFactory = value;
-			invalidLayout = true;
+			invalidate("_docIconFactory", _docIconFactory, false);
 		}
 		
 		public function get lastOpened():int { return _lastOpened; }
