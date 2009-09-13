@@ -31,8 +31,8 @@ package org.wvxvws.gui.containers
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.renderers.IBranchRenderer;
 	import org.wvxvws.gui.renderers.IRenderer;
-	import org.wvxvws.gui.renderers.NestBranchRenderer;
-	import org.wvxvws.gui.renderers.NestLeafRenderer;
+	import org.wvxvws.gui.renderers.BranchRenderer;
+	import org.wvxvws.gui.renderers.LeafRenderer;
 	import flash.display.DisplayObject;
 	
 	[Exclude(name="addChild", kind="property")]
@@ -48,8 +48,8 @@ package org.wvxvws.gui.containers
 	 */
 	public class Nest extends Pane
 	{
-		protected var _branchRenderer:Class = NestBranchRenderer;
-		protected var _leafRenderer:Class = NestLeafRenderer;
+		protected var _branchRenderer:Class = BranchRenderer;
+		protected var _leafRenderer:Class = LeafRenderer;
 		protected var _nextY:int;
 		protected var _selectedItem:XML;
 		protected var _selectedChild:IRenderer;
@@ -72,8 +72,11 @@ package org.wvxvws.gui.containers
 		protected var _lastOpened:int = -1;
 		protected var _closedNodes:Dictionary = new Dictionary();
 		
-		protected var _selection:Sprite = new Sprite();
+		//protected var _selection:Sprite = new Sprite();
 		protected var _selectedEvent:GUIEvent;
+		protected var _useBranchLabel:Boolean;
+		protected var _useLeafLabel:Boolean;
+		protected var _children:Dictionary = new Dictionary();
 		
 		public function Nest()
 		{
@@ -106,14 +109,24 @@ package org.wvxvws.gui.containers
 			if (!_selectedChild) return;
 			event.stopImmediatePropagation();
 			_selectedItem = _selectedChild.data;
-			_selectedEvent = event;
-			if (event.target === this || !(event.target is _branchRenderer))
+			for (var obj:Object in _children)
 			{
-				drawSelection();
-				return;
+				if (obj is BranchRenderer)
+				{
+					if (!(obj as BranchRenderer).unselectRecursively(
+									_selectedChild as DisplayObject))
+						break;
+				}
+				if (obj is LeafRenderer)
+				{
+					if ((obj as LeafRenderer).selected && obj !== _selectedChild)
+					{
+						(obj as LeafRenderer).selected = false;
+						break;
+					}
+				}
 			}
-			_nextY = 0;
-			layOutChildren();
+			dispatchEvent(new GUIEvent(GUIEvent.SELECTED));
 		}
 		
 		protected override function layOutChildren():void 
@@ -121,42 +134,9 @@ package org.wvxvws.gui.containers
 			_cumulativeHeight = 0;
 			_cumulativeWidth = 0;
 			_nextY = 0;
-			if (contains(_selection)) removeChild(_selection);
 			super.layOutChildren();
 			super.width = _cumulativeWidth;
 			super.height = _cumulativeHeight;
-			if (_selectedChild && !super._invalidLayout) drawSelection();
-			if (_selectedEvent)
-			{
-				_selectedChild = _selectedEvent.target as IRenderer;
-				_selectedItem = _selectedChild.data;
-				if (!super._invalidLayout)
-				{
-					dispatchEvent(_selectedEvent.clone());
-					_selectedEvent = null;
-				}
-			}
-		}
-		
-		protected function drawSelection():void
-		{
-			var bounds:Rectangle = (_selectedChild as DisplayObject).getBounds(this);
-			if (_selectedChild is IBranchRenderer)
-			{
-				bounds.height = (_selectedChild as IBranchRenderer).closedHeight;
-			}
-			if (scrollRect)
-			{
-				bounds.width = Math.max(scrollRect.width, _cumulativeWidth);
-			}
-			else bounds.width = _cumulativeWidth;
-			_selection.graphics.clear();
-			_selection.graphics.beginFill(0x161630);
-			_selection.graphics.drawRect(0, bounds.y - 1, 
-					bounds.width, bounds.height);
-			addChild(_selection);
-			_selection.mouseEnabled = false;
-			_selection.blendMode = BlendMode.SUBTRACT;
 		}
 		
 		protected override function createChild(xml:XML):DisplayObject
@@ -166,41 +146,40 @@ package org.wvxvws.gui.containers
 			{
 				_rendererFactory = _leafRenderer;
 				_labelFunction = _leafLabelFunction;
-				_labelField = _leafLabelField;
+				if (_useLeafLabel) _labelField = _leafLabelField;
 			}
 			else
 			{
 				_rendererFactory = _branchRenderer;
 				_labelFunction = _branchLabelFunction;
-				_labelField = _branchLabelField;
+				if (_useBranchLabel) _labelField = _branchLabelField;
 				isbranch = true;
 			}
 			var child:DisplayObject = super.createChild(xml);
 			_dispatchCreated = false;
 			if (!child) return null;
+			_children[child] = true;
 			var ci:int = getIndexForItem(child);
 			if (isbranch)
 			{
-				if (child is NestBranchRenderer)
+				if (child is BranchRenderer)
 				{
-					(child as NestBranchRenderer).addEventListener(
+					(child as BranchRenderer).addEventListener(
 						GUIEvent.CHILDREN_CREATED, renderer_childrenCreatedHnadler);
 					_pendingChildren[child] = _currentItem;
-					(child as NestBranchRenderer).nest = this;
 				}
 				(child as IBranchRenderer).leafLabelField = _leafLabelField;
 				(child as IBranchRenderer).leafLabelFunction = _leafLabelFunction;
+				(child as IBranchRenderer).labelFunction = _branchLabelFunction;
 				(child as IBranchRenderer).folderIcon = _folderIcon;
 				(child as IBranchRenderer).closedIcon = _closedIcon;
 				(child as IBranchRenderer).openIcon = _openIcon;
 				(child as IBranchRenderer).docIconFactory = _docIconFactory;
-				(child as IEventDispatcher).addEventListener("openedChange", 
-																openCloseListener);
 			}
-			else if (child is NestLeafRenderer)
+			else if (child is LeafRenderer)
 			{
-				(child as NestLeafRenderer).iconClass = 
-					_docIconFactory((child as NestLeafRenderer).data);
+				(child as LeafRenderer).iconClass = 
+					_docIconFactory((child as LeafRenderer).data);
 			}
 			child.y = _nextY;
 			_nextY += child.height;
@@ -236,21 +215,6 @@ package org.wvxvws.gui.containers
 				}
 			}
 			return ret;
-		}
-		
-		private function openCloseListener(event:Event):void 
-		{
-			var i:int = getIndexForItem(event.target as DisplayObject);
-			if ((event.target as IBranchRenderer).opened)
-			{
-				_lastOpened = -1;
-				delete _closedNodes[i];
-			}
-			else
-			{
-				_lastOpened = i;
-				_closedNodes[i] = i;
-			}
 		}
 		
 		public override function getIndexForItem(renderer:DisplayObject):int 
@@ -289,7 +253,6 @@ package org.wvxvws.gui.containers
 		
 		protected function renderer_childrenCreatedHnadler(event:GUIEvent):void
 		{
-			if ((event.target as NestBranchRenderer).hasPendingChildren) return;
 			delete _pendingChildren[event.target];
 			for (var obj:Object in _pendingChildren) return;
 			dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED, false, true));
@@ -364,6 +327,7 @@ package org.wvxvws.gui.containers
 		public function set branchLabelField(value:String):void 
 		{
 			if (_branchLabelField === value) return;
+			_useBranchLabel = (value !== "" && value !== null);
 			_branchLabelField = value;
 			invalidate("_branchLabelField", _branchLabelField, false);
 			dispatchEvent(new Event("branchLabelFieldChange"));
@@ -382,6 +346,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_leafLabelField === value) return;
 			_leafLabelField = value;
+			_useLeafLabel = (value !== "" && value !== null);
 			invalidate("_leafLabelField", _leafLabelField, false);
 			dispatchEvent(new Event("leafLabelFieldChange"));
 		}

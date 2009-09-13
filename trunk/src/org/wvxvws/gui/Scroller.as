@@ -298,9 +298,10 @@ package org.wvxvws.gui
 		//
 		//--------------------------------------------------------------------------
 		
-		override public function validateLayout(event:Event = null):void 
+		override public function validate(properties:Object):void 
 		{
-			super.validateLayout(event);
+			// TODO: Later...
+			super.validate(properties);
 			if ((_minHandle is ISkin) && !(_minHandle as ISkin).state)
 			{
 				(_minHandle as ISkin).state = MouseEvent.MOUSE_UP;

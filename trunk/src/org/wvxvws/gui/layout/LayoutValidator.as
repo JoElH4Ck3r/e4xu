@@ -85,7 +85,7 @@
 		{
 			if (!this[client]) return;
 			this[client] = false;
-			this[client.layoutParent] = !affectParent;
+			if (client.layoutParent) this[client.layoutParent] = !affectParent;
 			_hasDirtyClients = true;
 		}
 		
@@ -112,6 +112,7 @@
 		{
 			var suspect:ILayoutClient = dirtyChild.layoutParent;
 			var dirtyParent:ILayoutClient;
+			if (!suspect) return null;
 			if (!this[suspect]) dirtyParent = suspect;
 			while (suspect)
 			{

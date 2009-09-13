@@ -25,6 +25,7 @@ package org.wvxvws.gui
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Graphics;
 	import flash.display.Sprite;
+	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
 	import flash.geom.Matrix;
@@ -280,7 +281,18 @@ package org.wvxvws.gui
 		
 		/* INTERFACE org.wvxvws.gui.layout.ILayoutClient */
 		
-		public function get validator():LayoutValidator { return _validator; }
+		public function get validator():LayoutValidator
+		{
+			if (!_validator)
+			{
+				if (parent is ILayoutClient) 
+					_validator = (parent as ILayoutClient).validator;
+				if (parent is Stage)
+					_validator = new LayoutValidator();
+				_validator.append(this);
+			}
+			return _validator;
+		}
 		
 		public function get invalidProperties():Object { return _invalidProperties; }
 		
@@ -310,7 +322,6 @@ package org.wvxvws.gui
 		protected var _background:Graphics;
 		protected var _backgroundColor:uint = 0x999999;
 		protected var _backgroundAlpha:Number = 0;
-		protected var _children:Array = [];
 		protected var _style:IEventDispatcher;
 		protected var _className:String;
 		protected var _invalidProperties:Object = { };
@@ -339,6 +350,13 @@ package org.wvxvws.gui
 			_className = String(nm.pop());
 			_nativeTransform = new Transform(this);
 			invalidate("", undefined, true);
+			if (stage) addEventListener(Event.ENTER_FRAME, deferredInitialize);
+		}
+		
+		private function deferredInitialize(event:Event):void 
+		{
+			removeEventListener(Event.ENTER_FRAME, deferredInitialize);
+			dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
 		}
 		
 		/* INTERFACE mx.core.IMXMLObject */
@@ -364,7 +382,7 @@ package org.wvxvws.gui
 		
 		public function validate(properties:Object):void
 		{
-			trace("validate");
+			trace("validate", this);
 			if (!_document) _validator = new LayoutValidator();
 			else if (parent is ILayoutClient && !_validator)
 			{

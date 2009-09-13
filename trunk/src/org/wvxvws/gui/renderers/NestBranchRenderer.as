@@ -82,6 +82,7 @@ package org.wvxvws.gui.renderers
 		protected var _invalid:Boolean;
 		
 		private var _childIDGenerator:uint;
+		private var _folderFactory:Function;
 		
 		public function NestBranchRenderer()
 		{
@@ -600,6 +601,14 @@ package org.wvxvws.gui.renderers
 		}
 		
 		private function childIDGenerator():uint { return ++_childIDGenerator; }
+		
+		/* INTERFACE org.wvxvws.gui.renderers.IBranchRenderer */
+		
+		public function set folderFactory(value:Function):void
+		{
+			if (_folderFactory === value) return;
+			_folderFactory = value;
+		}
 		
 		/* INTERFACE org.wvxvws.gui.renderers.IBranchRenderer */
 		
