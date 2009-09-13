@@ -1,9 +1,13 @@
 ﻿package org.wvxvws.gui.renderers 
 {
 	//{imports
+	import flash.display.BitmapData;
+	import flash.display.DisplayObject;
+	import flash.display.Graphics;
 	import flash.display.InteractiveObject;
 	import flash.display.Shape;
 	import flash.display.Sprite;
+	import flash.geom.Rectangle;
 	import flash.text.TextField;
 	import mx.core.IMXMLObject;
 	import org.wvxvws.gui.containers.Nest;
@@ -163,6 +167,8 @@
 		protected var _labelField:String;
 		protected var _labelFunction:Function;
 		protected var _dataCopy:XML;
+		protected var _nest:Nest;
+		protected var _dot:BitmapData;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -177,6 +183,12 @@
 		//--------------------------------------------------------------------------
 		
 		public function BranchRenderer() { super(); }
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
 		
 		public function validate(properties:Object):void
 		{
@@ -214,10 +226,8 @@
 		public function initialized(document:Object, id:String):void
 		{
 			_document = document;
-			//if (_document is Nest)
-			//{
-				//(_document as Nest).addChild(this);
-			//}
+			if (_document is Nest) _nest = _document as Nest;
+			if (_document is ILayoutClient) _layoutParent = _document as ILayoutClient;
 			_id = id;
 			if (_hasPendingValidation) validate(_invalidProperties);
 			dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
@@ -225,15 +235,42 @@
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Public methods
-		//
-		//--------------------------------------------------------------------------
-		
-		//--------------------------------------------------------------------------
-		//
 		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
+		
+		protected function drawLines():void
+		{
+			if (!_lines) _lines = new Shape();
+			var g:Graphics = _lines.graphics;
+			var cumulativeHeight:int = _folderIcon.height + 2;
+			if (!_dot)
+			{
+				_dot = new BitmapData(3, 3, true, 0x00FFFFFF);
+				_dot.setPixel(0, 0, 0xA0A0A0);
+				_dot.setPixel(2, 0, 0xA0A0A0);
+				_dot.setPixel(0, 2, 0xA0A0A0);
+			}
+			g.clear();
+			if (_opened)
+			{
+				for each (var child:ILayoutClient in _childLayouts)
+				{
+					cumulativeHeight += (child as DisplayObject).height + 2;
+				}
+				cumulativeHeight -= (_childLayouts[_childLayouts.length - 1] as 
+									DisplayObject).height >> 1;
+				g.beginBitmapFill(_dot);
+				g.drawRect(_folderIcon.x + _folderIcon.width >> 1, 
+							_folderIcon.y + _folderIcon.height, 1, cumulativeHeight);
+				g.endFill();
+			}
+			g.beginBitmapFill(_dot);
+			g.drawRect(_openCloseIcon.x + _openCloseIcon.width, 
+						_folderIcon.y + _folderIcon.height >> 1, 
+						_folderIcon.x - (_openCloseIcon.x + _openCloseIcon.width), 1);
+			g.endFill();
+		}
 		
 		//--------------------------------------------------------------------------
 		//
