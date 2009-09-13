@@ -72,7 +72,7 @@
         
         private function write(block:int):void
         {
-            if(block > 0xFF) throw new Error("byte write error");
+            if (block > 0xFF) throw new Error("byte write error");
             _blocks.push(block);
         }
         
