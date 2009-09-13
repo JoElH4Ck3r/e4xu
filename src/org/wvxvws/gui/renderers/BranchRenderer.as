@@ -241,16 +241,23 @@
 			drawUI();
 			createChildren();
 			drawLines();
+			_invalidProperties = { };
+			_hasPendingValidation = false;
+			if (properties.hasOwnProperty("_opened"))
+				super.dispatchEvent(new GUIEvent(GUIEvent.OPENED, true, true));
 		}
 		
-		public function invalidate(property:String, cleanValue:*, validateParent:Boolean):void
+		public function invalidate(property:String, 
+									cleanValue:*, validateParent:Boolean):void
 		{
 			_invalidProperties[property] = cleanValue;
-			if (_validator) _validator.requestValidation(this, validateParent);
+			if (_validator)
+				_validator.requestValidation(this, validateParent);
 			else
 			{
 				_hasPendingValidation = true;
-				_hasPendingParentValidation = _hasPendingParentValidation || validateParent;
+				_hasPendingParentValidation = 
+					_hasPendingParentValidation || validateParent;
 			}
 		}
 		
@@ -328,8 +335,14 @@
 				_validator.append(this);
 			}
 			_id = id;
-			if (_hasPendingValidation) validate(_invalidProperties);
+			if (_hasPendingValidation) invalidate("", undefined, true);
+			addEventListener(GUIEvent.OPENED, childOpenedHandler);
 			dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
+		}
+		
+		private function childOpenedHandler(event:GUIEvent):void 
+		{
+			if (event.target !== this) validate(_invalidProperties);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -340,12 +353,18 @@
 		
 		protected function createChildren():void
 		{
+			var lastHeight:int = super.height;
 			if (!_data) return;
 			var obj:Object;
 			for (obj in _children)
 			{
 				if (contains(obj as DisplayObject))
 					_cachedChildren[removeChild(obj as DisplayObject)] = true;
+			}
+			if (_layoutParent && lastHeight !== super.height)
+			{
+				//_layoutParent.invalidate("", undefined, true);
+				//trace("1 lastHeight, super.height", lastHeight, super.height);
 			}
 			if (!_opened) return;
 			removeChild(_lines);
@@ -381,6 +400,11 @@
 				}
 				addChild(child as DisplayObject);
 			}
+			if (_layoutParent && lastHeight !== super.height)
+			{
+				//trace("2 lastHeight, super.height", lastHeight, super.height);
+				//_layoutParent.invalidate("", undefined, true);
+			}
 		}
 		
 		private function createLeaf(xml:XML):IRenderer
@@ -395,8 +419,12 @@
 				}
 			}
 			if (!ibRenderer) ibRenderer = new LeafRenderer();
-			ibRenderer.labelField = _leafLabelField;
-			ibRenderer.labelFunction = _leafLabelFunction;
+			if (_leafLabelField !== "" && _leafLabelField !== null)
+				ibRenderer.labelField = _leafLabelField;
+			if (_leafLabelFunction !== null)
+			{
+				ibRenderer.labelFunction = _leafLabelFunction;
+			}
 			if (ibRenderer is LeafRenderer)
 			{
 				(ibRenderer as LeafRenderer).iconFactory = _docIconFactory; 
@@ -420,11 +448,16 @@
 			ibRenderer.closedIcon = _closedIcon;
 			ibRenderer.openIcon = _openIcon;
 			ibRenderer.docIconFactory = _docIconFactory;
-			if (_labelField) ibRenderer.labelField = _labelField;
-			ibRenderer.leafLabelFunction = _leafLabelFunction;
+			if (_labelField !== "" && _labelField !== null)
+				ibRenderer.labelField = _labelField;
+			if (_leafLabelFunction !== null)
+			{
+				ibRenderer.leafLabelFunction = _leafLabelFunction;
+			}
 			ibRenderer.folderIcon = _folderIcon;
 			ibRenderer.folderFactory = _folderFactory;
-			ibRenderer.labelFunction = _labelFunction;
+			if (_labelFunction !== null)
+				ibRenderer.labelFunction = _labelFunction;
 			return ibRenderer;
 		}
 		

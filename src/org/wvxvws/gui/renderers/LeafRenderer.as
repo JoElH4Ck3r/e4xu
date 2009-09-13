@@ -72,9 +72,7 @@ package org.wvxvws.gui.renderers
 		{
 			var s:DisplayObject;
 			if (_iconFactory !== null && _data)
-			{
 				_iconClass = _iconFactory(_data.toXMLString());
-			}
 			if (_iconClass) s = new _iconClass();
 			else
 			{
@@ -156,12 +154,13 @@ package org.wvxvws.gui.renderers
 										icon_mouseDownHandler, false, int.MAX_VALUE);
 			_icon.x = 17;
 			_icon.y = 1;
-			_lines = new Shape();
+			if (!_lines) _lines = new Shape();
 			if (!_dot)
 			{
 				_dot = new BitmapData(2, 1, true, 0x00FFFFFF);
 				_dot.setPixel32(1, 0, 0xFFA0A0A0);
 			}
+			_lines.graphics.clear();
 			_lines.graphics.beginBitmapFill(_dot);
 			_lines.graphics.drawRect(7, 1 + _icon.height >> 1, 10, 1);
 			_lines.graphics.endFill();
@@ -240,11 +239,7 @@ package org.wvxvws.gui.renderers
 				_field.background = true;
 				_field.backgroundColor = 0xD0D0D0;
 			}
-			else 
-			{
-				trace("unselected 1");
-				_field.background = false;
-			}
+			else _field.background = false;
 		}
 	}
 	
