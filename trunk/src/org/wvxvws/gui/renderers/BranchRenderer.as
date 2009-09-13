@@ -70,11 +70,7 @@
 				_label.background = true;
 				_label.backgroundColor = 0xD0D0D0;
 			}
-			else
-			{
-				trace("unselected");
-				_label.background = false;
-			}
+			else _label.background = false;
 		}
 		
 		/* INTERFACE org.wvxvws.gui.renderers.IBranchRenderer */
@@ -328,7 +324,6 @@
 			if (_document is ILayoutClient)
 			{
 				_layoutParent = _document as ILayoutClient;
-				trace("document is ILayoutClient", _layoutParent.validator, _document);
 				_validator = _layoutParent.validator;
 				_validator.append(this);
 			}
@@ -534,7 +529,6 @@
 		public function unselectRecursively(selection:DisplayObject):Boolean
 		{
 			var ret:Boolean;
-			trace(selection);
 			if (selection !== this)
 			{
 				if (_selected)
