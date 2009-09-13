@@ -69,6 +69,7 @@
 		{
 			if (_labelFunction === value) return;
 			_labelFunction = value;
+			_useLabelFunction = Boolean(value);
 			invalidate("_labelFunction", _labelFunction, false);
 			dispatchEvent(new Event("labelFunctionChange"));
 		}
@@ -88,6 +89,7 @@
 		protected var _labelField:String = "@label";
 		protected var _dispatchCreated:Boolean;
 		protected var _useLabelField:Boolean;
+		protected var _useLabelFunction:Boolean;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -211,7 +213,8 @@
 			if (!child) return null;
 			if (!(child is IRenderer)) return null;
 			if (_useLabelField) (child as IRenderer).labelField = _labelField;
-			(child as IRenderer).labelFunction = _labelFunction;
+			if (_useLabelFunction)
+				(child as IRenderer).labelFunction = _labelFunction;
 			if (!recycledChild)
 			{
 				(child as IRenderer).data = xml;

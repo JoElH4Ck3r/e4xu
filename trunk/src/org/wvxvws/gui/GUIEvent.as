@@ -38,6 +38,7 @@ package org.wvxvws.gui
 		public static const SELECTED:String = "selected";
 		public static const DATA_CHANGED:String = "dataChanged";
 		public static const SCROLLED:String = "scrolled";
+		public static const OPENED:String = "opened";
 		
 		public function GUIEvent(type:String, bubbles:Boolean = false, 
 								cancelable:Boolean = false)
