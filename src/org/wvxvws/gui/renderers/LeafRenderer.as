@@ -21,12 +21,16 @@
 
 package org.wvxvws.gui.renderers 
 {
+	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
 	import flash.display.InteractiveObject;
+	import flash.display.Shape;
 	import flash.display.Sprite;
+	import flash.events.FocusEvent;
 	import flash.events.MouseEvent;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
+	import flash.text.TextFieldType;
 	import flash.text.TextFormat;
 	import org.wvxvws.gui.GUIEvent;
 	
@@ -36,7 +40,7 @@ package org.wvxvws.gui.renderers
 	 * NestLeafRenderer class.
 	 * @author wvxvw
 	 */
-	public class NestLeafRenderer extends Sprite implements IRenderer
+	public class LeafRenderer extends Sprite implements IRenderer
 	{
 		protected var _document:Object;
 		protected var _id:String;
@@ -44,13 +48,17 @@ package org.wvxvws.gui.renderers
 		protected var _dataCopy:XML;
 		protected var _icon:DisplayObject;
 		protected var _field:TextField;
+		protected var _lines:Shape;
 		protected var _labelField:String = "@label";
 		protected var _labelFunction:Function;
 		protected var _textFormat:TextFormat = new TextFormat("_sans", 11);
 		protected var _gutter:int = 6;
 		protected var _iconClass:Class;
+		protected var _iconFactory:Function;
+		protected var _dot:BitmapData;
+		protected var _selected:Boolean;
 		
-		public function NestLeafRenderer() { super(); }
+		public function LeafRenderer() { super(); }
 		
 		/* INTERFACE org.wvxvws.gui.renderers.IRenderer */
 		
@@ -63,6 +71,10 @@ package org.wvxvws.gui.renderers
 		protected function drawIcon():DisplayObject
 		{
 			var s:DisplayObject;
+			if (_iconFactory !== null && _data)
+			{
+				_iconClass = _iconFactory(_data.toXMLString());
+			}
 			if (_iconClass) s = new _iconClass();
 			else
 			{
@@ -87,7 +99,33 @@ package org.wvxvws.gui.renderers
 			t.defaultTextFormat = _textFormat;
 			t.autoSize = TextFieldAutoSize.LEFT;
 			t.height = 10;
+			t.selectable = false;
+			t.doubleClickEnabled = true;
+			t.addEventListener(MouseEvent.CLICK, label_clickHandler);
+			t.addEventListener(MouseEvent.DOUBLE_CLICK, label_doubleClickHandler);
+			t.addEventListener(FocusEvent.FOCUS_OUT, label_focusOutHandler);
 			return t;
+		}
+		
+		private function label_focusOutHandler(event:FocusEvent):void 
+		{
+			_field.border = false;
+			_field.selectable = false;
+			_field.type = TextFieldType.DYNAMIC;
+		}
+		
+		private function label_doubleClickHandler(event:MouseEvent):void 
+		{
+			_field.border = true;
+			_field.borderColor = 0xA0A0A0;
+			_field.selectable = true;
+			_field.setSelection(0, _field.text.length);
+			_field.type = TextFieldType.INPUT;
+		}
+		
+		private function label_clickHandler(event:MouseEvent):void 
+		{
+			selected = true;
 		}
 		
 		public function get isValid():Boolean
@@ -116,11 +154,23 @@ package org.wvxvws.gui.renderers
 			_icon = drawIcon();
 			_icon.addEventListener(MouseEvent.MOUSE_DOWN, 
 										icon_mouseDownHandler, false, int.MAX_VALUE);
+			_icon.x = 17;
+			_icon.y = 1;
+			_lines = new Shape();
+			if (!_dot)
+			{
+				_dot = new BitmapData(2, 1, true, 0x00FFFFFF);
+				_dot.setPixel32(1, 0, 0xFFA0A0A0);
+			}
+			_lines.graphics.beginBitmapFill(_dot);
+			_lines.graphics.drawRect(7, 1 + _icon.height >> 1, 10, 1);
+			_lines.graphics.endFill();
+			addChild(_lines);
 			super.addChild(_icon);
 			if (_field && super.contains(_field)) super.removeChild(_field);
 			_field = drawField();
 			super.addChild(_field);
-			_field.x = _icon.width + _gutter;
+			_field.x = 14 + _icon.width + _gutter;
 			rendrerText();
 		}
 		
@@ -130,25 +180,14 @@ package org.wvxvws.gui.renderers
 			if (_labelField && _data.hasOwnProperty(_labelField))
 			{
 				if (_labelFunction !== null)
-				{
 					_field.text = _labelFunction(_data[_labelField]);
-				}
-				else
-				{
-					_field.text = _data[_labelField];
-				}
+				else _field.text = _data[_labelField];
 			}
 			else
 			{
 				if (_labelFunction !== null)
-				{
-					_field.text = 
-						_labelFunction(_data.toXMLString().replace(/[\r\n]+/g, " "));
-				}
-				else
-				{
-					_field.text = _data.toXMLString().replace(/[\r\n]+/g, " ");
-				}
+					_field.text = _labelFunction(_data.toXMLString());
+				else _field.text = _data.localName();
 			}
 		}
 		
@@ -162,7 +201,7 @@ package org.wvxvws.gui.renderers
 		
 		protected function icon_mouseDownHandler(event:MouseEvent):void 
 		{
-			dispatchEvent(new GUIEvent(GUIEvent.SELECTED, true));
+			selected = true;
 		}
 		
 		/* INTERFACE org.wvxvws.gui.renderers.IRenderer */
@@ -180,6 +219,32 @@ package org.wvxvws.gui.renderers
 			if (_iconClass === value) return;
 			_iconClass = value;
 			render();
+		}
+		
+		public function get iconFactory():Function { return _iconFactory; }
+		
+		public function set iconFactory(value:Function):void 
+		{
+			_iconFactory = value;
+		}
+		
+		public function get selected():Boolean { return _selected; }
+		
+		public function set selected(value:Boolean):void 
+		{
+			if (_selected === value) return;
+			_selected = value;
+			if (_selected)
+			{
+				dispatchEvent(new GUIEvent(GUIEvent.SELECTED, true, true));
+				_field.background = true;
+				_field.backgroundColor = 0xD0D0D0;
+			}
+			else 
+			{
+				trace("unselected 1");
+				_field.background = false;
+			}
 		}
 	}
 	

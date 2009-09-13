@@ -3,6 +3,7 @@
 	//{imports
 	import flash.display.DisplayObject;
 	import flash.events.Event;
+	import mx.core.IMXMLObject;
 	import org.wvxvws.gui.DIV;
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.renderers.IRenderer;
@@ -50,6 +51,7 @@
 		{
 			if (_labelField === value) return;
 			_labelField = value;
+			_useLabelField = (value !== "" && value !== null)
 			invalidate("_labelField", _labelField, false);
 			dispatchEvent(new Event("labelFieldChange"));
 		}
@@ -85,6 +87,7 @@
 		protected var _labelFunction:Function;
 		protected var _labelField:String = "@label";
 		protected var _dispatchCreated:Boolean;
+		protected var _useLabelField:Boolean;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -183,9 +186,7 @@
 			_removedChildren = [];
 			var i:int;
 			while (super.numChildren > i)
-			{
 				_removedChildren.push(super.removeChildAt(0));
-			}
 			_dispatchCreated = false;
 			_dataProvider.*.(createChild(valueOf()));
 			if (_dispatchCreated) 
@@ -199,14 +200,9 @@
 			for each (var ir:IRenderer in _removedChildren)
 			{
 				if (ir.data === xml && ir.isValid)
-				{
 					recycledChild = ir as DisplayObject;
-				}
 			}
-			if (recycledChild)
-			{
-				child = recycledChild;
-			}
+			if (recycledChild) child = recycledChild;
 			else
 			{
 				_dispatchCreated = true;
@@ -214,9 +210,14 @@
 			}
 			if (!child) return null;
 			if (!(child is IRenderer)) return null;
-			(child as IRenderer).labelField = _labelField;
+			if (_useLabelField) (child as IRenderer).labelField = _labelField;
 			(child as IRenderer).labelFunction = _labelFunction;
-			if (!recycledChild) (child as IRenderer).data = xml;
+			if (!recycledChild)
+			{
+				(child as IRenderer).data = xml;
+				if (child is IMXMLObject)
+					(child as IMXMLObject).initialized(this, xml.localName());
+			}
 			super.addChild(child);
 			_currentItem++;
 			return child;

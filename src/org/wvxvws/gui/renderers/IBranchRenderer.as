@@ -23,6 +23,8 @@
 		
 		function set docIconFactory(value:Function):void;
 		
+		function set folderFactory(value:Function):void;
+		
 		function nodeToRenderer(node:XML):IRenderer;
 		
 		function rendererToXML(renderer:IRenderer):XML;
