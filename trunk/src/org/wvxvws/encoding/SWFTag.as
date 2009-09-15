@@ -18,12 +18,9 @@
 		protected var _length:uint;
 		
 		private var _symbolID:uint = uint.MAX_VALUE;
-		protected function get symbolID():uint
-		{
-			if (_symbolID < uint.MAX_VALUE) return _symbolID;
-			_symbolID = generateSymbolID();
-			return _symbolID;
-		}
+		
+		// TODO: why cannot we use other values?
+		protected function get symbolID():uint { return 1; }
 		
 		public function get code():int { return _code; }
 		

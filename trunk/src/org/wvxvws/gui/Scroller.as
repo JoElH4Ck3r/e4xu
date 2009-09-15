@@ -62,10 +62,10 @@ package org.wvxvws.gui
 		
 		public function set target(value:DisplayObject):void 
 		{
-		   if (_target == value) return;
-		   _target = value;
-		   invalidLayout = true;
-		   dispatchEvent(new Event("targetChange"));
+			if (_target == value) return;
+			_target = value;
+			invalidate("_target", _target, false);
+			dispatchEvent(new Event("targetChange"));
 		}
 		
 		//------------------------------------
@@ -83,10 +83,10 @@ package org.wvxvws.gui
 		
 		public function set area(value:Rectangle):void 
 		{
-		   if (_area == value) return;
-		   _area = value;
-		   invalidLayout = true;
-		   dispatchEvent(new Event("areaChange"));
+			if (_area == value) return;
+			_area = value;
+			invalidate("_area", _area, false);
+			dispatchEvent(new Event("areaChange"));
 		}
 		
 		//------------------------------------
@@ -104,11 +104,12 @@ package org.wvxvws.gui
 		
 		public function set minHandle(value:DisplayObject):void 
 		{
-		   if (_minHandle === value) return;
-		   _minHandle = value;
-		   if (_minHandle is ISkin) (_minHandle as ISkin).state = MouseEvent.MOUSE_UP;
-		   invalidLayout = true;
-		   dispatchEvent(new Event("minHandleChange"));
+			if (_minHandle === value) return;
+			if (_minHandle && super.contains(_minHandle))	_garbage.push(_minHandle);
+			_minHandle = value;
+			if (_minHandle is ISkin) (_minHandle as ISkin).state = MouseEvent.MOUSE_UP;
+			invalidate("_minHandle", _minHandle, false);
+			dispatchEvent(new Event("minHandleChange"));
 		}
 		
 		//------------------------------------
@@ -127,10 +128,11 @@ package org.wvxvws.gui
 		public function set maxHandle(value:DisplayObject):void 
 		{
 			if (_maxHandle === value) return;
+			if (_maxHandle && super.contains(_maxHandle)) _garbage.push(_maxHandle);
 			_maxHandle = value;
 			if (_maxHandle is ISkin) 
 				(_maxHandle as ISkin).state = MouseEvent.MOUSE_UP;
-			invalidLayout = true;
+			invalidate("_maxHandle", _maxHandle, false);
 			dispatchEvent(new Event("maxHandleChange"));
 		}
 		
@@ -150,9 +152,10 @@ package org.wvxvws.gui
 		public function set handle(value:DisplayObject):void 
 		{
 			if (_handle === value) return;
+			if (_handle && super.contains(_handle)) _garbage.push(_handle);
 			_handle = value;
 			if (_handle is ISkin) (_handle as ISkin).state = MouseEvent.MOUSE_UP;
-			invalidLayout = true;
+			invalidate("_handle", _handle, false);
 			dispatchEvent(new Event("handleChange"));
 		}
 		
@@ -172,10 +175,10 @@ package org.wvxvws.gui
 		public function set body(value:DisplayObject):void 
 		{
 			if (_body === value) return;
-			if (_body && contains(_body)) removeChild(_body);
+			if (_body && super.contains(_body)) _garbage.push(_body);
 			_body = value;
 			if (_body is ISkin) (_body as ISkin).state = MouseEvent.MOUSE_UP;
-			invalidLayout = true;
+			invalidate("_body", _body, false);
 			dispatchEvent(new Event("bodyChange"));
 		}
 		
@@ -196,7 +199,7 @@ package org.wvxvws.gui
 		{
 			if (_direction === value) return;
 			_direction = value;
-			invalidLayout = true;
+			invalidate("_direction", _direction, false);
 			dispatchEvent(new Event("directionChange"));
 		}
 		
@@ -213,7 +216,7 @@ package org.wvxvws.gui
 		{
 			if (_handleWidth === value) return;
 			_handleWidth = value;
-			invalidLayout = true;
+			invalidate("_handleWidth", _handleWidth, false);
 			dispatchEvent(new Event("handleWidthChange"));
 		}
 		
@@ -230,7 +233,7 @@ package org.wvxvws.gui
 		{
 			if (_minMaxHandleSize === value) return;
 			_minMaxHandleSize = value;
-			invalidLayout = true;
+			invalidate("_minMaxHandleSize", _minMaxHandleSize, false);
 			dispatchEvent(new Event("minMaxHandleSizeChange"));
 		}
 		
@@ -247,7 +250,7 @@ package org.wvxvws.gui
 		{
 			if (_gutter === value) return;
 			_gutter = value;
-			invalidLayout = true;
+			invalidate("_gutter", _gutter, false);
 			dispatchEvent(new Event("gutterChange"));
 		}
 		
@@ -259,10 +262,11 @@ package org.wvxvws.gui
 		
 		protected var _target:DisplayObject;
 		protected var _area:Rectangle = new Rectangle(0, 0, 160, 160);
-		protected var _minHandle:DisplayObject = new Sprite() as DisplayObject;
-		protected var _maxHandle:DisplayObject = new Sprite() as DisplayObject;
-		protected var _handle:DisplayObject = new Sprite() as DisplayObject;
-		protected var _body:DisplayObject = new Sprite() as DisplayObject;
+		protected var _minHandle:DisplayObject = new Sprite();
+		protected var _maxHandle:DisplayObject = new Sprite();
+		protected var _handle:DisplayObject = new Sprite();
+		protected var _body:DisplayObject = new Sprite();
+		protected var _garbage:Vector.<DisplayObject> = new Vector.<DisplayObject>(0, false);
 		
 		protected var _direction:Boolean;
 		protected var _path:Number = 160;
@@ -302,6 +306,12 @@ package org.wvxvws.gui
 		{
 			// TODO: Later...
 			super.validate(properties);
+			var m:Matrix;
+			while (_garbage.length)
+			{
+				if (super.contains(_garbage[0]));
+					super.removeChild(_garbage.shift());
+			}
 			if ((_minHandle is ISkin) && !(_minHandle as ISkin).state)
 			{
 				(_minHandle as ISkin).state = MouseEvent.MOUSE_UP;
@@ -340,29 +350,53 @@ package org.wvxvws.gui
 			}
 			else
 			{
-				_minHandle.width = height;
-				_minHandle.height = _handleWidth;
-				_maxHandle.width = height;
-				_maxHandle.height = _handleWidth;
-				_minHandle.rotation = -90;
-				_minHandle.y = height;
-				_maxHandle.rotation = -90;
-				_maxHandle.y = height;
-				_path = width - (_minHandle.width + _maxHandle.width);
-				_maxHandle.x = width - _maxHandle.width;
-				_handle.width = _minMaxHandleSize; // width;
+				// minHandle
+				_minHandle.rotation = 0;
+				_minHandle.scaleX = 1;
+				_minHandle.scaleY = 1;
+				_minHandle.x = 0;
+				_minHandle.y = 0;
+				m = new Matrix();
+				m.a = this.height / _minHandle.width;
+				m.d = _handleWidth / _minHandle.height;
+				m.rotate(Math.PI / -2);
+				m.translate(0, this.height);
+				_minHandle.transform.matrix = m;
+				
+				// maxHandle
+				_maxHandle.rotation = 0;
+				_maxHandle.scaleX = 1;
+				_maxHandle.scaleY = 1;
+				_maxHandle.x = 0;
+				_maxHandle.y = 0;
+				m = new Matrix();
+				m.a = this.height / _minHandle.width;
+				m.d = _handleWidth / _minHandle.height;
+				m.rotate(Math.PI / -2);
+				m.translate(this.width - _handleWidth, this.height);
+				_maxHandle.transform.matrix = m;
+				
+				_path = this.width - _handleWidth * 2;
+				
+				// handle
+				_handle.width = _minMaxHandleSize;
 				_handle.height = handleRatio() * _path + _gutter * 2;
 				_handle.rotation = -90;
-				_handle.x = _minHandle.width + 
+				_handle.x = _handleWidth + 
 							(_path - _handle.height) * _position - _gutter;
 				_handle.y = height;
-				_body.rotation = -90;
-				_body.scaleY = 1;
+				// body
+				_body.rotation = 0;
 				_body.scaleX = 1;
-				_body.width = height;
-				_body.height = width;
-				_body.scaleX = height / _body.getBounds(_body).height;
-				_body.y = height;
+				_body.scaleY = 1;
+				_body.x = 0;
+				_body.y = 0;
+				m = new Matrix();
+				m.a = this.height / _body.width;
+				m.d = this.width / _body.height;
+				m.rotate(Math.PI / -2);
+				m.translate(0, this.height);
+				_body.transform.matrix = m;
 			}
 			if (!super.contains(_body)) super.addChild(_body);
 			if (!super.contains(_minHandle)) super.addChild(_minHandle);
