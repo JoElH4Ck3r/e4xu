@@ -398,13 +398,7 @@ package org.wvxvws.gui
 			if (!_background) _background = graphics;
 			if (properties._backgroundColor !== undefined ||
 				properties._backgroundAlpha !== undefined ||
-				properties._bounds !== undefined)
-			{
-				_background.clear();
-				_background.beginFill(_backgroundColor, _backgroundAlpha);
-				_background.drawRect(0, 0, _bounds.x, _bounds.y);
-				_background.endFill();
-			}
+				properties._bounds !== undefined) drawBackground();
 			if (properties._userTransform) super.transform = _userTransform;
 			else if (properties._transformMatrix)
 			{
@@ -418,6 +412,14 @@ package org.wvxvws.gui
 			}
 			_invalidProperties = { };
 			dispatchEvent(new GUIEvent(GUIEvent.VALIDATED));
+		}
+		
+		protected function drawBackground():void
+		{
+			_background.clear();
+			_background.beginFill(_backgroundColor, _backgroundAlpha);
+			_background.drawRect(0, 0, _bounds.x, _bounds.y);
+			_background.endFill();
 		}
 		
 		public function invalidate(property:String, cleanValue:*, validateParent:Boolean):void

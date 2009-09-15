@@ -177,7 +177,7 @@
 			swf.endian = Endian.LITTLE_ENDIAN;
 			writeHeader(swf, toFile);
 			input.writeBytes(frameLabel.compile());
-			input.writeBytes(defineSceneAndFrameLabelData.compile());
+			//input.writeBytes(defineSceneAndFrameLabelData.compile());
 			defineSound = MP3Transcoder.transcode(input);
 			
 			soundStreamHead2.playBackSoundRate = defineSound.soundRate;
@@ -185,7 +185,7 @@
 			soundStreamHead2.playBackSoundType = defineSound.soundType;
 			
 			//soundStreamHead2.streamSoundCompression = defineSound.soundFormat;
-			trace("defineSound.sampleCount", defineSound.sampleCount);
+			//trace("defineSound.sampleCount", defineSound.sampleCount);
 			//soundStreamHead2.streamSoundSampleCount = defineSound.sampleCount;
 			//soundStreamHead2.streamSoundRate = defineSound.soundRate;
 			//soundStreamHead2.streamSoundSize = defineSound.soundSize;
@@ -253,9 +253,14 @@
 		
 		private static function generateMP3Name():String
 		{
-			var id:String = (++_generator).toString(36).toUpperCase();
+			var id:String = (_generator++).toString(36).toUpperCase();
 			while (id.length < 3) id = "0" + id;
 			return "Sound" + id;
+		}
+		
+		public static function getSoundClassName():String
+		{
+			return doABC.embeddedSoundName;
 		}
 		
 		public static function writeHeader(input:ByteArray, 
@@ -273,7 +278,7 @@
 			input.writeBytes(fileAttributes.compile());
 			//input.writeBytes(scriptLimits.compile());
 			input.writeBytes(setBackgroundColor.compile());
-			frameLabel.label = "Scene 1"; // frameClassName;
+			frameLabel.label = frameClassName; //"Scene 1"; // 
 			//input.writeBytes(frameLabel.compile());
 			//input.writeBytes(defineSceneAndFrameLabelData.compile());
 		}

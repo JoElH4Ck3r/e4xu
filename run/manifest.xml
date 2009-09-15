@@ -29,6 +29,7 @@
 	<component id="ImageRenderer" class="org.wvxvws.gui.renderers.ImageRenderer"/>
 	<component id="ButtonS" class="org.wvxvws.gui.ButtonS"/>
 	<component id="Scroller" class="org.wvxvws.gui.Scroller"/>
+	<component id="StatefulButton" class="org.wvxvws.gui.StatefulButton"/>
 	<!-- CONTAINERS -->
 	<component id="Nest" class="org.wvxvws.gui.containers.Nest"/>
 	<component id="Table" class="org.wvxvws.gui.containers.Table"/>

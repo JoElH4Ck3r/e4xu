@@ -43,6 +43,59 @@ package org.wvxvws.gui
 	 */
 	public class ButtonS extends DIV
 	{
+		
+		//------------------------------------
+		//  Public property skin
+		//------------------------------------
+		
+		[Bindable("skinChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>skinChange</code> event.
+		*/
+		public function get skin():ISkin { return _skin; }
+		
+		public function set skin(value:ISkin):void 
+		{
+			if (_skin == value) return;
+			_skin = value;
+			invalidate("_skin", _skin, false);
+			dispatchEvent(new Event("skinChange"));
+		}
+		
+		public function get label():String { return _label; }
+		
+		public function set label(value:String):void 
+		{
+			if (_label == value) return;
+			_label = value;
+			invalidate("_label", _label, false);
+		}
+		
+		public function get labelField():TextField { return _labelField; }
+		
+		public function get currentState():String { return _currentState; }
+		
+		public function set currentState(value:String):void 
+		{
+			if (_currentState == value) return;
+			_currentState = value;
+			invalidate("_currentState", _currentState, false);
+		}
+		
+		public function get disabled():Boolean { return _disabled; }
+		
+		public function set disabled(value:Boolean):void 
+		{
+			if (_disabled == value) return;
+			_disabled = value;
+			_currentState = GUIEvent.DISABLED;
+			invalidate("_currentState", _currentState, false);
+			dispatchEvent(new GUIEvent(GUIEvent.DISABLED));
+		}
+		
 		protected var _label:String = "";
 		protected var _labelField:TextField = new TextField();
 		protected var _disabled:Boolean;
@@ -116,9 +169,9 @@ package org.wvxvws.gui
 			currentState = MouseEvent.MOUSE_UP;
 		}
 		
-		override public function validateLayout(event:Event = null):void 
+		public override function validate(properties:Object):void 
 		{
-			super.validateLayout(event);
+			super.validate(properties);
 			if (_skin && _currentState != _skin.state && _skin is DisplayObject)
 			{
 				_skin.state = _currentState;
@@ -136,68 +189,21 @@ package org.wvxvws.gui
 			if (_labelField.height > height)
 			{
 				height = _labelField.height;
-				validateLayout(event);
+				validate(_invalidProperties);
 			}
 			if (_labelField.width > width)
 			{
 				width = _labelField.width;
-				validateLayout(event);
+				validate(_invalidProperties);
 			}
 			_labelField.x = (width - _labelField.width) / 2;
 			_labelField.y = (height - _labelField.height) / 2;
-			if (!contains(_labelField)) addChildAt(_labelField, 1);
+			if (!contains(_labelField))
+			{
+				if (super.numChildren) addChildAt(_labelField, 1);
+				else addChildAt(_labelField, 0);
+			}
 		}
 		
-		//------------------------------------
-		//  Public property skin
-		//------------------------------------
-		
-		[Bindable("skinChange")]
-		
-		/**
-		* ...
-		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>skinChange</code> event.
-		*/
-		public function get skin():ISkin { return _skin; }
-		
-		public function set skin(value:ISkin):void 
-		{
-		   if (_skin == value) return;
-		   _skin = value;
-		   invalidLayout = true;
-		   dispatchEvent(new Event("skinChange"));
-		}
-		
-		public function get label():String { return _label; }
-		
-		public function set label(value:String):void 
-		{
-			if (_label == value) return;
-			_label = value;
-			invalidLayout = true;
-		}
-		
-		public function get labelField():TextField { return _labelField; }
-		
-		public function get currentState():String { return _currentState; }
-		
-		public function set currentState(value:String):void 
-		{
-			if (_currentState == value) return;
-			_currentState = value;
-			invalidLayout = true;
-		}
-		
-		public function get disabled():Boolean { return _disabled; }
-		
-		public function set disabled(value:Boolean):void 
-		{
-			if (_disabled == value) return;
-			_disabled = value;
-			_currentState = GUIEvent.DISABLED;
-			invalidLayout = true;
-			dispatchEvent(new GUIEvent(GUIEvent.DISABLED));
-		}
 	}
 }

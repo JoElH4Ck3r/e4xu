@@ -102,11 +102,8 @@
 		//--------------------------------------------------------------------------
 		
 		protected var _min:DisplayObject;
-		//= new HandleRefAST() as Sprite;
 		protected var _max:DisplayObject;
-		//= new HandleAST() as Sprite;
 		protected var _middle:DisplayObject;
-		//= new HandleBodyAST() as Sprite;
 		protected var _rotation:int;
 		protected var _direction:Boolean = true;
 		protected var _height:int;
@@ -176,11 +173,9 @@
 				_max.rotation = _rotation;
 				
 				_middle.x = _min.width >> 0;
-				//_middle.height = _width;
 				_middle.height = 1 + (_height - (_min.height + _max.height)) >> 0;
-				//(_height - (_min.width + _max.width)) >> 0;
-				_middle.scaleY = (1 + (_height - (_min.height + _max.height)) >> 0) / _middle.getBounds(_middle).height
-				//trace(_middle.height, 1 + (_height - (_min.height + _max.height)) >> 0, _middle.scaleX, _middle.scaleY);
+				_middle.scaleY = (1 + (_height - (_min.height + _max.height)) >> 0) / 
+									_middle.getBounds(_middle).height
 				_middle.scaleX = 1;
 				_middle.y = _min.y;
 				_middle.x = _min.width;

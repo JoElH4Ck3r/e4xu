@@ -65,7 +65,7 @@ package org.wvxvws.gui
 			if (_target == value) return;
 			_target = value;
 			_target.addEventListener(Event.COMPLETE, completeHandler);
-			invalidLayout = true;
+			invalidate("_target", _target, false);
 		}
 		
 		public function get target():IEventDispatcher { return _target; }
@@ -74,7 +74,7 @@ package org.wvxvws.gui
 		{
 			if (_percent == value) return;
 			_percent = value;
-			invalidLayout = true;
+			invalidate("_percent", _percent, false);
 		}
 		
 		public function get percent():int { return _percent; }
@@ -85,7 +85,7 @@ package org.wvxvws.gui
 		{
 			if (_radius == value) return;
 			_radius = value;
-			invalidLayout = true;
+			invalidate("_radius", _radius, true);
 		}
 		
 		public function get circleRadius():int { return _circleRadius; }
@@ -94,7 +94,7 @@ package org.wvxvws.gui
 		{
 			if (_circleRadius == value) return;
 			_circleRadius = value;
-			invalidLayout = true;
+			invalidate("_circleRadius", _circleRadius, false);
 		}
 		
 		public function get circleColor():uint { return _circleColor; }
@@ -103,7 +103,7 @@ package org.wvxvws.gui
 		{
 			if (_circleColor == value) return;
 			_circleColor = value;
-			invalidLayout = true;
+			invalidate("_circleColor", _circleColor, false);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -169,9 +169,9 @@ package org.wvxvws.gui
 			start();
 		}
 		
-		override public function validateLayout(event:Event = null):void 
+		override public function validate(properties:Object):void 
 		{
-			super.validateLayout(event);
+			super.validate(properties);
 			init();
 			if (_isPlaying) start();
 		}
