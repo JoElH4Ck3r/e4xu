@@ -220,9 +220,15 @@
 			_videoCodec = codecID;
 			var videoData:ByteArray = new ByteArray();
 			// CHECK!
-			videoData.writeBytes(input, from + 2, lenght - 1);
+			if (codecID !== 2)
+			{
+				videoData.writeBytes(input, from + 2, lenght - 1);
+			}
+			else
+			{
+				videoData.writeBytes(input, from + 1, lenght - 1);
+			}
 			videoData.position = 0;
-			trace("reading video", from);
 			_frames.push(videoData);
 		}
 		
