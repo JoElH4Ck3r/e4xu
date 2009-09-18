@@ -15,7 +15,11 @@
 		function set hotKeys(value:Vector.<int>):void;
 		
 		function set kind(value:String):void;
+		function get kind():String;
 		
+		function set clickHandler(value:Function):void;
+		
+		function set enabled(value:Boolean):void;
 	}
 	
 }

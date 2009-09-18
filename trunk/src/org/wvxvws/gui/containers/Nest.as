@@ -85,7 +85,7 @@ package org.wvxvws.gui.containers
 		public function Nest()
 		{
 			super();
-			_rendererFactory = _branchRenderer;
+			super._rendererFactory = _branchRenderer;
 			addEventListener(GUIEvent.SELECTED, selectedHandler, false, int.MAX_VALUE);
 			addEventListener(GUIEvent.OPENED, openedHandler, false, int.MAX_VALUE);
 		}
