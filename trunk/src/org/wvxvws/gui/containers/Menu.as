@@ -3,7 +3,11 @@
 	//{imports
 	import flash.display.DisplayObject;
 	import flash.display.Graphics;
+	import flash.events.MouseEvent;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	import flash.system.ApplicationDomain;
+	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.renderers.IMenuRenderer;
 	import org.wvxvws.gui.renderers.MenuRenderer;
 	//}
@@ -30,6 +34,14 @@
 		public static const SEPARATOR:String = "separator";
 		public static const NONE:String = "";
 		
+		public function get hasMouse():Boolean
+		{
+			var rect:Rectangle = 
+				new Rectangle(super.x, super.y, _cumulativeWidth, _cumulativeHeight);
+			var p:Point = new Point(super.mouseX, super.mouseY);
+			return rect.containsPoint(p);
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
@@ -46,6 +58,12 @@
 		protected var _cumulativeHeight:int;
 		protected var _cumulativeWidth:int;
 		protected var _nextY:int;
+		protected var _borderWidth:Number;
+		protected var _borderColor:uint;
+		protected var _openedItem:IMenuRenderer;
+		protected var _itemClickHandler:Function;
+		protected var _childMenu:Menu;
+		protected var _parentMenu:Menu;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -63,6 +81,48 @@
 		{
 			super();
 			super._rendererFactory = MenuRenderer;
+			super.addEventListener(GUIEvent.OPENED, openedHandler);
+			super.addEventListener(GUIEvent.SELECTED, selectedHandler);
+			super.addEventListener(MouseEvent.ROLL_OUT, rollOutHandler);
+		}
+		
+		private function rollOutHandler(event:MouseEvent):void 
+		{
+			if (_parentMenu && event.target is Menu) _parentMenu.collapseChildMenu();
+		}
+		
+		private function selectedHandler(event:GUIEvent):void 
+		{
+			if (_itemClickHandler !== null)
+			{
+				_itemClickHandler((event.target as IMenuRenderer).data);
+			}
+		}
+		
+		private function openedHandler(event:GUIEvent):void 
+		{
+			event.stopImmediatePropagation();
+			if (_openedItem === event.target) return;
+			_openedItem = event.target as IMenuRenderer;
+			if (_childMenu && super.contains(_childMenu))
+			{
+				if (!_childMenu.hasMouse) collapseChildMenu();
+			}
+			if (!_openedItem) return;
+			if (_openedItem.kind !== CONTAINER || !_openedItem.enabled) return;
+			_childMenu = new Menu();
+			_childMenu.backgroundAlpha = _backgroundAlpha;
+			_childMenu.backgroundColor = _backgroundColor;
+			_childMenu.borderWidth = _borderWidth;
+			_childMenu.borderColor = _borderColor;
+			if (_useLabelField) _childMenu.labelField = _labelField;
+			if (_useLabelFunction) _childMenu.labelFunction = _labelFunction;
+			_childMenu.dataProvider = _openedItem.data;
+			_childMenu.x = (_openedItem as DisplayObject).x + (_openedItem as DisplayObject).width;
+			_childMenu.y = (_openedItem as DisplayObject).y;
+			super.addChild(_childMenu);
+			_childMenu.initialized(this, "_childMenu");
+			_childMenu.validate(_childMenu.invalidProperties);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -71,23 +131,40 @@
 		//
 		//--------------------------------------------------------------------------
 		
+		public function collapseChildMenu():void
+		{
+			if (_childMenu && super.contains(_childMenu))
+			{
+				_openedItem = null;
+				super.removeChild(_childMenu);
+			}
+		}
+		
+		public override function initialized(document:Object, id:String):void 
+		{
+			super.initialized(document, id);
+			if (document is Menu) _parentMenu = document as Menu;
+		}
+		
+		public override function validate(properties:Object):void 
+		{
+			super.validate(properties);
+			drawIconBG();
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
 		
-		override public function validate(properties:Object):void 
-		{
-			super.validate(properties);
-			drawIconBG();
-		}
-		
 		protected override function layOutChildren():void 
 		{
 			_cumulativeHeight = 0;
 			_cumulativeWidth = 0;
 			_nextY = 0;
+			if (_childMenu && contains(_childMenu))
+				super.removeChild(_childMenu);
 			super.layOutChildren();
 			super.width = _cumulativeWidth;
 			super.height = _cumulativeHeight;
@@ -98,12 +175,15 @@
 				child = super.getChildAt(i);
 				child.width = _cumulativeWidth;
 			}
+			if (_childMenu) super.addChild(_childMenu);
 		}
 		
 		protected override function createChild(xml:XML):DisplayObject 
 		{
 			var child:IMenuRenderer = super.createChild(xml) as IMenuRenderer;
 			if (!child) return null;
+			var childWidth:int;
+			var bounds:Rectangle;
 			child.iconFactory = (_iconGenerator != null ? _iconGenerator(xml) : 
 				ApplicationDomain.currentDomain.hasDefinition(xml[_iconField].toString()) ? 
 				ApplicationDomain.currentDomain.getDefinition(xml[_iconField].toString()) as Class : null);
@@ -111,8 +191,8 @@
 			{
 				child.hotKeys = Vector.<int>(xml[_hotkeysField].toString().split("|"));
 			}
-			child.kind = xml[_kindField].toString();
-			child.enabled = Boolean(xml[_enabledField]);
+			if (xml.hasSimpleContent()) child.kind = xml[_kindField].toString();
+			child.enabled = xml[_enabledField] != "false";
 			if (child.kind !== SEPARATOR)
 			{
 				if (!_groups)
@@ -129,20 +209,47 @@
 				_groups.push(_lastGroup);
 			}
 			(child as DisplayObject).y = _nextY;
-			_nextY += (child as DisplayObject).height;
-			_cumulativeHeight += (child as DisplayObject).height;
-			_cumulativeWidth = Math.max(_cumulativeWidth, (child as DisplayObject).width);
+			if (child.kind == SEPARATOR)
+			{
+				_nextY += 4;
+				_cumulativeHeight += 4;
+			}
+			else
+			{
+				_nextY += (child as DisplayObject).height;
+				_cumulativeHeight += (child as DisplayObject).height;
+			}
+			bounds = (child as DisplayObject).getBounds(this);
+			childWidth = bounds.width + bounds.x;
+			_cumulativeWidth = Math.max(_cumulativeWidth, childWidth);
 			return child as DisplayObject;
 		}
 		
 		protected function drawIconBG():void
 		{
-			trace("_cumulativeHeight", _cumulativeHeight)
 			var g:Graphics = super.graphics;
 			g.clear();
-			g.beginFill(0xD0D0D0);
-			g.drawRect(0, 0, 20, _cumulativeHeight);
+			g.lineStyle(_borderWidth, _borderColor);
+			g.beginFill(super._backgroundColor, super._backgroundAlpha);
+			g.drawRect(0, 0, _cumulativeWidth + 2, _cumulativeHeight + 2);
 			g.endFill();
+			g.beginFill(0xD0D0D0);
+			g.drawRect(0, 0, 20, _cumulativeHeight + 2);
+			g.endFill();
+		}
+		
+		public function get borderWidth():Number { return _borderWidth; }
+		
+		public function set borderWidth(value:Number):void 
+		{
+			_borderWidth = value;
+		}
+		
+		public function get borderColor():uint { return _borderColor; }
+		
+		public function set borderColor(value:uint):void 
+		{
+			_borderColor = value;
 		}
 		
 		//--------------------------------------------------------------------------

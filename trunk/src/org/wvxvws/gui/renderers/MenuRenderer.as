@@ -2,6 +2,7 @@
 {
 	//{imports
 	import flash.display.DisplayObject;
+	import flash.display.Graphics;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -10,8 +11,11 @@
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import org.wvxvws.gui.containers.Menu;
+	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.utils.KeyUtils;
 	//}
+	
+	[Event(name="opened", type="org.wvxvws.gui.GUIEvent")]
 	
 	/**
 	* MenuRenderer class.
@@ -57,8 +61,10 @@
 		protected var _arrow:Sprite;
 		protected var _hasChildNodes:Boolean;
 		protected var _defaultFormat:TextFormat = new TextFormat("_sans", 11);
+		protected var _disabledFormat:TextFormat = new TextFormat("_sans", 11, 0xC0C0C0);
 		protected var _fieldScrollRect:Rectangle = new Rectangle();
 		protected var _width:int;
+		protected var _selection:Sprite;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -72,7 +78,49 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public function MenuRenderer() { super(); }
+		public function MenuRenderer()
+		{
+			super();
+			super.addEventListener(MouseEvent.MOUSE_OVER, mouseOverHandler);
+			super.addEventListener(MouseEvent.MOUSE_OUT, mouseOutHandler);
+		}
+		
+		private function mouseOverHandler(event:MouseEvent):void 
+		{
+			if (_kind !== Menu.SEPARATOR) drawSelection(true);
+		}
+		
+		private function mouseOutHandler(event:MouseEvent):void
+		{
+			if (_kind !== Menu.SEPARATOR) drawSelection(false);
+		}
+		
+		public function drawSelection(isSelected:Boolean):void
+		{
+			if (isSelected)
+			{
+				if (!_selection)
+				{
+					_selection = new Sprite();
+					_selection.mouseEnabled = false;
+				}
+				_selection.graphics.clear();
+				_selection.graphics.lineStyle(1, 0xFF, 0.5, true);
+				if (_enabled) _selection.graphics.beginFill(0xFF, 0.2);
+				else _selection.graphics.beginFill(0, 0);
+				_selection.graphics.drawRect(0, 0, _width, Math.max(super.height, 20));
+				_selection.graphics.endFill();
+				super.addChild(_selection);
+				super.dispatchEvent(new GUIEvent(GUIEvent.OPENED, true, true));
+			}
+			else
+			{
+				if (_selection && super.contains(_selection))
+				{
+					super.removeChild(_selection);
+				}
+			}
+		}
 		
 		/* INTERFACE org.wvxvws.gui.renderers.IMenuRenderer */
 		
@@ -103,6 +151,8 @@
 			if (_clickHandler === value) return;
 			_clickHandler = value;
 		}
+		
+		public function get enabled():Boolean { return _enabled; }
 		
 		public function set enabled(value:Boolean):void
 		{
@@ -136,6 +186,7 @@
 			_data = value;
 			_dataCopy = value.copy();
 			_hasChildNodes = _data.hasComplexContent();
+			if (_hasChildNodes) _kind = Menu.CONTAINER;
 			render();
 		}
 		
@@ -161,6 +212,18 @@
 		{
 			var hkStr:String = "";
 			var i:int;
+			var g:Graphics = super.graphics;
+			if (_kind === Menu.SEPARATOR)
+			{
+				g.clear();
+				g.beginFill(0xC0C0C0, 1);
+				g.drawRect(30, 2, _width - 30, 1);
+				g.endFill();
+				if (_icon && super.contains(_icon)) super.removeChild(_icon);
+				if (_field && super.contains(_field)) super.removeChild(_field);
+				if (_hkField && super.contains(_hkField)) super.removeChild(_hkField);
+				return;
+			}
 			if (!_icon || !(_icon as Object).constructor !== _iconFactory)
 			{
 				if (_icon && super.contains(_icon))
@@ -210,6 +273,16 @@
 				_hkField.text = hkStr;
 			}
 			_hkField.x = Math.max(_width - (30 + _hkField.width), _field.width + _field.x + 2);
+			if (_enabled)
+			{
+				_field.setTextFormat(_defaultFormat);
+				_hkField.setTextFormat(_defaultFormat);
+			}
+			else
+			{
+				_field.setTextFormat(_disabledFormat);
+				_hkField.setTextFormat(_disabledFormat);
+			}
 			if (_hasChildNodes && !_arrow)
 			{
 				_arrow = new Sprite();
@@ -228,6 +301,10 @@
 				_arrow.x = Math.max(_width - (_arrow.width + 2), _hkField.x + _hkField.width + 2);
 				_arrow.y = (height - _arrow.height) >> 1;
 			}
+			g.clear();
+			g.beginFill(0, 0);
+			g.drawRect(0, 0, _width, Math.max(super.height, 20));
+			g.endFill();
 		}
 		
 		protected function arrow_mouseOverHandler(event:MouseEvent):void 

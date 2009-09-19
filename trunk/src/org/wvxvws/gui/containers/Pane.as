@@ -86,7 +86,7 @@
 		protected var _removedChildren:Array;
 		protected var _rendererFactory:Class;
 		protected var _labelFunction:Function;
-		protected var _labelField:String = "@label";
+		protected var _labelField:String;
 		protected var _dispatchCreated:Boolean;
 		protected var _useLabelField:Boolean;
 		protected var _useLabelFunction:Boolean;
