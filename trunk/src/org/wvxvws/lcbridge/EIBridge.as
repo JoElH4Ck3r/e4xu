@@ -1,10 +1,8 @@
 ﻿package org.wvxvws.lcbridge 
 {
+	//{imports
 	import flash.display.Loader;
 	import flash.external.ExternalInterface;
-	
-	//{imports
-	
 	//}
 	/**
 	* EIBridge class.

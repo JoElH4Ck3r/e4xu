@@ -3,7 +3,7 @@
    <benchmark>false</benchmark>
    <compiler>
       <!-- compiler.accessible: generate an accessible SWF-->
-      <accessible>false</accessible>
+      <accessible>true</accessible>
       <!-- compiler.actionscript-file-encoding: specifies actionscript file encoding. If there is no BOM in the AS3 source files, the compiler will use this file encoding.-->
       <!-- compiler.actionscript-file-encoding usage:
       <actionscript-file-encoding>string</actionscript-file-encoding>
@@ -34,8 +34,19 @@
          <value>string</value>
       </define>
       -->
+      <!-- compiler.enable-runtime-design-layers usage:
+      <enable-runtime-design-layers>boolean</enable-runtime-design-layers>
+      -->
       <!-- compiler.es: use the ECMAScript edition 3 prototype based object model to allow dynamic overriding of prototype properties. In the prototype based object model built-in functions are implemented as dynamic properties of prototype objects.-->
       <es>false</es>
+      <extensions>
+         <!-- compiler.extensions.extension usage:
+         <extension>
+            <extension>string</extension>
+            <parameters>string</parameters>
+         </extension>
+         -->
+      </extensions>
       <!-- compiler.external-library-path: list of SWC files or directories to compile against but to omit from linking-->
       <external-library-path>
          <path-element>libs/player/{targetPlayerMajorVersion}/playerglobal.swc</path-element>
@@ -123,6 +134,9 @@
          <!-- compiler.mxml.compatibility-version: specifies a compatibility version. e.g. -compatibility-version=2.0.1-->
          <!-- compiler.mxml.compatibility-version usage:
          <compatibility-version>version</compatibility-version>
+         -->
+         <!-- compiler.mxml.qualified-type-selectors usage:
+         <qualified-type-selectors>boolean</qualified-type-selectors>
          -->
       </mxml>
       <namespaces>
@@ -327,10 +341,10 @@
       <!-- metadata.publisher: A publisher's name to store in the SWF metadata-->
       <publisher>unknown</publisher>
       <!-- metadata.title: The default title to store in the SWF metadata-->
-      <title>Adobe Flex 3 Application</title>
+      <title>Adobe Flex 4 Application</title>
    </metadata>
    <!-- output: the filename of the SWF movie to create-->
-   <output>obj\xmlhelpers633887508835246250</output>
+   <output>obj\xmlhelpers633889713091652500</output>
    <!-- raw-metadata: XML text to store in the SWF metadata (overrides metadata.* configuration)-->
    <!-- raw-metadata usage:
    <raw-metadata>text</raw-metadata>
@@ -347,10 +361,23 @@
    </runtime-shared-libraries>
    -->
    <runtime-shared-library-path>
-      <path-element>libs/framework.swc</path-element>
-      <rsl-url>framework_4.0.0.4904.swz</rsl-url>
+      <path-element>libs/textLayout.swc</path-element>
+      <rsl-url>textLayout_4.0.0.0.swf</rsl-url>
       <policy-file-url></policy-file-url>
-      <rsl-url>framework_4.0.0.4904.swf</rsl-url>
+   </runtime-shared-library-path>
+   <runtime-shared-library-path>
+      <path-element>libs/framework.swc</path-element>
+      <rsl-url>framework_4.0.0.0.swf</rsl-url>
+      <policy-file-url></policy-file-url>
+   </runtime-shared-library-path>
+   <runtime-shared-library-path>
+      <path-element>libs/spark.swc</path-element>
+      <rsl-url>spark_4.0.0.0.swf</rsl-url>
+      <policy-file-url></policy-file-url>
+   </runtime-shared-library-path>
+   <runtime-shared-library-path>
+      <path-element>libs/rpc.swc</path-element>
+      <rsl-url>rpc_4.0.0.0.swf</rsl-url>
       <policy-file-url></policy-file-url>
    </runtime-shared-library-path>
    <!-- static-link-runtime-shared-libraries: statically link the libraries specified by the -runtime-shared-libraries-path option.-->
