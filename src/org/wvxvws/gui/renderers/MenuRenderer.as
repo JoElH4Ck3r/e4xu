@@ -83,6 +83,13 @@
 			super();
 			super.addEventListener(MouseEvent.MOUSE_OVER, mouseOverHandler);
 			super.addEventListener(MouseEvent.MOUSE_OUT, mouseOutHandler);
+			super.addEventListener(MouseEvent.CLICK, mclickHandler);
+		}
+		
+		private function mclickHandler(event:Event = null):void 
+		{
+			trace("mclickHandler");
+			if (_clickHandler !== null) _clickHandler(_data);
 		}
 		
 		private function mouseOverHandler(event:MouseEvent):void 
@@ -134,6 +141,7 @@
 		{
 			if (_hotKeys === value) return;
 			_hotKeys = value;
+			KeyUtils.registerHotKeys(_hotKeys, mclickHandler);
 		}
 		
 		public function get kind():String { return _kind; }
@@ -273,16 +281,6 @@
 				_hkField.text = hkStr;
 			}
 			_hkField.x = Math.max(_width - (30 + _hkField.width), _field.width + _field.x + 2);
-			if (_enabled)
-			{
-				_field.setTextFormat(_defaultFormat);
-				_hkField.setTextFormat(_defaultFormat);
-			}
-			else
-			{
-				_field.setTextFormat(_disabledFormat);
-				_hkField.setTextFormat(_disabledFormat);
-			}
 			if (_hasChildNodes && !_arrow)
 			{
 				_arrow = new Sprite();
@@ -291,7 +289,6 @@
 				_arrow.graphics.lineTo(0, 9);
 				_arrow.graphics.lineTo(0, 0);
 				_arrow.graphics.endFill();
-				_arrow.addEventListener(MouseEvent.MOUSE_OVER, arrow_mouseOverHandler);
 				super.addChild(_arrow);
 			}
 			else if (!_hasChildNodes && _arrow && super.contains(_arrow))
@@ -301,15 +298,22 @@
 				_arrow.x = Math.max(_width - (_arrow.width + 2), _hkField.x + _hkField.width + 2);
 				_arrow.y = (height - _arrow.height) >> 1;
 			}
+			if (_enabled)
+			{
+				_field.setTextFormat(_defaultFormat);
+				_hkField.setTextFormat(_defaultFormat);
+				if (_arrow) _arrow.alpha = 1;
+			}
+			else
+			{
+				_field.setTextFormat(_disabledFormat);
+				_hkField.setTextFormat(_disabledFormat);
+				if (_arrow) _arrow.alpha = 0.2;
+			}
 			g.clear();
 			g.beginFill(0, 0);
 			g.drawRect(0, 0, _width, Math.max(super.height, 20));
 			g.endFill();
-		}
-		
-		protected function arrow_mouseOverHandler(event:MouseEvent):void 
-		{
-			
 		}
 		
 		//--------------------------------------------------------------------------
