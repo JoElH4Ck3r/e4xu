@@ -3,6 +3,7 @@
 	//{imports
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Rectangle;
 	import flash.text.TextField;
@@ -26,6 +27,13 @@
 		//
 		//--------------------------------------------------------------------------
 		
+		public override function set width(value:Number):void 
+		{
+			if (_width === value) return;
+			_width = value;
+			render();
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
@@ -46,11 +54,11 @@
 		protected var _kind:String;
 		protected var _hotKeys:Vector.<int>;
 		protected var _iconFactory:Class;
-		protected var _icon:DisplayObject;
 		protected var _arrow:Sprite;
 		protected var _hasChildNodes:Boolean;
 		protected var _defaultFormat:TextFormat = new TextFormat("_sans", 11);
 		protected var _fieldScrollRect:Rectangle = new Rectangle();
+		protected var _width:int;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -170,10 +178,12 @@
 			if (!_field)
 			{
 				_field = new TextField();
+				_field.selectable = false;
 				_field.defaultTextFormat = _defaultFormat;
 				_field.height = 1;
 				_field.width = 1;
 				_field.autoSize = TextFieldAutoSize.LEFT;
+				_field.x = 30;
 				super.addChild(_field);
 			}
 			if (_labelFunction !== null) _field.text = _labelFunction(data);
@@ -183,6 +193,7 @@
 			if (!_hkField)
 			{
 				_hkField = new TextField();
+				_hkField.selectable = false;
 				_hkField.defaultTextFormat = _defaultFormat;
 				_hkField.height = 1;
 				_hkField.width = 1;
@@ -194,21 +205,29 @@
 				while (i < _hotKeys.length)
 				{
 					hkStr += (hkStr ? "+" : "") + KeyUtils.keyToString(_hotKeys[i]);
+					i++;
 				}
+				_hkField.text = hkStr;
 			}
-			_hkField.text = hkStr;
+			_hkField.x = Math.max(_width - (30 + _hkField.width), _field.width + _field.x + 2);
 			if (_hasChildNodes && !_arrow)
 			{
 				_arrow = new Sprite();
-				_arrow.graphics.beginFill(0);
-				_arrow.graphics.lineTo(4, 3);
-				_arrow.graphics.lineTo(0, 6);
+				_arrow.graphics.beginFill(0, 1);
+				_arrow.graphics.lineTo(5, 4);
+				_arrow.graphics.lineTo(0, 9);
 				_arrow.graphics.lineTo(0, 0);
 				_arrow.graphics.endFill();
 				_arrow.addEventListener(MouseEvent.MOUSE_OVER, arrow_mouseOverHandler);
 				super.addChild(_arrow);
 			}
-			else if (_arrow && super.contains(_arrow)) super.removeChild(_arrow);
+			else if (!_hasChildNodes && _arrow && super.contains(_arrow))
+				super.removeChild(_arrow);
+			if (_arrow && super.contains(_arrow))
+			{
+				_arrow.x = Math.max(_width - (_arrow.width + 2), _hkField.x + _hkField.width + 2);
+				_arrow.y = (height - _arrow.height) >> 1;
+			}
 		}
 		
 		protected function arrow_mouseOverHandler(event:MouseEvent):void 

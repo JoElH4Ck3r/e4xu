@@ -35,8 +35,10 @@
 	<component id="Table" class="org.wvxvws.gui.containers.Table"/>
 	<component id="TiledPanel" class="org.wvxvws.gui.containers.TiledPanel"/>
 	<component id="Tris" class="org.wvxvws.gui.containers.Tris"/>
+	<component id="Menu" class="org.wvxvws.gui.containers.Menu"/>
 	<!-- RENDERERS -->
 	<component id="BranchRenderer" class="org.wvxvws.gui.renderers.BranchRenderer"/>
+	<component id="MenuRenderer" class="org.wvxvws.gui.renderers.MenuRenderer"/>
 	<!-- CSS -->
 	<component id="STYLE" class="org.wvxvws.gui.styles.STYLE"/>
 	<!-- GEOMETRY -->

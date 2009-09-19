@@ -1,13 +1,15 @@
 ﻿package org.wvxvws.gui.containers 
 {
+	//{imports
 	import flash.display.DisplayObject;
+	import flash.display.Graphics;
 	import flash.system.ApplicationDomain;
 	import org.wvxvws.gui.renderers.IMenuRenderer;
 	import org.wvxvws.gui.renderers.MenuRenderer;
-	
-	//{imports
-	
 	//}
+	
+	[DefaultProperty("dataProvider")]
+	
 	/**
 	* Menu class.
 	* @author wvxvw
@@ -41,6 +43,9 @@
 		protected var _kindField:String = "@kind";
 		protected var _enabledField:String = "@enabled";
 		protected var _lastGroup:Vector.<IMenuRenderer>;
+		protected var _cumulativeHeight:int;
+		protected var _cumulativeWidth:int;
+		protected var _nextY:int;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -72,14 +77,40 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		override protected function createChild(xml:XML):DisplayObject 
+		override public function validate(properties:Object):void 
+		{
+			super.validate(properties);
+			drawIconBG();
+		}
+		
+		protected override function layOutChildren():void 
+		{
+			_cumulativeHeight = 0;
+			_cumulativeWidth = 0;
+			_nextY = 0;
+			super.layOutChildren();
+			super.width = _cumulativeWidth;
+			super.height = _cumulativeHeight;
+			var i:int = super.numChildren;
+			var child:DisplayObject;
+			while (i--)
+			{
+				child = super.getChildAt(i);
+				child.width = _cumulativeWidth;
+			}
+		}
+		
+		protected override function createChild(xml:XML):DisplayObject 
 		{
 			var child:IMenuRenderer = super.createChild(xml) as IMenuRenderer;
 			if (!child) return null;
 			child.iconFactory = (_iconGenerator != null ? _iconGenerator(xml) : 
 				ApplicationDomain.currentDomain.hasDefinition(xml[_iconField].toString()) ? 
-				ApplicationDomain.currentDomain.getDefinition(xml[_iconField].toString()) : null);
-			child.hotKeys = Vector.<int>(xml[_hotkeysField].toString().split("|"));
+				ApplicationDomain.currentDomain.getDefinition(xml[_iconField].toString()) as Class : null);
+			if (xml[_hotkeysField].toString().length)
+			{
+				child.hotKeys = Vector.<int>(xml[_hotkeysField].toString().split("|"));
+			}
 			child.kind = xml[_kindField].toString();
 			child.enabled = Boolean(xml[_enabledField]);
 			if (child.kind !== SEPARATOR)
@@ -97,7 +128,21 @@
 				_lastGroup.push(child);
 				_groups.push(_lastGroup);
 			}
+			(child as DisplayObject).y = _nextY;
+			_nextY += (child as DisplayObject).height;
+			_cumulativeHeight += (child as DisplayObject).height;
+			_cumulativeWidth = Math.max(_cumulativeWidth, (child as DisplayObject).width);
 			return child as DisplayObject;
+		}
+		
+		protected function drawIconBG():void
+		{
+			trace("_cumulativeHeight", _cumulativeHeight)
+			var g:Graphics = super.graphics;
+			g.clear();
+			g.beginFill(0xD0D0D0);
+			g.drawRect(0, 0, 20, _cumulativeHeight);
+			g.endFill();
 		}
 		
 		//--------------------------------------------------------------------------

@@ -351,11 +351,13 @@ package org.wvxvws.gui
 			_nativeTransform = new Transform(this);
 			invalidate("", undefined, true);
 			if (stage) addEventListener(Event.ENTER_FRAME, deferredInitialize);
+			if (stage) trace("deferredInitialize");
 		}
 		
 		private function deferredInitialize(event:Event):void 
 		{
 			removeEventListener(Event.ENTER_FRAME, deferredInitialize);
+			trace("dispatchEvent INITIALIZED", hasEventListener(GUIEvent.INITIALIZED));
 			dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
 		}
 		
@@ -364,12 +366,12 @@ package org.wvxvws.gui
 		public function initialized(document:Object, id:String):void
 		{
 			_document = document;
+			_id = id;
 			initStyles();
 			if (_document is DisplayObjectContainer)
 			{
 				(_document as DisplayObjectContainer).addChild(this);
 			}
-			_id = id;
 			if (_hasPendingValidation) validate(_invalidProperties);
 			dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
 		}
