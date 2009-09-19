@@ -351,13 +351,11 @@ package org.wvxvws.gui
 			_nativeTransform = new Transform(this);
 			invalidate("", undefined, true);
 			if (stage) addEventListener(Event.ENTER_FRAME, deferredInitialize);
-			if (stage) trace("deferredInitialize");
 		}
 		
 		private function deferredInitialize(event:Event):void 
 		{
 			removeEventListener(Event.ENTER_FRAME, deferredInitialize);
-			trace("dispatchEvent INITIALIZED", hasEventListener(GUIEvent.INITIALIZED));
 			dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
 		}
 		
@@ -384,7 +382,6 @@ package org.wvxvws.gui
 		
 		public function validate(properties:Object):void
 		{
-			trace("validate", this);
 			if (!_document) _validator = new LayoutValidator();
 			else if (parent is ILayoutClient && !_validator)
 			{

@@ -1,6 +1,8 @@
 ﻿package org.wvxvws.gui.renderers 
 {
 	
+	[Event(name="opened", type="org.wvxvws.gui.GUIEvent")]
+	
 	/**
 	* IMenuRenderer interface.
 	* @author wvxvw
@@ -20,6 +22,7 @@
 		function set clickHandler(value:Function):void;
 		
 		function set enabled(value:Boolean):void;
+		function get enabled():Boolean;
 	}
 	
 }
