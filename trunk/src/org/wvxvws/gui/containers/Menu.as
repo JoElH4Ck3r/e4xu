@@ -3,6 +3,7 @@
 	//{imports
 	import flash.display.DisplayObject;
 	import flash.display.Graphics;
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
@@ -10,6 +11,7 @@
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.renderers.IMenuRenderer;
 	import org.wvxvws.gui.renderers.MenuRenderer;
+	import org.wvxvws.utils.KeyUtils;
 	//}
 	
 	[DefaultProperty("dataProvider")]
@@ -84,6 +86,13 @@
 			super.addEventListener(GUIEvent.OPENED, openedHandler);
 			super.addEventListener(GUIEvent.SELECTED, selectedHandler);
 			super.addEventListener(MouseEvent.ROLL_OUT, rollOutHandler);
+			super.addEventListener(Event.ADDED_TO_STAGE, atsHandler);
+		}
+		
+		private function atsHandler(event:Event):void 
+		{
+			removeEventListener(Event.ADDED_TO_STAGE, atsHandler);
+			KeyUtils.obtainStage(stage);
 		}
 		
 		private function rollOutHandler(event:MouseEvent):void 

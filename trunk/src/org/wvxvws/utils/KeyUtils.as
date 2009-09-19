@@ -1,6 +1,9 @@
 ﻿package org.wvxvws.utils 
 {
+	import flash.display.Stage;
+	import flash.events.KeyboardEvent;
 	import flash.system.Capabilities;
+	import flash.utils.Dictionary;
 	
 	//{imports
 	
@@ -30,6 +33,11 @@
 		//  Private properties
 		//
 		//--------------------------------------------------------------------------
+		
+		private static var _stage:Stage;
+		private static var _listeners:Dictionary = new Dictionary(true);
+		private static var _keySequence:uint;
+		private static var _lastPressed:uint;
 		
 		private static const _keyNamesWinUSqwerty:Object =
 		{
@@ -138,6 +146,76 @@
 		//  Public methods
 		//
 		//--------------------------------------------------------------------------
+		
+		public static function obtainStage(stage:Stage):void
+		{
+			_stage = stage;
+			_stage.addEventListener(KeyboardEvent.KEY_DOWN, keyDownHandler, false, 0, true);
+			_stage.addEventListener(KeyboardEvent.KEY_UP, keyUpHandler, false, 0, true);
+		}
+		
+		private static function keyDownHandler(event:KeyboardEvent):void 
+		{
+			if (_lastPressed) 
+			{
+				if (_lastPressed === event.keyCode) return;
+			}
+			_lastPressed = event.keyCode;
+			_keySequence = (_keySequence << 8) | event.keyCode;
+			trace("_keySequence", _keySequence.toString(16));
+			var listKey:uint;
+			for (var obj:Object in _listeners)
+			{
+				listKey = _listeners[obj];
+				if (listKey === _keySequence) (obj as Function)(event);
+				else
+				{
+					if (isBinMatch(listKey, _keySequence))
+					{
+						(obj as Function)(event);
+					}
+				}
+			}
+		}
+		
+		private static function isBinMatch(key:uint, mask:uint):Boolean
+		{
+			if (key < mask)
+			{
+				var t:uint = key;
+				key = mask;
+				mask = t;
+			}
+			while (key)
+			{
+				if (key == mask) return true;
+				key >>>= 1;
+			}
+			return false;
+		}
+		
+		static private function keyUpHandler(event:KeyboardEvent):void 
+		{
+			_keySequence = 0;
+		}
+		
+		public static function registerHotKeys(keys:Vector.<int>, handler:Function):void
+		{
+			_listeners[handler] = keysToKey(keys);
+		}
+		
+		private static function keysToKey(keys:Vector.<int>):uint
+		{
+			var i:int = Math.min(4, keys.length - 1);
+			var ret:uint;
+			var k:int;
+			while (k < i)
+			{
+				ret = (ret << 8) | keys[i];
+				k++;
+			}
+			return ret;
+		}
 		
 		public static function keyToString(key:int):String
 		{
