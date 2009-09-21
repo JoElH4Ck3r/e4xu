@@ -19,31 +19,13 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package org.wvxvws.gui.renderers 
+import org.wvxvws.lcbridge.EI;
+
+class MainAS2EI
 {
+	public static var ei:EI;
 	
-	[Event(name="opened", type="org.wvxvws.gui.GUIEvent")]
+	public static function main(swfRoot:MovieClip):Void { ei = new EI(); }
 	
-	/**
-	* IMenuRenderer interface.
-	* @author wvxvw
-	* @langVersion 3.0
-	* @playerVersion 10.0.12.36
-	*/
-	public interface IMenuRenderer extends IRenderer
-	{
-		
-		function set iconFactory(value:Class):void;
-		
-		function set hotKeys(value:Vector.<int>):void;
-		
-		function set kind(value:String):void;
-		function get kind():String;
-		
-		function set clickHandler(value:Function):void;
-		
-		function set enabled(value:Boolean):void;
-		function get enabled():Boolean;
-	}
-	
+	public function MainAS2EI() { super(); }
 }

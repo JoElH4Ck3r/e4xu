@@ -1,4 +1,25 @@
-﻿package org.wvxvws.lcbridge 
+﻿////////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (C) Oleg Sivokon email: olegsivokon@gmail.com
+//  
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or any later version.
+//  
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//  GNU General Public License for more details.
+//  
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, write to the Free Software
+//  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+//  Or visit http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+//
+////////////////////////////////////////////////////////////////////////////////
+
+package org.wvxvws.lcbridge 
 {
 	//{imports
 	import flash.display.Loader;
@@ -55,9 +76,10 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public function as3receive(...rest):*
+		public function as3receive(obj:Object):*
 		{
-			return rest.join("\r") + "Ho!";
+			return obj;
+			//AVM1Command.parseFromAMF0(obj);
 		}
 		
 		public function createReceiver():Boolean
@@ -87,7 +109,7 @@
 				{
 					var flash = document.getElementById("]]> + _ourID +
 			<![CDATA[");
-					return flash.as2receive.apply(flash, arguments);
+					return flash.as2receive(arguments);
 				}
 				d.as2send = function()
 				{
@@ -103,17 +125,11 @@
 			return true;
 		}
 		
-		public function as3send(command:String):*
+		public function as3send(command:AVM1Command):*
 		{
 			if (!_available) return undefined;
-			var script:String =
-			<![CDATA[function(){
-				var objects = document.getElementsByTagName("object");
-				var o = document.getElementById("]]> + _id +
-			<![CDATA[");
-				return o.as2send("]]> + command +
-			<![CDATA[");}]]>;
-			return ExternalInterface.call(script);
+			var script:String = "document.getElementById(\"" + _id + "\").as2send";
+			return AVM1Command.parseFromAMF0(ExternalInterface.call(script, command.toAMF0Object()));
 		}
 		
 		//--------------------------------------------------------------------------

@@ -1,13 +1,33 @@
-﻿package org.wvxvws.utils 
+﻿////////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (C) Oleg Sivokon email: olegsivokon@gmail.com
+//  
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or any later version.
+//  
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//  GNU General Public License for more details.
+//  
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, write to the Free Software
+//  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+//  Or visit http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+//
+////////////////////////////////////////////////////////////////////////////////
+
+package org.wvxvws.utils 
 {
+	//{imports
 	import flash.display.Stage;
 	import flash.events.KeyboardEvent;
 	import flash.system.Capabilities;
 	import flash.utils.Dictionary;
-	
-	//{imports
-	
 	//}
+	
 	/**
 	* KeyUtils class.
 	* @author wvxvw
@@ -22,6 +42,11 @@
 		//
 		//--------------------------------------------------------------------------
 		
+		public static function get currentCombination():uint
+		{
+			return keysToKey(_keySequence);
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
@@ -35,8 +60,8 @@
 		//--------------------------------------------------------------------------
 		
 		private static var _stage:Stage;
-		private static var _listeners:Dictionary = new Dictionary(true);
-		private static var _keySequence:uint;
+		private static var _listeners:Dictionary = new Dictionary();
+		private static var _keySequence:Vector.<int> = new Vector.<int>(0, false);
 		private static var _lastPressed:uint;
 		
 		private static const _keyNamesWinUSqwerty:Object =
@@ -161,18 +186,22 @@
 				if (_lastPressed === event.keyCode) return;
 			}
 			_lastPressed = event.keyCode;
-			_keySequence = (_keySequence << 8) | event.keyCode;
-			trace("_keySequence", _keySequence.toString(16));
+			_keySequence.push(event.keyCode);
 			var listKey:uint;
+			var seqInt:uint = keysToKey(_keySequence);
+			var listener:Dictionary;
 			for (var obj:Object in _listeners)
 			{
 				listKey = _listeners[obj];
-				if (listKey === _keySequence) (obj as Function)(event);
+				if (listKey === seqInt)
+				{
+					obj.f(event);
+				}
 				else
 				{
-					if (isBinMatch(listKey, _keySequence))
+					if (isBinMatch(listKey, seqInt))
 					{
-						(obj as Function)(event);
+						obj.f(event);
 					}
 				}
 			}
@@ -180,38 +209,40 @@
 		
 		private static function isBinMatch(key:uint, mask:uint):Boolean
 		{
-			if (key < mask)
-			{
-				var t:uint = key;
-				key = mask;
-				mask = t;
-			}
-			while (key)
+			while (mask >= key)
 			{
 				if (key == mask) return true;
-				key >>>= 1;
+				mask >>>= 8;
 			}
 			return false;
 		}
 		
 		static private function keyUpHandler(event:KeyboardEvent):void 
 		{
-			_keySequence = 0;
+			var index:int = _keySequence.indexOf(event.keyCode);
+			if (index < 0) return;
+			if (_lastPressed === event.keyCode) _lastPressed = 0;
+			_keySequence.splice(index, 1);
 		}
 		
 		public static function registerHotKeys(keys:Vector.<int>, handler:Function):void
 		{
-			_listeners[handler] = keysToKey(keys);
+			//var kl:Dictionary = new Dictionary();
+			//new Dictionary(true)
+			// NOTE: if set to use weak keys, will not work
+			// so far no way to store a weak reference to the method...
+			//kl[handler] = true;
+			_listeners[{ f: handler }] = keysToKey(keys);
 		}
 		
-		private static function keysToKey(keys:Vector.<int>):uint
+		public static function keysToKey(keys:Vector.<int>):uint
 		{
-			var i:int = Math.min(4, keys.length - 1);
+			var i:int = Math.min(3, keys.length - 1) + 1;
 			var ret:uint;
 			var k:int;
 			while (k < i)
 			{
-				ret = (ret << 8) | keys[i];
+				ret = (ret << 8) | keys[k];
 				k++;
 			}
 			return ret;
