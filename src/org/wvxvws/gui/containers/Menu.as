@@ -1,13 +1,36 @@
-﻿package org.wvxvws.gui.containers 
+﻿////////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (C) Oleg Sivokon email: olegsivokon@gmail.com
+//  
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or any later version.
+//  
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//  GNU General Public License for more details.
+//  
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, write to the Free Software
+//  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+//  Or visit http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+//
+////////////////////////////////////////////////////////////////////////////////
+
+package org.wvxvws.gui.containers 
 {
 	//{imports
 	import flash.display.DisplayObject;
 	import flash.display.Graphics;
 	import flash.events.Event;
+	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.system.ApplicationDomain;
+	import flash.utils.Dictionary;
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.renderers.IMenuRenderer;
 	import org.wvxvws.gui.renderers.MenuRenderer;
@@ -44,6 +67,12 @@
 			return rect.containsPoint(p);
 		}
 		
+		public override function set dataProvider(value:XML):void 
+		{
+			super.dataProvider = value;
+			if (_isDeferredKeyInit) initiKeyListener();
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
@@ -66,6 +95,9 @@
 		protected var _itemClickHandler:Function;
 		protected var _childMenu:Menu;
 		protected var _parentMenu:Menu;
+		protected var _isRootMenu:Boolean;
+		protected var _isDeferredKeyInit:Boolean;
+		protected var _keyListenersMap:Dictionary = new Dictionary(true);
 		
 		//--------------------------------------------------------------------------
 		//
@@ -153,6 +185,42 @@
 		{
 			super.initialized(document, id);
 			if (document is Menu) _parentMenu = document as Menu;
+			else initiKeyListener();
+		}
+		
+		protected function initiKeyListener():void
+		{
+			_isRootMenu = true;
+			var hkList:XMLList;
+			var compositeKey:Vector.<int>;
+			if (_dataProvider)
+			{
+				hkList = _dataProvider..*.(hasOwnProperty(_hotkeysField));
+				for each (var node:XML in hkList)
+				{
+					if (!node[_hotkeysField].toString().length) continue;
+					compositeKey = Vector.<int>(node[_hotkeysField].toString().split("|"));
+					_keyListenersMap[node] = KeyUtils.keysToKey(compositeKey);
+					KeyUtils.registerHotKeys(compositeKey, defaultKeyHandler);
+				}
+			}
+			else _isDeferredKeyInit = true;
+		}
+		
+		private function defaultKeyHandler(event:KeyboardEvent):void
+		{
+			var sequenceCode:uint = KeyUtils.currentCombination;
+			trace("defaultKeyHandler", sequenceCode.toString(16));
+			if (_itemClickHandler !== null)
+			{
+				for (var obj:Object in _keyListenersMap)
+				{
+					if (_keyListenersMap[obj] === sequenceCode)
+					{
+						_itemClickHandler(obj);
+					}
+				}
+			}
 		}
 		
 		public override function validate(properties:Object):void 

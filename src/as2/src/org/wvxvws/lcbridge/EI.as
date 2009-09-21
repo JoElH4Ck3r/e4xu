@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////////////
+﻿////////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (C) Oleg Sivokon email: olegsivokon@gmail.com
 //  
@@ -19,26 +19,24 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+import flash.external.ExternalInterface;
 import org.wvxvws.lcbridge.AVM1Command;
 import org.wvxvws.lcbridge.AVM1Protocol;
 
 /**
- * org.wvxvws.lcbridge.LC class. This class provides the wrapper for 
+ * org.wvxvws.lcbridge.EI class. This class provides the wrapper for 
  * AS2 content that needs to communicate to AS3 content.
  * @author wvxvw
  * @langVersion 2.0
  * @playerVersion 10.0.12.36
  */
-class org.wvxvws.lcbridge.LC extends LocalConnection
+class org.wvxvws.lcbridge.EI extends LocalConnection
 {
-	public static var LC_NAME:String = "__LC645F8553-33B1-47D1-996F-5EDFB4863061";
+	private static var _avaliable:Boolean = ExternalInterface.available;
 	
 	//Events
 	public static var ON_ERROR:String = "onError";
 	public static var ON_STATUS:String = "onStatus";
-	
-	private var _receivingConnection:String;
-	private var _sendingConnection:String;
 	
 	private var _messageCommand:String = "";
 	private var _messageContext:Object = { };
@@ -137,14 +135,6 @@ class org.wvxvws.lcbridge.LC extends LocalConnection
 	//
 	//------------------------------------------------------------------------------
 	
-	public function connect(connectionName:String):Boolean
-	{
-		var ret:Boolean;
-		if (ret = super.connect(connectionName)) broadcastMessage(ON_STATUS);
-		else broadcastMessage(ON_ERROR);
-		return ret;
-	}
-	
 	public function send(command:AVM1Command):Boolean
 	{
 		return super.send(_receivingConnection, "as3recieve", command.toAMF0Object());
@@ -197,20 +187,5 @@ class org.wvxvws.lcbridge.LC extends LocalConnection
 		this.send(new AVM1Command(AVM1Command.LOAD_CONTENT, AVM1Protocol.NULL));
 	}
 	
-	public function reconnect(newNames:String):Void
-	{
-		super.close();
-		var names:Array = newNames.split("|");
-		_receivingConnection = names[1];
-		_sendingConnection = names[0];
-		super.connect(_sendingConnection);
-	}
-	
-	public function disconnect():Void
-	{
-		this.send(new AVM1Command(AVM1Command.NOOP, AVM1Protocol.THIS, "disconnect"));
-		super.close();
-	}
-	
-	public function toString():String { return "[LC]"; }
+	public function toString():String { return "[EI]"; }
 }
