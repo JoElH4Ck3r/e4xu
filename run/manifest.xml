@@ -30,6 +30,8 @@
 	<component id="ButtonS" class="org.wvxvws.gui.ButtonS"/>
 	<component id="Scroller" class="org.wvxvws.gui.Scroller"/>
 	<component id="StatefulButton" class="org.wvxvws.gui.StatefulButton"/>
+	<component id="Bar" class="org.wvxvws.gui.Bar"/>
+	<component id="Palette" class="org.wvxvws.gui.Palette"/>
 	<!-- CONTAINERS -->
 	<component id="Nest" class="org.wvxvws.gui.containers.Nest"/>
 	<component id="Table" class="org.wvxvws.gui.containers.Table"/>

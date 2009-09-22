@@ -46,10 +46,10 @@
 				return null;
 			}
 			input.position = fileStart;
-			trace("_version", _version, "_hasVideo", _hasVideo, "_hasAudio", _hasAudio);
+			//trace("_version", _version, "_hasVideo", _hasVideo, "_hasAudio", _hasAudio);
 			_error = readBody(input);
-			trace("_videoCodec", _videoCodec);
-			trace("_error", _error);
+			//trace("_videoCodec", _videoCodec);
+			//trace("_error", _error);
 			if (!_error) return _frames;
 			return null;
 		}
@@ -234,7 +234,7 @@
 		
 		private static function readScript(input:ByteArray, from:uint, lenght:uint):void
 		{
-			trace("reading script", from, lenght);
+			//trace("reading script", from, lenght);
 		}
 		
 		public static function get videoCodec():int { return _videoCodec; }
