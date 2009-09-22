@@ -1,5 +1,27 @@
-﻿package org.wvxvws.gui 
+﻿////////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (C) Oleg Sivokon email: olegsivokon@gmail.com
+//  
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or any later version.
+//  
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//  GNU General Public License for more details.
+//  
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, write to the Free Software
+//  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+//  Or visit http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+//
+////////////////////////////////////////////////////////////////////////////////
+
+package org.wvxvws.gui 
 {
+	//{ imports
 	import flash.display.BlendMode;
 	import flash.display.GradientType;
 	import flash.display.Graphics;
@@ -12,13 +34,22 @@
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import org.wvxvws.geometry.DrawUtils;
+	//}
 	
 	/**
-	 * ...
+	 * Palette class.
 	 * @author wvxvw
+	 * @langVersion 3.0
+	 * @playerVersion 10.0.12.36
 	 */
 	public class Palette extends DIV
 	{
+		//--------------------------------------------------------------------------
+		//
+		//  Protected properties
+		//
+		//--------------------------------------------------------------------------
+		
 		protected var _black:Shape;
 		protected var _colorA:Shape;
 		protected var _colorB:Shape;
@@ -32,7 +63,19 @@
 		protected var _outerCircle:Sprite;
 		protected var _rotateTarget:Sprite;
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+		
 		public function Palette() { super(); }
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
 		
 		public function getColorAt(point:Point):uint
 		{
@@ -43,20 +86,29 @@
 		public override function validate(properties:Object):void 
 		{
 			super.validate(properties);
-			if (_colorCircle && super.contains(_colorCircle)) super.removeChild(_colorCircle);
-			if (!_colorCircle) _colorCircle = super.addChild(new Sprite()) as Sprite;
+			if (_colorCircle && super.contains(_colorCircle))
+				super.removeChild(_colorCircle);
+			if (!_colorCircle) 
+				_colorCircle = super.addChild(new Sprite()) as Sprite;
 			DrawUtils.conicalGradient(_colorCircle.graphics, 0, 0, 
 										Math.max(super.width, super.height));
 			_colorCircle.x = super.width * 0.5;
 			_colorCircle.y = super.height * 0.5;
 			drawCircleMask();
-			if (_composite && super.contains(_composite)) super.removeChild(_composite);
+			if (_composite && super.contains(_composite))
+				super.removeChild(_composite);
 			if (!_composite) _composite = super.addChild(new Sprite()) as Sprite;
 			drawTriangle();
 			_composite.x = super.width >> 1;
 			_composite.y = super.height >> 1;
 			drawInOutCircles();
 		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
 		
 		protected function drawCircleMask():void
 		{
@@ -78,22 +130,25 @@
 		{
 			var mid:int = Math.max(super.width, super.height) * 0.5;
 			var rad:int = mid - 20;
-			if (_black && _composite.contains(_black)) _composite.removeChild(_black);
-			if (_colorA && _composite.contains(_colorA)) _composite.removeChild(_colorA);
-			if (_colorB && _composite.contains(_colorB)) _composite.removeChild(_colorB);
+			if (_black && _composite.contains(_black)) 
+				_composite.removeChild(_black);
+			if (_colorA && _composite.contains(_colorA)) 
+				_composite.removeChild(_colorA);
+			if (_colorB && _composite.contains(_colorB)) 
+				_composite.removeChild(_colorB);
 			_black = _composite.addChild(new Shape()) as Shape;
 			_colorA = _composite.addChild(new Shape()) as Shape;
 			_colorB = _composite.addChild(new Shape()) as Shape;
 			var blackM:Matrix = new Matrix();
 			blackM.createGradientBox(rad * 2 * Math.cos(Math.PI / 3), 
-									rad * 2 * Math.cos(Math.PI / 3), 
-									Math.PI / 2, 0, rad * -1 * Math.cos(Math.PI / 3));
+								rad * 2 * Math.cos(Math.PI / 3), 
+								Math.PI / 2, 0, rad * -1 * Math.cos(Math.PI / 3));
 			var i:int = 3;
 			_black.graphics.beginFill(_grayComponent);
 			_colorA.graphics.beginGradientFill(GradientType.LINEAR, 
-										[0, _selectedColorA], [0, 1], [0, 0xFF], blackM);
+								[0, _selectedColorA], [0, 1], [0, 0xFF], blackM);
 			_colorB.graphics.beginGradientFill(GradientType.LINEAR, 
-										[0, _selectedColorB], [0, 1], [0, 0xFF], blackM);
+								[0, _selectedColorB], [0, 1], [0, 0xFF], blackM);
 			var angle:Number = (Math.PI * 2 / 3) * i;
 			var deg60:Number = Math.PI * 7 / 6;
 			_black.graphics.moveTo(rad * Math.cos(deg60 + angle), 
@@ -154,9 +209,17 @@
 			g.endFill();
 			_innerCircle.x = _outerCircle.x = super.width >> 1;
 			_innerCircle.y = _outerCircle.y = super.height >> 1;
-			_innerCircle.addEventListener(MouseEvent.MOUSE_DOWN, startRotation, false, 0, true);
-			_outerCircle.addEventListener(MouseEvent.MOUSE_DOWN, startRotation, false, 0, true);
+			_innerCircle.addEventListener(MouseEvent.MOUSE_DOWN, 
+										startRotation, false, 0, true);
+			_outerCircle.addEventListener(MouseEvent.MOUSE_DOWN, 
+										startRotation, false, 0, true);
 		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Event handlers
+		//
+		//--------------------------------------------------------------------------
 		
 		private function startRotation(event:MouseEvent):void 
 		{
