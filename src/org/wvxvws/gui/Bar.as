@@ -182,12 +182,20 @@ package org.wvxvws.gui
 			}
 			else
 			{
-				m = new Matrix();
-				_body.transform.matrix = m;
-				m.scale(super.height / _body.width, 1);
-				m.rotate(Math.PI / 2);
-				m.translate(_body.width + ((super.width - _body.width) >> 1), 0);
-				_body.transform.matrix = m;
+				if (_body.scale9Grid)
+				{
+					_body.height = super.height;
+					_body.x = (super.width - _body.width) >> 1;
+				}
+				else
+				{
+					m = new Matrix();
+					_body.transform.matrix = m;
+					m.scale(super.height / _body.width, 1);
+					m.rotate(Math.PI / 2);
+					m.translate(_body.width + ((super.width - _body.width) >> 1), 0);
+					_body.transform.matrix = m;
+				}
 				_handle.x = (super.width - _handle.width) >> 1;
 				_handle.y = (super.height - _handle.height) * _position;
 			}
