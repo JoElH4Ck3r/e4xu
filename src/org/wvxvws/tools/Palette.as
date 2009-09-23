@@ -34,8 +34,8 @@ package org.wvxvws.tools
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	import org.wvxvws.geometry.DrawUtils;
 	import org.wvxvws.gui.DIV;
+	import org.wvxvws.gui.skins.Drawings;
 	//}
 	
 	/**
@@ -118,7 +118,7 @@ package org.wvxvws.tools
 			{
 				if (_colorCircle) super.removeChild(_colorCircle);
 				_colorCircle = super.addChild(new Sprite()) as Sprite;
-				DrawUtils.conicalGradient(_colorCircle.graphics, 0, 0, 
+				Drawings.conicalGradient(_colorCircle.graphics, 0, 0, 
 										Math.max(super.width, super.height));
 				_colorCircle.x = super.width * 0.5;
 				_colorCircle.y = super.height * 0.5;
