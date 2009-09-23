@@ -22,6 +22,7 @@
 package org.wvxvws.gui 
 {
 	//{ imports
+	import flash.display.BitmapData;
 	import flash.display.BlendMode;
 	import flash.display.GradientType;
 	import flash.display.Graphics;
@@ -62,6 +63,7 @@ package org.wvxvws.gui
 		protected var _innerCircle:Sprite;
 		protected var _outerCircle:Sprite;
 		protected var _rotateTarget:Sprite;
+		protected var _colorPixel:BitmapData
 		
 		//--------------------------------------------------------------------------
 		//
@@ -77,31 +79,66 @@ package org.wvxvws.gui
 		//
 		//--------------------------------------------------------------------------
 		
-		public function getColorAt(point:Point):uint
+		public function setColorA(color:uint):void
 		{
-			
-			return 0;
+			_selectedColorA = color;
+			validate(_invalidProperties);
+		}
+		
+		public function setColorB(color:uint):void
+		{
+			_selectedColorB = color;
+			validate(_invalidProperties);
+		}
+		
+		public function setGray(color:Number):void
+		{
+			color = Math.min(Math.max(color, 0), 1);
+			var comp:uint = color * 0xFF;
+			_grayComponent = (comp << 16) | (comp << 8) | comp;
+			validate(_invalidProperties);
+		}
+		
+		public function colorAt(point:Point):uint
+		{
+			if (_colorPixel) _colorPixel.dispose();
+			_colorPixel = new BitmapData(1, 1, false);
+			var m:Matrix = new Matrix();
+			m.translate(-point.x, -point.y);
+			_colorPixel.draw(this , m);
+			return _colorPixel.getPixel(0, 0);
 		}
 		
 		public override function validate(properties:Object):void 
 		{
+			var dimensionChanged:Boolean = ("_transformMatrix" in properties);
 			super.validate(properties);
-			if (_colorCircle && super.contains(_colorCircle))
-				super.removeChild(_colorCircle);
-			if (!_colorCircle) 
+			if (!_colorCircle || dimensionChanged)
+			{
+				if (_colorCircle) super.removeChild(_colorCircle);
 				_colorCircle = super.addChild(new Sprite()) as Sprite;
-			DrawUtils.conicalGradient(_colorCircle.graphics, 0, 0, 
+				DrawUtils.conicalGradient(_colorCircle.graphics, 0, 0, 
 										Math.max(super.width, super.height));
-			_colorCircle.x = super.width * 0.5;
-			_colorCircle.y = super.height * 0.5;
-			drawCircleMask();
-			if (_composite && super.contains(_composite))
-				super.removeChild(_composite);
-			if (!_composite) _composite = super.addChild(new Sprite()) as Sprite;
+				_colorCircle.x = super.width * 0.5;
+				_colorCircle.y = super.height * 0.5;
+			}
+			if (!_mask || dimensionChanged) drawCircleMask();
+			else if (_colorCircle.mask !== _mask)
+			{
+				_colorCircle.cacheAsBitmap = true;
+				_colorCircle.mask = _mask;
+			}
+			if (!_composite)
+				_composite = super.addChild(new Sprite()) as Sprite;
 			drawTriangle();
 			_composite.x = super.width >> 1;
 			_composite.y = super.height >> 1;
-			drawInOutCircles();
+			if (!_innerCircle || !_outerCircle) drawInOutCircles();
+			else
+			{
+				super.setChildIndex(_innerCircle, super.numChildren - 1);
+				super.setChildIndex(_outerCircle, super.numChildren - 1);
+			}
 		}
 		
 		//--------------------------------------------------------------------------
@@ -130,20 +167,17 @@ package org.wvxvws.gui
 		{
 			var mid:int = Math.max(super.width, super.height) * 0.5;
 			var rad:int = mid - 20;
-			if (_black && _composite.contains(_black)) 
-				_composite.removeChild(_black);
-			if (_colorA && _composite.contains(_colorA)) 
-				_composite.removeChild(_colorA);
-			if (_colorB && _composite.contains(_colorB)) 
-				_composite.removeChild(_colorB);
-			_black = _composite.addChild(new Shape()) as Shape;
-			_colorA = _composite.addChild(new Shape()) as Shape;
-			_colorB = _composite.addChild(new Shape()) as Shape;
+			if (!_black) _black = _composite.addChild(new Shape()) as Shape;
+			if (!_colorA) _colorA = _composite.addChild(new Shape()) as Shape;
+			if (!_colorB) _colorB = _composite.addChild(new Shape()) as Shape;
 			var blackM:Matrix = new Matrix();
 			blackM.createGradientBox(rad * 2 * Math.cos(Math.PI / 3), 
 								rad * 2 * Math.cos(Math.PI / 3), 
 								Math.PI / 2, 0, rad * -1 * Math.cos(Math.PI / 3));
 			var i:int = 3;
+			_black.graphics.clear();
+			_colorA.graphics.clear();
+			_colorB.graphics.clear();
 			_black.graphics.beginFill(_grayComponent);
 			_colorA.graphics.beginGradientFill(GradientType.LINEAR, 
 								[0, _selectedColorA], [0, 1], [0, 0xFF], blackM);
@@ -221,6 +255,33 @@ package org.wvxvws.gui
 		//
 		//--------------------------------------------------------------------------
 		
+		private function rotationToColor(value:Number):uint
+		{
+			var red:uint;
+			var green:uint;
+			var blue:uint;
+			var k:Number = 2.1333333333333333;
+			if (value > 240) red = 0;
+			else 
+			{
+				if (value < 120) red = (k * value) & 0xFF;
+				else red = ((240 - value) * k) & 0xFF;
+			}
+			if (value < 120) green = 0;
+			else
+			{
+				if (value < 240) green = ((value - 120) * k) & 0xFF;
+				else green = ((360 - value) * k) & 0xFF;
+			}
+			if (value > 120 && value < 240) blue = 0;
+			else
+			{
+				if (value > 240) blue = ((value - 240) * k) & 0xFF;
+				else blue = ((120 - value) * k) & 0xFF;
+			}
+			return (red << 16) | (green << 8) | blue;
+		}
+		
 		private function startRotation(event:MouseEvent):void 
 		{
 			_rotateTarget = event.target as Sprite;
@@ -243,6 +304,14 @@ package org.wvxvws.gui
 			t = t.subtract(p);
 			var angle:Number = Math.atan2(t.x, t.y);
 			_rotateTarget.rotation = 180 + angle * -180 / Math.PI;
+			if (_rotateTarget === _innerCircle)
+			{
+				setColorA(rotationToColor((440 + angle * -180 / Math.PI) % 360));
+			}
+			else
+			{
+				setColorB(rotationToColor((440 + angle * -180 / Math.PI) % 360));
+			}
 		}
 	}
 	
