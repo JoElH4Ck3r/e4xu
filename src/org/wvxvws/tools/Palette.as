@@ -19,7 +19,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package org.wvxvws.gui 
+package org.wvxvws.tools 
 {
 	//{ imports
 	import flash.display.BitmapData;
@@ -35,6 +35,7 @@ package org.wvxvws.gui
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import org.wvxvws.geometry.DrawUtils;
+	import org.wvxvws.gui.DIV;
 	//}
 	
 	/**
