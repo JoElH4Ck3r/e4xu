@@ -33,6 +33,12 @@
 		protected var _matrixTarget:Matrix;
 		protected var _receiver:Sprite;
 		protected var _receiverHandles:Vector.<Sprite>;
+		protected var _savedMatrix:Matrix;
+		protected var _activeMatrix:Matrix;
+		protected var _savedBounds:Rectangle;
+		protected var _startX:Number;
+		protected var _startY:Number;
+		protected var _change:Point;
 		
 		public function Transformer(target:DisplayObject = null) 
 		{
@@ -40,6 +46,7 @@
 			super.addEventListener(Event.ADDED_TO_STAGE, adtsHandler);
 			super.addEventListener(Event.REMOVED_FROM_STAGE, removedHandler);
 			_target = target;
+			if (_target) _savedBounds = _target.getBounds(_target);
 			if (target) draw();
 		}
 		
@@ -51,6 +58,8 @@
 					(_document as DisplayObjectContainer).removeChild(this);
 				return;
 			}
+			var i:int;
+			var j:int = 9;
 			if (_document is DisplayObjectContainer)
 				(_document as DisplayObjectContainer).addChild(this);
 			if (!_edges) _edges = super.addChild(new Shape()) as Shape;
@@ -75,6 +84,22 @@
 				new <Sprite>[drawHandle(0, this), drawHandle(1, this),drawHandle(2, this),
 							drawHandle(3, this), drawHandle(4, this), drawHandle(5, this),
 							drawHandle(6, this), drawHandle(7, this), drawHandle(8, this)];
+			else
+			{
+				while (i < j)
+				{
+					positionHandles(i);
+					i++;
+				}
+			}
+		}
+		
+		protected function positionHandles(index:int):void
+		{
+			var p:Point = this.globalToLocal(
+						_receiverHandles[index].localToGlobal(new Point()));
+			_handles[index].x = p.x;
+			_handles[index].y = p.y;
 		}
 		
 		protected function drawHandle(index:int, where:Sprite):Sprite
@@ -85,9 +110,6 @@
 			g.drawRect( -5, -5, 10, 10);
 			g.endFill();
 			s.addEventListener(MouseEvent.MOUSE_DOWN, handle_downHandler);
-			var i:int;
-			var j:int = 9;
-			var bounds:Rectangle;
 			var p:Point;
 			if (where === this)
 			{
@@ -97,38 +119,37 @@
 			}
 			else
 			{
-				bounds = _target.getBounds(_target)
 				switch (index)
 				{
 					case 0:
 						break;
 					case 1:
-						s.x = bounds.width * 0.5;
+						s.x = _savedBounds.width * 0.5;
 						break;
 					case 2:
-						s.x = bounds.width;
+						s.x = _savedBounds.width;
 						break;
 					case 3:
-						s.y = bounds.height * 0.5;
+						s.y = _savedBounds.height * 0.5;
 						break;
 					case 4:
-						s.x = bounds.width * 0.5;
-						s.y = bounds.height * 0.5;
+						s.x = _savedBounds.width * 0.5;
+						s.y = _savedBounds.height * 0.5;
 						break;
 					case 5:
-						s.x = bounds.width;
-						s.y = bounds.height * 0.5;
+						s.x = _savedBounds.width;
+						s.y = _savedBounds.height * 0.5;
 						break;
 					case 6:
-						s.y = bounds.height;
+						s.y = _savedBounds.height;
 						break;
 					case 7:
-						s.x = bounds.width * 0.5;
-						s.y = bounds.height;
+						s.x = _savedBounds.width * 0.5;
+						s.y = _savedBounds.height;
 						break;
 					case 8:
-						s.x = bounds.width;
-						s.y = bounds.height;
+						s.x = _savedBounds.width;
+						s.y = _savedBounds.height;
 						break;
 					default:
 						throw new RangeError("\"index\" is out of range.");
@@ -143,12 +164,51 @@
 		private function handle_downHandler(event:MouseEvent):void 
 		{
 			_activeHandle = event.target as Sprite;
+			_startX = _activeHandle.x;
+			_startY = _activeHandle.y;
 			super.addEventListener(Event.ENTER_FRAME, enterFrameHandler);
+			_savedMatrix = _target.transform.matrix.clone();
 		}
 		
 		private function enterFrameHandler(event:Event):void 
 		{
-			
+			_change = new Point(_startX, _startY).subtract(
+						new Point(super.mouseX, super.mouseY));
+			trace("_change", _change);
+			switch (_activeHandle)
+			{
+				case _handles[0]: // a, d
+					
+					break;
+				case _handles[1]:
+					
+					break;
+				case _handles[2]: // a, d
+					
+					break;
+				case _handles[3]:
+					
+					break;
+				case _handles[4]:
+					
+					break;
+				case _handles[5]:
+					
+					break;
+				case _handles[6]: // a, d
+					
+					break;
+				case _handles[7]:
+					
+					break;
+				case _handles[8]: // a, d
+					_activeMatrix = _savedMatrix.clone();
+					_activeMatrix.a = (_savedBounds.width - _change.x) / _savedBounds.width;
+					_activeMatrix.d = (_savedBounds.height - _change.y) / _savedBounds.height;
+					break;
+			}
+			_target.transform.matrix = _activeMatrix;
+			draw();
 		}
 		
 		private function removedHandler(event:Event):void 
@@ -197,6 +257,7 @@
 		{
 			if (_target === value) return;
 			_target = value;
+			_savedBounds = _target.getBounds(_target);
 			draw();
 			dispatchEvent(new Event("targetChange"));
 		}
