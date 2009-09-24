@@ -107,6 +107,8 @@
 			var fieldIndex:int;
 			var textBounds:Rectangle;
 			var numStart:int;
+			var localIterator:uint;
+			var prevField:TextField;
 			if (ratioChanged)
 			{
 				if (_bitmapData) _bitmapData.dispose();
@@ -119,6 +121,8 @@
 										_step * _ratio * _zoom, true, localBackgroundColor);
 					localWidth = _step * _ratio * _zoom;
 					localStep = _step * _zoom;
+					if (localStep < 2) localStep = 2;
+					localIterator = localStep;
 					divisionBig = new Rectangle(0, 0, _bigDivision, 1);
 					divisionSmall = new Rectangle(0, 0, _smallDivision, 1);
 					_bitmapData.fillRect(divisionBig, 0xFF000000);
@@ -126,7 +130,7 @@
 					{
 						divisionSmall.y = localStep;
 						_bitmapData.fillRect(divisionSmall, 0xFF000000);
-						localStep += _step * _zoom;
+						localStep += localIterator;
 					}
 				}
 				else
@@ -135,6 +139,8 @@
 										super.height, true, localBackgroundColor);
 					localWidth = _step * _ratio * _zoom;
 					localStep = _step * _zoom;
+					if (localStep < 2) localStep = 2;
+					localIterator = localStep;
 					divisionBig = new Rectangle(0, 0, 1, _bigDivision);
 					divisionSmall = new Rectangle(0, 0, 1, _smallDivision);
 					_bitmapData.fillRect(divisionBig, 0xFF000000);
@@ -142,7 +148,7 @@
 					{
 						divisionSmall.x = localStep;
 						_bitmapData.fillRect(divisionSmall, 0xFF000000);
-						localStep += _step * _zoom;
+						localStep += localIterator;
 					}
 				}
 				
@@ -206,6 +212,24 @@
 					}
 					recicledFields[fieldIndex].text = 
 							(numStart + fieldIndex * _ratio * _step).toString();
+					if (prevField && prevField.hitTestObject(recicledFields[fieldIndex]))
+					{
+						if (_textHolder.contains(recicledFields[fieldIndex]))
+						{
+							_textHolder.removeChild(recicledFields[fieldIndex]);
+						}
+					}
+					else
+					{
+						if (!_textHolder.contains(recicledFields[fieldIndex]))
+						{
+							_textHolder.addChild(recicledFields[fieldIndex]);
+						}
+					}
+					if (_textHolder.contains(recicledFields[fieldIndex]))
+					{
+						prevField = recicledFields[fieldIndex];
+					}
 					fieldIndex++;
 				}
 				_textHolder.scrollRect = textBounds;
