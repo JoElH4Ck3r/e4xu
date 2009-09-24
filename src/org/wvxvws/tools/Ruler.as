@@ -23,6 +23,11 @@
 		protected var _bitmapData:BitmapData;
 		protected var _textFormat:TextFormat = new TextFormat("_sans", 10);
 		protected var _textHolder:Sprite;
+		protected var _direction:Boolean;
+		protected var _numbersDown:Boolean;
+		protected var _bigDivision:uint = 15;
+		protected var _smallDivision:uint = 10;
+		protected var _zoom:Number = 1;
 		
 		public function Ruler() { super(); }
 		
@@ -58,12 +63,36 @@
 			dispatchEvent(new Event("positionChange"));
 		}
 		
+		public function get direction():Boolean { return _direction; }
+		
+		public function set direction(value:Boolean):void 
+		{
+			if (_direction === value) return;
+			invalidate("_direction", _direction, false);
+			_direction = value;
+			dispatchEvent(new Event("directionChange"));
+		}
+		
+		public function get zoom():Number { return _zoom; }
+		
+		public function set zoom(value:Number):void 
+		{
+			if (_zoom === value) return;
+			invalidate("_zoom", _zoom, false);
+			_zoom = value;
+			dispatchEvent(new Event("zoomChange"));
+		}
+		
 		public override function validate(properties:Object):void 
 		{
-			var ratioChanged:Boolean = ("_ratio" in properties) || 
-							("_ratio" in properties) || !_bitmapData;
+			var ratioChanged:Boolean = 
+							("_ratio" in properties) || ("_zoom" in properties) ||
+							("_step" in properties) || ("_ratio" in properties) || 
+							("_backgroundColor" in properties) || 
+							("_backgroundAlpha" in properties) || 
+							("_direction" in properties) || !_bitmapData;
 			var needRedraw:Boolean = ratioChanged || ("_position" in properties) ||
-							("_transformMatrix" in properties)
+							("_transformMatrix" in properties);
 			super.validate(properties);
 			var g:Graphics = super.graphics;
 			var m:Matrix = new Matrix();
@@ -81,26 +110,48 @@
 			if (ratioChanged)
 			{
 				if (_bitmapData) _bitmapData.dispose();
-				localBackgroundColor = ((Math.min(Math.max(super._backgroundAlpha, 
-									0), 1) * 0xFF) << 24) | super._backgroundColor;
-				_bitmapData = new BitmapData(_step * _ratio, 
-										super.height, true, localBackgroundColor);
-				localWidth = _step * _ratio;
-				localStep = _step;
-				divisionBig = new Rectangle(0, 0, 1, super.height - 15);
-				divisionSmall = new Rectangle(0, 0, 1, super.height - 20);
-				_bitmapData.fillRect(divisionBig, 0xFF000000);
-				while (localStep < localWidth)
+				localBackgroundColor = 
+					(((super._backgroundAlpha * 0xFF) & 0xFF) << 24) | 
+					super._backgroundColor;
+				if (_direction)
 				{
-					divisionSmall.x = localStep;
-					_bitmapData.fillRect(divisionSmall, 0xFF000000);
-					localStep += _step;
+					_bitmapData = new BitmapData(super.width, 
+										_step * _ratio * _zoom, true, localBackgroundColor);
+					localWidth = _step * _ratio * _zoom;
+					localStep = _step * _zoom;
+					divisionBig = new Rectangle(0, 0, _bigDivision, 1);
+					divisionSmall = new Rectangle(0, 0, _smallDivision, 1);
+					_bitmapData.fillRect(divisionBig, 0xFF000000);
+					while (localStep < localWidth)
+					{
+						divisionSmall.y = localStep;
+						_bitmapData.fillRect(divisionSmall, 0xFF000000);
+						localStep += _step * _zoom;
+					}
 				}
+				else
+				{
+					_bitmapData = new BitmapData(_step * _ratio * _zoom, 
+										super.height, true, localBackgroundColor);
+					localWidth = _step * _ratio * _zoom;
+					localStep = _step * _zoom;
+					divisionBig = new Rectangle(0, 0, 1, _bigDivision);
+					divisionSmall = new Rectangle(0, 0, 1, _smallDivision);
+					_bitmapData.fillRect(divisionBig, 0xFF000000);
+					while (localStep < localWidth)
+					{
+						divisionSmall.x = localStep;
+						_bitmapData.fillRect(divisionSmall, 0xFF000000);
+						localStep += _step * _zoom;
+					}
+				}
+				
 			}
 			if (needRedraw)
 			{
 				delta = _position % (_step * _ratio);
-				m.translate(delta * -1, 0);
+				if (_direction) m.translate(0, delta * -1);
+				else m.translate(delta * -1, 0);
 				g.clear();
 				g.beginBitmapFill(_bitmapData, m);
 				g.drawRect(0, 0, super.width, super.height);
@@ -112,23 +163,49 @@
 					recicledFields.push(_textHolder.getChildAt(fieldIndex) as TextField);
 					fieldIndex++;
 				}
-				while (recicledFields.length > super.width / (_step * _ratio))
+				if (_direction)
 				{
-					recicledFields.pop();
-					_textHolder.removeChildAt(_textHolder.numChildren - 1);
+					while (recicledFields.length > super.height / (_step * _ratio * _zoom))
+					{
+						recicledFields.pop();
+						_textHolder.removeChildAt(_textHolder.numChildren - 1);
+					}
+					while (recicledFields.length <= super.height / (_step * _ratio * _zoom))
+					{
+						recicledFields.push(createTextField(_textHolder));
+					}
 				}
-				while (recicledFields.length <= super.width / (_step * _ratio))
+				else
 				{
-					recicledFields.push(createTextField(_textHolder));
+					while (recicledFields.length > super.width / (_step * _ratio * _zoom))
+					{
+						recicledFields.pop();
+						_textHolder.removeChildAt(_textHolder.numChildren - 1);
+					}
+					while (recicledFields.length <= super.width / (_step * _ratio * _zoom))
+					{
+						recicledFields.push(createTextField(_textHolder));
+					}
 				}
 				fieldIndex = 0;
 				textBounds = new Rectangle(0, 0, super.width, super.height);
 				numStart = (_position - delta) / _step;
 				while (fieldIndex < recicledFields.length)
 				{
-					recicledFields[fieldIndex].x = fieldIndex * _step * _ratio - delta;
-					recicledFields[fieldIndex].y = super.height - 15;
-					recicledFields[fieldIndex].text = (numStart + fieldIndex * _ratio).toString();
+					if (_direction)
+					{
+						recicledFields[fieldIndex].y = 
+									fieldIndex * _step * _ratio * _zoom - delta;
+						recicledFields[fieldIndex].x = _bigDivision;
+					}
+					else
+					{
+						recicledFields[fieldIndex].x = 
+									fieldIndex * _step * _ratio * _zoom - delta;
+						recicledFields[fieldIndex].y = _bigDivision;
+					}
+					recicledFields[fieldIndex].text = 
+							(numStart + fieldIndex * _ratio * _step).toString();
 					fieldIndex++;
 				}
 				_textHolder.scrollRect = textBounds;
