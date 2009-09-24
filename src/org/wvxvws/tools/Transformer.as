@@ -29,7 +29,7 @@
 				StageAlign.BOTTOM_LEFT, StageAlign.BOTTOM, 	StageAlign.BOTTOM_RIGHT];
 		protected var _direction:String;
 		protected var _target:DisplayObject;
-		protected var _edges:Shape;
+		//protected var _edges:Shape;
 		protected var _matrixTarget:Matrix;
 		protected var _receiver:Sprite;
 		protected var _receiverHandles:Vector.<Sprite>;
@@ -39,6 +39,8 @@
 		protected var _startX:Number;
 		protected var _startY:Number;
 		protected var _change:Point;
+		protected var _angle:Number;
+		protected var _registrationPoint:Point;
 		
 		public function Transformer(target:DisplayObject = null) 
 		{
@@ -62,7 +64,7 @@
 			var j:int = 9;
 			if (_document is DisplayObjectContainer)
 				(_document as DisplayObjectContainer).addChild(this);
-			if (!_edges) _edges = super.addChild(new Shape()) as Shape;
+			//if (!_edges) _edges = super.addChild(new Shape()) as Shape;
 			if (!_receiver)
 				_receiver = new Sprite();
 			if (!_receiverHandles)
@@ -75,10 +77,10 @@
 							drawHandle(8, _receiver)];
 			}
 			_receiver.transform.matrix = _target.transform.matrix.clone();
-			_edges.graphics.clear();
-			var bounds:Rectangle = _target.getBounds(_target);
-			_edges.graphics.lineStyle(1, 0, 1, true);
-			_edges.graphics.drawRect(0, 0, bounds.width, bounds.height);
+			//_edges.graphics.clear();
+			//var bounds:Rectangle = _target.getBounds(_target);
+			//_edges.graphics.lineStyle(1, 0, 1, true);
+			//_edges.graphics.drawRect(0, 0, bounds.width, bounds.height);
 			
 			if (!_handles) _handles = 
 				new <Sprite>[drawHandle(0, this), drawHandle(1, this),drawHandle(2, this),
@@ -156,7 +158,6 @@
 						return null;
 				}
 			}
-			
 			where.addChild(s);
 			return s;
 		}
@@ -168,43 +169,68 @@
 			_startY = _activeHandle.y;
 			super.addEventListener(Event.ENTER_FRAME, enterFrameHandler);
 			_savedMatrix = _target.transform.matrix.clone();
+			_registrationPoint = new Point(_activeHandle.x, _activeHandle.y);
 		}
 		
 		private function enterFrameHandler(event:Event):void 
 		{
 			_change = new Point(_startX, _startY).subtract(
 						new Point(super.mouseX, super.mouseY));
-			trace("_change", _change);
+			_angle = Math.atan2(_change.x, _change.y);
 			switch (_activeHandle)
 			{
 				case _handles[0]: // a, d
-					
+					_activeMatrix = _savedMatrix.clone();
+					_activeMatrix.tx -= _change.x;
+					_activeMatrix.ty -= _change.y;
+					_activeMatrix.a += _change.x / _savedBounds.width;
+					_activeMatrix.d += _change.y / _savedBounds.height;
 					break;
 				case _handles[1]:
-					
+					_activeMatrix = _savedMatrix.clone();
+					_activeMatrix.ty -= _change.y;
+					_activeMatrix.d += _change.y / _savedBounds.height;
 					break;
 				case _handles[2]: // a, d
-					
+					_activeMatrix = _savedMatrix.clone();
+					_activeMatrix.ty -= _change.y;
+					_activeMatrix.d += _change.y / _savedBounds.height;
+					_activeMatrix.a -= _change.x / _savedBounds.width;
 					break;
 				case _handles[3]:
-					
+					_activeMatrix = _savedMatrix.clone();
+					_activeMatrix.tx -= _change.x;
+					_activeMatrix.a += _change.x / _savedBounds.width;
 					break;
-				case _handles[4]:
-					
+				case _handles[4]: // rotate
+					_activeMatrix = _savedMatrix.clone();
+					var point:Point = _registrationPoint.clone();
+					trace("point", point);
+					//point = _activeMatrix.transformPoint(point);
+					_activeMatrix.tx -= point.x;
+					_activeMatrix.ty -= point.y;
+					_activeMatrix.rotate(_angle * -1);
+					_activeMatrix.tx += point.x;
+					_activeMatrix.ty += point.y;
 					break;
 				case _handles[5]:
-					
+					_activeMatrix = _savedMatrix.clone();
+					_activeMatrix.a -= _change.x / _savedBounds.width;
 					break;
 				case _handles[6]: // a, d
-					
+					_activeMatrix = _savedMatrix.clone();
+					_activeMatrix.d -= _change.y / _savedBounds.height;
+					_activeMatrix.tx -= _change.x;
+					_activeMatrix.a += _change.x / _savedBounds.width;
 					break;
 				case _handles[7]:
-					
+					_activeMatrix = _savedMatrix.clone();
+					_activeMatrix.d -= _change.y / _savedBounds.height;
 					break;
 				case _handles[8]: // a, d
 					_activeMatrix = _savedMatrix.clone();
-					_activeMatrix.a = (_savedBounds.width - _change.x) / _savedBounds.width;
-					_activeMatrix.d = (_savedBounds.height - _change.y) / _savedBounds.height;
+					_activeMatrix.a -= _change.x / _savedBounds.width;
+					_activeMatrix.d -= _change.y / _savedBounds.height;
 					break;
 			}
 			_target.transform.matrix = _activeMatrix;
