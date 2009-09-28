@@ -20,25 +20,25 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		override public function get scaleX():Number { return _scaleX; }
+		public override function get scaleX():Number { return _scaleX; }
 		
-		override public function set scaleX(value:Number):void 
+		public override function set scaleX(value:Number):void 
 		{
 			_scaleX = value;
 			_width = _nativeWidth * _scaleX;
 		}
 		
-		override public function get scaleY():Number { return _scaleY; }
+		public override function get scaleY():Number { return _scaleY; }
 		
-		override public function set scaleY(value:Number):void 
+		public override function set scaleY(value:Number):void 
 		{
 			_scaleY = value;
 			_height = _nativeHeight * _scaleY;
 		}
 		
-		override public function get width():Number { return _width; }
+		public override function get width():Number { return _width; }
 		
-		override public function set width(value:Number):void 
+		public override function set width(value:Number):void 
 		{
 			if (_width == value >> 0) return;
 			_width = value >> 0;
@@ -46,9 +46,9 @@
 			draw();
 		}
 		
-		override public function get height():Number { return _height; }
+		public override function get height():Number { return _height; }
 		
-		override public function set height(value:Number):void 
+		public override function set height(value:Number):void 
 		{
 			if (_height == value >> 0) return;
 			_height = value >> 0;
@@ -56,9 +56,9 @@
 			draw();
 		}
 		
-		override public function get rotation():Number { return _rotation; }
+		public override function get rotation():Number { return _rotation; }
 		
-		override public function set rotation(value:Number):void 
+		public override function set rotation(value:Number):void 
 		{
 			_rotation = ((value / 90) >> 0) * 90;
 			_direction = !Boolean(_rotation % 180);
