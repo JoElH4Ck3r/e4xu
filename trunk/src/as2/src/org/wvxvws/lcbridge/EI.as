@@ -48,6 +48,9 @@ class org.wvxvws.lcbridge.EI extends LocalConnection
 	private var _loaderContent:MovieClip;
 	private var _prop:String = "";
 	
+	private var _ourID:String;
+	private var _ourCallBack:String;
+	
 	//------------------------------------------------------------------------------
 	//
 	//  Constructor
@@ -58,10 +61,8 @@ class org.wvxvws.lcbridge.EI extends LocalConnection
 	{
 		super();
 		_global.AsBroadcaster.initialize(this);
-		_receivingConnection = LC_NAME;
 		_clipLoader = new MovieClipLoader();
 		_clipLoader.addListener(this);
-		this.connect(LC_NAME);
 	}
 	
 	//------------------------------------------------------------------------------
@@ -70,7 +71,24 @@ class org.wvxvws.lcbridge.EI extends LocalConnection
 	//
 	//------------------------------------------------------------------------------
 	
-	private function parseMethod(command:AVM1Command):Void
+	private function createJSCallback():Void
+	{
+		if (!_avaliable) return;
+		var script:String = 
+		"function(){var r = {}; var d = document.getElementsByTagName(\"div\");" +
+		"for(var i=0; i<d.length; i++){" +
+		"if(d[i].id.indexOf(\"ieBridge\")==0 && d[i].available){" +
+		"r.id=d[i].id;" + 
+		"for (var p in d[i]){" +
+		"if(p.indexOf(\"as2receive\")==0){r.cb=p; return r;}}}}}";
+		var ourCredentials:Object = ExternalInterface.call(script);
+		_ourID = ourCredentials.id;
+		_ourCallBack = ourCredentials.cb;
+		trace([_ourID, _ourCallBack]);
+		ExternalInterface.addCallback(_ourCallBack, this, as2receive);
+	}
+	
+	private function parseMethod(command:AVM1Command):Object
 	{
 		var scope:Object = getScope(command.scope);
 		var method:Function;
@@ -87,7 +105,7 @@ class org.wvxvws.lcbridge.EI extends LocalConnection
 									command.propertyValue, command.methodArguments, 
 									command.contentURL);
 		reply.operationResult = command.operationResult;
-		this.send(reply);
+		return reply;
 		broadcastMessage(ON_STATUS);
 	}
 	
@@ -131,43 +149,38 @@ class org.wvxvws.lcbridge.EI extends LocalConnection
 	
 	//------------------------------------------------------------------------------
 	//
-	//  Overloaded methods
-	//
-	//------------------------------------------------------------------------------
-	
-	public function send(command:AVM1Command):Boolean
-	{
-		return super.send(_receivingConnection, "as3recieve", command.toAMF0Object());
-	}
-	
-	//------------------------------------------------------------------------------
-	//
 	//  Public methods
 	//
 	//------------------------------------------------------------------------------
 	
-	public function as2recieve(message:Object):Void
+	public function as2receive(message:Object):Object
 	{
 		var command:AVM1Command = AVM1Command.parseFromAMF0(message);
 		
 		switch (command.type)
 		{
 			case AVM1Command.CALL_METHOD:
-				parseMethod(command);
-				break;
+				return parseMethod(command);
 			case AVM1Command.SET_PROPERTY:
 				parseProperty(command);
-				break;
+				return undefined;
 			case AVM1Command.LOAD_CONTENT:
 				loadContent(command.contentURL);
+				return undefined;
 			case AVM1Command.ERROR:
 				broadcastMessage(ON_ERROR);
-				break;
+				return undefined;
 			case AVM1Command.NOOP:
 			default:
 				broadcastMessage(ON_STATUS);
-				break;
+				return undefined;
 		}
+		return undefined;
+	}
+	
+	public function as2send(message:AVM1Command):Void
+	{
+		
 	}
 	
 	public function broadcastMessage(message:String):Void { };
@@ -179,12 +192,12 @@ class org.wvxvws.lcbridge.EI extends LocalConnection
 	public function onLoadError(clip:MovieClip, errorText:String, 
 												errorNumber:Number):Void
 	{
-		this.send(new AVM1Command(AVM1Command.ERROR, AVM1Protocol.NULL));
+		as2send(new AVM1Command(AVM1Command.ERROR, AVM1Protocol.NULL));
 	}
 	
 	public function onLoadInit(clip:MovieClip):Void
 	{
-		this.send(new AVM1Command(AVM1Command.LOAD_CONTENT, AVM1Protocol.NULL));
+		as2send(new AVM1Command(AVM1Command.LOAD_CONTENT, AVM1Protocol.NULL));
 	}
 	
 	public function toString():String { return "[EI]"; }

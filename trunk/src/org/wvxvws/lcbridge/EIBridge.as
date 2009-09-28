@@ -56,7 +56,8 @@ package org.wvxvws.lcbridge
 		//--------------------------------------------------------------------------
 		
 		private static var _available:Boolean = ExternalInterface.available;
-		private var _id:String = (new Date().time * Math.random()).toString(36);
+		private var _id:String = "ieBridge" + 
+								(new Date().time * Math.random()).toString(36);
 		private var _ourURL:String = new Loader().contentLoaderInfo.loaderURL;
 		private var _ourID:String;
 		

@@ -162,8 +162,7 @@
       <source-path>
          <path-element>C:\www\projects\xmlhelpers\src</path-element>
          <path-element>C:\www\amfphp\services</path-element>
-         <path-element>c:\as3-global</path-element>
-         <path-element>C:\Program Files\FlashDevelopRTM\Library\AS3\classes</path-element>
+         <path-element>C:\Program Files\FlashDevelop\Library\AS3\classes</path-element>
       </source-path>
       <!-- compiler.strict: runs the AS3 compiler in strict error checking mode.-->
       <strict>true</strict>
@@ -344,7 +343,7 @@
       <title>Adobe Flex 4 Application</title>
    </metadata>
    <!-- output: the filename of the SWF movie to create-->
-   <output>obj\xmlhelpers633892140591768750</output>
+   <output>obj\xmlhelpers633897442628905000</output>
    <!-- raw-metadata: XML text to store in the SWF metadata (overrides metadata.* configuration)-->
    <!-- raw-metadata usage:
    <raw-metadata>text</raw-metadata>

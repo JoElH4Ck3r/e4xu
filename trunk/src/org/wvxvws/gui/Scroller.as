@@ -154,6 +154,7 @@ package org.wvxvws.gui
 			if (_handle === value) return;
 			if (_handle && super.contains(_handle)) _garbage.push(_handle);
 			_handle = value;
+			trace("handle", _handle);
 			if (_handle is ISkin) (_handle as ISkin).state = MouseEvent.MOUSE_UP;
 			invalidate("_handle", _handle, false);
 			dispatchEvent(new Event("handleChange"));
@@ -304,7 +305,7 @@ package org.wvxvws.gui
 		
 		override public function validate(properties:Object):void 
 		{
-			// TODO: Later...
+			trace("scroller validated", _handle);
 			super.validate(properties);
 			var m:Matrix;
 			while (_garbage.length)
@@ -323,6 +324,7 @@ package org.wvxvws.gui
 			if ((_handle is ISkin) && !(_handle as ISkin).state)
 			{
 				(_handle as ISkin).state = MouseEvent.MOUSE_UP;
+				trace("_handle as ISkin");
 			}
 			if ((_body is ISkin) && !(_body as ISkin).state)
 			{
