@@ -12,6 +12,8 @@
 	[Event(name="childrenCreated", type="org.wvxvws.gui.GUIEvent")]
 	[Event(name="dataChanged", type="org.wvxvws.gui.GUIEvent")]
 	
+	[DefaultProperty("dataProvider")]
+	
 	/**
 	* Pane class.
 	* @author wvxvw
@@ -83,7 +85,7 @@
 		protected var _dataProvider:XML;
 		protected var _dataProviderCopy:XML;
 		protected var _currentItem:int;
-		protected var _removedChildren:Array;
+		protected var _removedChildren:Vector.<DisplayObject>;
 		protected var _rendererFactory:Class;
 		protected var _labelFunction:Function;
 		protected var _labelField:String;
@@ -185,7 +187,7 @@
 			if (!_dataProvider.*.length()) return;
 			if (!_rendererFactory) return;
 			_currentItem = 0;
-			_removedChildren = [];
+			_removedChildren = new <DisplayObject>[];
 			var i:int;
 			while (super.numChildren > i)
 				_removedChildren.push(super.removeChildAt(0));

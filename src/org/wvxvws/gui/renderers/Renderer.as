@@ -21,8 +21,10 @@
 
 package org.wvxvws.gui.renderers
 {
+	import flash.display.Graphics;
 	import flash.display.Sprite;
 	import flash.text.TextField;
+	import flash.text.TextFieldAutoSize;
 	
 	/**
 	* Renderer class.
@@ -38,6 +40,15 @@ package org.wvxvws.gui.renderers
 		//
 		//--------------------------------------------------------------------------
 		
+		public override function get width():Number { return super.width; }
+		
+		public override function set width(value:Number):void 
+		{
+			if (_width === (value >> 0)) return;
+			_width = value;
+			drawBackground();
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
@@ -48,6 +59,12 @@ package org.wvxvws.gui.renderers
 		protected var _field:TextField = new TextField();
 		protected var _document:Object;
 		protected var _id:String;
+		protected var _labelField:String;
+		protected var _labelFunction:Function;
+		protected var _width:int;
+		protected var _backgroundColor:uint = 0xFFFFFF;
+		protected var _backgroundAlpha:Number = 1;
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Private properties
@@ -64,6 +81,7 @@ package org.wvxvws.gui.renderers
 			super();
 			addChild(_field);
 			_field.selectable = false;
+			_field.autoSize = TextFieldAutoSize.LEFT;
 		}
 		
 		/* INTERFACE org.wvxvws.gui.renderers.IRenderer */
@@ -76,12 +94,9 @@ package org.wvxvws.gui.renderers
 		
 		public function set labelFunction(value:Function):void
 		{
-			// TODO:
-		}
-		
-		public function set labelField(value:String):String
-		{
-			// TODO:
+			if (_labelFunction === value) return;
+			_labelFunction = value;
+			if (_data) rendrerText();
 		}
 		
 		public function get data():XML { return _data; }
@@ -90,9 +105,44 @@ package org.wvxvws.gui.renderers
 		{
 			if (isValid && _data === value) return;
 			_data = value;
-			_field.text = _data.toXMLString();
-			_field.background = true;
-			_field.backgroundColor = Math.random() * 0xFFFFFF;
+			if (!_data) return;
+			rendrerText();
+		}
+		
+		protected function rendrerText():void
+		{
+			if (!_data) return;
+			if (_labelField && _data.hasOwnProperty(_labelField))
+			{
+				if (_labelFunction !== null)
+					_field.text = _labelFunction(_data[_labelField]);
+				else _field.text = _data[_labelField];
+			}
+			else
+			{
+				if (_labelFunction !== null)
+					_field.text = _labelFunction(_data.toXMLString());
+				else _field.text = _data.localName();
+			}
+			drawBackground();
+		}
+		
+		protected function drawBackground():void
+		{
+			var g:Graphics = super.graphics;
+			g.clear();
+			g.beginFill(_backgroundColor, _backgroundAlpha);
+			g.drawRect(0, 0, _width, _field.height);
+			g.endFill();
+		}
+		
+		public function get labelField():String { return _labelField; }
+		
+		public function set labelField(value:String):void 
+		{
+			if (_labelField === value) return;
+			_labelField = value;
+			if (_data) rendrerText();
 		}
 		
 		public function get isValid():Boolean

@@ -18,6 +18,8 @@
 		public static const EQUATOR:int = 0;
 		public static const SOUTH:int = 1;
 		
+		public static const AUTO:int = -0x80000000;
+		
 		public function Constraints() { super(); }
 		
 		public static function makeFlow(children:Vector.<DisplayObject>, 

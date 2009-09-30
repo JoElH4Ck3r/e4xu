@@ -194,8 +194,9 @@ package org.wvxvws.gui.renderers
 		
 		public function set labelField(value:String):void 
 		{
-			if (_data) rendrerText();
+			if (_labelField === value) return;
 			_labelField = value;
+			if (_data) rendrerText();
 		}
 		
 		protected function icon_mouseDownHandler(event:MouseEvent):void 
@@ -207,6 +208,7 @@ package org.wvxvws.gui.renderers
 		
 		public function set labelFunction(value:Function):void
 		{
+			if (_labelFunction === value) return;
 			_labelFunction = value;
 			if (_data) rendrerText();
 		}
