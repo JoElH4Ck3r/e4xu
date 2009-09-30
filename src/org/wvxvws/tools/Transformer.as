@@ -177,33 +177,29 @@
 			_change = new Point(_startX, _startY).subtract(
 						new Point(super.mouseX, super.mouseY));
 			_angle = Math.atan2(_change.x, _change.y);
+			_activeMatrix = _savedMatrix.clone();
 			switch (_activeHandle)
 			{
 				case _handles[0]: // a, d
-					_activeMatrix = _savedMatrix.clone();
 					_activeMatrix.tx -= _change.x;
 					_activeMatrix.ty -= _change.y;
 					_activeMatrix.a += _change.x / _savedBounds.width;
 					_activeMatrix.d += _change.y / _savedBounds.height;
 					break;
 				case _handles[1]:
-					_activeMatrix = _savedMatrix.clone();
 					_activeMatrix.ty -= _change.y;
 					_activeMatrix.d += _change.y / _savedBounds.height;
 					break;
 				case _handles[2]: // a, d
-					_activeMatrix = _savedMatrix.clone();
 					_activeMatrix.ty -= _change.y;
 					_activeMatrix.d += _change.y / _savedBounds.height;
 					_activeMatrix.a -= _change.x / _savedBounds.width;
 					break;
 				case _handles[3]:
-					_activeMatrix = _savedMatrix.clone();
 					_activeMatrix.tx -= _change.x;
 					_activeMatrix.a += _change.x / _savedBounds.width;
 					break;
 				case _handles[4]: // rotate
-					_activeMatrix = _savedMatrix.clone();
 					var point:Point = _registrationPoint.clone();
 					trace("point", point);
 					//point = _activeMatrix.transformPoint(point);
@@ -214,21 +210,17 @@
 					_activeMatrix.ty += point.y;
 					break;
 				case _handles[5]:
-					_activeMatrix = _savedMatrix.clone();
 					_activeMatrix.a -= _change.x / _savedBounds.width;
 					break;
 				case _handles[6]: // a, d
-					_activeMatrix = _savedMatrix.clone();
 					_activeMatrix.d -= _change.y / _savedBounds.height;
 					_activeMatrix.tx -= _change.x;
 					_activeMatrix.a += _change.x / _savedBounds.width;
 					break;
 				case _handles[7]:
-					_activeMatrix = _savedMatrix.clone();
 					_activeMatrix.d -= _change.y / _savedBounds.height;
 					break;
 				case _handles[8]: // a, d
-					_activeMatrix = _savedMatrix.clone();
 					_activeMatrix.a -= _change.x / _savedBounds.width;
 					_activeMatrix.d -= _change.y / _savedBounds.height;
 					break;
