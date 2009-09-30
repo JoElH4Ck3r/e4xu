@@ -24,6 +24,9 @@ package org.wvxvws.gui.containers
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.geom.Point;
+	import flash.geom.Rectangle;
+	import org.wvxvws.gui.GUIEvent;
+	import org.wvxvws.gui.renderers.Renderer;
 	
 	/**
 	* Table class.
@@ -31,7 +34,7 @@ package org.wvxvws.gui.containers
 	* @langVersion 3.0
 	* @playerVersion 10.0.12.36
 	*/
-	public class Table extends DIV
+	public class Table extends Pane
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -45,15 +48,12 @@ package org.wvxvws.gui.containers
 		//
 		//--------------------------------------------------------------------------
 		
-		protected var _dataProvider:XML;
-		protected var _dataProviderCopy:XML;
-		protected var _rendererFactory:Class = Renderer;
-		protected var _cellSize:Point = new Point(100, 100);
-		protected var _columnCount:int = 5;
+		protected var _cellHeight:int = -0x8000000;
 		protected var _itemCount:int;
-		protected var _currentItem:int;
-		protected var _removedChildren:Array;
-		protected var _columns:Array = [];
+		protected var _columns:Vector.<Column> = new <Column>[];
+		protected var _gutterH:int;
+		protected var _gutterV:int;
+		protected var _padding:Rectangle = new Rectangle();
 		
 		//--------------------------------------------------------------------------
 		//
@@ -72,24 +72,14 @@ package org.wvxvws.gui.containers
 			
 		}
 		
-		public function get columns():Array { return _columns; }
+		public function get columns():Vector.<Column> { return _columns; }
 		
-		public function set columns(value:Array):void 
+		public function set columns(value:Vector.<Column>):void 
 		{
 			if (_columns === value) return;
 			_columns = value;
-			invalidLayout = true;
-		}
-		
-		public function get dataProvider():XML { return _dataProvider; }
-		
-		public function set dataProvider(value:XML):void 
-		{
-			if (_dataProvider === value) return;
-			_dataProvider = value;
-			_dataProviderCopy = value.copy();
-			_dataProvider.setNotification(providerNotifier);
-			invalidLayout = true;
+			invalidate("_columns", _columns, false);
+			dispatchEvent(new Event("columnsChanged"));
 		}
 		
 		public function get rendererFactory():Class { return _rendererFactory; }
@@ -98,16 +88,49 @@ package org.wvxvws.gui.containers
 		{
 			if (_rendererFactory === value) return;
 			_rendererFactory = value;
-			invalidLayout = true;
+			invalidate("_rendererFactory", _rendererFactory, false);
+			dispatchEvent(new Event("rendererFactoryChanged"));
 		}
 		
-		public function get cellSize():Point { return _cellSize; }
+		public function get cellHeight():int { return _cellHeight; }
 		
-		public function set cellSize(value:Point):void 
+		public function set cellHeight(value:int):void 
 		{
-			if (_cellSize === value) return;
-			_cellSize = value;
-			invalidLayout = true;
+			if (_cellHeight === value) return;
+			_cellHeight = value;
+			invalidate("_cellHeight", _cellHeight, false);
+			dispatchEvent(new Event("cellHeightChanged"));
+		}
+		
+		public function get gutterH():int { return _gutterH; }
+		
+		public function set gutterH(value:int):void 
+		{
+			if (_gutterH === value) return;
+			_gutterH = value;
+			invalidate("_gutterH", _gutterH, false);
+			dispatchEvent(new Event("gutterHChanged"));
+		}
+		
+		public function get gutterV():int { return _gutterV; }
+		
+		public function set gutterV(value:int):void 
+		{
+			if (_gutterV === value) return;
+			_gutterV = value;
+			invalidate("_gutterV", _gutterV, false);
+			dispatchEvent(new Event("gutterVChanged"));
+		}
+		
+		public function get padding():Rectangle { return _padding; }
+		
+		public function set padding(value:Rectangle):void 
+		{
+			if (_padding === value || _padding && value && _padding.equals(value))
+				return;
+			_padding = value;
+			invalidate("_padding", _padding, false);
+			dispatchEvent(new Event("paddingChanged"));
 		}
 		
 		//--------------------------------------------------------------------------
@@ -116,66 +139,9 @@ package org.wvxvws.gui.containers
 		//
 		//--------------------------------------------------------------------------
 		
-		public function getItemForNode(node:XML):DisplayObject
+		public override function validate(properties:Object):void 
 		{
-			var i:int;
-			while (i < super.numChildren)
-			{
-				if ((super.getChildAt(i) as IRenderer).data === node) 
-					return super.getChildAt(i);
-				i++;
-			}
-			return null;
-		}
-		
-		public function getNodeForItem(renderer:DisplayObject):XML
-		{
-			var i:int;
-			while (i < super.numChildren)
-			{
-				if (super.getChildAt(i) === renderer)
-					return _dataProvider.*[i];
-				i++;
-			}
-			return null;
-		}
-		
-		public function getItemAt(index:int):DisplayObject
-		{
-			return getItemForNode(getNodeAt(index));
-		}
-		
-		public function getNodeAt(index:int):XML
-		{
-			return _dataProvider.*[index];
-		}
-		
-		public function getIndexForItem(renderer:DisplayObject):int
-		{
-			var i:int;
-			while (i < super.numChildren)
-			{
-				if (super.getChildAt(i) === renderer) return i;
-				i++;
-			}
-			return -1;
-		}
-		
-		public function getIndexForNode(node:XML, position:int = -1):int
-		{
-			var i:int;
-			for each(var xn:XML in _dataProvider.*)
-			{
-				if (xn === node && i > position) return i;
-				i++;
-			}
-			return -1;
-		}
-		
-		override public function validateLayout(event:Event = null):void 
-		{
-			super.validateLayout(event);
-			layOutChildren();
+			super.validate(properties);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -184,34 +150,73 @@ package org.wvxvws.gui.containers
 		//
 		//--------------------------------------------------------------------------
 		
-		protected function layOutChildren():void
+		protected override function layOutChildren():void
 		{
 			if (_dataProvider === null) return;
-			if (!_dataProvider.*.length()) return;
-			var cumulativeX:int;
+			var dataList:XMLList = _dataProvider.*;
+			var dataLenght:int = dataList.length();
+			if (!dataLenght) return;
+			var cumulativeX:int = _padding.left;
 			var numColons:int = _columns.length;
 			var colWidth:int = width / numColons;
-			for each(var col:Column in _columns)
+			var col:Column;
+			var totalWidth:int = super.width - (_padding.right + _padding.left);
+			var i:int;
+			var j:int = _columns.length;
+			while (i < j)
 			{
+				col = _columns[i];
 				if (!super.contains(col))
 				{
-					col.width = colWidth;
-					col.cellSize.x = colWidth;
-					super.addChild(col);
+					if (col.minWidth > col.definedWidth)
+					{
+						col.width = colWidth;
+						totalWidth -= colWidth + _gutterH;
+					}
+					else totalWidth -= col.width + _gutterH;
+					if (j - i === 1 && totalWidth + _gutterH > 0)
+						col.width += totalWidth + _gutterH;
 					col.x = cumulativeX;
-					cumulativeX = cumulativeX + col.width;
+					col.y = _padding.top;
+					col.gutter = _gutterV;
+					col.rendererFactory = Renderer;
+					super.addChild(col);
+					col.initialized(this, "column" + _columns.indexOf(col));
+					cumulativeX += col.width + _gutterH;
 				}
-				col.dataProvider = listColumnChildren(col.filter);
-				col.validateLayout();
+				col.dataProvider = _dataProvider;
+				i++;
+				//col.validate(col.invalidProperties);
+			}
+			for each (col in _columns)
+			{
+				if (!col.parentIsCreator) col.parentIsCreator = true;
+				col.beginLayoutChildren();
+			}
+			i = 0;
+			var child:DisplayObject;
+			var currentData:XML;
+			var maxChildHeight:int;
+			while (i < dataLenght)
+			{
+				currentData = dataList[i];
+				for each (col in _columns)
+				{
+					child = col.createNextRow();
+					if (!child) continue;
+					maxChildHeight = Math.max(maxChildHeight, child.height);
+				}
+				for each (col in _columns)
+				{
+					col.adjustHeight(maxChildHeight + _gutterV);
+				}
+				i++;
+			}
+			for each (col in _columns)
+			{
+				col.endLayoutChildren(super.height - (_padding.top + _padding.bottom));
 			}
 			dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED));
-		}
-		
-		protected function listColumnChildren(filter:String):XML
-		{
-			var temp:XML = <$/>;
-			_dataProvider.*.(hasOwnProperty(filter) ? temp.appendChild(valueOf()) : false);
-			return temp;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -220,84 +225,6 @@ package org.wvxvws.gui.containers
 		//
 		//--------------------------------------------------------------------------
 		
-		private function providerNotifier(targetCurrent:Object, command:String, 
-									target:Object, value:Object, detail:Object):void
-		{
-			var renderer:IRenderer;
-			switch (command)
-			{
-				    case "attributeAdded":
-					case "attributeChanged":
-					case "attributeRemoved":
-						renderer = getItemForNode(target as XML) as IRenderer;
-						renderer.data = target as XML;
-						break;
-					case "nodeAdded":
-						{
-							var needReplace:Boolean;
-							var nodeList:Array = [];
-							var firstIndex:int;
-							var lastIndex:int;
-							var correctNodeList:XMLList;
-							(targetCurrent as XML).*.(nodeList.push(valueOf()));
-							for each (var node:XML in nodeList)
-							{
-								if (nodeList.indexOf(node) != nodeList.lastIndexOf(node))
-								{
-									firstIndex = nodeList.indexOf(node);
-									lastIndex = nodeList.lastIndexOf(node);
-									needReplace = true;
-									break;
-								}
-							}
-							if (needReplace)
-							{
-								if (_dataProvider.*[firstIndex].contains(_dataProviderCopy.*[firstIndex]))
-								{
-									nodeList.splice(firstIndex, 1);
-									_dataProvider.setChildren("");
-									_dataProvider.normalize();
-									while (nodeList.length)
-									{
-										_dataProvider.appendChild(nodeList.shift());
-									}
-									_dataProviderCopy = _dataProvider.copy();
-									return;
-								}
-								else
-								{
-									nodeList.splice(lastIndex, 1);
-									_dataProvider.setChildren("");
-									_dataProvider.normalize();
-									while (nodeList.length)
-									{
-										_dataProvider.appendChild(nodeList.shift());
-									}
-									_dataProviderCopy = _dataProvider.copy();
-									return;
-								}
-							}
-							invalidLayout = true;
-						}
-						break;
-					case "textSet":
-					case "nameSet":
-					case "nodeChanged":
-					case "nodeRemoved":
-						invalidLayout = true;
-						break;
-					case "namespaceAdded":
-						
-						break;
-					case "namespaceRemoved":
-						
-						break;
-					case "namespaceSet":
-						
-						break;
-			}
-			_dataProviderCopy = _dataProvider.copy();
-		}
 	}
 	
 }

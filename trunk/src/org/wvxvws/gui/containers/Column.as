@@ -25,9 +25,9 @@ package org.wvxvws.gui.containers
 	import flash.display.DisplayObject
 	import flash.events.Event;
 	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.renderers.IRenderer;
-	import org.wvxvws.gui.renderers.Renderer;
 	//}
 	
 	/**
@@ -44,6 +44,14 @@ package org.wvxvws.gui.containers
 		//
 		//--------------------------------------------------------------------------
 		
+		
+		public override function set width(value:Number):void 
+		{
+			if (value < _minWidth) return;
+			super.width = value;
+			_definedWidth = value;
+		}
+		
 		public function get rendererFactory():Class { return _rendererFactory; }
 		
 		public function set rendererFactory(value:Class):void 
@@ -54,24 +62,14 @@ package org.wvxvws.gui.containers
 			dispatchEvent(new Event("rendererFactoryChanged"));
 		}
 		
-		public function get cellSize():Point { return _cellSize; }
+		public function get cellHeight():int { return _cellHeight; }
 		
-		public function set cellSize(value:Point):void 
+		public function set cellHeight(value:int):void 
 		{
-			if (_cellSize === value) return;
-			_cellSize = value;
-			invalidate("_cellSize", _cellSize, false);
-			dispatchEvent(new Event("cellSizeChanged"));
-		}
-		
-		public function get rowCount():int { return _rowCount; }
-		
-		public function set rowCount(value:int):void 
-		{
-			if (_rowCount === value) return;
-			_rowCount = value;
-			invalidate("_rowCount", _rowCount, false);
-			dispatchEvent(new Event("rowCountChanged"));
+			if (_cellHeight === value) return;
+			_cellHeight = value;
+			invalidate("_cellHeight", _cellHeight, false);
+			dispatchEvent(new Event("cellHeightChanged"));
 		}
 		
 		public function get filter():String { return _filter; }
@@ -84,17 +82,59 @@ package org.wvxvws.gui.containers
 			dispatchEvent(new Event("filterChanged"));
 		}
 		
+		public function get gutter():int { return _gutter; }
+		
+		public function set gutter(value:int):void 
+		{
+			if (_gutter === value) return;
+			_gutter = value;
+			invalidate("_gutter", _gutter, false);
+			dispatchEvent(new Event("gutterChanged"));
+		}
+		
+		public function get padding():Rectangle { return _padding; }
+		
+		public function set padding(value:Rectangle):void 
+		{
+			if (_padding === value) return;
+			_padding = value;
+			invalidate("_padding", _padding, false);
+			dispatchEvent(new Event("paddingChanged"));
+		}
+		
+		public function get parentIsCreator():Boolean { return _parentIsCreator; }
+		
+		public function set parentIsCreator(value:Boolean):void 
+		{
+			if (_parentIsCreator === value) return;
+			_parentIsCreator = value;
+			invalidate("_parentIsCreator", _parentIsCreator, false);
+			dispatchEvent(new Event("parentIsCreatorChanged"));
+		}
+		
+		public function get currentRenderer():DisplayObject { return _currentRenderer; }
+		
+		public function get minWidth():int { return _minWidth; }
+		
+		public function get definedWidth():int { return _definedWidth; }
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
 		//
 		//--------------------------------------------------------------------------
 		
-		protected var _rendererFactory:Class = Renderer;
-		protected var _cellSize:Point = new Point(100, 100);
+		protected var _cellHeight:int = int.MIN_VALUE;
 		protected var _itemCount:int;
 		protected var _filter:String;
-		protected var _rowCount:int;
+		protected var _cumulativeHeight:int;
+		protected var _gutter:int;
+		protected var _padding:Rectangle = new Rectangle();
+		protected var _calculatedHeight:int;
+		protected var _parentIsCreator:Boolean;
+		protected var _currentRenderer:DisplayObject;
+		protected var _minWidth:int = 20;
+		protected var _definedWidth:int = -1;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -118,8 +158,53 @@ package org.wvxvws.gui.containers
 		
 		public override function validate(properties:Object):void 
 		{
-			super.validate(properties);
-			super.layOutChildren();
+			if (super.width < _minWidth) _bounds.x = _minWidth;
+			_cumulativeHeight = _padding.top;
+			if (!_parentIsCreator)
+			{
+				super.validate(properties);
+				_calculatedHeight = _padding.bottom + _cumulativeHeight - _gutter;
+				drawBackground();
+			}
+		}
+		
+		public function createNextRow():DisplayObject
+		{
+			var xml:XML = _dataProvider.*[_currentItem];
+			_currentRenderer = super.createChild(xml);
+			if (!_currentRenderer) return null;
+			_currentRenderer.width = super.width - (_padding.left + _padding.right);
+			_currentRenderer.y = _cumulativeHeight;
+			_currentRenderer.x = _padding.left;
+			super.addChild(_currentRenderer);
+			if (_currentRenderer is IRenderer)
+			{
+				if (_filter !== "")
+				{
+					(_currentRenderer as IRenderer).labelField = _filter;
+				}
+			}
+			return _currentRenderer;
+		}
+		
+		public function adjustHeight(newHeight:int):void
+		{
+			_cumulativeHeight += newHeight;
+		}
+		
+		public function beginLayoutChildren():void
+		{
+			_currentItem = 0;
+			_removedChildren = new <DisplayObject>[];
+			var i:int;
+			while (super.numChildren > i)
+				_removedChildren.push(super.removeChildAt(0));
+		}
+		
+		public function endLayoutChildren(newHeight:int):void
+		{
+			_calculatedHeight = newHeight;
+			drawBackground();
 		}
 		
 		//--------------------------------------------------------------------------
@@ -128,31 +213,54 @@ package org.wvxvws.gui.containers
 		//
 		//--------------------------------------------------------------------------
 		
-		//protected function layOutChildren():void
-		//{
-			//super.layou
-			//if (_dataProvider === null) return;
-			//if (!_dataProvider.*.length()) return;
-			//_currentItem = 0;
-			//_removedChildren = [];
-			//var i:int;
-			//while (super.numChildren > i)
-			//{
-				//_removedChildren.push(super.removeChildAt(0));
-			//}
-			//_dataProvider.*.(createChild(valueOf()));
-			//dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED));
-		//}
+		protected override function layOutChildren():void
+		{
+			if (_dataProvider === null) return;
+			if (!_dataProvider.*.length()) return;
+			if (!_rendererFactory) return;
+			_currentItem = 0;
+			_removedChildren = new <DisplayObject>[];
+			var i:int;
+			while (super.numChildren > i)
+				_removedChildren.push(super.removeChildAt(0));
+			_dispatchCreated = false;
+			if (!_parentIsCreator)
+			{
+				_dataProvider.*.(createChild(valueOf()));
+				if (_dispatchCreated)
+				{
+					dispatchEvent(new GUIEvent(
+						GUIEvent.CHILDREN_CREATED, false, true));
+				}
+			}
+		}
 		
 		protected override function createChild(xml:XML):DisplayObject
 		{
-			var child:DisplayObject = super.createChild(xml);
-			if (!child) return;
-			child.width = _cellSize.x;
-			child.height = _cellSize.y;
-			child.y = _currentItem * _cellSize.y;
-			super.addChild(child);
-			return true;
+			_currentRenderer = super.createChild(xml);
+			if (!_currentRenderer) return null;
+			_currentRenderer.width = super.width - (_padding.left + _padding.right);
+			if (_cellHeight !== int.MIN_VALUE) _currentRenderer.height = _cellHeight;
+			_currentRenderer.y = _cumulativeHeight;
+			_currentRenderer.x = _padding.left;
+			_cumulativeHeight += _currentRenderer.height + _gutter;
+			super.addChild(_currentRenderer);
+			if (_currentRenderer is IRenderer)
+			{
+				if (_filter !== "")
+				{
+					(_currentRenderer as IRenderer).labelField = _filter;
+				}
+			}
+			return _currentRenderer;
+		}
+		
+		protected override function drawBackground():void
+		{
+			_background.clear();
+			_background.beginFill(_backgroundColor, _backgroundAlpha);
+			_background.drawRect(0, 0, _bounds.x, _calculatedHeight);
+			_background.endFill();
 		}
 		
 		//--------------------------------------------------------------------------
