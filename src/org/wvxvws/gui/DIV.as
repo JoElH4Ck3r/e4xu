@@ -325,7 +325,7 @@ package org.wvxvws.gui
 		protected var _style:IEventDispatcher;
 		protected var _className:String;
 		protected var _invalidProperties:Object = { };
-		protected var _childLayouts:Vector.<ILayoutClient> = new Vector.<ILayoutClient>(0, false);
+		protected var _childLayouts:Vector.<ILayoutClient> = new <ILayoutClient>[];
 		protected var _layoutParent:ILayoutClient;
 		protected var _validator:LayoutValidator;
 		protected var _hasPendingValidation:Boolean;
