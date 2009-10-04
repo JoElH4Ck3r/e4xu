@@ -1,5 +1,6 @@
 ﻿package org.wvxvws.tools 
 {
+	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
@@ -10,6 +11,8 @@
 	import org.wvxvws.rendering.Slide;
 	
 	[DefaultProperty("dataProvider")]
+	
+	[Event(name="moved", type="org.wvxvws.tools.ToolEvent")]
 	
 	/**
 	 * Timeline class.
@@ -75,6 +78,15 @@
 			invalidLayout = true;
 		}
 		
+		public function get selectedSlide():Slide { return _selectedSlide; }
+		
+		public function get slideEditor():DisplayObject { return _slideEditor; }
+		
+		public function set slideEditor(value:DisplayObject):void 
+		{
+			_slideEditor = value;
+		}
+		
 		protected var _document:Object;
 		protected var _id:String;
 		protected var _dataProvider:XML;
@@ -85,14 +97,11 @@
 		protected var _slideHeight:int = 10;
 		protected var _slides:Vector.<Slide> = new <Slide>[];
 		protected var _zoom:Number = 1;
-		protected var _gutter:int;
+		protected var _gutter:int = 1;
 		protected var _selectedSlide:Slide;
+		protected var _slideEditor:DisplayObject;
 		
-		public function Timeline() 
-		{
-			super();
-			
-		}
+		public function Timeline() { super(); }
 		
 		public function slideForNode(xml:XML):Slide
 		{
@@ -101,6 +110,15 @@
 				if (s.node === xml) return s;
 			}
 			return null;
+		}
+		
+		public function createEditor(from:DisplayObject = null):DisplayObject
+		{
+			_slideEditor = from || _slideEditor;
+			if (!_slideEditor || !_selectedSlide) return null;
+			_slideEditor.x = _selectedSlide.x;
+			_slideEditor.y = _selectedSlide.y;
+			return _slideEditor;
 		}
 		
 		/* INTERFACE mx.core.IMXMLObject */
@@ -140,6 +158,7 @@
 				if (!slide)
 				{
 					slide = new Slide();
+					slide.node = currentNode;
 					slide.addEventListener(MouseEvent.MOUSE_DOWN, slide_mouseDownHandler);
 				}
 				if (_slideWidthFactory !== null)
@@ -181,6 +200,7 @@
 		private function mouseUpHandler(event:MouseEvent):void 
 		{
 			stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+			super.dispatchEvent(new ToolEvent(ToolEvent.MOVED, false, false, _selectedSlide));
 			_selectedSlide = null;
 		}
 		
