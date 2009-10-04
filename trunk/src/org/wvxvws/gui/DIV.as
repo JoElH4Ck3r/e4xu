@@ -68,9 +68,9 @@ package org.wvxvws.gui
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>xChange</code> event.
 		*/
-		override public function get x():Number { return _transformMatrix.tx; }
+		public override function get x():Number { return _transformMatrix.tx; }
 		
-		override public function set x(value:Number):void 
+		public override function set x(value:Number):void 
 		{
 			if (_transformMatrix.tx == value) return;
 			_transformMatrix.tx = value;
@@ -89,9 +89,9 @@ package org.wvxvws.gui
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>yChange</code> event.
 		*/
-		override public function get y():Number { return _transformMatrix.ty; }
+		public override function get y():Number { return _transformMatrix.ty; }
 		
-		override public function set y(value:Number):void 
+		public override function set y(value:Number):void 
 		{
 			if (_transformMatrix.ty == value) return;
 			_transformMatrix.ty = value;
@@ -110,9 +110,9 @@ package org.wvxvws.gui
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>widthChange</code> event.
 		*/
-		override public function get width():Number { return _bounds.x; }
+		public override function get width():Number { return _bounds.x; }
 		
-		override public function set width(value:Number):void 
+		public override function set width(value:Number):void 
 		{
 			if (_bounds.x == value) return;
 			_bounds.x = value;
@@ -131,9 +131,9 @@ package org.wvxvws.gui
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>heightChange</code> event.
 		*/
-		override public function get height():Number { return _bounds.y; }
+		public override function get height():Number { return _bounds.y; }
 		
-		override public function set height(value:Number):void 
+		public override function set height(value:Number):void 
 		{
 			if (_bounds.y == value) return;
 			_bounds.y = value;
@@ -152,9 +152,9 @@ package org.wvxvws.gui
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>scaleXChange</code> event.
 		*/
-		override public function get scaleX():Number { return _transformMatrix.a; }
+		public override function get scaleX():Number { return _transformMatrix.a; }
 		
-		override public function set scaleX(value:Number):void 
+		public override function set scaleX(value:Number):void 
 		{
 			if (_transformMatrix.a == value) return;
 			_transformMatrix.a = value;
@@ -173,9 +173,9 @@ package org.wvxvws.gui
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>scaleYChange</code> event.
 		*/
-		override public function get scaleY():Number { return _transformMatrix.d; }
+		public override function get scaleY():Number { return _transformMatrix.d; }
 		
-		override public function set scaleY(value:Number):void 
+		public override function set scaleY(value:Number):void 
 		{
 			if (_transformMatrix.d == value) return;
 			_transformMatrix.d = value;
@@ -194,12 +194,12 @@ package org.wvxvws.gui
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>transformChange</code> event.
 		*/
-		override public function get transform():Transform
+		public override function get transform():Transform
 		{
 			return _userTransform ? _userTransform : super.transform;
 		}
 		
-		override public function set transform(value:Transform):void 
+		public override function set transform(value:Transform):void 
 		{
 			invalidate("_userTransform", _userTransform, true);
 			_userTransform = value;

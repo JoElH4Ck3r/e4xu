@@ -25,6 +25,7 @@ package org.wvxvws.gui.renderers
 	import flash.display.Sprite;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
+	import flash.text.TextFormat;
 	
 	/**
 	* Renderer class.
@@ -64,6 +65,7 @@ package org.wvxvws.gui.renderers
 		protected var _width:int;
 		protected var _backgroundColor:uint = 0xFFFFFF;
 		protected var _backgroundAlpha:Number = 1;
+		protected var _textFormat:TextFormat = new TextFormat("_sans", 11);
 		
 		//--------------------------------------------------------------------------
 		//
@@ -112,6 +114,7 @@ package org.wvxvws.gui.renderers
 		protected function rendrerText():void
 		{
 			if (!_data) return;
+			_field.defaultTextFormat = _textFormat;
 			if (_labelField && _data.hasOwnProperty(_labelField))
 			{
 				if (_labelFunction !== null)

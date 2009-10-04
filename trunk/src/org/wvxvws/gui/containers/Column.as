@@ -168,9 +168,9 @@ package org.wvxvws.gui.containers
 			}
 		}
 		
-		public function createNextRow():DisplayObject
+		public function createNextRow(from:XML = null):DisplayObject
 		{
-			var xml:XML = _dataProvider.*[_currentItem];
+			var xml:XML = from || _dataProvider.*[_currentItem];
 			_currentRenderer = super.createChild(xml);
 			if (!_currentRenderer) return null;
 			_currentRenderer.width = super.width - (_padding.left + _padding.right);

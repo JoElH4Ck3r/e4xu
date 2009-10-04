@@ -58,16 +58,12 @@ package org.wvxvws.jsutils.shadowbox
 		//--------------------------------------------------------------------------
 		private static var _init:Boolean;
 		static private var _linksContainer:XML = 
-		<script>
-			<![CDATA[
-			function() {
+		<![CDATA[function() {
 				var b = document.getElementsByTagName("body")[0];
 				var div = document.createElement("div");
 				div.id = "SB_links_container";
 				div.style.visibility = "hidden";
-				b.appendChild(div);
-			}]]>
-		</script>;
+				b.appendChild(div);}]]>;
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -88,8 +84,8 @@ package org.wvxvws.jsutils.shadowbox
 		/**
 		 * Calls the <code>Shadowbox.open()</code> from HTML page.
 		 * Opens the specified object in Shadowbox. 
-		 * The optional options parameter may be used here to specify the set 
-		 * of options to apply on this call only.
+		 * The optional <code>options>/code> parameter may be used to specify the  
+		 * options to apply on this call only.
 		 * 
 		 * @param	content			String. The content to display.
 		 * 
@@ -359,11 +355,13 @@ package org.wvxvws.jsutils.shadowbox
 		 * @private
 		 */
 		private static var getScriptXML:Function = function(content:String, 
-					player:String, title:String, gallery:String = null, windowHeight:int = 350, 
-					windowWidth:int = 350, options:ShadowOptions = null):String
+					player:String, title:String, gallery:String = null, 
+					windowHeight:int = 350, windowWidth:int = 350, 
+					options:ShadowOptions = null):String
 		{
 			if (gallery == null) gallery = "";
-			var op:String = options ? String("}," + options).substring(0, options.toString().length + 1) : "";
+			var op:String = options ? String("}," + options).substring(0, 
+							options.toString().length + 1) : "";
 			switch(player)
 			{
 				case FLV:

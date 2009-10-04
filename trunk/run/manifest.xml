@@ -41,7 +41,7 @@
 	<component id="TiledPanel" class="org.wvxvws.gui.containers.TiledPanel"/>
 	<component id="Tris" class="org.wvxvws.gui.containers.Tris"/>
 	<component id="Menu" class="org.wvxvws.gui.containers.Menu"/>
-	<component id="NetsGrid" class="org.wvxvws.gui.containers.NetsGrid"/>
+	<component id="NestGrid" class="org.wvxvws.gui.containers.NestGrid"/>
 	<!-- RENDERERS -->
 	<component id="BranchRenderer" class="org.wvxvws.gui.renderers.BranchRenderer"/>
 	<component id="MenuRenderer" class="org.wvxvws.gui.renderers.MenuRenderer"/>
