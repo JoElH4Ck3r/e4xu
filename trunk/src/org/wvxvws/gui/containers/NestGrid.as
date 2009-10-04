@@ -5,6 +5,7 @@
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	import org.wvxvws.gui.GUIEvent;
+	import org.wvxvws.gui.renderers.IRenderer;
 	import org.wvxvws.gui.renderers.NestGridRenderer;
 	import org.wvxvws.gui.renderers.Renderer;
 	
@@ -63,19 +64,27 @@
 			if (!_nestColumn) _nestColumn = new Column();
 			if (value) _columns = value.concat();
 			else _columns = new <Column>[_nestColumn];
-			trace(value.toLocaleString(), value[0].filter);
 			
 			if (_columns.indexOf(_nestColumn) < 0)
 			{
-				trace("unshifting", _columns.length, value.length, _nestColumn);
 				_columns = new <Column>[_nestColumn].concat(_columns);
 				trace(_columns[0].filter, _columns.length);
 			}
-			trace("_columns.length", _columns.length, value.length);
 			invalidate("_columns", _columns, false);
 			dispatchEvent(new Event("columnsChanged"));
 		}
 		
+		public function set firstColumnWidth(value:int):void 
+		{
+			if (value < 100) value = 100;
+			if (_nestColumn.width === value) return;
+			_nestColumn.width = value;
+			invalidate("_nestColumn", _nestColumn, false);
+		}
+		
+		public function get selectedItem():XML { return _selectedItem; }
+		
+		public function get selectedChild():IRenderer { return _selectedChild; }
 		
 		protected var _cellHeight:int = -0x8000000;
 		protected var _itemCount:int;
@@ -83,7 +92,7 @@
 		protected var _gutterH:int;
 		protected var _gutterV:int;
 		protected var _padding:Rectangle = new Rectangle();
-		protected var _nestColumn:Column;
+		protected var _nestColumn:Column = new Column();
 		protected var _currentDepth:int;
 		protected var _isCurrentClosed:Boolean;
 		protected var _closedNodes:Vector.<XML> = new <XML>[];
@@ -96,12 +105,31 @@
 		
 		protected var _openClass:Class;
 		protected var _closedClass:Class;
+		protected var _selectedItem:XML;
+		protected var _selectedChild:IRenderer;
 		
 		public function NestGrid() 
 		{
 			super();
 			super._rendererFactory = Renderer;
-			super.addEventListener(GUIEvent.OPENED, openedHandler);
+			super.addEventListener(GUIEvent.OPENED, openedHandler, false, int.MAX_VALUE);
+			super.addEventListener(GUIEvent.SELECTED, selectedHandler, false, int.MAX_VALUE);
+		}
+		
+		private function selectedHandler(event:GUIEvent):void 
+		{
+			var lastSelected:IRenderer;
+			if (event.target is IRenderer) lastSelected = _selectedChild;
+			if (!(event.target is IRenderer)) return;
+			_selectedChild = event.target as IRenderer;
+			event.stopImmediatePropagation();
+			_selectedItem = _selectedChild.data;
+			if (lastSelected && lastSelected !== _selectedChild && 
+				(lastSelected as Object).hasOwnProperty("selected"))
+			{
+				(lastSelected as Object).selected = false;
+			}
+			dispatchEvent(new GUIEvent(GUIEvent.SELECTED));
 		}
 		
 		private function openedHandler(event:GUIEvent):void 
@@ -137,9 +165,8 @@
 			while (super.numChildren > i)
 				_removedChildren.push(super.removeChildAt(0));
 			_dispatchCreated = false;
-			if (!_nestColumn)
+			if (_columns.indexOf(_nestColumn) < 0)
 			{
-				_nestColumn =  new Column();
 				_columns.unshift(_nestColumn);
 			}
 			var cumulativeX:int = _padding.left;
@@ -168,7 +195,6 @@
 						_nestColumn.rendererFactory = NestGridRenderer;
 					else col.rendererFactory = Renderer;
 					super.addChild(col);
-					trace("column added", _columns.length);
 					col.initialized(this, "column" + _columns.indexOf(col));
 					cumulativeX += col.width + _gutterH;
 				}
@@ -196,8 +222,6 @@
 			{
 				nn = _currentList[i];
 				_currentDepth = getNodeDepth(nn);
-				trace("-------------------", _currentDepth);
-				trace("------------------- index:", nn.@index);
 				isClosed = false;
 				if (_closedNodes.indexOf(nn) > -1)
 				{

@@ -35,6 +35,7 @@
 	<component id="Palette" class="org.wvxvws.tools.Palette"/>
 	<component id="Transformer" class="org.wvxvws.tools.Transformer"/>
 	<component id="Ruler" class="org.wvxvws.tools.Ruler"/>
+	<component id="Timeline" class="org.wvxvws.tools.Timeline"/>
 	<!-- CONTAINERS -->
 	<component id="Nest" class="org.wvxvws.gui.containers.Nest"/>
 	<component id="Table" class="org.wvxvws.gui.containers.Table"/>

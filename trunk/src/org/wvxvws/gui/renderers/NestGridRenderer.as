@@ -34,7 +34,7 @@
 		{
 			if (_labelFunction === value) return;
 			_labelFunction = value;
-			if (_data) render();
+			if (_data) renderText();
 		}
 		
 		public function get data():XML { return _data; }
@@ -52,7 +52,7 @@
 		{
 			if (_labelField === value) return;
 			_labelField = value;
-			if (_data) render();
+			if (_data) renderText();
 		}
 		
 		public function get isValid():Boolean
@@ -124,6 +124,15 @@
 			if (_data) render();
 		}
 		
+		public function get selected():Boolean { return _selected; }
+		
+		public function set selected(value:Boolean):void 
+		{
+			if (_selected === value) return;
+			_selected = value;
+			if (_data) renderText();
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
@@ -139,6 +148,7 @@
 		protected var _width:int;
 		protected var _backgroundColor:uint = 0xFFFFFF;
 		protected var _backgroundAlpha:Number = 1;
+		protected var _fieldFormat:TextFormat = new TextFormat("_sans", 11);
 		
 		protected var _openClose:StatefulButton = new StatefulButton();
 		protected var _icon:InteractiveObject;
@@ -152,7 +162,7 @@
 		protected var _indent:int;
 		protected var _gutter:int;
 		protected var _closed:Boolean;
-		protected var _fieldFormat:TextFormat = new TextFormat("_sans", 11);
+		protected var _selected:Boolean;
 		
 		public function NestGridRenderer() { super(); }
 		
@@ -167,7 +177,7 @@
 		protected function render():void
 		{
 			drawIcon();
-			rendrerText();
+			renderText();
 			drawBackground();
 		}
 		
@@ -227,7 +237,7 @@
 			super.dispatchEvent(new GUIEvent(GUIEvent.OPENED, true, true));
 		}
 		
-		protected function rendrerText():void
+		protected function renderText():void
 		{
 			if (!_data) return;
 			if (!super.contains(_field))
@@ -237,6 +247,9 @@
 				_field.defaultTextFormat = _fieldFormat;
 				_field.width = 1;
 				_field.height = 1;
+				_field.addEventListener(MouseEvent.CLICK, text_clickHandler);
+				_field.doubleClickEnabled = true;
+				_field.addEventListener(MouseEvent.DOUBLE_CLICK, text_doubleClickHandler);
 				super.addChild(_field);
 			}
 			if (_labelField && _data.hasOwnProperty(_labelField))
@@ -254,9 +267,29 @@
 			if (_icon) _field.x = _icon.x + _icon.width + _gutter;
 			else 
 			{
-				trace(_depth, _indent);
+				//trace(_depth, _indent);
 				_field.x = _depth * _indent;
 			}
+			if (_selected)
+			{
+				_field.background = true;
+				_field.backgroundColor = 0xC0C0C0;
+			}
+			else
+			{
+				_field.background = false;
+			}
+		}
+		
+		private function text_doubleClickHandler(event:MouseEvent):void 
+		{
+			
+		}
+		
+		private function text_clickHandler(event:MouseEvent):void 
+		{
+			selected = true;
+			super.dispatchEvent(new GUIEvent(GUIEvent.SELECTED, true, true));
 		}
 		
 		protected function drawBackground():void
