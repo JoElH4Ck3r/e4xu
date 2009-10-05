@@ -1,17 +1,20 @@
 ﻿package org.wvxvws.rendering
 {
+	import flash.display.DisplayObject;
+	import flash.display.DisplayObjectContainer;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
+	import org.wvxvws.tools.ITrimable;
 	
 	/**
 	 * Slide class.
 	 * @author wvxvw
 	 */
-	public class Slide extends Renderable
+	public class Slide extends Renderable implements ITrimable
 	{
 		protected var _maxWidth:int;
 		protected var _minWidth:int;
@@ -80,6 +83,42 @@
 			super();
 			addEventListener(MouseEvent.MOUSE_DOWN, 
 							mouseDownHandler, false, int.MAX_VALUE, true);
+		}
+		
+		public override function globalToLocal(point:Point):Point
+		{
+			if (_port)
+			{
+				point.x -= _port.bounds.x;
+				point.y -= _port.bounds.y;
+			}
+			return super.globalToLocal(point);
+		}
+		
+		public override function getBounds(where:DisplayObject):Rectangle
+		{
+			var points:Vector.<Point> = new <Point>[
+				new Point(_newBounds.left, _newBounds.top),
+				new Point(_newBounds.right, _newBounds.bottom)];
+			if (_port)
+			{
+				points[0].x += _port.bounds.x;
+				points[0].y += _port.bounds.y;
+				points[1].x += _port.bounds.x;
+				points[1].y += _port.bounds.y;
+			}
+			points[0] = super.localToGlobal(points[0]);
+			points[1] = super.localToGlobal(points[1]);
+			
+			points[0] = where.globalToLocal(points[0]);
+			points[1] = where.globalToLocal(points[1]);
+			
+			var r:Rectangle = new Rectangle();
+			r.top = points[0].y;
+			r.left = points[0].x;
+			r.right = points[1].x;
+			r.bottom = points[1].y;
+			return r;
 		}
 		
 		protected override function addedToStageHandler(event:Event):void 

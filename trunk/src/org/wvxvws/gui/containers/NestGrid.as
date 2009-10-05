@@ -9,6 +9,9 @@
 	import org.wvxvws.gui.renderers.NestGridRenderer;
 	import org.wvxvws.gui.renderers.Renderer;
 	
+	[Event(name="opened", type="org.wvxvws.gui.GUIEvent")]
+	[Event(name="selected", type="org.wvxvws.gui.GUIEvent")]
+	
 	/**
 	 * ...
 	 * @author wvxvw
@@ -129,11 +132,12 @@
 			{
 				(lastSelected as Object).selected = false;
 			}
-			dispatchEvent(new GUIEvent(GUIEvent.SELECTED));
+			super.dispatchEvent(new GUIEvent(GUIEvent.SELECTED));
 		}
 		
 		private function openedHandler(event:GUIEvent):void 
 		{
+			if (!(event.target is IRenderer)) return;
 			event.stopImmediatePropagation();
 			var index:int;
 			var renderer:NestGridRenderer = event.target as NestGridRenderer;
@@ -150,6 +154,17 @@
 				}
 			}
 			super.validate(super._invalidProperties);
+			super.dispatchEvent(new GUIEvent(GUIEvent.OPENED));
+		}
+		
+		public function isNodeVisibe(node:XML):Boolean
+		{
+			while (node && node !== _dataProvider)
+			{
+				node = node.parent() as XML;
+				if (_closedNodes.indexOf(node) > -1) return false;
+			}
+			return true;
 		}
 		
 		protected override function layOutChildren():void 
@@ -262,6 +277,18 @@
 			for each (col in _columns)
 			{
 				col.endLayoutChildren(super.height - (_padding.top + _padding.bottom));
+			}
+			var sRect:Rectangle;
+			if (!super.scrollRect)
+			{
+				super.scrollRect = new Rectangle(0, 0, super.width, super.height);
+			}
+			else
+			{
+				sRect = super.scrollRect.clone();
+				sRect.width = super.width;
+				sRect.height = super.height;
+				super.scrollRect = sRect;
 			}
 			if (_dispatchCreated) 
 				dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED, false, true));
