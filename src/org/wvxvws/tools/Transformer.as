@@ -17,7 +17,7 @@
 	 * ...
 	 * @author wvxvw
 	 */
-	public class Transformer extends Sprite implements IMXMLObject
+	public class Transformer extends Sprite implements IMXMLObject, IEditor
 	{
 		protected var _document:Object;
 		protected var _id:String;
@@ -269,11 +269,11 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>targetChange</code> event.
 		*/
-		public function get target():DisplayObject { return _target; }
+		public function get target():Object { return _target; }
 		
-		public function set target(value:DisplayObject):void 
+		public function set target(value:Object):void 
 		{
-			if (_target === value) return;
+			if (_target === value || !(value is DisplayObject)) return;
 			_target = value;
 			_savedBounds = _target.getBounds(_target);
 			draw();

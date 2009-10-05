@@ -87,6 +87,15 @@
 			_slideEditor = value;
 		}
 		
+		public function get gutter():int { return _gutter; }
+		
+		public function set gutter(value:int):void 
+		{
+			if (_gutter === value) return;
+			_gutter = value;
+			invalidLayout = true;
+		}
+		
 		protected var _document:Object;
 		protected var _id:String;
 		protected var _dataProvider:XML;
@@ -151,6 +160,7 @@
 			var currentNode:XML;
 			var slideY:int;
 			var slidesCopy:Vector.<Slide> = new <Slide>[];
+			var cumulativeHeight:int;
 			while (i < j)
 			{
 				currentNode = list[i];
@@ -160,12 +170,13 @@
 					slide = new Slide();
 					slide.node = currentNode;
 					slide.addEventListener(MouseEvent.MOUSE_DOWN, slide_mouseDownHandler);
+					_slides.push(slide);
 				}
 				if (_slideWidthFactory !== null)
 					slide.width = _slideWidthFactory(currentNode);
 				if (_slidePositionFactory !== null)
 					slide.x = _slidePositionFactory(currentNode);
-				slide.y = (_slideHeight + _gutter) * i;
+				slide.y = cumulativeHeight;
 				slide.height = _slideHeight;
 				slidesCopy.push(slide);
 				if (_slideVisible !== null)
@@ -173,6 +184,7 @@
 					if (_slideVisible(currentNode))
 					{
 						if (!super.contains(slide)) super.addChild(slide);
+						cumulativeHeight += _slideHeight + _gutter;
 					}
 					else if (super.contains(slide)) super.removeChild(slide);
 				}
@@ -195,6 +207,11 @@
 			_selectedSlide = event.target as Slide;
 			stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMoveHandler, false, 0, true);
 			stage.addEventListener(MouseEvent.MOUSE_UP, mouseUpHandler, false, 0, true);
+			if (_slideEditor)
+			{
+				(_slideEditor as IEditor).target = _selectedSlide;
+				(_slideEditor as IEditor).show();
+			}
 		}
 		
 		private function mouseUpHandler(event:MouseEvent):void 
@@ -202,11 +219,20 @@
 			stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoveHandler);
 			super.dispatchEvent(new ToolEvent(ToolEvent.MOVED, false, false, _selectedSlide));
 			_selectedSlide = null;
+			//if (_slideEditor)
+			//{
+				//(_slideEditor as IEditor).target = null;
+				//(_slideEditor as IEditor).hide();
+			//}
 		}
 		
 		private function mouseMoveHandler(event:MouseEvent):void 
 		{
-			_selectedSlide.x = super.mouseX - _selectedSlide.clickLocation.x;
+			_selectedSlide.x = super.mouseX - (_selectedSlide.clickLocation.x + x);
+			if (_slideEditor)
+			{
+				(_slideEditor as IEditor).update();
+			}
 		}
 		
 		protected function providerNotifier(targetCurrent:Object, command:String, 
