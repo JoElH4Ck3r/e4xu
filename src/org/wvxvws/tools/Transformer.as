@@ -232,6 +232,8 @@
 		private function removedHandler(event:Event):void 
 		{
 			stage.removeEventListener(MouseEvent.MOUSE_UP, mouseUpHandler);
+			stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+			super.removeEventListener(Event.ENTER_FRAME, enterFrameHandler);
 		}
 		
 		private function adtsHandler(event:Event):void 
@@ -257,6 +259,17 @@
 			_document = document;
 			_id = id;
 		}
+		
+		/* INTERFACE org.wvxvws.tools.IEditor */
+		
+		public function show():void { draw(); }
+		
+		public function hide():void
+		{
+			if (super.parent) super.parent.removeChild(this);
+		}
+		
+		public function update():void { draw(); }
 		
 		//------------------------------------
 		//  Public property target
