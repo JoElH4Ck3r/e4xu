@@ -76,6 +76,8 @@
 			dispatchEvent(new Event("labelFunctionChange"));
 		}
 		
+		public function get subContainers():Vector.<Pane> { return _subContainers; }
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
@@ -92,6 +94,7 @@
 		protected var _dispatchCreated:Boolean;
 		protected var _useLabelField:Boolean;
 		protected var _useLabelFunction:Boolean;
+		protected var _subContainers:Vector.<Pane>;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -232,13 +235,29 @@
 									target:Object, value:Object, detail:Object):void
 		{
 			var renderer:IRenderer;
+			var pane:Pane;
+			var doc:DisplayObject;
+			var subs:Vector.<Pane>;
 			switch (command)
 			{
 				    case "attributeAdded":
 					case "attributeChanged":
 					case "attributeRemoved":
-						renderer = getItemForNode(target as XML) as IRenderer;
+						doc = getItemForNode(target as XML);
+						renderer = doc as IRenderer;
+						pane = doc as Pane;
 						if (renderer) renderer.data = target as XML;
+						else if (pane)
+						{
+							subs = pane.subContainers;
+							for each (var p:Pane in subs)
+							{
+								doc = p.getItemForNode(target as XML);
+								renderer = doc as IRenderer;
+								if (renderer) renderer.data = target as XML;
+							}
+							//pane.dataProvider = target as XML;
+						}
 						break;
 					case "nodeAdded":
 						{

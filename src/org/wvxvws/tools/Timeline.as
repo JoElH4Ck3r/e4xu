@@ -13,6 +13,7 @@
 	[DefaultProperty("dataProvider")]
 	
 	[Event(name="moved", type="org.wvxvws.tools.ToolEvent")]
+	[Event(name="resized", type="org.wvxvws.tools.ToolEvent")]
 	
 	/**
 	 * Timeline class.
@@ -84,7 +85,12 @@
 		
 		public function set slideEditor(value:DisplayObject):void 
 		{
+			if (_slideEditor === value) return;
+			if (_slideEditor)
+				_slideEditor.removeEventListener(ToolEvent.RESIZED, tool_resizedHandler);
 			_slideEditor = value;
+			if (_slideEditor)
+				_slideEditor.addEventListener(ToolEvent.RESIZED, tool_resizedHandler);
 		}
 		
 		public function get gutter():int { return _gutter; }
@@ -123,11 +129,19 @@
 		
 		public function createEditor(from:DisplayObject = null):DisplayObject
 		{
+			if (_slideEditor)
+				_slideEditor.removeEventListener(ToolEvent.RESIZED, tool_resizedHandler);
 			_slideEditor = from || _slideEditor;
 			if (!_slideEditor || !_selectedSlide) return null;
 			_slideEditor.x = _selectedSlide.x;
 			_slideEditor.y = _selectedSlide.y;
+			_slideEditor.addEventListener(ToolEvent.RESIZED, tool_resizedHandler);
 			return _slideEditor;
+		}
+		
+		protected function tool_resizedHandler(event:ToolEvent):void 
+		{
+			super.dispatchEvent(event);
 		}
 		
 		/* INTERFACE mx.core.IMXMLObject */
@@ -161,6 +175,7 @@
 			var slideY:int;
 			var slidesCopy:Vector.<Slide> = new <Slide>[];
 			var cumulativeHeight:int;
+			if (_slideEditor) (_slideEditor as IEditor).hide();
 			while (i < j)
 			{
 				currentNode = list[i];

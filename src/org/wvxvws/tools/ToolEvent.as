@@ -10,6 +10,9 @@
 	{
 		public static const MOVED:String = "moved";
 		public static const RESIZED:String = "resized";
+		public static const RESIZE_START:String = "resizeStart";
+		public static const RESIZE_END:String = "resizeEnd";
+		public static const RESIZE_REQUEST:String = "resizeRequest";
 		public static const ROTATED:String = "rotated";
 		public static const DISTORTED:String = "distorted";
 		

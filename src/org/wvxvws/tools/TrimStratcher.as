@@ -190,10 +190,10 @@
 			_globalPoints[2] = _target.globalToLocal(new Point(_rightIn.x, 0));
 			_globalPoints[3] = _target.globalToLocal(new Point(_rightOut.x, 0));
 			_target.x = _globalPoints[0].x;
-			//_target.trimLeft = p.x;
-			//_target.trimRight = p.x;
-			//trace();
+			_target.trimLeft = _globalPoints[1].x - _globalPoints[0].x;
+			_target.trimRight = _globalPoints[3].x - _globalPoints[2].x;
 			_target.width = _globalPoints[3].x - _globalPoints[0].x;
+			super.dispatchEvent(new ToolEvent(ToolEvent.RESIZED, false, false, _target));
 		}
 		
 		/* INTERFACE mx.core.IMXMLObject */
@@ -230,8 +230,8 @@
 			if (!_target) return;
 			var bounds:Rectangle = _target.getBounds(super.root);
 			_leftOut.x = bounds.left;
-			_leftIn.x = bounds.left;
-			_rightIn.x = bounds.right;
+			_leftIn.x = bounds.left + _target.trimLeft;
+			_rightIn.x = bounds.right - _target.trimRight;
 			_rightOut.x = bounds.right;
 			super.y = bounds.y;
 		}
