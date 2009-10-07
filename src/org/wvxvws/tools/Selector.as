@@ -1,5 +1,27 @@
-﻿package org.wvxvws.tools 
+﻿////////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (C) Oleg Sivokon email: olegsivokon@gmail.com
+//  
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or any later version.
+//  
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//  GNU General Public License for more details.
+//  
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, write to the Free Software
+//  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+//  Or visit http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+//
+////////////////////////////////////////////////////////////////////////////////
+
+package org.wvxvws.tools 
 {
+	//{ imports
 	import flash.display.BlendMode;
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
@@ -15,13 +37,34 @@
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import mx.core.IMXMLObject;
+	//}
 	
 	/**
-	 * ...
+	 * Selector class.
 	 * @author wvxvw
 	 */
 	public class Selector extends Sprite implements IMXMLObject
 	{
+		//--------------------------------------------------------------------------
+		//
+		//  Public properties
+		//
+		//--------------------------------------------------------------------------
+		
+		public function get target():DisplayObjectContainer { return _target; }
+		
+		public function set target(value:DisplayObjectContainer):void 
+		{
+			if (_target === value) return;
+			_target = value;
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected properties
+		//
+		//--------------------------------------------------------------------------
+		
 		protected var _document:Object;
 		protected var _id:String;
 		protected var _target:DisplayObjectContainer;
@@ -31,7 +74,19 @@
 		protected var _lineMatrixV:Matrix;
 		protected var _visibleBounds:Rectangle = new Rectangle();
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+		
 		public function Selector() { super(); }
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
 		
 		/* INTERFACE mx.core.IMXMLObject */
 		
@@ -71,6 +126,12 @@
 			s.addEventListener(KeyboardEvent.KEY_DOWN, keyDownHandler, false, 0, true);
 			s.addEventListener(KeyboardEvent.KEY_UP, keyUpHandler, false, 0, true);
 		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Event handlers
+		//
+		//--------------------------------------------------------------------------
 		
 		private function keyUpHandler(event:KeyboardEvent):void 
 		{
@@ -145,7 +206,23 @@
 			super.blendMode = BlendMode.INVERT;
 		}
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
+		
 		public function selectTo(point:Point):void
+		{
+			
+		}
+		
+		public function stop():void
+		{
+			
+		}
+		
+		protected function draw():void
 		{
 			
 		}
@@ -172,6 +249,12 @@
 			return v;
 		}
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Private methods
+		//
+		//--------------------------------------------------------------------------
+		
 		private function getSelectedRecursive(container:DisplayObjectContainer, 
 								bounds:Rectangle, to:Vector.<DisplayObject>):void
 		{
@@ -189,24 +272,6 @@
 					}
 				}
 			}
-		}
-		
-		public function stop():void
-		{
-			
-		}
-		
-		protected function draw():void
-		{
-			
-		}
-		
-		public function get target():DisplayObjectContainer { return _target; }
-		
-		public function set target(value:DisplayObjectContainer):void 
-		{
-			if (_target === value) return;
-			_target = value;
 		}
 		
 	}

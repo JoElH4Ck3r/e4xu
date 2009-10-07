@@ -1,4 +1,25 @@
-﻿package org.wvxvws.tools 
+﻿////////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (C) Oleg Sivokon email: olegsivokon@gmail.com
+//  
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or any later version.
+//  
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//  GNU General Public License for more details.
+//  
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, write to the Free Software
+//  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+//  Or visit http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+//
+////////////////////////////////////////////////////////////////////////////////
+
+package org.wvxvws.tools 
 {
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
@@ -14,11 +35,45 @@
 	import mx.core.IMXMLObject;
 	
 	/**
-	 * ...
+	 * Transformer class.
 	 * @author wvxvw
 	 */
 	public class Transformer extends Sprite implements IMXMLObject, IEditor
 	{
+		//--------------------------------------------------------------------------
+		//
+		//  Public properties
+		//
+		//--------------------------------------------------------------------------
+		
+		//------------------------------------
+		//  Public property target
+		//------------------------------------
+		
+		[Bindable("targetChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>targetChange</code> event.
+		*/
+		public function get target():Object { return _target; }
+		
+		public function set target(value:Object):void 
+		{
+			if (_target === value || !(value is DisplayObject)) return;
+			_target = value;
+			_savedBounds = _target.getBounds(_target);
+			draw();
+			dispatchEvent(new Event("targetChange"));
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected properties
+		//
+		//--------------------------------------------------------------------------
+		
 		protected var _document:Object;
 		protected var _id:String;
 		protected var _activeHandle:Sprite;
@@ -42,6 +97,12 @@
 		protected var _angle:Number;
 		protected var _registrationPoint:Point;
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+		
 		public function Transformer(target:DisplayObject = null) 
 		{
 			super();
@@ -51,6 +112,12 @@
 			if (_target) _savedBounds = _target.getBounds(_target);
 			if (target) draw();
 		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
 		
 		protected function draw():void
 		{
@@ -162,6 +229,12 @@
 			return s;
 		}
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Event handlers
+		//
+		//--------------------------------------------------------------------------
+		
 		private function handle_downHandler(event:MouseEvent):void 
 		{
 			_activeHandle = event.target as Sprite;
@@ -252,6 +325,12 @@
 			super.removeEventListener(Event.ENTER_FRAME, enterFrameHandler);
 		}
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
+		
 		/* INTERFACE mx.core.IMXMLObject */
 		
 		public function initialized(document:Object, id:String):void
@@ -270,28 +349,6 @@
 		}
 		
 		public function update():void { draw(); }
-		
-		//------------------------------------
-		//  Public property target
-		//------------------------------------
-		
-		[Bindable("targetChange")]
-		
-		/**
-		* ...
-		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>targetChange</code> event.
-		*/
-		public function get target():Object { return _target; }
-		
-		public function set target(value:Object):void 
-		{
-			if (_target === value || !(value is DisplayObject)) return;
-			_target = value;
-			_savedBounds = _target.getBounds(_target);
-			draw();
-			dispatchEvent(new Event("targetChange"));
-		}
 		
 	}
 	

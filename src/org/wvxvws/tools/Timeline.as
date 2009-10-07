@@ -1,4 +1,25 @@
-﻿package org.wvxvws.tools 
+﻿////////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (C) Oleg Sivokon email: olegsivokon@gmail.com
+//  
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or any later version.
+//  
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//  GNU General Public License for more details.
+//  
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, write to the Free Software
+//  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+//  Or visit http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+//
+////////////////////////////////////////////////////////////////////////////////
+
+package org.wvxvws.tools 
 {
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
@@ -21,6 +42,11 @@
 	 */
 	public class Timeline extends Port implements IMXMLObject
 	{
+		//--------------------------------------------------------------------------
+		//
+		//  Public properties
+		//
+		//--------------------------------------------------------------------------
 		
 		public function get dataProvider():XML { return _dataProvider; }
 		
@@ -102,6 +128,12 @@
 			invalidLayout = true;
 		}
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected properties
+		//
+		//--------------------------------------------------------------------------
+		
 		protected var _document:Object;
 		protected var _id:String;
 		protected var _dataProvider:XML;
@@ -116,6 +148,12 @@
 		protected var _selectedSlide:Slide;
 		protected var _slideEditor:DisplayObject;
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+		
 		public function Timeline() { super(); }
 		
 		public function slideForNode(xml:XML):Slide
@@ -126,6 +164,12 @@
 			}
 			return null;
 		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
 		
 		public function createEditor(from:DisplayObject = null):DisplayObject
 		{
@@ -139,11 +183,6 @@
 			return _slideEditor;
 		}
 		
-		protected function tool_resizedHandler(event:ToolEvent):void 
-		{
-			super.dispatchEvent(event);
-		}
-		
 		/* INTERFACE mx.core.IMXMLObject */
 		
 		public function initialized(document:Object, id:String):void
@@ -155,6 +194,17 @@
 				(_document as DisplayObjectContainer).addChild(this);
 			}
 			super.dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
+		
+		protected function tool_resizedHandler(event:ToolEvent):void 
+		{
+			super.dispatchEvent(event);
 		}
 		
 		protected override function renderHandler(event:Event):void 
@@ -214,39 +264,6 @@
 					_slides.splice(i, 1);
 					if (super.contains(slide)) super.removeChild(slide);
 				}
-			}
-		}
-		
-		private function slide_mouseDownHandler(event:MouseEvent):void 
-		{
-			_selectedSlide = event.target as Slide;
-			stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMoveHandler, false, 0, true);
-			stage.addEventListener(MouseEvent.MOUSE_UP, mouseUpHandler, false, 0, true);
-			if (_slideEditor)
-			{
-				(_slideEditor as IEditor).target = _selectedSlide;
-				(_slideEditor as IEditor).show();
-			}
-		}
-		
-		private function mouseUpHandler(event:MouseEvent):void 
-		{
-			stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoveHandler);
-			super.dispatchEvent(new ToolEvent(ToolEvent.MOVED, false, false, _selectedSlide));
-			_selectedSlide = null;
-			//if (_slideEditor)
-			//{
-				//(_slideEditor as IEditor).target = null;
-				//(_slideEditor as IEditor).hide();
-			//}
-		}
-		
-		private function mouseMoveHandler(event:MouseEvent):void 
-		{
-			_selectedSlide.x = super.mouseX - (_selectedSlide.clickLocation.x + x);
-			if (_slideEditor)
-			{
-				(_slideEditor as IEditor).update();
 			}
 		}
 		
@@ -328,6 +345,45 @@
 			}
 			_dataProviderCopy = _dataProvider.copy();
 			super.dispatchEvent(new GUIEvent(GUIEvent.DATA_CHANGED));
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Event handlers
+		//
+		//--------------------------------------------------------------------------
+		
+		private function slide_mouseDownHandler(event:MouseEvent):void 
+		{
+			_selectedSlide = event.target as Slide;
+			stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMoveHandler, false, 0, true);
+			stage.addEventListener(MouseEvent.MOUSE_UP, mouseUpHandler, false, 0, true);
+			if (_slideEditor)
+			{
+				(_slideEditor as IEditor).target = _selectedSlide;
+				(_slideEditor as IEditor).show();
+			}
+		}
+		
+		private function mouseUpHandler(event:MouseEvent):void 
+		{
+			stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+			super.dispatchEvent(new ToolEvent(ToolEvent.MOVED, false, false, _selectedSlide));
+			_selectedSlide = null;
+			//if (_slideEditor)
+			//{
+				//(_slideEditor as IEditor).target = null;
+				//(_slideEditor as IEditor).hide();
+			//}
+		}
+		
+		private function mouseMoveHandler(event:MouseEvent):void 
+		{
+			_selectedSlide.x = super.mouseX - (_selectedSlide.clickLocation.x + x);
+			if (_slideEditor)
+			{
+				(_slideEditor as IEditor).update();
+			}
 		}
 		
 	}

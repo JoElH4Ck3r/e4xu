@@ -178,7 +178,7 @@
 		protected var _document:Object;
 		protected var _id:String;
 		protected var _invalidProperties:Object = { };
-		protected var _childLayouts:Vector.<ILayoutClient> = new Vector.<ILayoutClient>(0, false);
+		protected var _childLayouts:Vector.<ILayoutClient> = new <ILayoutClient>[];
 		protected var _layoutParent:ILayoutClient;
 		protected var _validator:LayoutValidator;
 		protected var _hasPendingValidation:Boolean;
@@ -340,9 +340,35 @@
 			dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
 		}
 		
-		private function childOpenedHandler(event:GUIEvent):void 
+		public function unselectRecursively(selection:DisplayObject):Boolean
 		{
-			if (event.target !== this) validate(_invalidProperties);
+			var ret:Boolean;
+			if (selection !== this)
+			{
+				if (_selected)
+				{
+					selected = false;
+					return false;
+				}
+			}
+			for (var dobj:Object in _children)
+			{
+				if ((dobj is BranchRenderer))
+				{
+					ret = (dobj as BranchRenderer).unselectRecursively(selection);
+					if (!ret) return false;
+				}
+				else if ((dobj is LeafRenderer))
+				{
+					if ((dobj as LeafRenderer).selected && 
+						selection !== (dobj as DisplayObject))
+					{
+						(dobj as LeafRenderer).selected = false;
+						return false;
+					}
+				}
+			}
+			return true;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -405,60 +431,6 @@
 				//trace("2 lastHeight, super.height", lastHeight, super.height);
 				//_layoutParent.invalidate("", undefined, true);
 			}
-		}
-		
-		private function createLeaf(xml:XML):IRenderer
-		{
-			var ibRenderer:IRenderer;
-			for (var obj:Object in _cachedChildren)
-			{
-				if ((obj as IRenderer).data && (obj as IRenderer).data === xml)
-				{
-					ibRenderer = obj as IRenderer;
-					break;
-				}
-			}
-			if (!ibRenderer) ibRenderer = new LeafRenderer();
-			if (_leafLabelField !== "" && _leafLabelField !== null)
-				ibRenderer.labelField = _leafLabelField;
-			if (_leafLabelFunction !== null)
-			{
-				ibRenderer.labelFunction = _leafLabelFunction;
-			}
-			if (ibRenderer is LeafRenderer)
-			{
-				(ibRenderer as LeafRenderer).iconFactory = _docIconFactory; 
-			}
-			return ibRenderer;
-		}
-		
-		private function createBranch(xml:XML):IBranchRenderer
-		{
-			var ibRenderer:IBranchRenderer;
-			for (var obj:Object in _cachedChildren)
-			{
-				if (!(obj is IBranchRenderer)) continue;
-				if ((obj as IBranchRenderer).data === xml)
-				{
-					ibRenderer = obj as IBranchRenderer;
-					break;
-				}
-			}
-			if (!ibRenderer) ibRenderer = new BranchRenderer();
-			ibRenderer.closedIcon = _closedIcon;
-			ibRenderer.openIcon = _openIcon;
-			ibRenderer.docIconFactory = _docIconFactory;
-			if (_labelField !== "" && _labelField !== null)
-				ibRenderer.labelField = _labelField;
-			if (_leafLabelFunction !== null)
-			{
-				ibRenderer.leafLabelFunction = _leafLabelFunction;
-			}
-			ibRenderer.folderIcon = _folderIcon;
-			ibRenderer.folderFactory = _folderFactory;
-			if (_labelFunction !== null)
-				ibRenderer.labelFunction = _labelFunction;
-			return ibRenderer;
 		}
 		
 		protected function drawUI():void
@@ -528,66 +500,58 @@
 			_label.x = _folder.x + _folder.width + 3;
 		}
 		
-		private function openClose_clickHandler(event:MouseEvent):void 
+		protected function createLeaf(xml:XML):IRenderer
 		{
-			opened = !_opened;
-		}
-		
-		private function label_clickHandler(event:MouseEvent):void 
-		{
-			selected = true;
-		}
-		
-		private function label_focusOutHandler(event:FocusEvent):void 
-		{
-			_label.selectable = false;
-			_label.border = false;
-			_label.type = TextFieldType.DYNAMIC;
-		}
-		
-		private function label_clickDoubleHandler(event:MouseEvent):void 
-		{
-			_label.selectable = true;
-			_label.setSelection(0, _label.text.length);
-			_label.border = true;
-			_label.borderColor = 0xA0A0A0;
-			_label.type = TextFieldType.INPUT;
-		}
-		
-		private function folder_clickHandler(event:MouseEvent):void 
-		{
-			selected = true;
-		}
-		
-		public function unselectRecursively(selection:DisplayObject):Boolean
-		{
-			var ret:Boolean;
-			if (selection !== this)
+			var ibRenderer:IRenderer;
+			for (var obj:Object in _cachedChildren)
 			{
-				if (_selected)
+				if ((obj as IRenderer).data && (obj as IRenderer).data === xml)
 				{
-					selected = false;
-					return false;
+					ibRenderer = obj as IRenderer;
+					break;
 				}
 			}
-			for (var dobj:Object in _children)
+			if (!ibRenderer) ibRenderer = new LeafRenderer();
+			if (_leafLabelField !== "" && _leafLabelField !== null)
+				ibRenderer.labelField = _leafLabelField;
+			if (_leafLabelFunction !== null)
 			{
-				if ((dobj is BranchRenderer))
+				ibRenderer.labelFunction = _leafLabelFunction;
+			}
+			if (ibRenderer is LeafRenderer)
+			{
+				(ibRenderer as LeafRenderer).iconFactory = _docIconFactory; 
+			}
+			return ibRenderer;
+		}
+		
+		protected function createBranch(xml:XML):IBranchRenderer
+		{
+			var ibRenderer:IBranchRenderer;
+			for (var obj:Object in _cachedChildren)
+			{
+				if (!(obj is IBranchRenderer)) continue;
+				if ((obj as IBranchRenderer).data === xml)
 				{
-					ret = (dobj as BranchRenderer).unselectRecursively(selection);
-					if (!ret) return false;
-				}
-				else if ((dobj is LeafRenderer))
-				{
-					if ((dobj as LeafRenderer).selected && 
-						selection !== (dobj as DisplayObject))
-					{
-						(dobj as LeafRenderer).selected = false;
-						return false;
-					}
+					ibRenderer = obj as IBranchRenderer;
+					break;
 				}
 			}
-			return true;
+			if (!ibRenderer) ibRenderer = new BranchRenderer();
+			ibRenderer.closedIcon = _closedIcon;
+			ibRenderer.openIcon = _openIcon;
+			ibRenderer.docIconFactory = _docIconFactory;
+			if (_labelField !== "" && _labelField !== null)
+				ibRenderer.labelField = _labelField;
+			if (_leafLabelFunction !== null)
+			{
+				ibRenderer.leafLabelFunction = _leafLabelFunction;
+			}
+			ibRenderer.folderIcon = _folderIcon;
+			ibRenderer.folderFactory = _folderFactory;
+			if (_labelFunction !== null)
+				ibRenderer.labelFunction = _labelFunction;
+			return ibRenderer;
 		}
 		
 		protected function drawLines():void
@@ -644,9 +608,46 @@
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Private methods
+		//  Event handlers
 		//
 		//--------------------------------------------------------------------------
+		
+		private function childOpenedHandler(event:GUIEvent):void 
+		{
+			if (event.target !== this) validate(_invalidProperties);
+		}
+		
+		private function openClose_clickHandler(event:MouseEvent):void 
+		{
+			opened = !_opened;
+		}
+		
+		private function label_clickHandler(event:MouseEvent):void 
+		{
+			selected = true;
+		}
+		
+		private function label_focusOutHandler(event:FocusEvent):void 
+		{
+			_label.selectable = false;
+			_label.border = false;
+			_label.type = TextFieldType.DYNAMIC;
+		}
+		
+		private function label_clickDoubleHandler(event:MouseEvent):void 
+		{
+			_label.selectable = true;
+			_label.setSelection(0, _label.text.length);
+			_label.border = true;
+			_label.borderColor = 0xA0A0A0;
+			_label.type = TextFieldType.INPUT;
+		}
+		
+		private function folder_clickHandler(event:MouseEvent):void 
+		{
+			selected = true;
+		}
+		
 	}
 	
 }

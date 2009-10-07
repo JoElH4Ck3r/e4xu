@@ -1,5 +1,27 @@
-﻿package org.wvxvws.tools 
+﻿////////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (C) Oleg Sivokon email: olegsivokon@gmail.com
+//  
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or any later version.
+//  
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//  GNU General Public License for more details.
+//  
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, write to the Free Software
+//  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+//  Or visit http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+//
+////////////////////////////////////////////////////////////////////////////////
+
+package org.wvxvws.tools 
 {
+	//{ imports
 	import flash.display.BitmapData;
 	import flash.display.Graphics;
 	import flash.display.Sprite;
@@ -10,26 +32,19 @@
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import org.wvxvws.gui.DIV;
+	//}
 	
 	/**
-	 * ...
+	 * Ruler class.
 	 * @author wvxvw
 	 */
 	public class Ruler extends DIV
 	{
-		protected var _ratio:uint = 10;
-		protected var _step:uint = 2;
-		protected var _position:int;
-		protected var _bitmapData:BitmapData;
-		protected var _textFormat:TextFormat = new TextFormat("_sans", 10);
-		protected var _textHolder:Sprite;
-		protected var _direction:Boolean;
-		protected var _numbersDown:Boolean;
-		protected var _bigDivision:uint = 15;
-		protected var _smallDivision:uint = 10;
-		protected var _zoom:Number = 1;
-		
-		public function Ruler() { super(); }
+		//--------------------------------------------------------------------------
+		//
+		//  Public properties
+		//
+		//--------------------------------------------------------------------------
 		
 		public function get ratio():uint { return _ratio; }
 		
@@ -82,6 +97,32 @@
 			_zoom = value;
 			dispatchEvent(new Event("zoomChange"));
 		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected properties
+		//
+		//--------------------------------------------------------------------------
+		
+		protected var _ratio:uint = 10;
+		protected var _step:uint = 2;
+		protected var _position:int;
+		protected var _bitmapData:BitmapData;
+		protected var _textFormat:TextFormat = new TextFormat("_sans", 10);
+		protected var _textHolder:Sprite;
+		protected var _direction:Boolean;
+		protected var _numbersDown:Boolean;
+		protected var _bigDivision:uint = 15;
+		protected var _smallDivision:uint = 10;
+		protected var _zoom:Number = 1;
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+		
+		public function Ruler() { super(); }
 		
 		public override function validate(properties:Object):void 
 		{
@@ -235,6 +276,12 @@
 				_textHolder.scrollRect = textBounds;
 			}
 		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
 		
 		protected function createTextField(where:Sprite):TextField
 		{

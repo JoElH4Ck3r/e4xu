@@ -52,103 +52,6 @@ package org.wvxvws.gui.renderers
 		//
 		//--------------------------------------------------------------------------
 		
-		public override function set width(value:Number):void 
-		{
-			if (_width === value) return;
-			_width = value;
-			render();
-		}
-		
-		//--------------------------------------------------------------------------
-		//
-		//  Protected properties
-		//
-		//--------------------------------------------------------------------------
-		
-		protected var _document:Object;
-		protected var _id:String;
-		protected var _data:XML;
-		protected var _dataCopy:XML;
-		protected var _icon:DisplayObject;
-		protected var _field:TextField;
-		protected var _hkField:TextField;
-		protected var _enabled:Boolean;
-		protected var _clickHandler:Function;
-		protected var _labelFunction:Function;
-		protected var _labelField:String;
-		protected var _kind:String;
-		protected var _hotKeys:Vector.<int>;
-		protected var _iconFactory:Class;
-		protected var _arrow:Sprite;
-		protected var _hasChildNodes:Boolean;
-		protected var _defaultFormat:TextFormat = new TextFormat("_sans", 11);
-		protected var _disabledFormat:TextFormat = new TextFormat("_sans", 11, 0xC0C0C0);
-		protected var _fieldScrollRect:Rectangle = new Rectangle();
-		protected var _width:int;
-		protected var _selection:Sprite;
-		
-		//--------------------------------------------------------------------------
-		//
-		//  Private properties
-		//
-		//--------------------------------------------------------------------------
-		
-		//--------------------------------------------------------------------------
-		//
-		//  Constructor
-		//
-		//--------------------------------------------------------------------------
-		
-		public function MenuRenderer()
-		{
-			super();
-			super.addEventListener(MouseEvent.MOUSE_OVER, mouseOverHandler);
-			super.addEventListener(MouseEvent.MOUSE_OUT, mouseOutHandler);
-			super.addEventListener(MouseEvent.CLICK, mclickHandler);
-		}
-		
-		private function mclickHandler(event:Event = null):void 
-		{
-			if (_clickHandler !== null) _clickHandler(_data);
-		}
-		
-		private function mouseOverHandler(event:MouseEvent):void 
-		{
-			if (_kind !== Menu.SEPARATOR) drawSelection(true);
-		}
-		
-		private function mouseOutHandler(event:MouseEvent):void
-		{
-			if (_kind !== Menu.SEPARATOR) drawSelection(false);
-		}
-		
-		public function drawSelection(isSelected:Boolean):void
-		{
-			if (isSelected)
-			{
-				if (!_selection)
-				{
-					_selection = new Sprite();
-					_selection.mouseEnabled = false;
-				}
-				_selection.graphics.clear();
-				_selection.graphics.lineStyle(1, 0xFF, 0.5, true);
-				if (_enabled) _selection.graphics.beginFill(0xFF, 0.2);
-				else _selection.graphics.beginFill(0, 0);
-				_selection.graphics.drawRect(0, 0, _width, Math.max(super.height, 20));
-				_selection.graphics.endFill();
-				super.addChild(_selection);
-				super.dispatchEvent(new GUIEvent(GUIEvent.OPENED, true, true));
-			}
-			else
-			{
-				if (_selection && super.contains(_selection))
-				{
-					super.removeChild(_selection);
-				}
-			}
-		}
-		
 		/* INTERFACE org.wvxvws.gui.renderers.IMenuRenderer */
 		
 		public function set iconFactory(value:Class):void
@@ -217,10 +120,59 @@ package org.wvxvws.gui.renderers
 			render();
 		}
 		
-		public function initialized(document:Object, id:String):void
+		public override function set width(value:Number):void 
 		{
-			_document = document;
-			_id = id;
+			if (_width === value) return;
+			_width = value;
+			render();
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected properties
+		//
+		//--------------------------------------------------------------------------
+		
+		protected var _document:Object;
+		protected var _id:String;
+		protected var _data:XML;
+		protected var _dataCopy:XML;
+		protected var _icon:DisplayObject;
+		protected var _field:TextField;
+		protected var _hkField:TextField;
+		protected var _enabled:Boolean;
+		protected var _clickHandler:Function;
+		protected var _labelFunction:Function;
+		protected var _labelField:String;
+		protected var _kind:String;
+		protected var _hotKeys:Vector.<int>;
+		protected var _iconFactory:Class;
+		protected var _arrow:Sprite;
+		protected var _hasChildNodes:Boolean;
+		protected var _defaultFormat:TextFormat = new TextFormat("_sans", 11);
+		protected var _disabledFormat:TextFormat = new TextFormat("_sans", 11, 0xC0C0C0);
+		protected var _fieldScrollRect:Rectangle = new Rectangle();
+		protected var _width:int;
+		protected var _selection:Sprite;
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Private properties
+		//
+		//--------------------------------------------------------------------------
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+		
+		public function MenuRenderer()
+		{
+			super();
+			super.addEventListener(MouseEvent.MOUSE_OVER, mouseOverHandler);
+			super.addEventListener(MouseEvent.MOUSE_OUT, mouseOutHandler);
+			super.addEventListener(MouseEvent.CLICK, mclickHandler);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -228,6 +180,39 @@ package org.wvxvws.gui.renderers
 		//  Public methods
 		//
 		//--------------------------------------------------------------------------
+		
+		public function drawSelection(isSelected:Boolean):void
+		{
+			if (isSelected)
+			{
+				if (!_selection)
+				{
+					_selection = new Sprite();
+					_selection.mouseEnabled = false;
+				}
+				_selection.graphics.clear();
+				_selection.graphics.lineStyle(1, 0xFF, 0.5, true);
+				if (_enabled) _selection.graphics.beginFill(0xFF, 0.2);
+				else _selection.graphics.beginFill(0, 0);
+				_selection.graphics.drawRect(0, 0, _width, Math.max(super.height, 20));
+				_selection.graphics.endFill();
+				super.addChild(_selection);
+				super.dispatchEvent(new GUIEvent(GUIEvent.OPENED, true, true));
+			}
+			else
+			{
+				if (_selection && super.contains(_selection))
+				{
+					super.removeChild(_selection);
+				}
+			}
+		}
+		
+		public function initialized(document:Object, id:String):void
+		{
+			_document = document;
+			_id = id;
+		}
 		
 		//--------------------------------------------------------------------------
 		//
@@ -340,6 +325,22 @@ package org.wvxvws.gui.renderers
 		//  Private methods
 		//
 		//--------------------------------------------------------------------------
+		
+		private function mclickHandler(event:Event = null):void 
+		{
+			if (_clickHandler !== null) _clickHandler(_data);
+		}
+		
+		private function mouseOverHandler(event:MouseEvent):void 
+		{
+			if (_kind !== Menu.SEPARATOR) drawSelection(true);
+		}
+		
+		private function mouseOutHandler(event:MouseEvent):void
+		{
+			if (_kind !== Menu.SEPARATOR) drawSelection(false);
+		}
+		
 	}
 	
 }

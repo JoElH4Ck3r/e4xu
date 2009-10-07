@@ -1,4 +1,25 @@
-﻿package org.wvxvws.tools 
+﻿////////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (C) Oleg Sivokon email: olegsivokon@gmail.com
+//  
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or any later version.
+//  
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//  GNU General Public License for more details.
+//  
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, write to the Free Software
+//  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+//  Or visit http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+//
+////////////////////////////////////////////////////////////////////////////////
+
+package org.wvxvws.tools 
 {
 	import flash.display.BlendMode;
 	import flash.display.DisplayObject;
@@ -18,6 +39,11 @@
 	 */
 	public class TrimStratcher extends Sprite implements IMXMLObject, IEditor
 	{
+		//--------------------------------------------------------------------------
+		//
+		//  Public properties
+		//
+		//--------------------------------------------------------------------------
 		
 		public function get leftOut():InteractiveObject { return _leftOut; }
 		
@@ -86,6 +112,12 @@
 			if (_target) render();
 		}
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected properties
+		//
+		//--------------------------------------------------------------------------
+		
 		protected var _document:Object;
 		protected var _id:String;
 		
@@ -101,6 +133,12 @@
 		protected var _globalPoints:Vector.<Point> = 
 			new <Point>[new Point(), new Point(), new Point(), new Point()];
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+		
 		public function TrimStratcher()
 		{
 			super();
@@ -111,45 +149,23 @@
 			_rightOut = drawHandle(true);
 		}
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
+		
 		protected function removedHandler(event:Event):void 
 		{
 			stage.removeEventListener(MouseEvent.MOUSE_MOVE, stage_mouseMoveHandler);
 			stage.removeEventListener(MouseEvent.MOUSE_UP, stage_mouseUpHandler);
 		}
 		
-		public function render():void
-		{
-			if (!_target) return;
-			if (!super.root) return;
-			if (_leftOut && !super.contains(_leftOut))
-			{
-				_leftOut.addEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler);
-				super.addChild(_leftOut);
-			}
-			if (_leftIn && !super.contains(_leftIn))
-			{
-				_leftIn.addEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler);
-				super.addChild(_leftIn);
-			}
-			if (_rightIn && !super.contains(_rightIn))
-			{
-				_rightIn.addEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler);
-				super.addChild(_rightIn);
-			}
-			if (_rightOut && !super.contains(_rightOut))
-			{
-				_rightOut.addEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler);
-				super.addChild(_rightOut);
-			}
-			if (super.parent && super.parent !== super.root)
-			{
-				super.parent.removeChild(this);
-				((_target as DisplayObject).root as DisplayObjectContainer).addChildAt(
-					this, ((_target as DisplayObject).root as 
-						DisplayObjectContainer).numChildren);
-			}
-			update();
-		}
+		//--------------------------------------------------------------------------
+		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
 		
 		protected function mouseDownHandler(event:MouseEvent):void 
 		{
@@ -196,27 +212,52 @@
 			super.dispatchEvent(new ToolEvent(ToolEvent.RESIZED, false, false, _target));
 		}
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
+		
+		public function render():void
+		{
+			if (!_target) return;
+			if (!super.root) return;
+			if (_leftOut && !super.contains(_leftOut))
+			{
+				_leftOut.addEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler);
+				super.addChild(_leftOut);
+			}
+			if (_leftIn && !super.contains(_leftIn))
+			{
+				_leftIn.addEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler);
+				super.addChild(_leftIn);
+			}
+			if (_rightIn && !super.contains(_rightIn))
+			{
+				_rightIn.addEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler);
+				super.addChild(_rightIn);
+			}
+			if (_rightOut && !super.contains(_rightOut))
+			{
+				_rightOut.addEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler);
+				super.addChild(_rightOut);
+			}
+			if (super.parent && super.parent !== super.root)
+			{
+				super.parent.removeChild(this);
+				((_target as DisplayObject).root as DisplayObjectContainer).addChildAt(
+					this, ((_target as DisplayObject).root as 
+						DisplayObjectContainer).numChildren);
+			}
+			update();
+		}
+		
 		/* INTERFACE mx.core.IMXMLObject */
 		
 		public function initialized(document:Object, id:String):void
 		{
 			_document = document;
 			_id = id;
-		}
-		
-		private function drawHandle(dir:Boolean):Sprite
-		{
-			var s:Sprite = new Sprite();
-			var g:Graphics = s.graphics;
-			g.beginFill(0);
-			g.lineTo(0, 16);
-			if (dir) g.lineTo(8, 16);
-			else g.lineTo( -8, 16);
-			g.lineTo(0, 0);
-			g.endFill();
-			//s.blendMode = BlendMode.INVERT;
-			s.buttonMode = true;
-			return s;
 		}
 		
 		/* INTERFACE org.wvxvws.tools.IEditor */
@@ -235,6 +276,28 @@
 			_rightOut.x = bounds.right;
 			super.y = bounds.y;
 		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Private methods
+		//
+		//--------------------------------------------------------------------------
+		
+		private function drawHandle(dir:Boolean):Sprite
+		{
+			var s:Sprite = new Sprite();
+			var g:Graphics = s.graphics;
+			g.beginFill(0);
+			g.lineTo(0, 16);
+			if (dir) g.lineTo(8, 16);
+			else g.lineTo( -8, 16);
+			g.lineTo(0, 0);
+			g.endFill();
+			//s.blendMode = BlendMode.INVERT;
+			s.buttonMode = true;
+			return s;
+		}
+		
 	}
 
 }
