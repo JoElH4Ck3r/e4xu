@@ -21,6 +21,7 @@
 
 package org.wvxvws.gui.renderers 
 {
+	//{ imports
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
 	import flash.display.InteractiveObject;
@@ -33,6 +34,7 @@ package org.wvxvws.gui.renderers
 	import flash.text.TextFieldType;
 	import flash.text.TextFormat;
 	import org.wvxvws.gui.GUIEvent;
+	//}
 	
 	[Event(name="selected", type="org.wvxvws.gui.GUIEvent")]
 	
@@ -42,6 +44,83 @@ package org.wvxvws.gui.renderers
 	 */
 	public class LeafRenderer extends Sprite implements IRenderer
 	{
+		//--------------------------------------------------------------------------
+		//
+		//  Public properties
+		//
+		//--------------------------------------------------------------------------
+		
+		public function get isValid():Boolean
+		{
+			if (!_data) return false;
+			return _dataCopy.contains(_data);
+		}
+		
+		public function get data():XML { return _data; }
+		
+		public function set data(value:XML):void
+		{
+			if (isValid && _data === value) return;
+			_data = value;
+			_dataCopy = value.copy();
+			render();
+		}
+		
+		/* INTERFACE org.wvxvws.gui.renderers.IRenderer */
+		
+		public function set labelFunction(value:Function):void
+		{
+			if (_labelFunction === value) return;
+			_labelFunction = value;
+			if (_data) rendrerText();
+		}
+		
+		public function get iconClass():Class { return _iconClass; }
+		
+		public function set iconClass(value:Class):void 
+		{
+			if (_iconClass === value) return;
+			_iconClass = value;
+			render();
+		}
+		
+		public function get iconFactory():Function { return _iconFactory; }
+		
+		public function set iconFactory(value:Function):void 
+		{
+			_iconFactory = value;
+		}
+		
+		public function get selected():Boolean { return _selected; }
+		
+		public function set selected(value:Boolean):void 
+		{
+			if (_selected === value) return;
+			_selected = value;
+			if (_selected)
+			{
+				dispatchEvent(new GUIEvent(GUIEvent.SELECTED, true, true));
+				_field.background = true;
+				_field.backgroundColor = 0xD0D0D0;
+			}
+			else _field.background = false;
+		}
+		
+		public function get labelField():String { return _labelField; }
+		
+		public function set labelField(value:String):void 
+		{
+			if (_labelField === value) return;
+			_labelField = value;
+			if (_data) rendrerText();
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected properties
+		//
+		//--------------------------------------------------------------------------
+		
 		protected var _document:Object;
 		protected var _id:String;
 		protected var _data:XML;
@@ -58,7 +137,19 @@ package org.wvxvws.gui.renderers
 		protected var _dot:BitmapData;
 		protected var _selected:Boolean;
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+		
 		public function LeafRenderer() { super(); }
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
 		
 		/* INTERFACE org.wvxvws.gui.renderers.IRenderer */
 		
@@ -67,6 +158,12 @@ package org.wvxvws.gui.renderers
 			_document = document;
 			_id = id;
 		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
 		
 		protected function drawIcon():DisplayObject
 		{
@@ -103,43 +200,6 @@ package org.wvxvws.gui.renderers
 			t.addEventListener(MouseEvent.DOUBLE_CLICK, label_doubleClickHandler);
 			t.addEventListener(FocusEvent.FOCUS_OUT, label_focusOutHandler);
 			return t;
-		}
-		
-		private function label_focusOutHandler(event:FocusEvent):void 
-		{
-			_field.border = false;
-			_field.selectable = false;
-			_field.type = TextFieldType.DYNAMIC;
-		}
-		
-		private function label_doubleClickHandler(event:MouseEvent):void 
-		{
-			_field.border = true;
-			_field.borderColor = 0xA0A0A0;
-			_field.selectable = true;
-			_field.setSelection(0, _field.text.length);
-			_field.type = TextFieldType.INPUT;
-		}
-		
-		private function label_clickHandler(event:MouseEvent):void 
-		{
-			selected = true;
-		}
-		
-		public function get isValid():Boolean
-		{
-			if (!_data) return false;
-			return _dataCopy.contains(_data);
-		}
-		
-		public function get data():XML { return _data; }
-		
-		public function set data(value:XML):void
-		{
-			if (isValid && _data === value) return;
-			_data = value;
-			_dataCopy = value.copy();
-			render();
 		}
 		
 		protected function render():void
@@ -190,59 +250,38 @@ package org.wvxvws.gui.renderers
 			}
 		}
 		
-		public function get labelField():String { return _labelField; }
+		//--------------------------------------------------------------------------
+		//
+		//  Event handlers
+		//
+		//--------------------------------------------------------------------------
 		
-		public function set labelField(value:String):void 
+		private function label_focusOutHandler(event:FocusEvent):void 
 		{
-			if (_labelField === value) return;
-			_labelField = value;
-			if (_data) rendrerText();
+			_field.border = false;
+			_field.selectable = false;
+			_field.type = TextFieldType.DYNAMIC;
 		}
 		
-		protected function icon_mouseDownHandler(event:MouseEvent):void 
+		private function label_doubleClickHandler(event:MouseEvent):void 
+		{
+			_field.border = true;
+			_field.borderColor = 0xA0A0A0;
+			_field.selectable = true;
+			_field.setSelection(0, _field.text.length);
+			_field.type = TextFieldType.INPUT;
+		}
+		
+		private function label_clickHandler(event:MouseEvent):void 
 		{
 			selected = true;
 		}
 		
-		/* INTERFACE org.wvxvws.gui.renderers.IRenderer */
-		
-		public function set labelFunction(value:Function):void
+		private function icon_mouseDownHandler(event:MouseEvent):void 
 		{
-			if (_labelFunction === value) return;
-			_labelFunction = value;
-			if (_data) rendrerText();
+			selected = true;
 		}
 		
-		public function get iconClass():Class { return _iconClass; }
-		
-		public function set iconClass(value:Class):void 
-		{
-			if (_iconClass === value) return;
-			_iconClass = value;
-			render();
-		}
-		
-		public function get iconFactory():Function { return _iconFactory; }
-		
-		public function set iconFactory(value:Function):void 
-		{
-			_iconFactory = value;
-		}
-		
-		public function get selected():Boolean { return _selected; }
-		
-		public function set selected(value:Boolean):void 
-		{
-			if (_selected === value) return;
-			_selected = value;
-			if (_selected)
-			{
-				dispatchEvent(new GUIEvent(GUIEvent.SELECTED, true, true));
-				_field.background = true;
-				_field.backgroundColor = 0xD0D0D0;
-			}
-			else _field.background = false;
-		}
 	}
 	
 }

@@ -122,6 +122,8 @@
 		
 		public function get selectedChild():IRenderer { return _selectedChild; }
 		
+		public function get nestColumn():Column { return _nestColumn; }
+		
 		protected var _cellHeight:int = -0x8000000;
 		protected var _itemCount:int;
 		protected var _columns:Vector.<Column> = new <Column>[];

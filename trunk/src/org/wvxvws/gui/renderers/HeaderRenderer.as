@@ -1,11 +1,13 @@
 ﻿package org.wvxvws.gui.renderers 
 {
+	//{ imports
 	import flash.display.Graphics;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	import org.wvxvws.gui.renderers.Renderer;
 	import org.wvxvws.gui.StatefulButton;
 	import org.wvxvws.tools.ToolEvent;
+	//}
 	
 	[Event(name="resized", type="org.wvxvws.tools.ToolEvent")]
 	[Event(name="resizeEnd", type="org.wvxvws.tools.ToolEvent")]
@@ -17,6 +19,12 @@
 	 */
 	public class HeaderRenderer extends Renderer
 	{
+		//--------------------------------------------------------------------------
+		//
+		//  Public properties
+		//
+		//--------------------------------------------------------------------------
+		
 		public override function get width():Number { return super.width; }
 		
 		public override function set width(value:Number):void 
@@ -34,6 +42,12 @@
 			if (_data) renderText();
 		}
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected properties
+		//
+		//--------------------------------------------------------------------------
+		
 		protected var _minWidth:int = 30;
 		protected var _sortButton:StatefulButton = new StatefulButton();
 		protected var _sortUpClass:Class;
@@ -42,11 +56,23 @@
 		protected var _resizeHandle:Sprite = new Sprite();
 		protected var _resizing:Boolean;
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+		
 		public function HeaderRenderer()
 		{
 			super();
 			_backgroundColor = 0xC0C0C0;
 		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
 		
 		protected override function drawBackground():void 
 		{
