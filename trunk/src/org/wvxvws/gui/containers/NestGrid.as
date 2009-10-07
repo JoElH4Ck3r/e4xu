@@ -4,10 +4,13 @@
 	import flash.events.Event;
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
+	import org.wvxvws.cursor.Cursor;
 	import org.wvxvws.gui.GUIEvent;
+	import org.wvxvws.gui.renderers.HeaderRenderer;
 	import org.wvxvws.gui.renderers.IRenderer;
 	import org.wvxvws.gui.renderers.NestGridRenderer;
 	import org.wvxvws.gui.renderers.Renderer;
+	import org.wvxvws.tools.ToolEvent;
 	
 	[Event(name="opened", type="org.wvxvws.gui.GUIEvent")]
 	[Event(name="selected", type="org.wvxvws.gui.GUIEvent")]
@@ -85,6 +88,36 @@
 			invalidate("_nestColumn", _nestColumn, false);
 		}
 		
+		public function get headerRenderer():Class { return _headerRenderer; }
+		
+		public function set headerRenderer(value:Class):void 
+		{
+			if (_headerRenderer === value) return;
+			_headerRenderer = value;
+			invalidate("_headerRenderer", _headerRenderer, false);
+			dispatchEvent(new Event("headerRendererChanged"));
+		}
+		
+		public function get headerLabel():String { return _headerLabel; }
+		
+		public function set headerLabel(value:String):void 
+		{
+			if (_headerLabel === value) return;
+			_headerLabel = value;
+			invalidate("_headerLabel", _headerLabel, false);
+			dispatchEvent(new Event("headerLabelChanged"));
+		}
+		
+		public function get headerFactory():Function { return _headerFactory; }
+		
+		public function set headerFactory(value:Function):void 
+		{
+			if (_headerFactory === value) return;
+			_headerFactory = value;
+			invalidate("_headerFactory", _headerFactory, false);
+			dispatchEvent(new Event("headerFactoryChanged"));
+		}
+		
 		public function get selectedItem():XML { return _selectedItem; }
 		
 		public function get selectedChild():IRenderer { return _selectedChild; }
@@ -111,12 +144,27 @@
 		protected var _selectedItem:XML;
 		protected var _selectedChild:IRenderer;
 		
+		protected var _headerRenderer:Class;
+		protected var _headerLabel:String;
+		protected var _headerFactory:Function;
+		protected var _headerheight:int = 18;
+		protected var _headers:Vector.<IRenderer> = new <IRenderer>[];
+		protected var _columnsResizable:Boolean = true;
+		
 		public function NestGrid() 
 		{
 			super();
 			super._rendererFactory = Renderer;
+			_headerRenderer = HeaderRenderer;
 			super.addEventListener(GUIEvent.OPENED, openedHandler, false, int.MAX_VALUE);
 			super.addEventListener(GUIEvent.SELECTED, selectedHandler, false, int.MAX_VALUE);
+			super.addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
+		}
+		
+		protected function addedToStageHandler(event:Event):void 
+		{
+			removeEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
+			Cursor.init(stage);
 		}
 		
 		private function selectedHandler(event:GUIEvent):void 
@@ -190,9 +238,12 @@
 			var col:Column;
 			var totalWidth:int = super.width - (_padding.right + _padding.left);
 			var j:int = _columns.length;
+			var hRenderer:IRenderer;
 			while (i < j)
 			{
 				col = _columns[i];
+				if (_headers.length - 1 < i)
+					_headers.push(new _headerRenderer() as IRenderer);
 				if (!super.contains(col))
 				{
 					if (col.minWidth > col.definedWidth)
@@ -204,7 +255,7 @@
 					if (j - i === 1 && totalWidth + _gutterH > 0)
 						col.width += totalWidth + _gutterH;
 					col.x = cumulativeX;
-					col.y = _padding.top;
+					col.y = _headerheight + _padding.top;
 					col.gutter = _gutterV;
 					if (col === _nestColumn)
 						_nestColumn.rendererFactory = NestGridRenderer;
@@ -213,9 +264,28 @@
 					col.initialized(this, "column" + _columns.indexOf(col));
 					cumulativeX += col.width + _gutterH;
 				}
+				(_headers[i] as DisplayObject).width = col.width;
+				(_headers[i] as DisplayObject).x = col.x;
+				(_headers[i] as DisplayObject).height = _headerheight;
+				(_headers[i] as HeaderRenderer).resizable = _columnsResizable;
+				if (_headerLabel !== null) _headers[i].labelField = _headerLabel;
+				if (_headerFactory !== null)
+					_headers[i].labelFunction = _headerFactory;
+				_headers[i].data = _dataProvider;
+				(_headers[i] as DisplayObject).addEventListener(
+						ToolEvent.RESIZE_END, header_resizeEndHandler);
+				(_headers[i] as DisplayObject).addEventListener(
+						ToolEvent.RESIZE_REQUEST, header_resizeRequestHandler);
+				(_headers[i] as DisplayObject).addEventListener(
+						ToolEvent.RESIZE_START, header_resizeStartHandler);
+				(_headers[i] as DisplayObject).addEventListener(
+						ToolEvent.RESIZED, header_resizedHandler);
+				addChild(_headers[i] as DisplayObject);
 				col.dataProvider = _dataProvider;
 				i++;
 			}
+			_subContainers = Vector.<Pane>(_columns.concat());
+			_dataProvider.setNotification(providerNotifier);
 			for each (col in _columns)
 			{
 				if (!col.parentIsCreator) col.parentIsCreator = true;
@@ -292,6 +362,31 @@
 			}
 			if (_dispatchCreated) 
 				dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED, false, true));
+		}
+		
+		protected function header_resizedHandler(event:ToolEvent):void 
+		{
+			
+		}
+		
+		protected function header_resizeStartHandler(event:ToolEvent):void 
+		{
+			
+		}
+		
+		protected function header_resizeRequestHandler(event:ToolEvent):void 
+		{
+			
+		}
+		
+		protected function header_resizeEndHandler(event:ToolEvent):void 
+		{
+			
+		}
+		
+		public override function getItemForNode(node:XML):DisplayObject
+		{
+			return this;
 		}
 		
 		protected function getNodeDepth(node:XML):int

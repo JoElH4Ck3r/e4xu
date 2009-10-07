@@ -53,7 +53,7 @@
 			valid = false;
 		}
 		
-		public function get trimRight():uint { return _trimBounds.right; }
+		public function get trimRight():uint { return _trimPoint.y; }
 		
 		public function set trimRight(value:uint):void 
 		{

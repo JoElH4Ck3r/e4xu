@@ -84,6 +84,8 @@ package org.wvxvws.gui.renderers
 			addChild(_field);
 			_field.selectable = false;
 			_field.autoSize = TextFieldAutoSize.LEFT;
+			_field.width = 1;
+			_field.height = 1;
 		}
 		
 		/* INTERFACE org.wvxvws.gui.renderers.IRenderer */
@@ -98,7 +100,7 @@ package org.wvxvws.gui.renderers
 		{
 			if (_labelFunction === value) return;
 			_labelFunction = value;
-			if (_data) rendrerText();
+			if (_data) renderText();
 		}
 		
 		public function get data():XML { return _data; }
@@ -108,10 +110,10 @@ package org.wvxvws.gui.renderers
 			if (isValid && _data === value) return;
 			_data = value;
 			if (!_data) return;
-			rendrerText();
+			renderText();
 		}
 		
-		protected function rendrerText():void
+		protected function renderText():void
 		{
 			if (!_data) return;
 			_field.defaultTextFormat = _textFormat;
@@ -145,7 +147,7 @@ package org.wvxvws.gui.renderers
 		{
 			if (_labelField === value) return;
 			_labelField = value;
-			if (_data) rendrerText();
+			if (_data) renderText();
 		}
 		
 		public function get isValid():Boolean
