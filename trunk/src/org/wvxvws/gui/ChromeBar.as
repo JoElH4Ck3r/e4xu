@@ -5,7 +5,7 @@
 	import flash.text.TextField;
 	
 	/**
-	 * ...
+	 * ChromeBar class.
 	 * @author wvxvw
 	 */
 	public class ChromeBar extends DIV

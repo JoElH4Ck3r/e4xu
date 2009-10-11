@@ -3,8 +3,12 @@
 	//{imports
 	import flash.display.DisplayObject;
 	import flash.events.Event;
+	import flash.geom.Rectangle;
 	import org.wvxvws.gui.DIV;
+	import org.wvxvws.gui.layout.Constraints;
 	//}
+	
+	[DefaultProperty("children")]
 	
 	/**
 	* Rack class.
@@ -20,20 +24,16 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public static const MAX:int = 2;
-		public static const MIDDLE:int = 1;
-		public static const MIN:int = 0;
-		
 		//------------------------------------
 		//  Public property horizontalAlign
 		//------------------------------------
 		
-		[Bindable("horizontalAlignChange")]
+		[Bindable("horizontalAlignChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>horizontalAlignChange</code> event.
+		* When this property is modified, it dispatches the <code>horizontalAlignChanged</code> event.
 		*/
 		public function get horizontalAlign():int { return _horizontalAlign; }
 		
@@ -41,7 +41,7 @@
 		{
 			if (_horizontalAlign == value || value > 2 || value < 0) return;
 			_horizontalAlign = value;
-			dispatchEvent(new Event("horizontalAlignChange"));
+			dispatchEvent(new Event("horizontalAlignChanged"));
 		}
 		
 		//------------------------------------
@@ -68,52 +68,73 @@
 		//  Public property padding
 		//------------------------------------
 		
-		[Bindable("paddingChange")]
+		[Bindable("paddingChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>paddingChange</code> event.
+		* When this property is modified, it dispatches the <code>paddingChanged</code> event.
 		*/
-		public function get padding():int { return _padding; }
+		public function get padding():Rectangle { return _padding; }
 		
-		public function set padding(value:int):void 
+		public function set padding(value:Rectangle):void 
 		{
-			if (_padding == value) return;
-			_padding = value;
-			dispatchEvent(new Event("paddingChange"));
+			if (_padding == value || value && _padding && _padding.equals(value))
+				return;
+			_padding = value ? value.clone() : null;
+			dispatchEvent(new Event("paddingChanged"));
 		}
 		
 		//------------------------------------
-		//  Public property gutter
+		//  Public property gutterH
 		//------------------------------------
 		
-		[Bindable("gutterChange")]
+		[Bindable("gutterHChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>gutterChange</code> event.
+		* When this property is modified, it dispatches the <code>gutterHChanged</code> event.
 		*/
-		public function get gutter():int { return _gutter; }
+		public function get gutterH():int { return _gutterH; }
 		
-		public function set gutter(value:int):void 
+		public function set gutterH(value:int):void 
 		{
-			if (_gutter == value) return;
-			_gutter = value;
-			dispatchEvent(new Event("gutterChange"));
+			if (_gutterH == value) return;
+			_gutterH = value;
+			dispatchEvent(new Event("gutterHChanged"));
+		}
+		
+		//------------------------------------
+		//  Public property gutterV
+		//------------------------------------
+		
+		[Bindable("gutterVChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>gutterVChanged</code> event.
+		*/
+		public function get gutterV():int { return _gutterV; }
+		
+		public function set gutterV(value:int):void 
+		{
+			if (_gutterV == value) return;
+			_gutterV = value;
+			dispatchEvent(new Event("gutterVChanged"));
 		}
 		
 		//------------------------------------
 		//  Public property allowOverlap
 		//------------------------------------
 		
-		[Bindable("allowOverlapChange")]
+		[Bindable("allowOverlapChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>allowOverlapChange</code> event.
+		* When this property is modified, it dispatches the <code>allowOverlapChanged</code> event.
 		*/
 		public function get allowOverlap():Boolean { return _allowOverlap; }
 		
@@ -121,7 +142,17 @@
 		{
 			if (_allowOverlap == value) return;
 			_allowOverlap = value;
-			dispatchEvent(new Event("allowOverlapChange"));
+			dispatchEvent(new Event("allowOverlapChanged"));
+		}
+		
+		public function get children():Vector.<DisplayObject> { return _children.concat(); }
+		
+		public function set children(value:Vector.<DisplayObject>):void 
+		{
+			if (_children === value) return;
+			if (!value) _children = new <DisplayObject>[];
+			else _children = value.concat();
+			constrain();
 		}
 		
 		//--------------------------------------------------------------------------
@@ -130,11 +161,14 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		protected var _horisontalAlign:int;
+		protected var _horizontalAlign:int;
 		protected var _verticalAlign:int;
-		protected var _gutter:int;
-		protected var _padding:int;
+		protected var _gutterH:int;
+		protected var _gutterV:int;
+		protected var _padding:Rectangle = new Rectangle();
 		protected var _allowOverlap:Boolean;
+		protected var _layoutRect:Rectangle = new Rectangle();
+		protected var _children:Vector.<DisplayObject> = new <DisplayObject>[];
 		
 		//--------------------------------------------------------------------------
 		//
@@ -156,100 +190,64 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		override public function addChild(child:DisplayObject):DisplayObject 
+		public override function addChild(child:DisplayObject):DisplayObject 
 		{
 			var child:DisplayObject = super.addChild(child);
-			constrain();
+			var i:int = _children.indexOf(child);
+			if (i > -1) _children.splice(i, 1);
+			_children.push(child);
+			this.constrain();
 			return child;
 		}
 		
-		override public function addChildAt(child:DisplayObject, index:int):DisplayObject 
+		public override function addChildAt(child:DisplayObject, index:int):DisplayObject 
 		{
 			var child:DisplayObject = super.addChildAt(child, index);
-			constrain();
+			var i:int = _children.indexOf(child);
+			if (i > -1) _children.splice(i, 1);
+			_children.splice(index, 0, child);
+			this.constrain();
 			return child;
 		}
 		
-		override public function removeChild(child:DisplayObject):DisplayObject 
+		public override function removeChild(child:DisplayObject):DisplayObject 
 		{
 			var child:DisplayObject = super.removeChild(child);
-			constrain();
+			_children.pop();
+			this.constrain();
 			return child;
 		}
 		
-		override public function removeChildAt(index:int):DisplayObject 
+		public override function removeChildAt(index:int):DisplayObject 
 		{
 			var child:DisplayObject = super.removeChildAt(index);
-			constrain();
+			_children.splice(index, 1);
+			this.constrain();
 			return child;
 		}
 		
 		public function constrain():void
 		{
-			var minHeight:int;
-			var minWidth:int;
-			var maxHeight:int;
-			var maxWidth:int;
-			var totalWidth:int;
-			var totalHeight:int;
-			var children:Array = [];
-			var child:DisplayObject;
-			var lastChild:DisplayObject;
-			var toBeX:int;
-			var toBeY:int;
 			var i:int;
-			while (i < numChildren)
+			var j:int = super.numChildren;
+			var child:DisplayObject;
+			while (i < j)
 			{
 				child = super.getChildAt(i);
-				children.push(child);
-				minHeight = Math.min(minHeight, Math.abs(child.height));
-				minWidth = Math.min(minWidth, Math.abs(child.width));
-				maxHeight = Math.max(maxHeight, Math.abs(child.height));
-				maxWidth = Math.max(maxWidth, Math.abs(child.width));
-				totalWidth += Math.abs(child.width) + _gutter;
-				totalHeight += Math.abs(child.height) + _gutter;
+				if (_children.indexOf(child)) continue;
+				_children.push(super.getChildAt(i));
 				i++;
 			}
-			if (_allowOverlap)
+			_layoutRect.width = _bounds.x;
+			_layoutRect.width = _bounds.y;
+			Constraints.constrain(_children, 0, 
+						true, _gutterH, _gutterV, _padding, _layoutRect);
+			i = 0;
+			while (i < j)
 			{
-				
-			}
-			else
-			{
-				for each (child in children)
-				{
-					switch (_horisontalAlign)
-					{
-						case 0:
-							toBeX = 0;
-							if (lastChild) toBeX += lastChild.x + Math.abs(child.width) + _gutter;
-							break;
-						case 1:
-							toBeX = (maxWidth - Math.abs(child.width)) / 2;
-							break;
-						case 2:
-							toBeX = totalWidth - Math.abs(child.width);
-							if (lastChild) toBeX -= (lastChild.x + _gutter);
-							break;
-					}
-					switch (_verticalAlign)
-					{
-						case 0:
-							toBeY = 0;
-							if (lastChild) toBeY += lastChild.y + Math.abs(child.height) + _gutter;
-							break;
-						case 1:
-							toBeY = (maxHeight - Math.abs(child.height)) / 2;
-							break;
-						case 2:
-							toBeY = totalHeight - Math.abs(child.height);
-							if (lastChild) toBeY -= (lastChild.y + _gutter);
-							break;
-					}
-					child.x = toBeX;
-					child.y = toBeY;
-					lastChild = child;
-				}
+				child = _children[i];
+				if (!super.contains(child)) super.addChildAt(child, i);
+				i++;
 			}
 		}
 		

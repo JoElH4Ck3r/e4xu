@@ -43,6 +43,7 @@
 	<component id="Tris" class="org.wvxvws.gui.containers.Tris"/>
 	<component id="Menu" class="org.wvxvws.gui.containers.Menu"/>
 	<component id="NestGrid" class="org.wvxvws.gui.containers.NestGrid"/>
+	<component id="Rack" class="org.wvxvws.gui.containers.Rack"/>
 	<!-- RENDERERS -->
 	<component id="BranchRenderer" class="org.wvxvws.gui.renderers.BranchRenderer"/>
 	<component id="MenuRenderer" class="org.wvxvws.gui.renderers.MenuRenderer"/>
