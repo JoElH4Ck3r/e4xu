@@ -8,18 +8,20 @@
 	import org.wvxvws.gui.DIV;
 	
 	/**
-	 * ...
+	 * ChromeWindow class.
 	 * @author wvxvw
 	 */
 	public class ChromeWindow extends DIV
 	{
 		protected var _titleBar:ChromeBar;
+		
 		protected var _statusBar:DisplayObject;
 		protected var _closeBTN:InteractiveObject;
 		protected var _dockBTN:InteractiveObject;
 		protected var _expandBTN:InteractiveObject;
+		
 		protected var _border:Border;
-		protected var _contentPane:DisplayObjectContainer;
+		protected var _contentPane:Rack;
 		
 		protected var _floating:Boolean;
 		protected var _resizable:Boolean;
@@ -51,7 +53,7 @@
 			
 		}
 		
-		public function get contentPane():Pane { return _contentPane; }
+		public function get contentPane():Rack { return _contentPane; }
 	}
 	
 }
