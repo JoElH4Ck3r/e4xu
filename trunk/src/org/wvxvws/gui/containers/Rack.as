@@ -28,40 +28,42 @@
 		//  Public property horizontalAlign
 		//------------------------------------
 		
-		[Bindable("horizontalAlignChanged")]
+		[Bindable("directionChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>horizontalAlignChanged</code> event.
+		* When this property is modified, it dispatches the <code>directionChanged</code> event.
 		*/
-		public function get horizontalAlign():int { return _horizontalAlign; }
+		public function get direction():Boolean { return _direction; }
 		
-		public function set horizontalAlign(value:int):void 
+		public function set direction(value:Boolean):void 
 		{
-			if (_horizontalAlign == value || value > 2 || value < 0) return;
-			_horizontalAlign = value;
-			dispatchEvent(new Event("horizontalAlignChanged"));
+			if (_direction === value) return;
+			_direction = value;
+			this.invalidate("_direction", _direction, false);
+			super.dispatchEvent(new Event("directionChanged"));
 		}
 		
 		//------------------------------------
-		//  Public property verticalAlign
+		//  Public property distribute
 		//------------------------------------
 		
-		[Bindable("verticalAlignChange")]
+		[Bindable("distributeChange")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>verticalAlignChange</code> event.
+		* When this property is modified, it dispatches the <code>distributeChange</code> event.
 		*/
-		public function get verticalAlign():int { return _verticalAlign; }
+		public function get distribute():Number { return _distribute; }
 		
-		public function set verticalAlign(value:int):void 
+		public function set distribute(value:Number):void 
 		{
-			if (_verticalAlign == value || value > 2 || value < 0) return;
-			_verticalAlign = value;
-			dispatchEvent(new Event("verticalAlignChange"));
+			if (_distribute == value || value > 1 || value < 0) return;
+			_distribute = value;
+			super.invalidate("_distribute", _distribute, false);
+			super.dispatchEvent(new Event("distributeChange"));
 		}
 		
 		//------------------------------------
@@ -82,7 +84,8 @@
 			if (_padding == value || value && _padding && _padding.equals(value))
 				return;
 			_padding = value ? value.clone() : null;
-			dispatchEvent(new Event("paddingChanged"));
+			super.invalidate("_padding", _padding, false);
+			super.dispatchEvent(new Event("paddingChanged"));
 		}
 		
 		//------------------------------------
@@ -102,7 +105,8 @@
 		{
 			if (_gutterH == value) return;
 			_gutterH = value;
-			dispatchEvent(new Event("gutterHChanged"));
+			super.invalidate("_gutterH", _gutterH, false);
+			super.dispatchEvent(new Event("gutterHChanged"));
 		}
 		
 		//------------------------------------
@@ -122,7 +126,8 @@
 		{
 			if (_gutterV == value) return;
 			_gutterV = value;
-			dispatchEvent(new Event("gutterVChanged"));
+			super.invalidate("_gutterV", _gutterV, false);
+			super.dispatchEvent(new Event("gutterVChanged"));
 		}
 		
 		//------------------------------------
@@ -142,7 +147,8 @@
 		{
 			if (_allowOverlap == value) return;
 			_allowOverlap = value;
-			dispatchEvent(new Event("allowOverlapChanged"));
+			super.invalidate("_allowOverlap", _allowOverlap, false);
+			super.dispatchEvent(new Event("allowOverlapChanged"));
 		}
 		
 		public function get children():Vector.<DisplayObject> { return _children.concat(); }
@@ -152,7 +158,7 @@
 			if (_children === value) return;
 			if (!value) _children = new <DisplayObject>[];
 			else _children = value.concat();
-			constrain();
+			this.constrain();
 		}
 		
 		//--------------------------------------------------------------------------
@@ -161,8 +167,8 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		protected var _horizontalAlign:int;
-		protected var _verticalAlign:int;
+		protected var _distribute:Number = 0;
+		protected var _direction:Boolean;
 		protected var _gutterH:int;
 		protected var _gutterV:int;
 		protected var _padding:Rectangle = new Rectangle();
@@ -189,6 +195,12 @@
 		//  Public methods
 		//
 		//--------------------------------------------------------------------------
+		
+		public override function validate(properties:Object):void 
+		{
+			super.validate(properties);
+			this.constrain();
+		}
 		
 		public override function addChild(child:DisplayObject):DisplayObject 
 		{
@@ -234,15 +246,20 @@
 			while (i < j)
 			{
 				child = super.getChildAt(i);
-				if (_children.indexOf(child)) continue;
-				_children.push(super.getChildAt(i));
+				if (_children.indexOf(child) > -1)
+				{
+					i++;
+					continue;
+				}
+				_children.splice(i, 0, super.getChildAt(i));
 				i++;
 			}
 			_layoutRect.width = _bounds.x;
-			_layoutRect.width = _bounds.y;
-			Constraints.constrain(_children, 0, 
-						true, _gutterH, _gutterV, _padding, _layoutRect);
+			_layoutRect.height = _bounds.y;
+			Constraints.constrain(_children, _distribute, 
+						_direction, _gutterH, _gutterV, _padding, _layoutRect);
 			i = 0;
+			j = _children.length;
 			while (i < j)
 			{
 				child = _children[i];
