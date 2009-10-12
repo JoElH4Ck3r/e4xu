@@ -103,12 +103,12 @@ package org.wvxvws.gui
 		//  Public property width
 		//------------------------------------
 		
-		[Bindable("widthChange")]
+		[Bindable("widthChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>widthChange</code> event.
+		* When this property is modified, it dispatches the <code>widthChanged</code> event.
 		*/
 		public override function get width():Number { return _bounds.x; }
 		
@@ -117,7 +117,7 @@ package org.wvxvws.gui
 			if (_bounds.x == value) return;
 			_bounds.x = value;
 			invalidate("_bounds", _bounds, true);
-			dispatchEvent(new Event("widthChange"));
+			dispatchEvent(new Event("widthChanged"));
 		}
 		
 		//------------------------------------
@@ -243,9 +243,9 @@ package org.wvxvws.gui
 		public function set backgroundColor(value:uint):void 
 		{
 			if (value == _backgroundColor) return;
-			invalidate("_backgroundColor", _backgroundColor, false);
+			this.invalidate("_backgroundColor", _backgroundColor, false);
 			_backgroundColor = value;
-			dispatchEvent(new Event("backgroundColorChange"));
+			super.dispatchEvent(new Event("backgroundColorChange"));
 		}
 		
 		//------------------------------------
@@ -264,9 +264,9 @@ package org.wvxvws.gui
 		public function set backgroundAlpha(value:Number):void 
 		{
 			if (value == _backgroundAlpha) return;
-			invalidate("_backgroundAlpha", _backgroundAlpha, false);
+			this.invalidate("_backgroundAlpha", _backgroundAlpha, false);
 			_backgroundAlpha = value;
-			dispatchEvent(new Event("backgroundAlphaChange"));
+			super.dispatchEvent(new Event("backgroundAlphaChange"));
 		}
 		
 		/* INTERFACE org.wvxvws.gui.styles.ICSSClient */
@@ -276,7 +276,7 @@ package org.wvxvws.gui
 		public function set className(value:String):void
 		{
 			_className = value;
-			initStyles();
+			this.initStyles();
 		}
 		
 		/* INTERFACE org.wvxvws.gui.layout.ILayoutClient */

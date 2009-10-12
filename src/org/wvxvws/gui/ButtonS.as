@@ -35,6 +35,8 @@ package org.wvxvws.gui
 	import org.wvxvws.gui.skins.ISkin;
 	//}
 	
+	[DefaultProperty("label")]
+	
 	[Event(name="disabled", type="org.wvxvws.gui.GUIEvent")]
 	
 	/**
@@ -48,12 +50,12 @@ package org.wvxvws.gui
 		//  Public property skin
 		//------------------------------------
 		
-		[Bindable("skinChange")]
+		[Bindable("skinChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>skinChange</code> event.
+		* When this property is modified, it dispatches the <code>skinChanged</code> event.
 		*/
 		public function get skin():ISkin { return _skin; }
 		
@@ -62,7 +64,7 @@ package org.wvxvws.gui
 			if (_skin == value) return;
 			_skin = value;
 			invalidate("_skin", _skin, false);
-			dispatchEvent(new Event("skinChange"));
+			dispatchEvent(new Event("skinChanged"));
 		}
 		
 		public function get label():String { return _label; }

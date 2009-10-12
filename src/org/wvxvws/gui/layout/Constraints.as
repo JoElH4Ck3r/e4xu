@@ -17,7 +17,7 @@
 		public function Constraints() { super(); }
 		
 		public static function constrain(children:Vector.<DisplayObject>,
-							align:int, direction:Boolean, hSpace:int, vSpace:int, 
+							align:Number, direction:Boolean, hSpace:int, vSpace:int, 
 							padding:Rectangle, bounds:Rectangle):void
 		{
 			var i:int;
