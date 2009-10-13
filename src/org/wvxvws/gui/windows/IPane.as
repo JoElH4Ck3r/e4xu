@@ -15,7 +15,10 @@
 		
 		function created():void;
 		function destroyed():void;
+		
+		function expanded():void;
 		function collapsed():void;
+		
 		function choosen():void;
 		function unchoosen():void;
 	}
