@@ -14,8 +14,8 @@
 	public class ChromeWindow extends DIV
 	{
 		protected var _titleBar:ChromeBar;
-		
 		protected var _statusBar:DisplayObject;
+		
 		protected var _closeBTN:InteractiveObject;
 		protected var _dockBTN:InteractiveObject;
 		protected var _expandBTN:InteractiveObject;

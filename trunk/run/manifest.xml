@@ -32,6 +32,8 @@
 	<component id="ButtonS" class="org.wvxvws.gui.ButtonS"/>
 	<component id="Scroller" class="org.wvxvws.gui.Scroller"/>
 	<component id="StatefulButton" class="org.wvxvws.gui.StatefulButton"/>
+	<!-- UI CHROME -->
+	<component id="ChromeBar" class="org.wvxvws.gui.ChromeBar"/>
 	<!-- TOOLS -->
 	<component id="Palette" class="org.wvxvws.tools.Palette"/>
 	<component id="Transformer" class="org.wvxvws.tools.Transformer"/>
