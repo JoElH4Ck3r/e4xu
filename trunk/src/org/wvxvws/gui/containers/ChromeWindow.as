@@ -3,16 +3,38 @@
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.display.InteractiveObject;
+	import flash.display.Sprite;
 	import org.wvxvws.gui.Border;
 	import org.wvxvws.gui.ChromeBar;
 	import org.wvxvws.gui.DIV;
+	import org.wvxvws.gui.windows.IPane;
 	
 	/**
 	 * ChromeWindow class.
 	 * @author wvxvw
 	 */
-	public class ChromeWindow extends DIV
+	public class ChromeWindow extends DIV implements IPane
 	{
+		public function get modal():Boolean
+		{
+			
+		}
+		
+		public function set modal(value:Boolean):void
+		{
+			
+		}
+		
+		public function get resizable():Boolean
+		{
+			
+		}
+		
+		public function set resizable(value:Boolean):void
+		{
+			
+		}
+		
 		protected var _titleBar:ChromeBar;
 		protected var _statusBar:DisplayObject;
 		
@@ -38,17 +60,34 @@
 		
 		public function ChromeWindow() { super(); }
 		
-		public function collapse():void
+		/* INTERFACE org.wvxvws.gui.windows.IPane */
+		
+		public function created():void
 		{
 			
 		}
 		
-		public function expand():void
+		public function destroyed():void
 		{
 			
 		}
 		
-		public function close(gc:Boolean = true):void
+		public function expanded():void
+		{
+			
+		}
+		
+		public function collapsed():void
+		{
+			
+		}
+		
+		public function choosen():void
+		{
+			
+		}
+		
+		public function deselected():void
 		{
 			
 		}
