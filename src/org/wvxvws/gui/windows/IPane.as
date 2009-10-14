@@ -20,7 +20,7 @@
 		function collapsed():void;
 		
 		function choosen():void;
-		function unchoosen():void;
+		function deselected():void;
 	}
 	
 }

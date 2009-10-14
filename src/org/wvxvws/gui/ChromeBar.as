@@ -73,7 +73,8 @@
 			var labelChanged:Boolean = ("_label" in properties) || 
 										iconClassChanged || 
 										("_labelPadding" in properties) ||
-										("_iconFactory" in properties);
+										("_iconFactory" in properties) || 
+										("_bounds" in properties);
 			super.validate(properties);
 			if (_iconFactory !== null)
 			{

@@ -59,6 +59,10 @@ package org.wvxvws.gui.containers
 		public static const SEPARATOR:String = "separator";
 		public static const NONE:String = "";
 		
+		//------------------------------------
+		//  Public property hasMouse
+		//------------------------------------
+		
 		public function get hasMouse():Boolean
 		{
 			var rect:Rectangle = 
@@ -66,6 +70,10 @@ package org.wvxvws.gui.containers
 			var p:Point = new Point(super.mouseX, super.mouseY);
 			return rect.containsPoint(p);
 		}
+		
+		//------------------------------------
+		//  Public property dataProvider
+		//------------------------------------
 		
 		public override function set dataProvider(value:XML):void 
 		{

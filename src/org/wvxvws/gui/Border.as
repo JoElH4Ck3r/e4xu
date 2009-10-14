@@ -189,6 +189,8 @@
 		protected var _repeat:Boolean;
 		protected var _smooth:Boolean;
 		protected var _drawBack:Boolean;
+		protected var _sides:Vector.<BitmapData>;
+		protected var _corners:Vector.<BitmapData>;
 		
 		public function Border() { super(); }
 		
@@ -215,94 +217,102 @@
 			var m:Matrix = new Matrix();
 			var patWidth:int = _pattern.width;
 			var patHeight:int = _pattern.height;
-			
+			if (!_cornerPattern) _cornerPattern = _pattern.clone();
 			// top
 			m.d = _thikness.top / patHeight;
-			if (!_repeat) m.a = _bounds.x / patWidth;
+			if (!_repeat) 
+				m.a = (_bounds.x - (_thikness.left + _thikness.right)) / patWidth;
+			m.tx = _thikness.left;
 			_background.beginBitmapFill(_pattern, m, _repeat, _smooth);
-			_background.drawRect(0, 0, _bounds.x, _thikness.top);
+			_background.drawRect(_thikness.left, 0, 
+					_bounds.x - (_thikness.left + _thikness.right), _thikness.top);
 			_background.endFill();
 			
 			// bottom
 			m.d = _thikness.bottom / patHeight;
-			if (!_repeat) m.a = _bounds.x / patWidth;
+			if (!_repeat) 
+				m.a = (_bounds.x - (_thikness.left + _thikness.right)) / patWidth;
 			m.rotate(Math.PI);
 			m.ty = _bounds.y;
-			m.tx = _bounds.x;
+			m.tx = _bounds.x - _thikness.right;
 			_background.beginBitmapFill(_pattern, m, _repeat, _smooth);
-			_background.drawRect(0, _bounds.y - _thikness.bottom, 
-								_bounds.x, _thikness.bottom);
+			_background.drawRect(_thikness.left, _bounds.y - _thikness.bottom, 
+								_bounds.x - (_thikness.left + _thikness.right),
+								_thikness.bottom);
 			_background.endFill();
 			
 			// left
 			m = new Matrix();
 			m.d = _thikness.left / patHeight;
-			if (!_repeat) m.a = _bounds.y / patWidth;
+			if (!_repeat) 
+				m.a = (_bounds.y - (_thikness.top + _thikness.bottom)) / patWidth;
 			m.rotate(Math.PI * -0.5);
-			m.ty = _bounds.y;
+			m.ty = _bounds.y - _thikness.bottom;
 			_background.beginBitmapFill(_pattern, m, _repeat, _smooth);
-			_background.drawRect(0, 0, _thikness.left, _bounds.y);
+			_background.drawRect(0, _thikness.top, _thikness.left, 
+				_bounds.y - (_thikness.top + _thikness.bottom));
 			_background.endFill();
 			
 			// right
 			m = new Matrix();
 			m.d = _thikness.right / patHeight;
-			if (!_repeat) m.a = _bounds.y / patWidth;
+			if (!_repeat) 
+				m.a = (_bounds.y - (_thikness.top + _thikness.bottom)) / patWidth;
 			m.rotate(Math.PI * 0.5);
 			m.tx = _bounds.x;
+			m.ty = _thikness.top;
 			_background.beginBitmapFill(_pattern, m, _repeat, _smooth);
-			_background.drawRect(_bounds.x - _thikness.right, 0, 
-								_thikness.right, _bounds.y);
+			_background.drawRect(_bounds.x - _thikness.right, _thikness.top, 
+								_thikness.right, 
+								_bounds.y - (_thikness.top + _thikness.bottom));
 			_background.endFill();
 			
-			if (_cornerPattern)
-			{
-				patWidth = _cornerPattern.width;
-				patHeight = _cornerPattern.height;
-				
-				// TL corner
-				m = new Matrix();
-				m.a = _thikness.left / patWidth;
-				m.d = _thikness.top / patHeight;
-				_background.beginBitmapFill(_cornerPattern, m, _repeat, _smooth);
-				_background.drawRect(0, 0, _thikness.left, _thikness.top);
-				_background.endFill();
-				
-				// TR corner
-				m = new Matrix();
-				m.d = _thikness.right / patWidth;
-				m.a = _thikness.top / patHeight;
-				m.rotate(Math.PI * 0.5);
-				m.tx = _bounds.x;
-				_background.beginBitmapFill(_cornerPattern, m, _repeat, _smooth);
-				_background.drawRect(_bounds.x - _thikness.right, 0, 
-									_thikness.right, _thikness.top);
-				_background.endFill();
-				
-				// BR corner
-				m = new Matrix();
-				m.a = _thikness.right / patWidth;
-				m.d = _thikness.bottom / patHeight;
-				m.rotate(Math.PI);
-				m.tx = _bounds.x;
-				m.ty = _bounds.y;
-				_background.beginBitmapFill(_cornerPattern, m, _repeat, _smooth);
-				_background.drawRect(_bounds.x - _thikness.right, 
-									_bounds.y - _thikness.bottom, 
-									_thikness.right, _thikness.bottom);
-				_background.endFill();
-				
-				// BL corner
-				m = new Matrix();
-				m.d = _thikness.left / patWidth;
-				m.a = _thikness.bottom / patHeight;
-				m.rotate(Math.PI * 1.5);
-				m.ty = _bounds.y;
-				_background.beginBitmapFill(_cornerPattern, m, _repeat, _smooth);
-				_background.drawRect(0, _bounds.y - _thikness.bottom, 
-									_thikness.left, _thikness.bottom);
-				_background.endFill();
-			}
+			// corners
+			patWidth = _cornerPattern.width;
+			patHeight = _cornerPattern.height;
+			
+			// TL corner
+			m = new Matrix();
+			m.a = _thikness.left / patWidth;
+			m.d = _thikness.top / patHeight;
+			_background.beginBitmapFill(_cornerPattern, m, _repeat, _smooth);
+			_background.drawRect(0, 0, _thikness.left, _thikness.top);
+			_background.endFill();
+			
+			// TR corner
+			m = new Matrix();
+			m.d = _thikness.right / patWidth;
+			m.a = _thikness.top / patHeight;
+			m.rotate(Math.PI * 0.5);
+			m.tx = _bounds.x;
+			_background.beginBitmapFill(_cornerPattern, m, _repeat, _smooth);
+			_background.drawRect(_bounds.x - _thikness.right, 0, 
+								_thikness.right, _thikness.top);
+			_background.endFill();
+			
+			// BR corner
+			m = new Matrix();
+			m.a = _thikness.right / patWidth;
+			m.d = _thikness.bottom / patHeight;
+			m.rotate(Math.PI);
+			m.tx = _bounds.x;
+			m.ty = _bounds.y;
+			_background.beginBitmapFill(_cornerPattern, m, _repeat, _smooth);
+			_background.drawRect(_bounds.x - _thikness.right, 
+								_bounds.y - _thikness.bottom, 
+								_thikness.right, _thikness.bottom);
+			_background.endFill();
+			
+			// BL corner
+			m = new Matrix();
+			m.d = _thikness.left / patWidth;
+			m.a = _thikness.bottom / patHeight;
+			m.rotate(Math.PI * 1.5);
+			m.ty = _bounds.y;
+			_background.beginBitmapFill(_cornerPattern, m, _repeat, _smooth);
+			_background.drawRect(0, _bounds.y - _thikness.bottom, 
+								_thikness.left, _thikness.bottom);
+			_background.endFill();
 			
 			_drawBack = false;
 		}

@@ -44,6 +44,9 @@ package org.wvxvws.gui.containers
 		//
 		//--------------------------------------------------------------------------
 		
+		//------------------------------------
+		//  Public property width
+		//------------------------------------
 		
 		public override function set width(value:Number):void 
 		{
@@ -52,69 +55,147 @@ package org.wvxvws.gui.containers
 			_definedWidth = value;
 		}
 		
+		//------------------------------------
+		//  Public property rendererFactory
+		//------------------------------------
+		
+		[Bindable("rendererFactoryChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>rendererFactoryChanged</code> event.
+		*/
 		public function get rendererFactory():Class { return _rendererFactory; }
 		
 		public function set rendererFactory(value:Class):void 
 		{
 			if (_rendererFactory === value) return;
 			_rendererFactory = value;
-			invalidate("_rendererFactory", _rendererFactory, false);
-			dispatchEvent(new Event("rendererFactoryChanged"));
+			super.invalidate("_rendererFactory", _rendererFactory, false);
+			super.dispatchEvent(new Event("rendererFactoryChanged"));
 		}
 		
+		//------------------------------------
+		//  Public property cellHeight
+		//------------------------------------
+		
+		[Bindable("cellHeightChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>cellHeightChanged</code> event.
+		*/
 		public function get cellHeight():int { return _cellHeight; }
 		
 		public function set cellHeight(value:int):void 
 		{
 			if (_cellHeight === value) return;
 			_cellHeight = value;
-			invalidate("_cellHeight", _cellHeight, false);
-			dispatchEvent(new Event("cellHeightChanged"));
+			super.invalidate("_cellHeight", _cellHeight, false);
+			super.dispatchEvent(new Event("cellHeightChanged"));
 		}
 		
+		//------------------------------------
+		//  Public property filter
+		//------------------------------------
+		
+		[Bindable("filterChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>filterChanged</code> event.
+		*/
 		public function get filter():String { return _filter; }
 		
 		public function set filter(value:String):void 
 		{
 			if (_filter === value) return;
 			_filter = value;
-			invalidate("_filter", _filter, false);
-			dispatchEvent(new Event("filterChanged"));
+			super.invalidate("_filter", _filter, false);
+			super.dispatchEvent(new Event("filterChanged"));
 		}
 		
+		//------------------------------------
+		//  Public property gutter
+		//------------------------------------
+		
+		[Bindable("gutterChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>gutterChanged</code> event.
+		*/
 		public function get gutter():int { return _gutter; }
 		
 		public function set gutter(value:int):void 
 		{
 			if (_gutter === value) return;
 			_gutter = value;
-			invalidate("_gutter", _gutter, false);
-			dispatchEvent(new Event("gutterChanged"));
+			super.invalidate("_gutter", _gutter, false);
+			super.dispatchEvent(new Event("gutterChanged"));
 		}
 		
+		//------------------------------------
+		//  Public property padding
+		//------------------------------------
+		
+		[Bindable("paddingChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>paddingChanged</code> event.
+		*/
 		public function get padding():Rectangle { return _padding; }
 		
 		public function set padding(value:Rectangle):void 
 		{
 			if (_padding === value) return;
 			_padding = value;
-			invalidate("_padding", _padding, false);
-			dispatchEvent(new Event("paddingChanged"));
+			super.invalidate("_padding", _padding, false);
+			super.dispatchEvent(new Event("paddingChanged"));
 		}
 		
+		//------------------------------------
+		//  Public property parentIsCreator
+		//------------------------------------
+		
+		[Bindable("parentIsCreatorChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>parentIsCreatorChanged</code> event.
+		*/
 		public function get parentIsCreator():Boolean { return _parentIsCreator; }
 		
 		public function set parentIsCreator(value:Boolean):void 
 		{
 			if (_parentIsCreator === value) return;
 			_parentIsCreator = value;
-			invalidate("_parentIsCreator", _parentIsCreator, false);
-			dispatchEvent(new Event("parentIsCreatorChanged"));
+			super.invalidate("_parentIsCreator", _parentIsCreator, false);
+			super.dispatchEvent(new Event("parentIsCreatorChanged"));
 		}
+		
+		//------------------------------------
+		//  Public property currentRenderer
+		//------------------------------------
 		
 		public function get currentRenderer():DisplayObject { return _currentRenderer; }
 		
+		//------------------------------------
+		//  Public property minWidth
+		//------------------------------------
+		
 		public function get minWidth():int { return _minWidth; }
+		
+		//------------------------------------
+		//  Public property definedWidth
+		//------------------------------------
 		
 		public function get definedWidth():int { return _definedWidth; }
 		

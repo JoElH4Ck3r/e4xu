@@ -62,10 +62,10 @@ package org.wvxvws.tools
 		public function set target(value:Object):void 
 		{
 			if (_target === value || !(value is DisplayObject)) return;
-			_target = value;
+			_target = value as DisplayObject;
 			_savedBounds = _target.getBounds(_target);
-			draw();
-			dispatchEvent(new Event("targetChange"));
+			this.draw();
+			super.dispatchEvent(new Event("targetChange"));
 		}
 		
 		//--------------------------------------------------------------------------
