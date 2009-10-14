@@ -230,7 +230,17 @@
 		
 		public function get dockSkin():ButtonSkinProducer { return _dockSkin; }
 		
+		public function set closeSkin(value:ButtonSkinProducer):void 
+		{
+			_closeSkin = value;
+		}
+		
 		public function get expandSkin():ButtonSkinProducer { return _expandSkin; }
+		
+		public function set expandSkin(value:ButtonSkinProducer):void 
+		{
+			_expandSkin = value;
+		}
 		
 		//--------------------------------------------------------------------------
 		//
