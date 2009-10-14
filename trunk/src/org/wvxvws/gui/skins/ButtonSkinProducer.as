@@ -30,7 +30,7 @@
 				return new _stateClasses[index]();
 			if (_stateFactories && _stateFactories.length > index && 
 				_stateFactories[index])
-				return _stateFactories[index](this);
+				return _stateFactories[index](inContext);
 			return null;
 		}
 	}
