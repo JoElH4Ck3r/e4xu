@@ -45,7 +45,6 @@ package org.wvxvws.gui
 	 */
 	public class ButtonS extends DIV
 	{
-		
 		//------------------------------------
 		//  Public property skin
 		//------------------------------------
@@ -63,8 +62,8 @@ package org.wvxvws.gui
 		{
 			if (_skin == value) return;
 			_skin = value;
-			invalidate("_skin", _skin, false);
-			dispatchEvent(new Event("skinChanged"));
+			super.invalidate("_skin", _skin, false);
+			super.dispatchEvent(new Event("skinChanged"));
 		}
 		
 		public function get label():String { return _label; }
@@ -73,10 +72,10 @@ package org.wvxvws.gui
 		{
 			if (_label == value) return;
 			_label = value;
-			invalidate("_label", _label, false);
+			super.invalidate("_label", _label, false);
 		}
 		
-		public function get labelField():TextField { return _labelField; }
+		public function get labelTXT():TextField { return _labelTXT; }
 		
 		public function get currentState():String { return _currentState; }
 		
@@ -84,7 +83,7 @@ package org.wvxvws.gui
 		{
 			if (_currentState == value) return;
 			_currentState = value;
-			invalidate("_currentState", _currentState, false);
+			super.invalidate("_currentState", _currentState, false);
 		}
 		
 		public function get disabled():Boolean { return _disabled; }
@@ -94,17 +93,18 @@ package org.wvxvws.gui
 			if (_disabled == value) return;
 			_disabled = value;
 			_currentState = GUIEvent.DISABLED;
-			invalidate("_currentState", _currentState, false);
-			dispatchEvent(new GUIEvent(GUIEvent.DISABLED));
+			super.invalidate("_currentState", _currentState, false);
+			super.dispatchEvent(new GUIEvent(GUIEvent.DISABLED));
 		}
 		
 		protected var _label:String = "";
-		protected var _labelField:TextField = new TextField();
+		protected var _labelTXT:TextField = new TextField();
 		protected var _disabled:Boolean;
 		
 		protected var _currentState:String;
 		protected var _skin:ISkin;
-		protected var _labelFormat:TextFormat = new TextFormat("_sans", 12, 0x3E2F1B, true, null, null, null, null, "center");
+		protected var _labelFormat:TextFormat = 
+		new TextFormat("_sans", 12, 0x3E2F1B, true, null, null, null, null, "center");
 		
 		public function ButtonS()
 		{
@@ -120,10 +120,10 @@ package org.wvxvws.gui
 			addEventListener(MouseEvent.DOUBLE_CLICK, disableHelper, false, int.MAX_VALUE, true);
 			addEventListener(MouseEvent.MOUSE_WHEEL, disableHelper, false, int.MAX_VALUE, true);
 			addEventListener(MouseEvent.MOUSE_MOVE, disableHelper, false, int.MAX_VALUE, true);
-			_labelField.defaultTextFormat = _labelFormat;
-			_labelField.autoSize = TextFieldAutoSize.LEFT;
-			mouseChildren = false;
-			buttonMode = true;
+			_labelTXT.defaultTextFormat = _labelFormat;
+			_labelTXT.autoSize = TextFieldAutoSize.LEFT;
+			super.mouseChildren = false;
+			super.buttonMode = true;
 		}
 		
 		protected function disableHelper(event:MouseEvent):void 
@@ -138,7 +138,7 @@ package org.wvxvws.gui
 				event.stopImmediatePropagation();
 				return;
 			}
-			currentState = event.type;
+			this.currentState = event.type;
 		}
 		
 		protected function mouseUpHandler(event:MouseEvent):void 
@@ -148,7 +148,7 @@ package org.wvxvws.gui
 				event.stopImmediatePropagation();
 				return;
 			}
-			currentState = event.type;
+			this.currentState = event.type;
 		}
 		
 		protected function rollOverHandler(event:MouseEvent):void 
@@ -158,7 +158,7 @@ package org.wvxvws.gui
 				event.stopImmediatePropagation();
 				return;
 			}
-			currentState = event.type;
+			this.currentState = event.type;
 		}
 		
 		protected function rollOutHandler(event:MouseEvent):void 
@@ -168,7 +168,7 @@ package org.wvxvws.gui
 				event.stopImmediatePropagation();
 				return;
 			}
-			currentState = MouseEvent.MOUSE_UP;
+			this.currentState = MouseEvent.MOUSE_UP;
 		}
 		
 		public override function validate(properties:Object):void 
@@ -177,7 +177,7 @@ package org.wvxvws.gui
 			if (_skin && _currentState != _skin.state && _skin is DisplayObject)
 			{
 				_skin.state = _currentState;
-				if (!contains(_skin as DisplayObject))
+				if (!super.contains(_skin as DisplayObject))
 				{
 					super.addChildAt(_skin as DisplayObject, 0);
 				}
@@ -187,23 +187,23 @@ package org.wvxvws.gui
 				(_skin as DisplayObject).width = width;
 				(_skin as DisplayObject).height = height;
 			}
-			if (_labelField.text != _label) _labelField.text = _label;
-			if (_labelField.height > height)
+			if (_labelTXT.text != _label) _labelTXT.text = _label;
+			if (_labelTXT.height > super.height)
 			{
-				height = _labelField.height;
-				validate(_invalidProperties);
+				super.height = _labelTXT.height;
+				super.validate(_invalidProperties);
 			}
-			if (_labelField.width > width)
+			if (_labelTXT.width > super.width)
 			{
-				width = _labelField.width;
-				validate(_invalidProperties);
+				super.width = _labelTXT.width;
+				super.validate(_invalidProperties);
 			}
-			_labelField.x = (width - _labelField.width) / 2;
-			_labelField.y = (height - _labelField.height) / 2;
-			if (!contains(_labelField))
+			_labelTXT.x = (super.width - _labelTXT.width) >> 1;
+			_labelTXT.y = (super.height - _labelTXT.height) >> 1;
+			if (!super.contains(_labelTXT))
 			{
-				if (super.numChildren) addChildAt(_labelField, 1);
-				else addChildAt(_labelField, 0);
+				if (super.numChildren) super.addChildAt(_labelTXT, 1);
+				else super.addChildAt(_labelTXT, 0);
 			}
 		}
 		

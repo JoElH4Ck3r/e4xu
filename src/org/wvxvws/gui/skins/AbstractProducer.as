@@ -1,5 +1,6 @@
 ﻿package org.wvxvws.gui.skins 
 {
+	import flash.display.DisplayObject;
 	import mx.core.IMXMLObject;
 	
 	/**

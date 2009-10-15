@@ -20,7 +20,6 @@
 	<!-- UI -->
 	<component id="Bar" class="org.wvxvws.gui.Bar"/>
 	<component id="Border" class="org.wvxvws.gui.Border"/>
-	<component id="Column" class="org.wvxvws.gui.containers.Column"/>
 	<component id="DIV" class="org.wvxvws.gui.DIV"/>
 	<component id="FrameOne" class="org.wvxvws.base.FrameOne"/>
 	<component id="FrameTwo" class="org.wvxvws.base.FrameTwo"/>
@@ -41,6 +40,7 @@
 	<component id="Ruler" class="org.wvxvws.tools.Ruler"/>
 	<component id="Timeline" class="org.wvxvws.tools.Timeline"/>
 	<!-- CONTAINERS -->
+	<component id="Column" class="org.wvxvws.gui.containers.Column"/>
 	<component id="Nest" class="org.wvxvws.gui.containers.Nest"/>
 	<component id="Table" class="org.wvxvws.gui.containers.Table"/>
 	<component id="TiledPanel" class="org.wvxvws.gui.containers.TiledPanel"/>
@@ -48,6 +48,7 @@
 	<component id="Menu" class="org.wvxvws.gui.containers.Menu"/>
 	<component id="NestGrid" class="org.wvxvws.gui.containers.NestGrid"/>
 	<component id="Rack" class="org.wvxvws.gui.containers.Rack"/>
+	<component id="ChromeToolStrip" class="org.wvxvws.gui.windows.ChromeToolStrip"/>
 	<!-- RENDERERS -->
 	<component id="BranchRenderer" class="org.wvxvws.gui.renderers.BranchRenderer"/>
 	<component id="MenuRenderer" class="org.wvxvws.gui.renderers.MenuRenderer"/>
@@ -59,6 +60,7 @@
 	<!-- SKINS -->
 	<component id="Skin" class="org.wvxvws.gui.skins.Skin"/>
 	<component id="SkinState" class="org.wvxvws.gui.skins.SkinState"/>
+	<component id="TextFormatMXML" class="org.wvxvws.gui.skins.TextFormatMXML"/>
 	<!-- DATA -->
 	<component id="Collection" class="org.wvxvws.data.Collection"/>
 </componentPackage>

@@ -9,19 +9,19 @@
 	public class SkinProducer extends AbstractProducer
 	{
 		protected var _skinClass:Class;
-		protected var _skinFactory:Function;
+		protected var _factory:Function;
 		
-		public function SkinProducer(skinClass:Class, skinFactory:Function = null) 
+		public function SkinProducer(skinClass:Class, factory:Function = null) 
 		{
 			super();
 			_skinClass = skinClass;
-			_skinFactory = skinFactory;
+			_factory = factory;
 		}
 		
 		public function produce(inContext:Object):DisplayObject
 		{
 			if (_skinClass) return new _skinClass();
-			if (_skinFactory !== null) return _skinFactory(inContext);
+			if (_factory !== null) return _factory(inContext);
 			return null;
 		}
 	}
