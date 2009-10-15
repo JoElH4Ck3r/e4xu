@@ -74,8 +74,8 @@ package org.wvxvws.gui
 		{
 			if (_transformMatrix.tx == value) return;
 			_transformMatrix.tx = value;
-			invalidate("_transformMatrix", _transformMatrix, true);
-			dispatchEvent(new Event("xChange"));
+			this.invalidate("_transformMatrix", _transformMatrix, true);
+			super.dispatchEvent(new Event("xChange"));
 		}
 		
 		//------------------------------------
@@ -95,8 +95,8 @@ package org.wvxvws.gui
 		{
 			if (_transformMatrix.ty == value) return;
 			_transformMatrix.ty = value;
-			invalidate("_transformMatrix", _transformMatrix, true);
-			dispatchEvent(new Event("yChange"));
+			this.invalidate("_transformMatrix", _transformMatrix, true);
+			super.dispatchEvent(new Event("yChange"));
 		}
 		
 		//------------------------------------
@@ -116,20 +116,20 @@ package org.wvxvws.gui
 		{
 			if (_bounds.x == value) return;
 			_bounds.x = value;
-			invalidate("_bounds", _bounds, true);
-			dispatchEvent(new Event("widthChanged"));
+			this.invalidate("_bounds", _bounds, true);
+			super.dispatchEvent(new Event("widthChanged"));
 		}
 		
 		//------------------------------------
 		//  Public property height
 		//------------------------------------
 		
-		[Bindable("heightChange")]
+		[Bindable("heightChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>heightChange</code> event.
+		* When this property is modified, it dispatches the <code>heightChanged</code> event.
 		*/
 		public override function get height():Number { return _bounds.y; }
 		
@@ -137,20 +137,20 @@ package org.wvxvws.gui
 		{
 			if (_bounds.y == value) return;
 			_bounds.y = value;
-			invalidate("_bounds", _bounds, true);
-			dispatchEvent(new Event("heightChange"));
+			this.invalidate("_bounds", _bounds, true);
+			super.dispatchEvent(new Event("heightChanged"));
 		}
 		
 		//------------------------------------
 		//  Public property scaleX
 		//------------------------------------
 		
-		[Bindable("scaleXChange")]
+		[Bindable("scaleXChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>scaleXChange</code> event.
+		* When this property is modified, it dispatches the <code>scaleXChanged</code> event.
 		*/
 		public override function get scaleX():Number { return _transformMatrix.a; }
 		
@@ -158,20 +158,20 @@ package org.wvxvws.gui
 		{
 			if (_transformMatrix.a == value) return;
 			_transformMatrix.a = value;
-			invalidate("_transformMatrix", _transformMatrix, true);
-			dispatchEvent(new Event("scaleXChange"));
+			this.invalidate("_transformMatrix", _transformMatrix, true);
+			super.dispatchEvent(new Event("scaleXChanged"));
 		}
 		
 		//------------------------------------
 		//  Public property scaleY
 		//------------------------------------
 		
-		[Bindable("scaleYChange")]
+		[Bindable("scaleYChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>scaleYChange</code> event.
+		* When this property is modified, it dispatches the <code>scaleYChanged</code> event.
 		*/
 		public override function get scaleY():Number { return _transformMatrix.d; }
 		
@@ -179,20 +179,20 @@ package org.wvxvws.gui
 		{
 			if (_transformMatrix.d == value) return;
 			_transformMatrix.d = value;
-			invalidate("_transformMatrix", _transformMatrix, true);
-			dispatchEvent(new Event("scaleYChange"));
+			this.invalidate("_transformMatrix", _transformMatrix, true);
+			super.dispatchEvent(new Event("scaleYChanged"));
 		}
 		
 		//------------------------------------
 		//  Public property transform
 		//------------------------------------
 		
-		[Bindable("transformChange")]
+		[Bindable("transformChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>transformChange</code> event.
+		* When this property is modified, it dispatches the <code>transformChanged</code> event.
 		*/
 		public override function get transform():Transform
 		{
@@ -203,40 +203,40 @@ package org.wvxvws.gui
 		{
 			invalidate("_userTransform", _userTransform, true);
 			_userTransform = value;
-			dispatchEvent(new Event("transformChange"));
+			super.dispatchEvent(new Event("transformChanged"));
 		}
 		
 		//------------------------------------
 		//  Public property style
 		//------------------------------------
 		
-		[Bindable("styleChange")]
+		[Bindable("styleChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>styleChange</code> event.
+		* When this property is modified, it dispatches the <code>styleChanged</code> event.
 		*/
 		public function get style():IEventDispatcher { return _style; }
 		
 		public function set style(value:IEventDispatcher):void 
 		{
 		   if (_style == value) return;
-		   invalidate("_invalidProperties", _invalidProperties, true);
+		   this.invalidate("_invalidProperties", _invalidProperties, true);
 		   _style = value;
-		   dispatchEvent(new Event("styleChange"));
+		   super.dispatchEvent(new Event("styleChanged"));
 		}
 		
 		//------------------------------------
 		//  Public property style
 		//------------------------------------
 		
-		[Bindable("backgroundColorChange")]
+		[Bindable("backgroundColorChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>backgroundColorChange</code> event.
+		* When this property is modified, it dispatches the <code>backgroundColorChanged</code> event.
 		*/
 		public function get backgroundColor():uint { return _backgroundColor; }
 		
@@ -245,19 +245,19 @@ package org.wvxvws.gui
 			if (value == _backgroundColor) return;
 			this.invalidate("_backgroundColor", _backgroundColor, false);
 			_backgroundColor = value;
-			super.dispatchEvent(new Event("backgroundColorChange"));
+			super.dispatchEvent(new Event("backgroundColorChanged"));
 		}
 		
 		//------------------------------------
 		//  Public property style
 		//------------------------------------
 		
-		[Bindable("backgroundAlphaChange")]
+		[Bindable("backgroundAlphaChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>backgroundAlphaChange</code> event.
+		* When this property is modified, it dispatches the <code>backgroundAlphaChanged</code> event.
 		*/
 		public function get backgroundAlpha():Number { return _backgroundAlpha; }
 		
@@ -266,7 +266,7 @@ package org.wvxvws.gui
 			if (value == _backgroundAlpha) return;
 			this.invalidate("_backgroundAlpha", _backgroundAlpha, false);
 			_backgroundAlpha = value;
-			super.dispatchEvent(new Event("backgroundAlphaChange"));
+			super.dispatchEvent(new Event("backgroundAlphaChanged"));
 		}
 		
 		/* INTERFACE org.wvxvws.gui.styles.ICSSClient */
@@ -349,14 +349,14 @@ package org.wvxvws.gui
 			var nm:Array = getQualifiedClassName(this).split("::");
 			_className = String(nm.pop());
 			_nativeTransform = new Transform(this);
-			invalidate("", undefined, true);
-			if (stage) addEventListener(Event.ENTER_FRAME, deferredInitialize);
+			this.invalidate("", undefined, true);
+			if (stage) super.addEventListener(Event.ENTER_FRAME, deferredInitialize);
 		}
 		
 		private function deferredInitialize(event:Event):void 
 		{
-			removeEventListener(Event.ENTER_FRAME, deferredInitialize);
-			dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
+			super.removeEventListener(Event.ENTER_FRAME, deferredInitialize);
+			super.dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
 		}
 		
 		/* INTERFACE mx.core.IMXMLObject */
@@ -365,13 +365,13 @@ package org.wvxvws.gui
 		{
 			_document = document;
 			_id = id;
-			initStyles();
+			this.initStyles();
 			if (_document is DisplayObjectContainer)
 			{
 				(_document as DisplayObjectContainer).addChild(this);
 			}
-			if (_hasPendingValidation) validate(_invalidProperties);
-			dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
+			if (_hasPendingValidation) this.validate(_invalidProperties);
+			super.dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
 		}
 		
 		//--------------------------------------------------------------------------
@@ -406,11 +406,12 @@ package org.wvxvws.gui
 			if (!_document) 
 			{
 				_document = this;
-				initStyles();
-				dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
+				this.initStyles();
+				super.dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
 			}
 			_invalidProperties = { };
-			dispatchEvent(new GUIEvent(GUIEvent.VALIDATED));
+			_invalidLayout = false;
+			super.dispatchEvent(new GUIEvent(GUIEvent.VALIDATED));
 		}
 		
 		protected function drawBackground():void
@@ -430,6 +431,7 @@ package org.wvxvws.gui
 				_hasPendingValidation = true;
 				_hasPendingParentValidation = _hasPendingParentValidation || validateParent;
 			}
+			_invalidLayout = true;
 		}
 		
 		//--------------------------------------------------------------------------

@@ -316,6 +316,11 @@ package org.wvxvws.gui.containers
 			}
 		}
 		
+		protected final function $createChild(xml:XML):DisplayObject
+		{
+			return super.createChild(xml);
+		}
+		
 		protected override function createChild(xml:XML):DisplayObject
 		{
 			_currentRenderer = super.createChild(xml);

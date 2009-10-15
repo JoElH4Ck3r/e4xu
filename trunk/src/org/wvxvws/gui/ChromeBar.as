@@ -9,6 +9,7 @@
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
+	import org.wvxvws.gui.skins.SkinProducer;
 	
 	/**
 	 * ChromeBar class.
@@ -27,24 +28,14 @@
 			super.dispatchEvent(new Event("labelChanged"));
 		}
 		
-		public function get iconFactory():Function { return _iconFactory; }
+		public function get iconProducer():SkinProducer { return _iconProducer; }
 		
-		public function set iconFactory(value:Function):void 
+		public function set iconProducer(value:SkinProducer):void 
 		{
-			if (_iconFactory === value) return;
-			_iconFactory = value;
-			super.invalidate("_iconFactory", _iconFactory, false);
-			super.dispatchEvent(new Event("iconFactoryChanged"));
-		}
-		
-		public function get iconClass():Class { return _iconClass; }
-		
-		public function set iconClass(value:Class):void 
-		{
-			if (_iconClass === value) return;
-			_iconClass = value;
-			super.invalidate("_iconClass", _iconClass, false);
-			super.dispatchEvent(new Event("iconClassChanged"));
+			if (_iconProducer === value) return;
+			_iconProducer = value;
+			super.invalidate("_iconProducer", _iconProducer, false);
+			super.dispatchEvent(new Event("iconProducerChanged"));
 		}
 		
 		public function get labelPadding():int { return _labelPadding; }
@@ -59,8 +50,7 @@
 		
 		protected var _label:String;
 		protected var _labelTXT:TextField;
-		protected var _iconClass:Class;
-		protected var _iconFactory:Function;
+		protected var _iconProducer:SkinProducer;
 		protected var _icon:DisplayObject;
 		protected var _labelFormat:TextFormat = new TextFormat("_sans", 11, 0, true);
 		protected var _labelPadding:int = 4;
@@ -69,21 +59,16 @@
 		
 		public override function validate(properties:Object):void 
 		{
-			var iconClassChanged:Boolean = ("_iconClass" in properties) || _iconClass;
+			var iconClassChanged:Boolean = ("_iconProducer" in properties);
 			var labelChanged:Boolean = ("_label" in properties) || 
 										iconClassChanged || 
 										("_labelPadding" in properties) ||
 										("_iconFactory" in properties) || 
 										("_bounds" in properties);
 			super.validate(properties);
-			if (_iconFactory !== null)
+			if (iconClassChanged)
 			{
-				_icon = _iconFactory(this);
-				this.drawIcon();
-			}
-			else if (iconClassChanged)
-			{
-				_icon = new _iconClass();
+				_icon = _iconProducer.produce(this);
 				this.drawIcon();
 			}
 			if (labelChanged) this.drawLabel();

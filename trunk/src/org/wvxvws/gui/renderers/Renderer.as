@@ -47,7 +47,39 @@ package org.wvxvws.gui.renderers
 		{
 			if (_width === (value >> 0)) return;
 			_width = value;
-			drawBackground();
+			this.drawBackground();
+		}
+		
+		public function get labelField():String { return _labelField; }
+		
+		public function set labelField(value:String):void 
+		{
+			if (_labelField === value) return;
+			_labelField = value;
+			if (_data) this.renderText();
+		}
+		
+		public function get isValid():Boolean
+		{
+			if (!_data) return false;
+			return _field.text == _data.toXMLString();
+		}
+		
+		public function set labelFunction(value:Function):void
+		{
+			if (_labelFunction === value) return;
+			_labelFunction = value;
+			if (_data) this.renderText();
+		}
+		
+		public function get data():XML { return _data; }
+		
+		public function set data(value:XML):void 
+		{
+			if (isValid && _data === value) return;
+			_data = value;
+			if (!_data) return;
+			this.renderText();
 		}
 		
 		//--------------------------------------------------------------------------
@@ -78,6 +110,7 @@ package org.wvxvws.gui.renderers
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
+		
 		public function Renderer() 
 		{
 			super();
@@ -88,6 +121,12 @@ package org.wvxvws.gui.renderers
 			_field.height = 1;
 		}
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
+		
 		/* INTERFACE org.wvxvws.gui.renderers.IRenderer */
 		
 		public function initialized(document:Object, id:String):void
@@ -96,22 +135,11 @@ package org.wvxvws.gui.renderers
 			_id = id;
 		}
 		
-		public function set labelFunction(value:Function):void
-		{
-			if (_labelFunction === value) return;
-			_labelFunction = value;
-			if (_data) renderText();
-		}
-		
-		public function get data():XML { return _data; }
-		
-		public function set data(value:XML):void 
-		{
-			if (isValid && _data === value) return;
-			_data = value;
-			if (!_data) return;
-			renderText();
-		}
+		//--------------------------------------------------------------------------
+		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
 		
 		protected function renderText():void
 		{
@@ -129,7 +157,7 @@ package org.wvxvws.gui.renderers
 					_field.text = _labelFunction(_data.toXMLString());
 				else _field.text = _data.localName();
 			}
-			drawBackground();
+			this.drawBackground();
 		}
 		
 		protected function drawBackground():void
@@ -140,33 +168,6 @@ package org.wvxvws.gui.renderers
 			g.drawRect(0, 0, _width, _field.height);
 			g.endFill();
 		}
-		
-		public function get labelField():String { return _labelField; }
-		
-		public function set labelField(value:String):void 
-		{
-			if (_labelField === value) return;
-			_labelField = value;
-			if (_data) renderText();
-		}
-		
-		public function get isValid():Boolean
-		{
-			if (!_data) return false;
-			return _field.text == _data.toXMLString();
-		}
-		
-		//--------------------------------------------------------------------------
-		//
-		//  Public methods
-		//
-		//--------------------------------------------------------------------------
-		
-		//--------------------------------------------------------------------------
-		//
-		//  Protected methods
-		//
-		//--------------------------------------------------------------------------
 		
 		//--------------------------------------------------------------------------
 		//
