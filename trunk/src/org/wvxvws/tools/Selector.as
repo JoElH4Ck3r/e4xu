@@ -192,15 +192,23 @@ package org.wvxvws.tools
 			}
 			g.clear();
 			g.lineStyle(1, 0, 1, true);
-			g.lineGradientStyle(GradientType.LINEAR, [0, 0, 0, 0], [1, 1, 0, 0], [0, 127, 128, 255], _lineMatrixH, SpreadMethod.REPEAT);
+			g.lineGradientStyle(GradientType.LINEAR, 
+				[0, 0, 0, 0], [1, 1, 0, 0], [0, 127, 128, 255], 
+				_lineMatrixH, SpreadMethod.REPEAT);
 			g.beginFill(0, 0);
 			g.moveTo(_downLocation.x, _downLocation.y)
 			g.lineTo(realX, _downLocation.y);
-			g.lineGradientStyle(GradientType.LINEAR, [0, 0, 0, 0], [1, 1, 0, 0], [0, 127, 128, 255], _lineMatrixV, SpreadMethod.REPEAT);
+			g.lineGradientStyle(GradientType.LINEAR, 
+				[0, 0, 0, 0], [1, 1, 0, 0], [0, 127, 128, 255], 
+				_lineMatrixV, SpreadMethod.REPEAT);
 			g.lineTo(realX, realY);
-			g.lineGradientStyle(GradientType.LINEAR, [0, 0, 0, 0], [1, 1, 0, 0], [0, 127, 128, 255], _lineMatrixH, SpreadMethod.REPEAT);
+			g.lineGradientStyle(GradientType.LINEAR, 
+				[0, 0, 0, 0], [1, 1, 0, 0], [0, 127, 128, 255], 
+				_lineMatrixH, SpreadMethod.REPEAT);
 			g.lineTo(_downLocation.x, realY);
-			g.lineGradientStyle(GradientType.LINEAR, [0, 0, 0, 0], [1, 1, 0, 0], [0, 127, 128, 255], _lineMatrixV, SpreadMethod.REPEAT);
+			g.lineGradientStyle(GradientType.LINEAR, 
+				[0, 0, 0, 0], [1, 1, 0, 0], [0, 127, 128, 255], 
+				_lineMatrixV, SpreadMethod.REPEAT);
 			g.lineTo(_downLocation.x, _downLocation.y);
 			g.endFill();
 			super.blendMode = BlendMode.INVERT;
