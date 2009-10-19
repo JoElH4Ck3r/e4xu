@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<flex-config>
+  <compiler>
+    <source-path append="true">
+      <path-element>C:\bugs\src</path-element>
+      <path-element>C:\Program Files\FlashDevelop\Library\AS3\classes</path-element>
+    </source-path>
+	<namespaces>
+		<namespace>
+			<uri>http://e4xu.googlecode.com</uri>
+			<manifest>C:\bugs\external\run\manifest.xml</manifest>
+		</namespace>
+		<namespace>
+			<uri>http://ns.adobe.com/mxml/2009</uri>
+			<manifest>C:\sdks\trunk\frameworks\mxml-2009-manifest.xml</manifest>
+		</namespace>
+	</namespaces>
+  </compiler>
+  <include-classes>
+	<class>mx.accessibility.UIComponentAccProps</class> <!-- fake -->
+	
+	<class>mx.binding.Binding</class>
+	<class>mx.binding.BindingManager</class>
+	<class>mx.binding.EvalBindingResponder</class>
+	<class>mx.binding.IBindingClient</class>
+	<class>mx.binding.IWatcherSetupUtil</class>
+	<class>mx.binding.IWatcherSetupUtil2</class>
+	<class>mx.binding.ArrayElementWatcher</class>
+	<class>mx.binding.FunctionReturnWatcher</class>
+	<class>mx.binding.PropertyWatcher</class>
+	<class>mx.binding.RepeaterComponentWatcher</class>
+	<class>mx.binding.RepeaterItemWatcher</class>
+	<class>mx.binding.StaticPropertyWatcher</class>
+	<class>mx.binding.XMLWatcher</class>
+	<class>mx.binding.Watcher</class>
+	
+	<class>mx.collections.errors.ItemPendingError</class>
+	
+	<class>mx.core.BitmapAsset</class>
+	<class>mx.core.ByteArrayAsset</class>
+	<class>mx.core.ClassFactory</class>
+	<class>mx.core.DeferredInstanceFromClass</class>
+	<class>mx.core.DeferredInstanceFromFunction</class>
+	<class>mx.core.EdgeMetrics</class>
+	<class>mx.core.FlexMovieClip</class>
+	<class>mx.core.FlexBitmap</class>
+	<class>mx.core.FontAsset</class>
+	<class>mx.core.IBorder</class>
+	<class>mx.core.IFlexModuleFactory</class>
+	<class>mx.core.IDeferredInstance</class>
+	<class>mx.core.IFactory</class>
+	<class>mx.core.IFlexAsset</class>
+	<class>mx.core.IFlexDisplayObject</class>
+	<class>mx.core.IMXMLObject</class>
+	<class>mx.core.IPropertyChangeNotifier</class>
+	<class>mx.core.IRepeaterClient</class>
+	<class>mx.core.MovieClipAsset</class>
+	<class>mx.core.MovieClipLoaderAsset</class>
+	<class>mx.core.SoundAsset</class>
+	<class>mx.core.SpriteAsset</class>
+	<class>mx.core.TextFieldFactory</class> <!-- fake -->
+	
+	<class>mx.effects.EffectManager</class> <!-- fake -->
+	
+	<class>mx.events.PropertyChangeEvent</class>
+	<class>mx.events.PropertyChangeEventKind</class>
+	<class>mx.events.Request</class> <!-- fake -->
+		
+	<class>mx.filters.Filter</class> <!-- fake -->
+	
+	<class>mx.managers.systemClasses.ChildManager</class> <!-- fake -->
+	
+	<class>mx.messaging.config.ServerConfig</class> <!-- fake -->
+	
+	<class>mx.rpc.IResponder</class>
+	
+	<class>mx.styles.IStyleModule</class>
+	<class>mx.styles.StyleManager</class> <!-- fake -->
+	<class>mx.styles.IStyleManager2</class> <!-- fake -->
+	<class>mx.styles.StyleManagerImpl</class> <!-- fake -->
+	
+	<class>mx.utils.UIDUtil</class>
+	<class>mx.utils.ObjectProxy</class>
+	<class>mx.utils.NameUtil</class>
+	
+  </include-classes>
+</flex-config>

@@ -239,9 +239,9 @@ package org.wvxvws.gui
 		{
 			var cl:uint = _backgroundColor;
 			var pattern:BitmapData = new BitmapData(50, 50, false, _backgroundColor);
-			pattern.fillRect(new Rectangle(0, 0, pattern.width / 2, pattern.height), 0x47361F);
+			pattern.fillRect(new Rectangle(0, 0, pattern.width * 0.5, pattern.height), 0x47361F);
 			var i:int = pattern.height;
-			var line:Rectangle = new Rectangle(0, 0, parent.width / 2, 1);
+			var line:Rectangle = new Rectangle(0, 0, pattern.width * 0.5, 1);
 			while (i >= 0)
 			{
 				pattern.fillRect(line, _backgroundColor);// 0x47361F);
@@ -251,7 +251,7 @@ package org.wvxvws.gui
 			var pWidth:int = width;
 			var pHeight:int = height;
 			var mtx:Matrix = new Matrix();
-			mtx.rotate(Math.PI / 4);
+			mtx.rotate(Math.PI * 0.25);
 			graphics.clear();
 			graphics.beginBitmapFill(pattern, mtx, true, true);
 			graphics.drawRect(0, 0, pWidth, pHeight);

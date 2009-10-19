@@ -174,7 +174,7 @@
 		
 		public override function validate(properties:Object):void 
 		{
-			layOutChildren();
+			if("_dataProvider" in properties) this.layOutChildren();
 			super.validate(properties);
 		}
 		
@@ -195,9 +195,9 @@
 			while (super.numChildren > i)
 				_removedChildren.push(super.removeChildAt(0));
 			_dispatchCreated = false;
-			_dataProvider.*.(createChild(valueOf()));
+			_dataProvider.*.(this.createChild(valueOf()));
 			if (_dispatchCreated) 
-				dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED, false, true));
+				super.dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED, false, true));
 		}
 		
 		protected function createChild(xml:XML):DisplayObject
