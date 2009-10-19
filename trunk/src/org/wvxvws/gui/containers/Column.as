@@ -245,7 +245,7 @@ package org.wvxvws.gui.containers
 			{
 				super.validate(properties);
 				_calculatedHeight = _padding.bottom + _cumulativeHeight - _gutter;
-				drawBackground();
+				this.drawBackground();
 			}
 		}
 		
@@ -285,7 +285,7 @@ package org.wvxvws.gui.containers
 		public function endLayoutChildren(newHeight:int):void
 		{
 			_calculatedHeight = newHeight;
-			drawBackground();
+			this.drawBackground();
 		}
 		
 		//--------------------------------------------------------------------------
@@ -310,7 +310,7 @@ package org.wvxvws.gui.containers
 				_dataProvider.*.(createChild(valueOf()));
 				if (_dispatchCreated)
 				{
-					dispatchEvent(new GUIEvent(
+					super.dispatchEvent(new GUIEvent(
 						GUIEvent.CHILDREN_CREATED, false, true));
 				}
 			}

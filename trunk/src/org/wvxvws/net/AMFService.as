@@ -67,7 +67,7 @@ package org.wvxvws.net
 		{
 		   if (_baseURL == value) return;
 		   _baseURL = value;
-		   dispatchEvent(new Event("baseURLChange"));
+		   super.dispatchEvent(new Event("baseURLChange"));
 		}
 		
 		//------------------------------------
@@ -87,7 +87,7 @@ package org.wvxvws.net
 		{
 		   if (_methods == value) return;
 		   _methods = value;
-		   dispatchEvent(new Event("methodsChange"));
+		   super.dispatchEvent(new Event("methodsChange"));
 		}
 		
 		//------------------------------------
@@ -107,7 +107,7 @@ package org.wvxvws.net
 		{
 		   if (_parameters == value) return;
 		   _parameters = value;
-		   dispatchEvent(new Event("parametersChange"));
+		   super.dispatchEvent(new Event("parametersChange"));
 		}
 		
 		//------------------------------------
@@ -127,7 +127,7 @@ package org.wvxvws.net
 		{
 		   if (_resultCallBack === value) return;
 		   _resultCallBack = value;
-		   dispatchEvent(new Event("resultCallBackChange"));
+		   super.dispatchEvent(new Event("resultCallBackChange"));
 		}
 		
 		//------------------------------------
@@ -147,7 +147,7 @@ package org.wvxvws.net
 		{
 			if (_faultCallBack === value) return;
 			_faultCallBack = value;
-			dispatchEvent(new Event("faultCallBackChange"));
+			super.dispatchEvent(new Event("faultCallBackChange"));
 		}
 		
 		//------------------------------------
@@ -167,7 +167,7 @@ package org.wvxvws.net
 		{
 		   if (_responder == value) return;
 		   _responder = value;
-		   dispatchEvent(new Event("responderChange"));
+		   super.dispatchEvent(new Event("responderChange"));
 		}
 		
 		//--------------------------------------------------------------------------
@@ -211,9 +211,9 @@ package org.wvxvws.net
 			_faultCallBack = faultCallBack;
 			_responder = new Responder(defaultResultCallBack, defaultFaultCallBack);
 			_synchronizer = Synchronizer.getInstance();
-			addEventListener(NetStatusEvent.NET_STATUS, 
+			super.addEventListener(NetStatusEvent.NET_STATUS, 
 												netStatusHandler, false, 0, true);
-			addEventListener(SecurityErrorEvent.SECURITY_ERROR, 
+			super.addEventListener(SecurityErrorEvent.SECURITY_ERROR, 
 											securityErrorHandler, false, 0, true);
 		}
 		
@@ -223,7 +223,7 @@ package org.wvxvws.net
 		//
 		//--------------------------------------------------------------------------
 		
-		override public function call(command:String, responder:Responder, ...rest):void 
+		public override function call(command:String, responder:Responder, ...rest):void 
 		{
 			//super.call(command, responder);
 		}
@@ -268,7 +268,7 @@ package org.wvxvws.net
 			_synchronizer.acknowledge(_currentID);
 			_sending = false;
 			if (_faultCallBack !== null) _faultCallBack(value);
-			dispatchEvent(new Event(Event.COMPLETE));
+			super.dispatchEvent(new Event(Event.COMPLETE));
 		}
 		
 		protected function defaultResultCallBack(value:Object):void
@@ -276,7 +276,7 @@ package org.wvxvws.net
 			_synchronizer.acknowledge(_currentID);
 			_sending = false;
 			if (_resultCallBack !== null) _resultCallBack(value);
-			dispatchEvent(new Event(Event.COMPLETE));
+			super.dispatchEvent(new Event(Event.COMPLETE));
 		}
 		
 		protected function methodForName(name:String):ServiceMethod

@@ -78,7 +78,7 @@ package org.wvxvws.gui.containers
 		public override function set dataProvider(value:XML):void 
 		{
 			super.dataProvider = value;
-			if (_isDeferredKeyInit) initiKeyListener();
+			if (_isDeferredKeyInit) this.initiKeyListener();
 		}
 		
 		//--------------------------------------------------------------------------
@@ -131,7 +131,7 @@ package org.wvxvws.gui.containers
 		
 		private function atsHandler(event:Event):void 
 		{
-			removeEventListener(Event.ADDED_TO_STAGE, atsHandler);
+			super.removeEventListener(Event.ADDED_TO_STAGE, atsHandler);
 			KeyUtils.obtainStage(stage);
 		}
 		
@@ -193,7 +193,7 @@ package org.wvxvws.gui.containers
 		{
 			super.initialized(document, id);
 			if (document is Menu) _parentMenu = document as Menu;
-			else initiKeyListener();
+			else this.initiKeyListener();
 		}
 		
 		protected function initiKeyListener():void
@@ -233,8 +233,17 @@ package org.wvxvws.gui.containers
 		
 		public override function validate(properties:Object):void 
 		{
+			//for (var p:String in properties)
+			//{
+				//trace("validate", p);
+			//}
+			//if (!("_dataProvider" in properties) && ("_bounds" in properties))
+			//{
+				//trace("this.layOutChildren()");
+				//this.layOutChildren();
+			//}
 			super.validate(properties);
-			drawIconBG();
+			this.drawIconBG();
 		}
 		
 		//--------------------------------------------------------------------------
@@ -305,7 +314,7 @@ package org.wvxvws.gui.containers
 				_cumulativeHeight += (child as DisplayObject).height;
 			}
 			bounds = (child as DisplayObject).getBounds(this);
-			childWidth = bounds.width + bounds.x;
+			childWidth = (child as DisplayObject).width + (child as DisplayObject).x; // bounds.width + bounds.x;
 			_cumulativeWidth = Math.max(_cumulativeWidth, childWidth);
 			return child as DisplayObject;
 		}

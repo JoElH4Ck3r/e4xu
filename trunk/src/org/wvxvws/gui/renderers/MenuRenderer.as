@@ -19,6 +19,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+// TODO: Needs major rewrite
 package org.wvxvws.gui.renderers 
 {
 	//{imports
@@ -117,14 +118,28 @@ package org.wvxvws.gui.renderers
 			_dataCopy = value.copy();
 			_hasChildNodes = _data.hasComplexContent();
 			if (_hasChildNodes) _kind = Menu.CONTAINER;
-			render();
+			this.render();
+		}
+		
+		public override function get width():Number
+		{
+			var i:int = super.numChildren;
+			var c:DisplayObject;
+			var ret:int;
+			while (i--)
+			{
+				c = getChildAt(i);
+				ret = Math.max(c.x + c.width, ret);
+			}
+			_width = ret;
+			return ret;
 		}
 		
 		public override function set width(value:Number):void 
 		{
 			if (_width === value) return;
 			_width = value;
-			render();
+			this.render();
 		}
 		
 		//--------------------------------------------------------------------------
@@ -194,7 +209,7 @@ package org.wvxvws.gui.renderers
 				_selection.graphics.lineStyle(1, 0xFF, 0.5, true);
 				if (_enabled) _selection.graphics.beginFill(0xFF, 0.2);
 				else _selection.graphics.beginFill(0, 0);
-				_selection.graphics.drawRect(0, 0, _width, Math.max(super.height, 20));
+				_selection.graphics.drawRect(0, 0, _width - 1, Math.max(super.height, 21) - 1);
 				_selection.graphics.endFill();
 				super.addChild(_selection);
 				super.dispatchEvent(new GUIEvent(GUIEvent.OPENED, true, true));
@@ -333,12 +348,12 @@ package org.wvxvws.gui.renderers
 		
 		private function mouseOverHandler(event:MouseEvent):void 
 		{
-			if (_kind !== Menu.SEPARATOR) drawSelection(true);
+			if (_kind !== Menu.SEPARATOR) this.drawSelection(true);
 		}
 		
 		private function mouseOutHandler(event:MouseEvent):void
 		{
-			if (_kind !== Menu.SEPARATOR) drawSelection(false);
+			if (_kind !== Menu.SEPARATOR) this.drawSelection(false);
 		}
 		
 	}

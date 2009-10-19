@@ -288,8 +288,10 @@ package org.wvxvws.gui
 				if (parent is ILayoutClient) 
 					_validator = (parent as ILayoutClient).validator;
 				if (parent is Stage)
+				{
 					_validator = new LayoutValidator();
-				_validator.append(this);
+					_validator.append(this);
+				}
 			}
 			return _validator;
 		}

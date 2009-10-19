@@ -24,6 +24,7 @@
 		
 		protected override function layOutChildren():void
 		{
+			trace("layOutChildren");
 			var hadMenu:Boolean;
 			if (super.contains(_menu))
 			{
@@ -66,7 +67,8 @@
 		{
 			_background.clear();
 			_background.beginFill(_backgroundColor, _backgroundAlpha);
-			_background.drawRect(0, 0, _cumulativeHeight, _bounds.y);
+			_background.drawRect(0, 0, 
+				Math.max(_cumulativeHeight, super._bounds.x), _bounds.y);
 			_background.endFill();
 		}
 		

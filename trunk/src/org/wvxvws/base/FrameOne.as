@@ -107,8 +107,8 @@ package org.wvxvws.base
 			_flexInit = getDefinitionByName("FlexInit") as Class;
 			removeChild(_ipreloader as DisplayObject);
 			_ipreloader = null;
-			if (_flexInit) Object(_flexInit).init(null);
 			var app:DisplayObject = new _frameTwoClass() as DisplayObject;
+			if (_flexInit) Object(_flexInit).init(app);
 			addChild(app);
 			(app as IMXMLObject).initialized(this, "frameTwo");
 		}

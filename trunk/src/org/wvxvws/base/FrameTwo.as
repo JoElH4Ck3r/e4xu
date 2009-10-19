@@ -22,6 +22,8 @@
 package org.wvxvws.base 
 {
 	import flash.display.DisplayObject;
+	import mx.core.IFlexModuleFactory;
+	import mx.styles.IStyleManager2;
 	import org.wvxvws.gui.DIV;
 	
 	//[SWF (width="800", height="600", scriptTimeLimit="15", frameRate="30", backgroundColor="0x3E2F1B")]
@@ -36,7 +38,7 @@ package org.wvxvws.base
 	* @langVersion 3.0
 	* @playerVersion 10.0.12.36
 	*/
-	public class FrameTwo extends DIV
+	public class FrameTwo extends DIV implements IFlexModuleFactory
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -89,6 +91,12 @@ package org.wvxvws.base
 		{
 			trace("mixin", obj);
 		}
+		
+		/* INTERFACE mx.core.IFlexModuleFactory */
+		
+		public function registerImplementation(a:String, b:IStyleManager2):void { }
+		
+		public function getImplementation(a:String):IStyleManager2 { return null; }
 		
 		//--------------------------------------------------------------------------
 		//
