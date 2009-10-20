@@ -38,9 +38,9 @@
 				_cachedStates[value] = newState;
 			}
 			else newState = _cachedStates[value];
-			if (_currentState && contains(_currentState))
-				removeChild(_currentState);
-			_currentState = addChild(newState);
+			if (_currentState && super.contains(_currentState))
+				super.removeChild(_currentState);
+			_currentState = super.addChildAt(newState, 0);
 		}
 		
 		public function get state():String

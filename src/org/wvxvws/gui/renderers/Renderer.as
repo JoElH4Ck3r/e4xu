@@ -41,8 +41,6 @@ package org.wvxvws.gui.renderers
 		//
 		//--------------------------------------------------------------------------
 		
-		public override function get width():Number { return super.width; }
-		
 		public override function set width(value:Number):void 
 		{
 			if (_width === (value >> 0)) return;
@@ -114,7 +112,7 @@ package org.wvxvws.gui.renderers
 		public function Renderer() 
 		{
 			super();
-			addChild(_field);
+			super.addChild(_field);
 			_field.selectable = false;
 			_field.autoSize = TextFieldAutoSize.LEFT;
 			_field.width = 1;

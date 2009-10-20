@@ -32,8 +32,10 @@ package org.wvxvws.gui.containers
 	import flash.system.ApplicationDomain;
 	import flash.utils.Dictionary;
 	import org.wvxvws.gui.GUIEvent;
+	import org.wvxvws.gui.layout.ILayoutClient;
 	import org.wvxvws.gui.renderers.IMenuRenderer;
 	import org.wvxvws.gui.renderers.MenuRenderer;
+	import org.wvxvws.gui.skins.SkinProducer;
 	import org.wvxvws.utils.KeyUtils;
 	//}
 	
@@ -88,7 +90,7 @@ package org.wvxvws.gui.containers
 		//--------------------------------------------------------------------------
 		
 		protected var _groups:Vector.<Vector.<IMenuRenderer>>;
-		protected var _iconGenerator:Function;
+		protected var _iconProducer:SkinProducer;
 		protected var _iconField:String = "@icon";
 		protected var _hotkeysField:String = "@hotkeys";
 		protected var _kindField:String = "@kind";
@@ -106,6 +108,7 @@ package org.wvxvws.gui.containers
 		protected var _isRootMenu:Boolean;
 		protected var _isDeferredKeyInit:Boolean;
 		protected var _keyListenersMap:Dictionary = new Dictionary(true);
+		protected var _cellHeight:int = 24;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -167,11 +170,13 @@ package org.wvxvws.gui.containers
 			if (_useLabelField) _childMenu.labelField = _labelField;
 			if (_useLabelFunction) _childMenu.labelFunction = _labelFunction;
 			_childMenu.dataProvider = _openedItem.data;
-			_childMenu.x = (_openedItem as DisplayObject).x + (_openedItem as DisplayObject).width;
+			_childMenu.x = (_openedItem as DisplayObject).x + 
+							(_openedItem as DisplayObject).width;
 			_childMenu.y = (_openedItem as DisplayObject).y;
-			super.addChild(_childMenu);
+			_childMenu.visible = false;
 			_childMenu.initialized(this, "_childMenu");
 			_childMenu.validate(_childMenu.invalidProperties);
+			_childMenu.visible = true;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -186,6 +191,7 @@ package org.wvxvws.gui.containers
 			{
 				_openedItem = null;
 				super.removeChild(_childMenu);
+				_childMenu = null;
 			}
 		}
 		
@@ -233,15 +239,6 @@ package org.wvxvws.gui.containers
 		
 		public override function validate(properties:Object):void 
 		{
-			//for (var p:String in properties)
-			//{
-				//trace("validate", p);
-			//}
-			//if (!("_dataProvider" in properties) && ("_bounds" in properties))
-			//{
-				//trace("this.layOutChildren()");
-				//this.layOutChildren();
-			//}
 			super.validate(properties);
 			this.drawIconBG();
 		}
@@ -260,8 +257,8 @@ package org.wvxvws.gui.containers
 			if (_childMenu && contains(_childMenu))
 				super.removeChild(_childMenu);
 			super.layOutChildren();
-			super.width = _cumulativeWidth;
-			super.height = _cumulativeHeight;
+			super._bounds.x = _cumulativeWidth;
+			super._bounds.y = _cumulativeHeight;
 			var i:int = super.numChildren;
 			var child:DisplayObject;
 			while (i--)
@@ -277,10 +274,7 @@ package org.wvxvws.gui.containers
 			var child:IMenuRenderer = super.createChild(xml) as IMenuRenderer;
 			if (!child) return null;
 			var childWidth:int;
-			var bounds:Rectangle;
-			child.iconFactory = (_iconGenerator != null ? _iconGenerator(xml) : 
-				ApplicationDomain.currentDomain.hasDefinition(xml[_iconField].toString()) ? 
-				ApplicationDomain.currentDomain.getDefinition(xml[_iconField].toString()) as Class : null);
+			child.iconProducer = _iconProducer;
 			if (xml[_hotkeysField].toString().length)
 			{
 				child.hotKeys = Vector.<int>(xml[_hotkeysField].toString().split("|"));
@@ -302,20 +296,24 @@ package org.wvxvws.gui.containers
 				_lastGroup.push(child);
 				_groups.push(_lastGroup);
 			}
+			(child as DisplayObject).height = _cellHeight;
 			(child as DisplayObject).y = _nextY;
-			if (child.kind == SEPARATOR)
+			if (child.kind == SEPARATOR) _nextY += 4;
+			else _nextY += _cellHeight;
+			if (child is ILayoutClient)
 			{
-				_nextY += 4;
-				_cumulativeHeight += 4;
+				(child as ILayoutClient).validate(
+					(child as ILayoutClient).invalidProperties);
 			}
+			if (child is MenuRenderer) 
+				childWidth = (child as MenuRenderer).desiredWidth;
 			else
 			{
-				_nextY += (child as DisplayObject).height;
-				_cumulativeHeight += (child as DisplayObject).height;
+				childWidth = (child as DisplayObject).width + 
+							(child as DisplayObject).x;
 			}
-			bounds = (child as DisplayObject).getBounds(this);
-			childWidth = (child as DisplayObject).width + (child as DisplayObject).x; // bounds.width + bounds.x;
 			_cumulativeWidth = Math.max(_cumulativeWidth, childWidth);
+			_cumulativeHeight = _nextY;
 			return child as DisplayObject;
 		}
 		
@@ -325,10 +323,10 @@ package org.wvxvws.gui.containers
 			g.clear();
 			g.lineStyle(_borderWidth, _borderColor);
 			g.beginFill(super._backgroundColor, super._backgroundAlpha);
-			g.drawRect(0, 0, _cumulativeWidth + 2, _cumulativeHeight + 2);
+			g.drawRect(0, 0, _cumulativeWidth, _cumulativeHeight);
 			g.endFill();
 			g.beginFill(0xD0D0D0);
-			g.drawRect(0, 0, 20, _cumulativeHeight + 2);
+			g.drawRect(0, 0, 20, _cumulativeHeight);
 			g.endFill();
 		}
 		
