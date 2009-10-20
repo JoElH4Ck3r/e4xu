@@ -34,6 +34,9 @@ package org.wvxvws.gui.renderers
 	import flash.text.TextFormat;
 	import org.wvxvws.gui.containers.Menu;
 	import org.wvxvws.gui.GUIEvent;
+	import org.wvxvws.gui.layout.ILayoutClient;
+	import org.wvxvws.gui.layout.LayoutValidator;
+	import org.wvxvws.gui.skins.SkinProducer;
 	import org.wvxvws.utils.KeyUtils;
 	//}
 	
@@ -45,7 +48,7 @@ package org.wvxvws.gui.renderers
 	* @langVersion 3.0
 	* @playerVersion 10.0.12.36
 	*/
-	public class MenuRenderer extends Sprite implements IMenuRenderer
+	public class MenuRenderer extends Renderer implements IMenuRenderer, ILayoutClient
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -53,18 +56,41 @@ package org.wvxvws.gui.renderers
 		//
 		//--------------------------------------------------------------------------
 		
+		public function get desiredWidth():int
+		{
+			var ret:int = 50 + _field.width + 2;
+			if (_hkField) ret += _hkField.width + 2;
+			return ret;
+		}
+		
+		public override function set width(value:Number):void 
+		{
+			if (_width === (value >> 0)) return;
+			_width = value;
+			this.invalidate("_width", _width, false);
+		}
+		
+		public override function set height(value:Number):void 
+		{
+			if (_height === (value >> 0)) return;
+			_height = value;
+			this.invalidate("_height", _height, false);
+		}
+		
 		/* INTERFACE org.wvxvws.gui.renderers.IMenuRenderer */
 		
-		public function set iconFactory(value:Class):void
+		public function set iconProducer(value:SkinProducer):void
 		{
-			if (_iconFactory === value) return;
-			_iconFactory = value;
+			if (_iconProducer === value) return;
+			_iconProducer = value;
+			this.invalidate("_iconProducer", _iconProducer, false);
 		}
 		
 		public function set hotKeys(value:Vector.<int>):void
 		{
 			if (_hotKeys === value) return;
 			_hotKeys = value;
+			this.invalidate("_hotKeys", _hotKeys, false);
 		}
 		
 		public function get kind():String { return _kind; }
@@ -75,6 +101,7 @@ package org.wvxvws.gui.renderers
 				value !== Menu.CONTAINER && value !== Menu.NONE && 
 				value !== Menu.RADIO && value !== Menu.SEPARATOR)) return;
 			_kind = value;
+			this.invalidate("_data", _data, false);
 		}
 		
 		public function set clickHandler(value:Function):void
@@ -89,58 +116,41 @@ package org.wvxvws.gui.renderers
 		{
 			if (_enabled === value) return;
 			_enabled = value;
+			this.invalidate("_enabled", _enabled, false);
 		}
 		
-		public function get isValid():Boolean
-		{
-			if (!_data) return false;
-			return _dataCopy.contains(_data);
-		}
+		public override function get data():XML { return _data; }
 		
-		public function set labelFunction(value:Function):void
+		public override function set data(value:XML):void
 		{
-			if (_labelFunction === value) return;
-			_labelFunction = value;
-		}
-		
-		public function set labelField(value:String):void
-		{
-			if (_labelField === value) return;
-			_labelField = value;
-		}
-		
-		public function get data():XML { return _data; }
-		
-		public function set data(value:XML):void
-		{
+			_hasChildNodes = false;
+			if (value) _hasChildNodes = value.hasComplexContent();
+			if (_hasChildNodes) _kind = Menu.CONTAINER;
 			if (isValid && _data === value) return;
 			_data = value;
-			_dataCopy = value.copy();
-			_hasChildNodes = _data.hasComplexContent();
-			if (_hasChildNodes) _kind = Menu.CONTAINER;
-			this.render();
+			if (!_data) return;
+			this.invalidate("_data", _data, false);
 		}
 		
-		public override function get width():Number
+		/* INTERFACE org.wvxvws.gui.layout.ILayoutClient */
+		
+		public function get validator():LayoutValidator { return _validator; }
+		
+		public function get invalidProperties():Object
 		{
-			var i:int = super.numChildren;
-			var c:DisplayObject;
-			var ret:int;
-			while (i--)
-			{
-				c = getChildAt(i);
-				ret = Math.max(c.x + c.width, ret);
-			}
-			_width = ret;
-			return ret;
+			return _invalidProperties;
 		}
 		
-		public override function set width(value:Number):void 
+		public function get layoutParent():ILayoutClient { return _layoutParent; }
+		
+		public function set layoutParent(value:ILayoutClient):void
 		{
-			if (_width === value) return;
-			_width = value;
-			this.render();
+			_layoutParent = value;
+			_validator = _layoutParent.validator;
+			_validator.append(this, _layoutParent);
 		}
+		
+		public function get childLayouts():Vector.<ILayoutClient> { return null; }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -148,27 +158,24 @@ package org.wvxvws.gui.renderers
 		//
 		//--------------------------------------------------------------------------
 		
-		protected var _document:Object;
-		protected var _id:String;
-		protected var _data:XML;
-		protected var _dataCopy:XML;
 		protected var _icon:DisplayObject;
-		protected var _field:TextField;
 		protected var _hkField:TextField;
 		protected var _enabled:Boolean;
 		protected var _clickHandler:Function;
-		protected var _labelFunction:Function;
-		protected var _labelField:String;
 		protected var _kind:String;
 		protected var _hotKeys:Vector.<int>;
-		protected var _iconFactory:Class;
+		protected var _iconProducer:SkinProducer;
 		protected var _arrow:Sprite;
 		protected var _hasChildNodes:Boolean;
-		protected var _defaultFormat:TextFormat = new TextFormat("_sans", 11);
 		protected var _disabledFormat:TextFormat = new TextFormat("_sans", 11, 0xC0C0C0);
 		protected var _fieldScrollRect:Rectangle = new Rectangle();
-		protected var _width:int;
 		protected var _selection:Sprite;
+		protected var _selectionColor:uint = 0xFF;
+		protected var _validator:LayoutValidator;
+		protected var _layoutParent:ILayoutClient;
+		protected var _invalidProperties:Object = { };
+		protected var _invalidLayout:Boolean;
+		protected var _height:int;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -188,6 +195,9 @@ package org.wvxvws.gui.renderers
 			super.addEventListener(MouseEvent.MOUSE_OVER, mouseOverHandler);
 			super.addEventListener(MouseEvent.MOUSE_OUT, mouseOutHandler);
 			super.addEventListener(MouseEvent.CLICK, mclickHandler);
+			super.mouseChildren = false;
+			super.tabChildren = false;
+			super._backgroundAlpha = 0;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -195,6 +205,30 @@ package org.wvxvws.gui.renderers
 		//  Public methods
 		//
 		//--------------------------------------------------------------------------
+		
+		public function validate(properties:Object):void
+		{
+			this.renderText();
+			_invalidLayout = false;
+			_invalidProperties = { };
+		}
+		
+		public function invalidate(property:String, 
+									cleanValue:*, validateParent:Boolean):void
+		{
+			_invalidProperties[property] = cleanValue;
+			if (!_validator)
+			{
+				if (super.parent && super.parent is ILayoutClient)
+				{
+					_layoutParent = super.parent as ILayoutClient;
+					_validator = _layoutParent.validator;
+					_validator.append(this, _layoutParent);
+				}
+			}
+			if (_validator)  _validator.requestValidation(this, validateParent);
+			_invalidLayout = true;
+		}
 		
 		public function drawSelection(isSelected:Boolean):void
 		{
@@ -206,10 +240,14 @@ package org.wvxvws.gui.renderers
 					_selection.mouseEnabled = false;
 				}
 				_selection.graphics.clear();
-				_selection.graphics.lineStyle(1, 0xFF, 0.5, true);
-				if (_enabled) _selection.graphics.beginFill(0xFF, 0.2);
-				else _selection.graphics.beginFill(0, 0);
-				_selection.graphics.drawRect(0, 0, _width - 1, Math.max(super.height, 21) - 1);
+				_selection.graphics.beginFill(_selectionColor, 0.5);
+				_selection.graphics.drawRect(0, 0, _width, super.height);
+				_selection.graphics.drawRect(1, 1, _width - 2, super.height - 2);
+				if (_enabled) 
+				{
+					_selection.graphics.beginFill(_selectionColor, 0.2);
+					_selection.graphics.drawRect(1, 1, _width - 2, super.height - 2);
+				}
 				_selection.graphics.endFill();
 				super.addChild(_selection);
 				super.dispatchEvent(new GUIEvent(GUIEvent.OPENED, true, true));
@@ -223,22 +261,14 @@ package org.wvxvws.gui.renderers
 			}
 		}
 		
-		public function initialized(document:Object, id:String):void
-		{
-			_document = document;
-			_id = id;
-		}
-		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
 		
-		protected function render():void
+		protected override function renderText():void 
 		{
-			var hkStr:String = "";
-			var i:int;
 			var g:Graphics = super.graphics;
 			if (_kind === Menu.SEPARATOR)
 			{
@@ -251,40 +281,53 @@ package org.wvxvws.gui.renderers
 				if (_hkField && super.contains(_hkField)) super.removeChild(_hkField);
 				return;
 			}
-			if (!_icon || !(_icon as Object).constructor !== _iconFactory)
-			{
-				if (_icon && super.contains(_icon))
-				{
-					super.removeChild(_icon);
-				}
-				if (_iconFactory)
-				{
-					_icon = new _iconFactory() as DisplayObject;
-					_icon.x = 2;
-					_icon.y = 2;
-					super.addChild(_icon);
-				}
-			}
-			if (!_field)
-			{
-				_field = new TextField();
-				_field.selectable = false;
-				_field.defaultTextFormat = _defaultFormat;
-				_field.height = 1;
-				_field.width = 1;
-				_field.autoSize = TextFieldAutoSize.LEFT;
-				_field.x = 30;
-				super.addChild(_field);
-			}
+			_field.x = 30;
+			_field.y = Math.max((_height - _field.height) >> 1, 0);
 			if (_labelFunction !== null) _field.text = _labelFunction(data);
 			else if (_labelField !== null && _labelField !== "")
 				_field.text = _data[_labelField].toString();
 			else _field.text = _data.localName().toString();
-			if (!_hkField)
+			
+			this.renderIcon();
+			this.renderHotKeys();
+			this.renderArrow();
+			
+			if (_enabled)
+			{
+				_field.setTextFormat(_textFormat);
+				if (_hkField) _hkField.setTextFormat(_textFormat);
+				if (_arrow) _arrow.alpha = 1;
+			}
+			else
+			{
+				_field.setTextFormat(_disabledFormat);
+				if (_hkField) _hkField.setTextFormat(_disabledFormat);
+				if (_arrow) _arrow.alpha = 0.2;
+			}
+			this.drawBackground();
+		}
+		
+		protected function renderIcon():void
+		{
+			if (_icon && super.contains(_icon)) super.removeChild(_icon);
+			if (_iconProducer)
+			{
+				_icon = _iconProducer.produce(this);
+				_icon.x = 2;
+				_icon.y = 2;
+				super.addChild(_icon);
+			}
+		}
+		
+		protected function renderHotKeys():void
+		{
+			var hkStr:String = "";
+			var i:int;
+			if (!_hkField && _hotKeys && _hotKeys.length)
 			{
 				_hkField = new TextField();
 				_hkField.selectable = false;
-				_hkField.defaultTextFormat = _defaultFormat;
+				_hkField.defaultTextFormat = _textFormat;
 				_hkField.height = 1;
 				_hkField.width = 1;
 				_hkField.autoSize = TextFieldAutoSize.LEFT;
@@ -298,8 +341,13 @@ package org.wvxvws.gui.renderers
 					i++;
 				}
 				_hkField.text = hkStr;
+				_hkField.x = Math.max(_field.width, _width - (20 + _hkField.width));
+				_hkField.y = Math.max((_height - _hkField.height) >> 1, 0);
 			}
-			_hkField.x = Math.max(_width - (30 + _hkField.width), _field.width + _field.x + 2);
+		}
+		
+		protected function renderArrow():void
+		{
 			if (_hasChildNodes && !_arrow)
 			{
 				_arrow = new Sprite();
@@ -314,24 +362,17 @@ package org.wvxvws.gui.renderers
 				super.removeChild(_arrow);
 			if (_arrow && super.contains(_arrow))
 			{
-				_arrow.x = Math.max(_width - (_arrow.width + 2), _hkField.x + _hkField.width + 2);
-				_arrow.y = (height - _arrow.height) >> 1;
+				_arrow.x = _width - (_arrow.width + 4);
+				_arrow.y = (_height - _arrow.height) >> 1;
 			}
-			if (_enabled)
-			{
-				_field.setTextFormat(_defaultFormat);
-				_hkField.setTextFormat(_defaultFormat);
-				if (_arrow) _arrow.alpha = 1;
-			}
-			else
-			{
-				_field.setTextFormat(_disabledFormat);
-				_hkField.setTextFormat(_disabledFormat);
-				if (_arrow) _arrow.alpha = 0.2;
-			}
+		}
+		
+		protected override function drawBackground():void 
+		{
+			var g:Graphics = super.graphics;
 			g.clear();
-			g.beginFill(0, 0);
-			g.drawRect(0, 0, _width, Math.max(super.height, 20));
+			g.beginFill(_backgroundColor, _backgroundAlpha);
+			g.drawRect(0, 0, _width, _height);
 			g.endFill();
 		}
 		

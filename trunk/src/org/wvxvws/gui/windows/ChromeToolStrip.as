@@ -24,10 +24,10 @@
 		
 		protected override function layOutChildren():void
 		{
-			trace("layOutChildren");
 			var hadMenu:Boolean;
 			if (super.contains(_menu))
 			{
+				_menu.collapseChildMenu();
 				super.removeChild(_menu);
 				hadMenu = true;
 			}
@@ -76,6 +76,7 @@
 		{
 			var dos:DisplayObject = event.currentTarget as DisplayObject;
 			var ir:IRenderer = event.currentTarget as IRenderer;
+			if (_menu) _menu.collapseChildMenu();
 			if (!ir || !ir.data.*.length())
 			{
 				if (super.contains(_menu)) super.removeChild(_menu);

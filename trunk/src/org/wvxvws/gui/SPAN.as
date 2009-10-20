@@ -69,14 +69,14 @@ package org.wvxvws.gui
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>xChange</code> event.
 		*/
-		override public function get x():Number { return _transformMatrix.tx; }
+		public override function get x():Number { return _transformMatrix.tx; }
 		
-		override public function set x(value:Number):void 
+		public override function set x(value:Number):void 
 		{
 			if (_transformMatrix.tx == value) return;
 			_transformMatrix.tx = value;
-			invalidate("_transformMatrix", _transformMatrix, true);
-			dispatchEvent(new Event("xChange"));
+			this.invalidate("_transformMatrix", _transformMatrix, true);
+			super.dispatchEvent(new Event("xChange"));
 		}
 		
 		//------------------------------------
@@ -90,14 +90,14 @@ package org.wvxvws.gui
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>yChange</code> event.
 		*/
-		override public function get y():Number { return _transformMatrix.ty; }
+		public override function get y():Number { return _transformMatrix.ty; }
 		
-		override public function set y(value:Number):void 
+		public override function set y(value:Number):void 
 		{
 			if (_transformMatrix.ty == value) return;
 			_transformMatrix.ty = value;
-			invalidate("_transformMatrix", _transformMatrix, true);
-			dispatchEvent(new Event("yChange"));
+			this.invalidate("_transformMatrix", _transformMatrix, true);
+			super.dispatchEvent(new Event("yChange"));
 		}
 		
 		//------------------------------------
@@ -111,16 +111,16 @@ package org.wvxvws.gui
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>widthChange</code> event.
 		*/
-		override public function get width():Number { return _bounds.x; }
+		public override function get width():Number { return _bounds.x; }
 		
-		override public function set width(value:Number):void 
+		public override function set width(value:Number):void 
 		{
 			if (_bounds.x == value) return;
 			_bounds.x = value;
 			_autoSize = TextFieldAutoSize.NONE;
-			invalidate("_bounds", _bounds, true);
-			invalidate("_autoSize", _autoSize, true);
-			dispatchEvent(new Event("widthChange"));
+			this.invalidate("_bounds", _bounds, true);
+			this.invalidate("_autoSize", _autoSize, true);
+			super.dispatchEvent(new Event("widthChange"));
 		}
 		
 		//------------------------------------
@@ -134,16 +134,16 @@ package org.wvxvws.gui
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>heightChange</code> event.
 		*/
-		override public function get height():Number { return _bounds.y; }
+		public override function get height():Number { return _bounds.y; }
 		
-		override public function set height(value:Number):void 
+		public override function set height(value:Number):void 
 		{
 			if (_bounds.y == value) return;
 			_bounds.y = value;
 			_autoSize = TextFieldAutoSize.NONE;
-			invalidate("_bounds", _bounds, true);
-			invalidate("_autoSize", _autoSize, true);
-			dispatchEvent(new Event("heightChange"));
+			this.invalidate("_bounds", _bounds, true);
+			this.invalidate("_autoSize", _autoSize, true);
+			super.dispatchEvent(new Event("heightChange"));
 		}
 		
 		//------------------------------------
@@ -157,14 +157,14 @@ package org.wvxvws.gui
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>scaleXChange</code> event.
 		*/
-		override public function get scaleX():Number { return _transformMatrix.a; }
+		public override function get scaleX():Number { return _transformMatrix.a; }
 		
-		override public function set scaleX(value:Number):void 
+		public override function set scaleX(value:Number):void 
 		{
 			if (_transformMatrix.a == value) return;
 			_transformMatrix.a = value;
-			invalidate("_transformMatrix", _transformMatrix, true);
-			dispatchEvent(new Event("scaleXChange"));
+			this.invalidate("_transformMatrix", _transformMatrix, true);
+			super.dispatchEvent(new Event("scaleXChange"));
 		}
 		
 		//------------------------------------
@@ -178,14 +178,14 @@ package org.wvxvws.gui
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>scaleYChange</code> event.
 		*/
-		override public function get scaleY():Number { return _transformMatrix.d; }
+		public override function get scaleY():Number { return _transformMatrix.d; }
 		
-		override public function set scaleY(value:Number):void 
+		public override function set scaleY(value:Number):void 
 		{
 			if (_transformMatrix.d == value) return;
 			_transformMatrix.d = value;
-			invalidate("_transformMatrix", _transformMatrix, true);
-			dispatchEvent(new Event("scaleYChange"));
+			this.invalidate("_transformMatrix", _transformMatrix, true);
+			super.dispatchEvent(new Event("scaleYChange"));
 		}
 		
 		//------------------------------------
@@ -199,13 +199,13 @@ package org.wvxvws.gui
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>transformChange</code> event.
 		*/
-		override public function get transform():Transform { return super.transform; }
+		public override function get transform():Transform { return super.transform; }
 		
-		override public function set transform(value:Transform):void 
+		public override function set transform(value:Transform):void 
 		{
 			_userTransform = value;
-			invalidate("_userTransform", _userTransform, true);
-			dispatchEvent(new Event("transformChange"));
+			this.invalidate("_userTransform", _userTransform, true);
+			super.dispatchEvent(new Event("transformChange"));
 		}
 		
 		//------------------------------------
@@ -225,8 +225,8 @@ package org.wvxvws.gui
 		{
 			if (value == _backgroundColor) return;
 			_backgroundColor = value;
-			invalidate("_backgroundColor", _backgroundColor, true);
-			dispatchEvent(new Event("backgroundColorChange"));
+			this.invalidate("_backgroundColor", _backgroundColor, true);
+			super.dispatchEvent(new Event("backgroundColorChange"));
 		}
 		
 		//------------------------------------
@@ -246,8 +246,8 @@ package org.wvxvws.gui
 		{
 			if (value == _background) return;
 			_background = value;
-			invalidate("_background", _background, true);
-			dispatchEvent(new Event("backgroundChange"));
+			this.invalidate("_background", _background, true);
+			super.dispatchEvent(new Event("backgroundChange"));
 		}
 		
 		//------------------------------------
@@ -261,14 +261,14 @@ package org.wvxvws.gui
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>textChange</code> event.
 		*/
-		override public function get text():String { return super.text; }
+		public override function get text():String { return super.text; }
 		
-		override public function set text(value:String):void 
+		public override function set text(value:String):void 
 		{
 			if (value == _text) return;
 			_text = value;
-			invalidate("_text", _text, true);
-			dispatchEvent(new Event("textChange"));
+			this.invalidate("_text", _text, true);
+			super.dispatchEvent(new Event("textChange"));
 		}
 		
 		//------------------------------------
@@ -282,14 +282,14 @@ package org.wvxvws.gui
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>autoSizeChange</code> event.
 		*/
-		override public function get autoSize():String { return super.autoSize; }
+		public override function get autoSize():String { return super.autoSize; }
 		
-		override public function set autoSize(value:String):void 
+		public override function set autoSize(value:String):void 
 		{
 			if (value == _autoSize) return;
 			_autoSize = value;
-			invalidate("_autoSize", _autoSize, true);
-			dispatchEvent(new Event("autoSizeChange"));
+			this.invalidate("_autoSize", _autoSize, true);
+			super.dispatchEvent(new Event("autoSizeChange"));
 		}
 		
 		//------------------------------------
@@ -309,8 +309,8 @@ package org.wvxvws.gui
 		{
 			if (value == _textFormat.align) return;
 			_textFormat.align = value;
-			invalidate("_textFormat", _textFormat, true);
-			dispatchEvent(new Event("alignChange"));
+			this.invalidate("_textFormat", _textFormat, true);
+			super.dispatchEvent(new Event("alignChange"));
 		}
 		
 		/* INTERFACE org.wvxvws.gui.styles.ICSSClient */
@@ -362,7 +362,7 @@ package org.wvxvws.gui
 			_className = String(nm.pop());
 			_nativeTransform = new Transform(this);
 			super.autoSize = TextFieldAutoSize.LEFT;
-			invalidate("", undefined, true);
+			this.invalidate("", undefined, true);
 		}
 		
 		/* INTERFACE mx.core.IMXMLObject */
@@ -370,12 +370,12 @@ package org.wvxvws.gui
 		public function initialized(document:Object, id:String):void
 		{
 			_document = document;
-			initStyles();
+			this.initStyles();
 			if (_document is DisplayObjectContainer) 
 				(_document as DisplayObjectContainer).addChild(this);
 			_id = id;
-			if (_hasPendingValidation) validate(_invalidProperties);
-			dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
+			if (_hasPendingValidation) this.validate(_invalidProperties);
+			super.dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
 		}
 		
 		protected function initStyles():void
@@ -404,12 +404,11 @@ package org.wvxvws.gui
 		
 		public function validate(properties:Object):void
 		{
-			trace("span validate");
 			if (!_document) _validator = new LayoutValidator();
-			else if (parent is ILayoutClient && !_validator)
+			else if (super.parent is ILayoutClient && !_validator)
 			{
-				_validator = (parent as ILayoutClient).validator;
-				_layoutParent = parent as ILayoutClient;
+				_validator = (super.parent as ILayoutClient).validator;
+				_layoutParent = super.parent as ILayoutClient;
 				if ((parent as ILayoutClient).childLayouts.indexOf(this) < 0)
 				{
 					(parent as ILayoutClient).childLayouts.push(this);
@@ -447,7 +446,7 @@ package org.wvxvws.gui
 				super.transform = _nativeTransform;
 			}
 			_invalidProperties = { };
-			dispatchEvent(new GUIEvent(GUIEvent.VALIDATED));
+			super.dispatchEvent(new GUIEvent(GUIEvent.VALIDATED));
 		}
 		
 		public function invalidate(property:String, cleanValue:*, validateParent:Boolean):void
