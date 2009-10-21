@@ -1,4 +1,25 @@
-﻿package org.wvxvws.gui.renderers 
+﻿////////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (C) Oleg Sivokon email: olegsivokon@gmail.com
+//  
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or any later version.
+//  
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//  GNU General Public License for more details.
+//  
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, write to the Free Software
+//  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+//  Or visit http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+//
+////////////////////////////////////////////////////////////////////////////////
+
+package org.wvxvws.gui.renderers 
 {
 	//{imports
 	import flash.display.BitmapData;
@@ -23,13 +44,16 @@
 	import org.wvxvws.gui.StatefulButton;
 	//}
 	
+	// TODO: Optimize this, or switch to NestGrid pattern
+	
 	/**
 	* BranchRenderer class.
 	* @author wvxvw
 	* @langVersion 3.0
 	* @playerVersion 10.0.12.36
 	*/
-	public class BranchRenderer extends Sprite implements ILayoutClient, IMXMLObject, IBranchRenderer
+	public class BranchRenderer extends Sprite 
+						implements ILayoutClient, IMXMLObject, IBranchRenderer
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -66,7 +90,7 @@
 			_selected = value;
 			if (value)
 			{
-				dispatchEvent(new GUIEvent(GUIEvent.SELECTED, true, true));
+				super.dispatchEvent(new GUIEvent(GUIEvent.SELECTED, true, true));
 				_label.background = true;
 				_label.backgroundColor = 0xD0D0D0;
 			}
@@ -85,7 +109,7 @@
 			_opened = value;
 			if (_opened) _openCloseIcon.state = "open";
 			else _openCloseIcon.state = "closed";
-			invalidate("_opened", _opened, true);
+			this.invalidate("_opened", _opened, true);
 		}
 		
 		//{ display stuff
@@ -93,63 +117,63 @@
 		{
 			if (_leafLabelFunction === value) return;
 			_leafLabelFunction = value;
-			invalidate("_leafLabelFunction", _leafLabelFunction, false);
+			this.invalidate("_leafLabelFunction", _leafLabelFunction, false);
 		}
 		
 		public function set leafLabelField(value:String):void
 		{
 			if (_leafLabelField === value) return;
 			_leafLabelField = value;
-			invalidate("_leafLabelField", _leafLabelField, false);
+			this.invalidate("_leafLabelField", _leafLabelField, false);
 		}
 		
 		public function set folderIcon(value:Class):void
 		{
 			if (_folderIcon === value) return;
 			_folderIcon = value;
-			invalidate("_folderIcon", _folderIcon, false);
+			this.invalidate("_folderIcon", _folderIcon, false);
 		}
 		
 		public function set closedIcon(value:Class):void
 		{
 			if (_closedIcon === value) return;
 			_closedIcon = value;
-			invalidate("_closedIcon", _closedIcon, false);
+			this.invalidate("_closedIcon", _closedIcon, false);
 		}
 		
 		public function set openIcon(value:Class):void
 		{
 			if (_openIcon === value) return;
 			_openIcon = value;
-			invalidate("_openIcon", _openIcon, false);
+			this.invalidate("_openIcon", _openIcon, false);
 		}
 		
 		public function set docIconFactory(value:Function):void
 		{
 			if (_docIconFactory === value) return;
 			_docIconFactory = value;
-			invalidate("_docIconFactory", _docIconFactory, false);
+			this.invalidate("_docIconFactory", _docIconFactory, false);
 		}
 		
 		public function set labelFunction(value:Function):void
 		{
 			if (_labelFunction === value) return;
 			_labelFunction = value;
-			invalidate("_labelFunction", _labelFunction, false);
+			this.invalidate("_labelFunction", _labelFunction, false);
 		}
 		
 		public function set labelField(value:String):void
 		{
 			if (_labelField === value) return;
 			_labelField = value;
-			invalidate("_labelField", _labelField, false);
+			this.invalidate("_labelField", _labelField, false);
 		}
 		
 		public function set folderFactory(value:Function):void
 		{
 			if (_folderFactory === value) return;
 			_folderFactory = value;
-			invalidate("_folderFactory", _folderFactory, false);
+			this.invalidate("_folderFactory", _folderFactory, false);
 		}
 		//}
 		
@@ -166,7 +190,7 @@
 			if (isValid && _data === value) return;
 			_data = value;
 			_dataCopy = value.copy();
-			invalidate("", undefined, true);
+			this.invalidate("", undefined, true);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -238,9 +262,9 @@
 		
 		public function validate(properties:Object):void
 		{
-			drawUI();
-			createChildren();
-			drawLines();
+			this.drawUI();
+			this.createChildren();
+			this.drawLines();
 			_invalidProperties = { };
 			_hasPendingValidation = false;
 			if (properties.hasOwnProperty("_opened"))
@@ -336,8 +360,8 @@
 			}
 			_id = id;
 			if (_hasPendingValidation) invalidate("", undefined, true);
-			addEventListener(GUIEvent.OPENED, childOpenedHandler);
-			dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
+			super.addEventListener(GUIEvent.OPENED, childOpenedHandler);
+			super.dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
 		}
 		
 		public function unselectRecursively(selection:DisplayObject):Boolean
@@ -393,14 +417,14 @@
 				//trace("1 lastHeight, super.height", lastHeight, super.height);
 			}
 			if (!_opened) return;
-			removeChild(_lines);
+			super.removeChild(_lines);
 			var list:XMLList = _data.*;
 			if (!list.length()) return;
 			var child:IRenderer;
 			for each (var xml:XML in list)
 			{
-				if (xml.hasComplexContent()) child = createBranch(xml);
-				else child = createLeaf(xml);
+				if (xml.hasComplexContent()) child = this.createBranch(xml);
+				else child = this.createLeaf(xml);
 				_cachedChildren[child] = true;
 				_children[child] = true;
 				_visibleChildren[child] = true;
@@ -424,7 +448,7 @@
 				{
 					(child as IMXMLObject).initialized(this, xml.localName());
 				}
-				addChild(child as DisplayObject);
+				super.addChild(child as DisplayObject);
 			}
 			if (_layoutParent && lastHeight !== super.height)
 			{
@@ -452,7 +476,7 @@
 			if (_opened) _openCloseIcon.state = "open";
 			else _openCloseIcon.state = "closed";
 			_openCloseIcon.y = 5;
-			addChild(_openCloseIcon);
+			super.addChild(_openCloseIcon);
 			
 			if (!_folder)
 			{
@@ -471,7 +495,7 @@
 			_folder.x = 17;
 			_folder.y = 1;
 			_openCloseIcon.x = (_folder.width - _openCloseIcon.width) >> 1;
-			addChild(_folder);
+			super.addChild(_folder);
 			
 			if (!_label) addChild(_label = new TextField()) as TextField;
 			{
@@ -556,8 +580,8 @@
 		
 		protected function drawLines():void
 		{
-			if (!_lines) _lines = addChildAt(new Shape(), 0) as Shape;
-			if (!contains(_lines)) addChildAt(_lines, 0);
+			if (!_lines) _lines = super.addChildAt(new Shape(), 0) as Shape;
+			if (!contains(_lines)) super.addChildAt(_lines, 0);
 			var g:Graphics = _lines.graphics;
 			var cumulativeHeight:int = _folder.height + 2;
 			var child:DisplayObject;
@@ -572,7 +596,7 @@
 			{
 				cumulativeHeight = 
 					super.height - (_folder.y + ((_folder.height * 1.5) >> 0)) - 1;
-				child = getBottomChild();
+				child = this.getBottomChild();
 				if (child && child is BranchRenderer)
 					cumulativeHeight -= (child.height - 14);
 				g.beginBitmapFill(_dot);
@@ -619,12 +643,12 @@
 		
 		private function openClose_clickHandler(event:MouseEvent):void 
 		{
-			opened = !_opened;
+			this.opened = !_opened;
 		}
 		
 		private function label_clickHandler(event:MouseEvent):void 
 		{
-			selected = true;
+			this.selected = true;
 		}
 		
 		private function label_focusOutHandler(event:FocusEvent):void 
@@ -645,7 +669,7 @@
 		
 		private function folder_clickHandler(event:MouseEvent):void 
 		{
-			selected = true;
+			this.selected = true;
 		}
 		
 	}

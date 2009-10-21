@@ -1,4 +1,25 @@
-﻿package org.wvxvws.gui.renderers 
+﻿////////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (C) Oleg Sivokon email: olegsivokon@gmail.com
+//  
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or any later version.
+//  
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//  GNU General Public License for more details.
+//  
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, write to the Free Software
+//  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+//  Or visit http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+//
+////////////////////////////////////////////////////////////////////////////////
+
+package org.wvxvws.gui.renderers 
 {
 	import flash.display.Graphics;
 	import flash.display.InteractiveObject;
@@ -16,7 +37,6 @@
 	 */
 	public class NestGridRenderer extends Sprite implements IRenderer
 	{
-		
 		//--------------------------------------------------------------------------
 		//
 		//  Public properties
@@ -164,7 +184,19 @@
 		protected var _closed:Boolean;
 		protected var _selected:Boolean;
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+		
 		public function NestGridRenderer() { super(); }
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
 		
 		/* INTERFACE org.wvxvws.gui.renderers.IRenderer */
 		
@@ -173,6 +205,12 @@
 			_document = document;
 			_id = id;
 		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
 		
 		protected function render():void
 		{
@@ -222,21 +260,6 @@
 			}
 		}
 		
-		private function openClose_mouseDownHandler(event:MouseEvent):void 
-		{
-			if (_openClose.state === "open")
-			{
-				_openClose.state = "closed";
-				closed = true;
-			}
-			else
-			{
-				_openClose.state = "open";
-				closed = false;
-			}
-			super.dispatchEvent(new GUIEvent(GUIEvent.OPENED, true, true));
-		}
-		
 		protected function renderText():void
 		{
 			if (!_data) return;
@@ -249,7 +272,8 @@
 				_field.height = 1;
 				_field.addEventListener(MouseEvent.CLICK, text_clickHandler);
 				_field.doubleClickEnabled = true;
-				_field.addEventListener(MouseEvent.DOUBLE_CLICK, text_doubleClickHandler);
+				_field.addEventListener(
+							MouseEvent.DOUBLE_CLICK, text_doubleClickHandler);
 				super.addChild(_field);
 			}
 			if (_labelField && _data.hasOwnProperty(_labelField))
@@ -281,6 +305,36 @@
 			}
 		}
 		
+		protected function drawBackground():void
+		{
+			var g:Graphics = super.graphics;
+			g.clear();
+			g.beginFill(_backgroundColor, _backgroundAlpha);
+			g.drawRect(0, 0, _width, _field.height);
+			g.endFill();
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Private methods
+		//
+		//--------------------------------------------------------------------------
+		
+		private function openClose_mouseDownHandler(event:MouseEvent):void 
+		{
+			if (_openClose.state === "open")
+			{
+				_openClose.state = "closed";
+				closed = true;
+			}
+			else
+			{
+				_openClose.state = "open";
+				closed = false;
+			}
+			super.dispatchEvent(new GUIEvent(GUIEvent.OPENED, true, true));
+		}
+		
 		private function text_doubleClickHandler(event:MouseEvent):void 
 		{
 			
@@ -290,15 +344,6 @@
 		{
 			selected = true;
 			super.dispatchEvent(new GUIEvent(GUIEvent.SELECTED, true, true));
-		}
-		
-		protected function drawBackground():void
-		{
-			var g:Graphics = super.graphics;
-			g.clear();
-			g.beginFill(_backgroundColor, _backgroundAlpha);
-			g.drawRect(0, 0, _width, _field.height);
-			g.endFill();
 		}
 		
 	}
