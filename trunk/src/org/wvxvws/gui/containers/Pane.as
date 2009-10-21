@@ -174,7 +174,7 @@
 		
 		public override function validate(properties:Object):void 
 		{
-			if("_dataProvider" in properties) this.layOutChildren();
+			if ("_dataProvider" in properties) this.layOutChildren();
 			super.validate(properties);
 		}
 		
@@ -204,12 +204,16 @@
 		{
 			var child:DisplayObject;
 			var recycledChild:DisplayObject;
+			var dirtyChild:DisplayObject;
 			for each (var ir:IRenderer in _removedChildren)
 			{
 				if (ir.data === xml && ir.isValid)
 					recycledChild = ir as DisplayObject;
+				else if (ir.data === xml)
+					dirtyChild = ir as DisplayObject;
 			}
 			if (recycledChild) child = recycledChild;
+			else if (dirtyChild) child = dirtyChild;
 			else
 			{
 				_dispatchCreated = true;
@@ -220,7 +224,7 @@
 			if (_useLabelField) (child as IRenderer).labelField = _labelField;
 			if (_useLabelFunction)
 				(child as IRenderer).labelFunction = _labelFunction;
-			if (!recycledChild)
+			if (!recycledChild || dirtyChild)
 			{
 				(child as IRenderer).data = xml;
 				if (child is IMXMLObject)
