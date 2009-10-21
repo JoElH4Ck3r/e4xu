@@ -18,7 +18,6 @@
 		{
 			if (_closed === value) return;
 			_closed = value;
-			super.dispatchEvent(new GUIEvent(GUIEvent.OPENED, true, true));
 		}
 		
 		public function get selected():Boolean { return _selected; }
@@ -52,6 +51,7 @@
 		{
 			this.closed = (!_closed);
 			this.selected = true;
+			super.dispatchEvent(new GUIEvent(GUIEvent.OPENED, true, true));
 			super.dispatchEvent(new GUIEvent(GUIEvent.SELECTED, true, true));
 		}
 	}
