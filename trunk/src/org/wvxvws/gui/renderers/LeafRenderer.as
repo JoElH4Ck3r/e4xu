@@ -63,7 +63,7 @@ package org.wvxvws.gui.renderers
 			if (isValid && _data === value) return;
 			_data = value;
 			_dataCopy = value.copy();
-			render();
+			this.render();
 		}
 		
 		/* INTERFACE org.wvxvws.gui.renderers.IRenderer */
@@ -72,7 +72,7 @@ package org.wvxvws.gui.renderers
 		{
 			if (_labelFunction === value) return;
 			_labelFunction = value;
-			if (_data) rendrerText();
+			if (_data) this.rendrerText();
 		}
 		
 		public function get iconClass():Class { return _iconClass; }
@@ -81,7 +81,7 @@ package org.wvxvws.gui.renderers
 		{
 			if (_iconClass === value) return;
 			_iconClass = value;
-			render();
+			this.render();
 		}
 		
 		public function get iconFactory():Function { return _iconFactory; }
@@ -112,7 +112,7 @@ package org.wvxvws.gui.renderers
 		{
 			if (_labelField === value) return;
 			_labelField = value;
-			if (_data) rendrerText();
+			if (_data) this.rendrerText();
 		}
 		
 		//--------------------------------------------------------------------------
@@ -206,12 +206,13 @@ package org.wvxvws.gui.renderers
 		{
 			if (_icon && super.contains(_icon))
 			{
-				_icon.removeEventListener(MouseEvent.MOUSE_DOWN, icon_mouseDownHandler);
+				_icon.removeEventListener(
+								MouseEvent.MOUSE_DOWN, icon_mouseDownHandler);
 				super.removeChild(_icon);
 			}
 			_icon = drawIcon();
-			_icon.addEventListener(MouseEvent.MOUSE_DOWN, 
-										icon_mouseDownHandler, false, int.MAX_VALUE);
+			_icon.addEventListener(
+				MouseEvent.MOUSE_DOWN,icon_mouseDownHandler, false, int.MAX_VALUE);
 			_icon.x = 17;
 			_icon.y = 1;
 			if (!_lines) _lines = new Shape();
@@ -224,13 +225,13 @@ package org.wvxvws.gui.renderers
 			_lines.graphics.beginBitmapFill(_dot);
 			_lines.graphics.drawRect(7, 1 + _icon.height >> 1, 10, 1);
 			_lines.graphics.endFill();
-			addChild(_lines);
+			super.addChild(_lines);
 			super.addChild(_icon);
 			if (_field && super.contains(_field)) super.removeChild(_field);
 			_field = drawField();
 			super.addChild(_field);
 			_field.x = 14 + _icon.width + _gutter;
-			rendrerText();
+			this.rendrerText();
 		}
 		
 		protected function rendrerText():void

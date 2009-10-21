@@ -19,7 +19,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-// TODO: Needs major rewrite
 package org.wvxvws.gui.renderers 
 {
 	//{imports
@@ -167,7 +166,8 @@ package org.wvxvws.gui.renderers
 		protected var _iconProducer:SkinProducer;
 		protected var _arrow:Sprite;
 		protected var _hasChildNodes:Boolean;
-		protected var _disabledFormat:TextFormat = new TextFormat("_sans", 11, 0xC0C0C0);
+		protected var _disabledFormat:TextFormat = 
+							new TextFormat("_sans", 11, 0xC0C0C0);
 		protected var _fieldScrollRect:Rectangle = new Rectangle();
 		protected var _selection:Sprite;
 		protected var _selectionColor:uint = 0xFF;
