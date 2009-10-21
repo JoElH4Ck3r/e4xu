@@ -42,6 +42,7 @@
 	<component id="Timeline" class="org.wvxvws.tools.Timeline"/>
 	<!-- CONTAINERS -->
 	<component id="Column" class="org.wvxvws.gui.containers.Column"/>
+	<component id="Drill" class="org.wvxvws.gui.containers.Drill"/>
 	<component id="Nest" class="org.wvxvws.gui.containers.Nest"/>
 	<component id="Table" class="org.wvxvws.gui.containers.Table"/>
 	<component id="TiledPanel" class="org.wvxvws.gui.containers.TiledPanel"/>

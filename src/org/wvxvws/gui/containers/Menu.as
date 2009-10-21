@@ -83,6 +83,20 @@ package org.wvxvws.gui.containers
 			if (_isDeferredKeyInit) this.initiKeyListener();
 		}
 		
+		public function get borderWidth():Number { return _borderWidth; }
+		
+		public function set borderWidth(value:Number):void 
+		{
+			_borderWidth = value;
+		}
+		
+		public function get borderColor():uint { return _borderColor; }
+		
+		public function set borderColor(value:uint):void 
+		{
+			_borderColor = value;
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
@@ -130,53 +144,6 @@ package org.wvxvws.gui.containers
 			super.addEventListener(GUIEvent.SELECTED, selectedHandler);
 			super.addEventListener(MouseEvent.ROLL_OUT, rollOutHandler);
 			super.addEventListener(Event.ADDED_TO_STAGE, atsHandler);
-		}
-		
-		private function atsHandler(event:Event):void 
-		{
-			super.removeEventListener(Event.ADDED_TO_STAGE, atsHandler);
-			KeyUtils.obtainStage(stage);
-		}
-		
-		private function rollOutHandler(event:MouseEvent):void 
-		{
-			if (_parentMenu && event.target is Menu) _parentMenu.collapseChildMenu();
-		}
-		
-		private function selectedHandler(event:GUIEvent):void 
-		{
-			if (_itemClickHandler !== null)
-			{
-				_itemClickHandler((event.target as IMenuRenderer).data);
-			}
-		}
-		
-		private function openedHandler(event:GUIEvent):void 
-		{
-			event.stopImmediatePropagation();
-			if (_openedItem === event.target) return;
-			_openedItem = event.target as IMenuRenderer;
-			if (_childMenu && super.contains(_childMenu))
-			{
-				if (!_childMenu.hasMouse) collapseChildMenu();
-			}
-			if (!_openedItem) return;
-			if (_openedItem.kind !== CONTAINER || !_openedItem.enabled) return;
-			_childMenu = new Menu();
-			_childMenu.backgroundAlpha = _backgroundAlpha;
-			_childMenu.backgroundColor = _backgroundColor;
-			_childMenu.borderWidth = _borderWidth;
-			_childMenu.borderColor = _borderColor;
-			if (_useLabelField) _childMenu.labelField = _labelField;
-			if (_useLabelFunction) _childMenu.labelFunction = _labelFunction;
-			_childMenu.dataProvider = _openedItem.data;
-			_childMenu.x = (_openedItem as DisplayObject).x + 
-							(_openedItem as DisplayObject).width;
-			_childMenu.y = (_openedItem as DisplayObject).y;
-			_childMenu.visible = false;
-			_childMenu.initialized(this, "_childMenu");
-			_childMenu.validate(_childMenu.invalidProperties);
-			_childMenu.visible = true;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -330,25 +297,59 @@ package org.wvxvws.gui.containers
 			g.endFill();
 		}
 		
-		public function get borderWidth():Number { return _borderWidth; }
-		
-		public function set borderWidth(value:Number):void 
-		{
-			_borderWidth = value;
-		}
-		
-		public function get borderColor():uint { return _borderColor; }
-		
-		public function set borderColor(value:uint):void 
-		{
-			_borderColor = value;
-		}
-		
 		//--------------------------------------------------------------------------
 		//
 		//  Private methods
 		//
 		//--------------------------------------------------------------------------
+		
+		private function atsHandler(event:Event):void 
+		{
+			super.removeEventListener(Event.ADDED_TO_STAGE, atsHandler);
+			KeyUtils.obtainStage(stage);
+		}
+		
+		private function rollOutHandler(event:MouseEvent):void 
+		{
+			if (_parentMenu && event.target is Menu) _parentMenu.collapseChildMenu();
+		}
+		
+		private function selectedHandler(event:GUIEvent):void 
+		{
+			if (_itemClickHandler !== null)
+			{
+				_itemClickHandler((event.target as IMenuRenderer).data);
+			}
+		}
+		
+		private function openedHandler(event:GUIEvent):void 
+		{
+			event.stopImmediatePropagation();
+			if (_openedItem === event.target) return;
+			_openedItem = event.target as IMenuRenderer;
+			if (_childMenu && super.contains(_childMenu))
+			{
+				if (!_childMenu.hasMouse) collapseChildMenu();
+			}
+			if (!_openedItem) return;
+			if (_openedItem.kind !== CONTAINER || !_openedItem.enabled) return;
+			_childMenu = new Menu();
+			_childMenu.backgroundAlpha = _backgroundAlpha;
+			_childMenu.backgroundColor = _backgroundColor;
+			_childMenu.borderWidth = _borderWidth;
+			_childMenu.borderColor = _borderColor;
+			if (_useLabelField) _childMenu.labelField = _labelField;
+			if (_useLabelFunction) _childMenu.labelFunction = _labelFunction;
+			_childMenu.dataProvider = _openedItem.data;
+			_childMenu.x = (_openedItem as DisplayObject).x + 
+							(_openedItem as DisplayObject).width;
+			_childMenu.y = (_openedItem as DisplayObject).y;
+			_childMenu.visible = false;
+			_childMenu.initialized(this, "_childMenu");
+			_childMenu.validate(_childMenu.invalidProperties);
+			_childMenu.visible = true;
+		}
+		
 	}
 	
 }
