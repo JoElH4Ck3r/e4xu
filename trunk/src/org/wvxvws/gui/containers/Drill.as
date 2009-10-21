@@ -55,6 +55,54 @@
 									openedHandler, false, int.MAX_VALUE);
 		}
 		
+		public function collapseAll():void
+		{
+			if (_dataProvider === null) return;
+			if (!_dataProvider.*.length()) return;
+			var i:int;
+			var allNodes:XMLList = _dataProvider..*;
+			var j:int = allNodes.length();
+			var node:XML;
+			var renderers:Vector.<DisplayObject> = new <DisplayObject>[];
+			i = super.numChildren;
+			trace("super.numChildren", super.numChildren);
+			while (i--) renderers.push(super.getChildAt(i));
+			i = 0;
+			while (i < j)
+			{
+				node = allNodes[i];
+				if (node.hasComplexContent())
+				{
+					if (_closedNodes.indexOf(node) < 0)
+					{
+						trace("_closedNodes.push(node)", renderers.length);
+						_closedNodes.push(node);
+						for each (var child:IDrillRenderer in renderers)
+						{
+							trace("for each");
+							if (child.data === node)
+							{
+								child.closed = true;
+								if (_closedChildren.indexOf(child) < 0)
+								{
+									trace("_closedChildren.push(child)");
+									_closedChildren.push(child);
+								}
+							}
+						}
+					}
+				}
+				i++;
+			}
+			super._invalidProperties._dataProvider = super._dataProvider;
+			super.validate(super._invalidProperties);
+		}
+		
+		public function expandAll():void
+		{
+			
+		}
+		
 		public function isNodeVisibe(node:XML):Boolean
 		{
 			while (node && node !== _dataProvider)
@@ -85,7 +133,7 @@
 			while (i < j)
 			{
 				node = allNodes[i];
-				depth = Math.min(this.getNodeDepth(node), _renderClasses.length - 1);
+				depth = Math.min(this.getNodeDepth(node) - 1, _renderClasses.length - 1);
 				super._rendererFactory = _renderClasses[depth];
 				this.createChild(node);
 				i++;
@@ -109,6 +157,7 @@
 			var child:DisplayObject = super.createChild(xml);
 			child.width = super._bounds.x;
 			child.y = _nextY;
+			child.x = _padding.left;
 			_nextY += child.height + _gutter;
 			return child;
 		}
@@ -145,7 +194,7 @@
 			if (!(event.target is IDrillRenderer)) return;
 			event.stopImmediatePropagation();
 			var index:int;
-			var renderer:DrillRenderer = event.target as DrillRenderer;
+			var renderer:IDrillRenderer = event.target as IDrillRenderer;
 			if (renderer.closed) _closedNodes.push(renderer.data);
 			else
 			{
