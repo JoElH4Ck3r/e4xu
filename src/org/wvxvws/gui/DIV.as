@@ -424,14 +424,16 @@ package org.wvxvws.gui
 			_background.endFill();
 		}
 		
-		public function invalidate(property:String, cleanValue:*, validateParent:Boolean):void
+		public function invalidate(property:String, cleanValue:*, 
+									validateParent:Boolean):void
 		{
 			_invalidProperties[property] = cleanValue;
 			if (_validator) _validator.requestValidation(this, validateParent);
 			else
 			{
 				_hasPendingValidation = true;
-				_hasPendingParentValidation = _hasPendingParentValidation || validateParent;
+				_hasPendingParentValidation = 
+							_hasPendingParentValidation || validateParent;
 			}
 			_invalidLayout = true;
 		}
