@@ -22,6 +22,7 @@
 package org.wvxvws.base 
 {
 	import flash.display.DisplayObject;
+	import flash.utils.Dictionary;
 	import mx.core.IFlexModuleFactory;
 	import mx.styles.IStyleManager2;
 	import org.wvxvws.gui.DIV;
@@ -46,6 +47,8 @@ package org.wvxvws.base
 		//
 		//--------------------------------------------------------------------------
 		
+		public function get preloadedRSLs():Dictionary { return null; };
+
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
@@ -94,10 +97,17 @@ package org.wvxvws.base
 		
 		/* INTERFACE mx.core.IFlexModuleFactory */
 		
-		public function registerImplementation(a:String, b:IStyleManager2):void { }
+		public function registerImplementation(a:String, b:Object):void { }
 		
-		public function getImplementation(a:String):IStyleManager2 { return null; }
+		public function getImplementation(a:String):Object { return null; }
 		
+		public function allowDomain(... domains):void {  }
+
+		public function allowInsecureDomain(... domains):void {  }
+
+		public function callInContext(fn:Function, thisArg:Object,
+							   argArray:Array, returns:Boolean = true):* { return null; }
+
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
