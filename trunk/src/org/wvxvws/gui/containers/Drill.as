@@ -65,7 +65,6 @@
 			var node:XML;
 			var renderers:Vector.<DisplayObject> = new <DisplayObject>[];
 			i = super.numChildren;
-			trace("super.numChildren", super.numChildren);
 			while (i--) renderers.push(super.getChildAt(i));
 			i = 0;
 			while (i < j)
@@ -75,19 +74,14 @@
 				{
 					if (_closedNodes.indexOf(node) < 0)
 					{
-						trace("_closedNodes.push(node)", renderers.length);
 						_closedNodes.push(node);
 						for each (var child:IDrillRenderer in renderers)
 						{
-							trace("for each");
 							if (child.data === node)
 							{
 								child.closed = true;
 								if (_closedChildren.indexOf(child) < 0)
-								{
-									trace("_closedChildren.push(child)");
 									_closedChildren.push(child);
-								}
 							}
 						}
 					}
@@ -100,11 +94,26 @@
 		
 		public function expandAll():void
 		{
-			
+			_closedNodes.length = 0;
+			var i:int = super.numChildren;
+			var child:DisplayObject;
+			while (i--)
+			{
+				child = super.getChildAt(i);
+				if (child is IDrillRenderer)
+					(child as IDrillRenderer).closed = false;
+			}
+			for each (child in _closedChildren)
+			{
+				(child as IDrillRenderer).closed = false;
+			}
+			super._invalidProperties._dataProvider = super._dataProvider;
+			super.validate(super._invalidProperties);
 		}
 		
 		public function isNodeVisibe(node:XML):Boolean
 		{
+			if (node && node.parent() === _dataProvider) return true;
 			while (node && node !== _dataProvider)
 			{
 				node = node.parent() as XML;
@@ -147,6 +156,12 @@
 					_closedChildren.push(child);
 				}
 			}
+			var rect:Rectangle;
+			if (super.scrollRect) rect = super.scrollRect;
+			else rect = new Rectangle();
+			rect.width = super._bounds.x;
+			rect.height = super._bounds.y;
+			super.scrollRect = rect;
 			if (_dispatchCreated) 
 				super.dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED, false, true));
 		}
@@ -155,6 +170,9 @@
 		{
 			if (!isNodeVisibe(xml)) return null;
 			var child:DisplayObject = super.createChild(xml);
+			if (!child) return null;
+			if (_closedNodes.indexOf(xml) > -1)
+				(child as IDrillRenderer).closed = true;
 			child.width = super._bounds.x;
 			child.y = _nextY;
 			child.x = _padding.left;
@@ -195,7 +213,11 @@
 			event.stopImmediatePropagation();
 			var index:int;
 			var renderer:IDrillRenderer = event.target as IDrillRenderer;
-			if (renderer.closed) _closedNodes.push(renderer.data);
+			if (renderer.closed) 
+			{
+				if (_closedNodes.indexOf(renderer.data) < 0)
+					_closedNodes.push(renderer.data);
+			}
 			else
 			{
 				index = _closedNodes.indexOf(renderer.data);
