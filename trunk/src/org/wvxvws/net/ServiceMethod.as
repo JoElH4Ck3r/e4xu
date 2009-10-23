@@ -45,12 +45,12 @@ package org.wvxvws.net
 		//  Public property parameters
 		//------------------------------------
 		
-		[Bindable("parametersChange")]
+		[Bindable("parametersChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>parametersChange</code> event.
+		* When this property is modified, it dispatches the <code>parametersChanged</code> event.
 		*/
 		public function get parameters():ServiceArguments { return _parameters; }
 		
@@ -58,47 +58,25 @@ package org.wvxvws.net
 		{
 		   if (_parameters == value) return;
 		   _parameters = value;
-		   dispatchEvent(new Event("parametersChange"));
+		   super.dispatchEvent(new Event("parametersChanged"));
 		}
 		
 		//------------------------------------
 		//  Public property name
 		//------------------------------------
 		
-		[Bindable("nameChange")]
+		[Bindable("nameChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>nameChange</code> event.
+		* When this property is modified, it dispatches the <code>nameChanged</code> event.
 		*/
-		public function get name():String { return _name ? _name : _id; }
-		
-		public function set name(value:String):void 
+		public function get name():String
 		{
-		   if (_name == value) return;
-		   _name = value;
-		   dispatchEvent(new Event("nameChange"));
-		}
-		
-		//------------------------------------
-		//  Public property operation
-		//------------------------------------
-		
-		[Bindable("operationChange")]
-		
-		/**
-		* ...
-		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>operationChange</code> event.
-		*/
-		public function get operation():String { return _operation; }
-		
-		public function set operation(value:String):void 
-		{
-		   if (_operation == value) return;
-		   _operation = value;
-		   dispatchEvent(new Event("operationChange"));
+			if (_document)
+				return _document.id + "." + _id;
+			return _id;
 		}
 		
 		public function get id():String { return _id; }
@@ -113,7 +91,6 @@ package org.wvxvws.net
 		protected var _id:String;
 		protected var _parameters:ServiceArguments;
 		protected var _name:String;
-		protected var _operation:String;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -134,7 +111,7 @@ package org.wvxvws.net
 		public function initialized(document:Object, id:String):void
 		{
 			_document = document as IService;
-			_id = id;
+			if (_id === "" || _id === null) _id = id;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -148,11 +125,6 @@ package org.wvxvws.net
 			if (!_document) return;
 			if (parameters) _document.send(id, parameters);
 			else _document.send(id, _parameters);
-		}
-		
-		public function get fullName():String
-		{
-			return name + (_operation ? "." + _operation : "");
 		}
 		
 		//--------------------------------------------------------------------------

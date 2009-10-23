@@ -21,8 +21,12 @@
 
 package org.wvxvws.mapping 
 {
+	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.events.IEventDispatcher;
 	import mx.core.IMXMLObject;
+	
+	[DefaultProperty("links")]
 	
 	/**
 	* Map class.
@@ -38,13 +42,54 @@ package org.wvxvws.mapping
 		//
 		//--------------------------------------------------------------------------
 		
-		public function get euid():int { return _euid; }
+		public function get id():String { return _id; }
 		
+		public function get eventTypes():Vector.<String>
+		{
+			return _eventTypes.concat();
+		}
+		
+		//public function get links():Vector.<Link> { return _links.concat(); }
+		
+		public function set links(value:Vector.<Link>):void 
+		{
+			for each (var l:Link in value)
+			{
+				_links[l.id] = l;
+				if (_eventTypes.indexOf(l.id) < 0) _eventTypes.push(l.id);
+			}
+		}
+		//------------------------------------
+		//  Public property dispatchers
+		//------------------------------------
+		
+		[Bindable("dispatchersChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>dispatchersChanged</code> event.
+		*/
+		public function get dispatchers():Vector.<IEventDispatcher> { return _dispatchers; }
+		
+		public function set dispatchers(value:Vector.<IEventDispatcher>):void 
+		{
+			if (_dispatchers == value) return;
+			_dispatchers = value;
+			super.dispatchEvent(new Event("dispatchersChanged"));
+		}
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
 		//
 		//--------------------------------------------------------------------------
+		
+		protected var _eventTypes:Vector.<String> = new <String>[];
+		protected var _dispatchers:Vector.<IEventDispatcher> = 
+										new <IEventDispatcher>[];
+		protected var _document:Object;
+		protected var _id:String;
+		protected var _links:Object = { };
 		
 		//--------------------------------------------------------------------------
 		//
@@ -52,19 +97,13 @@ package org.wvxvws.mapping
 		//
 		//--------------------------------------------------------------------------
 		
-		private static var _uidGenerator:int;
-		
-		private var _document:Object;
-		private var _name:QName;
-		private var _euid:int;
-		
 		//--------------------------------------------------------------------------
 		//
 		//  Internal properties
 		//
 		//--------------------------------------------------------------------------
 		
-		internal static var instances:Array = [];
+		internal static const instances:Vector.<Map> = new <Map>[];
 		
 		//--------------------------------------------------------------------------
 		//
@@ -75,7 +114,6 @@ package org.wvxvws.mapping
 		public function Map() 
 		{
 			super();
-			_euid = generateUID();
 			instances.push(this);
 		}
 		
@@ -85,21 +123,21 @@ package org.wvxvws.mapping
 		//
 		//--------------------------------------------------------------------------
 		
-		public function hasEvent(eventType:String):Boolean
+		public function remove():void
 		{
-			var l:Listener;
-			for (var p:String in this)
-			{
-				l = this[p] as Listener;
-				if (l && l.eventType == eventType) return true;
-			}
-			return false;
+			var i:int = instances.indexOf(this);
+			if (i > -1) instances.splice(i, 1);
+		}
+		
+		public function getLink(eventType:String):Link
+		{
+			return _links[eventType];
 		}
 		
 		public function initialized(document:Object, id:String):void
 		{
 			_document = document;
-			_name = new QName(id);
+			_id = id;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -110,14 +148,15 @@ package org.wvxvws.mapping
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Private methods
+		//  Internal methods
 		//
 		//--------------------------------------------------------------------------
 		
-		private static function generateUID():int
+		internal function generateEvent(type:String, target:Object, 
+										fault:Object, result:Object):MappingEvent
 		{
-			return (++_uidGenerator);
+			return new MappingEvent(type, target, fault, result);
 		}
+		
 	}
-	
 }

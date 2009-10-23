@@ -32,6 +32,8 @@ package org.wvxvws.net
 	[DefaultProperty("methods")]
 	
 	[Event(name="complete", type="flash.events.Event")]
+	[Event(name="fault", type="org.wvxvws.net.ServiceEvent")]
+	[Event(name="result", type="org.wvxvws.net.ServiceEvent")]
 	
 	/**
 	* AMFService class.
@@ -81,12 +83,20 @@ package org.wvxvws.net
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>methodsChange</code> event.
 		*/
-		public function get methods():Array { return _methods; }
+		public function get methods():Vector.<ServiceMethod> { return _methods.concat(); }
 		
-		public function set methods(value:Array):void 
+		public function set methods(value:Vector.<ServiceMethod>):void 
 		{
 		   if (_methods == value) return;
-		   _methods = value;
+		   _methods.length = 0;
+		   for each (var sm:ServiceMethod in value)
+		   {
+			   if (_methods.indexOf(sm) < 0)
+			   {
+				   _methods.push(sm);
+				   sm.initialized(this, "method");
+			   }
+		   }
 		   super.dispatchEvent(new Event("methodsChange"));
 		}
 		
@@ -170,6 +180,8 @@ package org.wvxvws.net
 		   super.dispatchEvent(new Event("responderChange"));
 		}
 		
+		public function get id():String { return _id; }
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
@@ -179,7 +191,7 @@ package org.wvxvws.net
 		protected var _document:Object;
 		protected var _id:String;
 		protected var _baseURL:String = "";
-		protected var _methods:Array /* of ServiceMethod */ = [];
+		protected var _methods:Vector.<ServiceMethod> = new <ServiceMethod>[];
 		protected var _parameters:ServiceArguments;
 		protected var _resultCallBack:Function;
 		protected var _faultCallBack:Function;
@@ -190,6 +202,8 @@ package org.wvxvws.net
 		protected var _responder:Responder;
 		protected var _deferredOperation:Array;
 		protected var _connected:Boolean;
+		protected var _result:Object;
+		protected var _fault:Object;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -242,7 +256,7 @@ package org.wvxvws.net
 		{
 			if (!method) throw new Error("Must specify method");
 			var id:int = _synchronizer.putOnQueve(this, method);
-			var sm:ServiceMethod = methodForName(method);
+			var sm:ServiceMethod = this.methodForName(_id + "." + method);
 			if (sm.parameters && !parameters) parameters = sm.parameters;
 			if (!parameters) parameters = _parameters;
 			var operation:Operation = new Operation(id, sm, parameters);
@@ -257,6 +271,10 @@ package org.wvxvws.net
 		
 		public function get sending():Boolean { return _sending; }
 		
+		public function get result():Object { return _result; }
+		
+		public function get fault():Object { return _fault; }
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
@@ -267,23 +285,27 @@ package org.wvxvws.net
 		{
 			_synchronizer.acknowledge(_currentID);
 			_sending = false;
+			_fault = value;
 			if (_faultCallBack !== null) _faultCallBack(value);
 			super.dispatchEvent(new Event(Event.COMPLETE));
+			super.dispatchEvent(new ServiceEvent(ServiceEvent.FAULT, value));
 		}
 		
 		protected function defaultResultCallBack(value:Object):void
 		{
 			_synchronizer.acknowledge(_currentID);
 			_sending = false;
+			_result = value;
 			if (_resultCallBack !== null) _resultCallBack(value);
 			super.dispatchEvent(new Event(Event.COMPLETE));
+			super.dispatchEvent(new ServiceEvent(ServiceEvent.RESULT, value));
 		}
 		
 		protected function methodForName(name:String):ServiceMethod
 		{
 			for each(var method:ServiceMethod in _methods)
 			{
-				if (method.fullName == name) return method;
+				if (method.name == name) return method;
 			}
 			return null;
 		}
@@ -294,7 +316,7 @@ package org.wvxvws.net
 			switch (event.info.level)
 			{
 				case "status":
-					switch(event.info.code)
+					switch (event.info.code)
 					{
 						case "NetConnection.Connect.Success":
 							if (_deferredOperation)
@@ -307,14 +329,14 @@ package org.wvxvws.net
 					break;
 				case "error":
 				case "warning":
-					_faultCallBack(event.info);
+					this.defaultFaultCallBack(event.info);
 					break;
 			}
 		}
 		
 		protected function securityErrorHandler(event:SecurityErrorEvent):void 
 		{
-			_faultCallBack("security error");
+			this.defaultFaultCallBack(event);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -328,8 +350,7 @@ package org.wvxvws.net
 			_sending = true;
 			_currentID = id;
 			var operation:Operation = _operations[id];
-			_deferredOperation = [operation.method.name + "." + 
-				operation.method.operation, _responder];
+			_deferredOperation = [operation.method.name, _responder];
 			if (operation.parameters.parameters && 
 				operation.parameters.parameters.length)
 			{
@@ -339,7 +360,7 @@ package org.wvxvws.net
 			if (!_baseURL) _baseURL = _synchronizer.defaultGetaway;
 			if (!_baseURL) 
 			{
-				defaultFaultCallBack("must specify baseURL");
+				this.defaultFaultCallBack("must specify baseURL");
 				return;
 			}
 			if (!_connected)
