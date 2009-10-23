@@ -21,9 +21,11 @@
 
 package org.wvxvws.mapping 
 {
+	import flash.display.Loader;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
+	import flash.utils.Dictionary;
 	import mx.core.IMXMLObject;
 	
 	[DefaultProperty("links")]
@@ -97,13 +99,15 @@ package org.wvxvws.mapping
 		//
 		//--------------------------------------------------------------------------
 		
+		private var _domain:String = (new Loader()).contentLoaderInfo.loaderURL;
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Internal properties
 		//
 		//--------------------------------------------------------------------------
 		
-		internal static const instances:Vector.<Map> = new <Map>[];
+		protected static const instances:Dictionary = new Dictionary(true);
 		
 		//--------------------------------------------------------------------------
 		//
@@ -114,7 +118,7 @@ package org.wvxvws.mapping
 		public function Map() 
 		{
 			super();
-			instances.push(this);
+			instances[this] = _domain;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -151,6 +155,19 @@ package org.wvxvws.mapping
 		//  Internal methods
 		//
 		//--------------------------------------------------------------------------
+		
+		internal static function getMaps(domain:String):Vector.<Map>
+		{
+			var v:Vector.<Map> = new <Map>[];
+			for (var obj:Object in instances)
+			{
+				if (instances[obj] === domain)
+				{
+					v.push(obj as Map);
+				}
+			}
+			return v;
+		}
 		
 		internal function generateEvent(type:String, target:Object, 
 										fault:Object, result:Object):MappingEvent
