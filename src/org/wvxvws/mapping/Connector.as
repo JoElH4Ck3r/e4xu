@@ -1,6 +1,7 @@
 ﻿package org.wvxvws.mapping 
 {
 	//{ imports
+	import flash.display.Loader;
 	import flash.events.Event;
 	import mx.core.IMXMLObject;
 	import flash.events.EventDispatcher;
@@ -39,7 +40,7 @@
 		public function set link(value:String):void 
 		{
 			if (_link && _link.id == value) return;
-			var vm:Vector.<Map> = Map.instances;
+			var vm:Vector.<Map> = Map.getMaps(_domain);
 			for each (var m:Map in vm)
 			{
 				_link = m.getLink(value);
@@ -99,6 +100,8 @@
 		//  Private properties
 		//
 		//--------------------------------------------------------------------------
+		
+		private var _domain:String = (new Loader()).contentLoaderInfo.loaderURL;
 		
 		//--------------------------------------------------------------------------
 		//

@@ -2,12 +2,7 @@
 <!-- xmlns:utils="http://e4xu.googlecode.com" -->
 <componentPackage>
 	<!-- MAPPING -->
-	<component id="CallBack" class="org.wvxvws.mapping.CallBack"/>
 	<component id="Connector" class="org.wvxvws.mapping.Connector"/>
-	<component id="Dispatcher" class="org.wvxvws.mapping.Dispatcher"/>
-	<component id="Handler" class="org.wvxvws.mapping.Handler"/>
-	<component id="Invoker" class="org.wvxvws.mapping.Invoker"/>
-	<component id="Listener" class="org.wvxvws.mapping.Listener"/>
 	<component id="Link" class="org.wvxvws.mapping.Link"/>
 	<component id="Map" class="org.wvxvws.mapping.Map"/>
 	<!-- NET -->

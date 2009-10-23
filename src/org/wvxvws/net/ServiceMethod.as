@@ -75,8 +75,15 @@ package org.wvxvws.net
 		public function get name():String
 		{
 			if (_document)
-				return _document.id + "." + _id;
-			return _id;
+				return _document.id + "." + _name;
+			return _name;
+		}
+		
+		public function set name(value:String):void 
+		{
+			if (_name === value) return;
+			_name = value;
+			super.dispatchEvent(new Event("nameChanged"));
 		}
 		
 		public function get id():String { return _id; }
@@ -123,8 +130,8 @@ package org.wvxvws.net
 		public function send(parameters:ServiceArguments = null):void
 		{
 			if (!_document) return;
-			if (parameters) _document.send(id, parameters);
-			else _document.send(id, _parameters);
+			if (parameters) _document.send(_name, parameters);
+			else _document.send(_name, _parameters);
 		}
 		
 		//--------------------------------------------------------------------------
