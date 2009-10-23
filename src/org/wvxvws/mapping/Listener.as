@@ -44,12 +44,12 @@ package org.wvxvws.mapping
 		
 		private var _eventType:String;
 		
-		[Bindable("eventTypeChange")]
+		[Bindable("eventTypeChanged")]
 		
 		/**
 		 * ...
 		 * This property can be used as the source for data binding. 
-		 * When this property is modified, it dispatches the <code>eventTypeChange</code> event.
+		 * When this property is modified, it dispatches the <code>eventTypeChanged</code> event.
 		 */
 		public function get eventType():String { return _eventType; }
 		
@@ -57,7 +57,7 @@ package org.wvxvws.mapping
 		{
 			if (_eventType == value) return;
 			_eventType = value;
-			dispatchEvent(new Event("eventTypeChange"));
+			super.dispatchEvent(new Event("eventTypeChanged"));
 		}
 		
 		//------------------------------------
@@ -66,12 +66,12 @@ package org.wvxvws.mapping
 		
 		private var _listener:Function = null;
 		
-		[Bindable("listenerChange")]
+		[Bindable("listenerChanged")]
 		
 		/**
 		 * ...
 		 * This property can be used as the source for data binding. 
-		 * When this property is modified, it dispatches the <code>listenerChange</code> event.
+		 * When this property is modified, it dispatches the <code>listenerChanged</code> event.
 		 */
 		public function get listener():Function { return _listener; }
 		
@@ -79,7 +79,7 @@ package org.wvxvws.mapping
 		{
 			if (_listener == value) return;
 			_listener = value;
-			dispatchEvent(new Event("listenerChange"));
+			super.dispatchEvent(new Event("listenerChanged"));
 		}
 		
 		//------------------------------------
@@ -88,12 +88,12 @@ package org.wvxvws.mapping
 		
 		private var _priority:int;
 		
-		[Bindable("priorityChange")]
+		[Bindable("priorityChanged")]
 		
 		/**
 		 * ...
 		 * This property can be used as the source for data binding. 
-		 * When this property is modified, it dispatches the <code>priorityChange</code> event.
+		 * When this property is modified, it dispatches the <code>priorityChanged</code> event.
 		 */
 		public function get priority():int { return _priority; }
 		
@@ -101,7 +101,7 @@ package org.wvxvws.mapping
 		{
 			if (_priority == value) return;
 			_priority = value;
-			dispatchEvent(new Event("priorityChange"));
+			super.dispatchEvent(new Event("priorityChanged"));
 		}
 		
 		//------------------------------------
@@ -110,12 +110,12 @@ package org.wvxvws.mapping
 		
 		private var _useWeakReference:Boolean = false;
 		
-		[Bindable("useWeakReferenceChange")]
+		[Bindable("useWeakReferenceChanged")]
 		
 		/**
 		 * ...
 		 * This property can be used as the source for data binding. 
-		 * When this property is modified, it dispatches the <code>useWeakReferenceChange</code> event.
+		 * When this property is modified, it dispatches the <code>useWeakReferenceChanged</code> event.
 		 */
 		public function get useWeakReference():Boolean { return _useWeakReference; }
 		
@@ -123,7 +123,7 @@ package org.wvxvws.mapping
 		{
 			if (_useWeakReference == value) return;
 			_useWeakReference = value;
-			dispatchEvent(new Event("useWeakReferenceChange"));
+			super.dispatchEvent(new Event("useWeakReferenceChanged"));
 		}
 		
 		//--------------------------------------------------------------------------

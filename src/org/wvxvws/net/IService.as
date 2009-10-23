@@ -37,6 +37,8 @@ package org.wvxvws.net
 		
 		function get sending():Boolean;
 		
+		function get id():String;
+		
 		function get resultCallBack():Function;
 		function set resultCallBack(value:Function):void;
 		
@@ -46,8 +48,8 @@ package org.wvxvws.net
 		function get baseURL():String;
 		function set baseURL(value:String):void;
 		
-		function get methods():Array;
-		function set methods(value:Array):void;
+		function get methods():Vector.<ServiceMethod>;
+		function set methods(value:Vector.<ServiceMethod>):void;
 		
 		function get parameters():ServiceArguments;
 		function set parameters(value:ServiceArguments):void;

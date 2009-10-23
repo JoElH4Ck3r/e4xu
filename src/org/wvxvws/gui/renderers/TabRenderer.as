@@ -1,15 +1,16 @@
-﻿package org.wvxvws.mapping 
+﻿package org.wvxvws.gui.renderers 
 {
 	//{ imports
-	
+	import org.wvxvws.gui.renderers.Renderer;
 	//}
+	
 	/**
-	 * Delegate class.
+	 * TabRenderer class.
 	 * @author wvxvw
 	 * @langVersion 3.0
 	 * @playerVersion 10.0.28
 	 */
-	public class Delegate
+	public class TabRenderer extends Renderer implements ILabel
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -23,10 +24,6 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		protected var _argumentTypes:Vector.<Class>;
-		protected var _returnType:Class;
-		protected var _delegate:Function;
-		
 		//--------------------------------------------------------------------------
 		//
 		//  Private properties
@@ -38,50 +35,39 @@
 		//  Cunstructor
 		//
 		//--------------------------------------------------------------------------
-		public function Delegate(delegate:Function, 
-								argumentTypes:Vector.<Class>, returnType:Class) 
-		{
-			super();
-			_argumentTypes = argumentTypes.concat();
-			_returnType = returnType;
-		}
+		
+		public function TabRenderer() { super(); }
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Public methods
 		//
 		//--------------------------------------------------------------------------
 		
-		public function toFunction():Function { return _delegate; }
+		/* INTERFACE org.wvxvws.gui.renderers.ILabel */
 		
-		public static function toDelegate(delegate:Function, 
-								argumentTypes:Vector.<Class>, returnType:Class, 
-								delegateClass:Class):Delegate
+		public function set text(value:String):void
 		{
-			return new delegateClass(delegate, argumentTypes, returnType);
+			this.renderText();
+			_field.text = value;
+			this.drawBackground();
 		}
-		
-		public function call(context:Object, ...args):*
-		{
-			return _delegate.apply(context, args);
-		}
-		
-		public function apply(context:Object, args:Array):*
-		{
-			return _delegate.apply(context, args);
-		}
-		
-		public function get argumentTypes():Vector.<Class>
-		{
-			return _argumentTypes.concat();
-		}
-		
-		public function get returnType():Class { return _returnType; }
 		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
+		
+		protected override function renderText():void 
+		{
+			_field.defaultTextFormat = _textFormat;
+		}
+		
+		protected override function drawBackground():void 
+		{
+			
+		}
 		
 		//--------------------------------------------------------------------------
 		//
