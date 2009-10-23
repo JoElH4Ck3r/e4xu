@@ -170,9 +170,9 @@ package org.wvxvws.mapping
 		}
 		
 		internal function generateEvent(type:String, target:Object, 
-										fault:Object, result:Object):MappingEvent
+										originalEvent:Event = null):MappingEvent
 		{
-			return new MappingEvent(type, target, fault, result);
+			return new MappingEvent(type, target, originalEvent);
 		}
 		
 	}

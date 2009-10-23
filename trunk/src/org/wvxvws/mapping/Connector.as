@@ -62,16 +62,23 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>handlersChanged</code> event.
 		*/
-		public function get handlers():Vector.<Function> { return _handlers.concat(); }
+		public function get handlers():Vector.<Handler> { return _handlers.concat(); }
 		
-		public function set handlers(value:Vector.<Function>):void 
+		public function set handlers(value:Vector.<Handler>):void 
 		{
 			if (_handlers == value) return;
-			_handlers.length = 0;
-			for each (var f:Function in value)
+			var v:Vector.<Function>;
+			var vh:Vector.<Function>;
+			for each (var f:Handler in value)
 			{
-				if (_handlers.indexOf(f) < 0)
-					_handlers.push(f);
+				if (!_handlers.hasOwnProperty(f.type))
+					_handlers[f.type] = new <Function>[];
+				v = _handlers[f.type];
+				vh = f.handlers;
+				for each (var h:Function in vh)
+				{
+					if (v.indexOf(h) < 0) v.push(h);
+				}
 			}
 			super.dispatchEvent(new Event("handlersChanged"));
 		}
@@ -93,7 +100,7 @@
 		protected var _link:Link;
 		protected var _document:Object;
 		protected var _id:String;
-		protected var _handlers:Vector.<Function> = new <Function>[];
+		protected var _handlers:Object = { };
 		
 		//--------------------------------------------------------------------------
 		//
@@ -133,7 +140,9 @@
 		
 		protected function linkHandler(event:MappingEvent):void 
 		{
-			for each (var f:Function in _handlers) f(event);
+			var type:String = event.originalEvent.type;
+			var v:Vector.<Function> = _handlers[type];
+			for each (var f:Function in v) f(event.originalEvent);
 		}
 		
 		//--------------------------------------------------------------------------

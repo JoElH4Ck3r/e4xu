@@ -3,6 +3,7 @@
 <componentPackage>
 	<!-- MAPPING -->
 	<component id="Connector" class="org.wvxvws.mapping.Connector"/>
+	<component id="Handler" class="org.wvxvws.mapping.Handler"/>
 	<component id="Link" class="org.wvxvws.mapping.Link"/>
 	<component id="Map" class="org.wvxvws.mapping.Map"/>
 	<!-- NET -->

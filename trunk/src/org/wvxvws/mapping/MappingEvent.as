@@ -10,26 +10,21 @@
 	{
 		public override function get target():Object { return _target; }
 		
-		public function get fault():Object { return _fault; }
-		
-		public function get result():Object { return _result; }
+		public function get originalEvent():Object { return _originalEvent; }
 		
 		private var _target:Object;
-		private var _fault:Object;
-		private var _result:Object;
+		private var _originalEvent:Event;
 		
-		public function MappingEvent(type:String, target:Object, 
-									fault:Object = null, result:Object = null) 
+		public function MappingEvent(type:String, target:Object, originalEvent:Event = null) 
 		{ 
 			super(type);
 			if (target) _target = target;
-			_fault = fault;
-			_result = result;
+			_originalEvent = originalEvent;
 		} 
 		
 		public override function clone():Event 
 		{ 
-			return new MappingEvent(this.type, _target, _fault, _result);
+			return new MappingEvent(this.type, _target, _originalEvent);
 		} 
 		
 		public override function toString():String 

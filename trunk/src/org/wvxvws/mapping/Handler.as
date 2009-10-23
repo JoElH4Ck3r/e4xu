@@ -2,20 +2,19 @@
 {
 	//{ imports
 	import flash.events.Event;
-	import flash.events.EventDispatcher;
-	import flash.events.IEventDispatcher;
 	import mx.core.IMXMLObject;
+	import flash.events.EventDispatcher;
 	//}
 	
-	[DefaultProperty("eventTypes")]
+	[DefaultProperty("handlers")]
 	
 	/**
-	 * Link class.
+	 * Handler class.
 	 * @author wvxvw
 	 * @langVersion 3.0
-	 * @playerVersion 9.0.115
+	 * @playerVersion 10.0.28
 	 */
-	public class Link extends EventDispatcher implements IMXMLObject
+	public class Handler extends EventDispatcher implements IMXMLObject
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -23,59 +22,49 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public function get id():String { return _id; }
-		
 		//------------------------------------
-		//  Public property dispatcher
+		//  Public property type
 		//------------------------------------
 		
-		[Bindable("dispatcherChanged")]
+		[Bindable("typeChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>dispatcherChanged</code> event.
+		* When this property is modified, it dispatches the <code>typeChanged</code> event.
 		*/
-		public function get dispatcher():IEventDispatcher { return _dispatcher; }
+		public function get type():String { return _type; }
 		
-		public function set dispatcher(value:IEventDispatcher):void 
+		public function set type(value:String):void 
 		{
-			if (_dispatcher == value) return;
-			_dispatcher = value;
-			for each (var s:String in _eventTypes)
-			{
-				_dispatcher.addEventListener(s, omniListener);
-			}
-			super.dispatchEvent(new Event("dispatcherChanged"));
+			if (_type == value) return;
+			_type = value;
+			super.dispatchEvent(new Event("typeChanged"));
 		}
 		
 		//------------------------------------
-		//  Public property eventTypes
+		//  Public property handlers
 		//------------------------------------
 		
-		[Bindable("eventTypesChanged")]
+		[Bindable("handlersChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>eventTypesChanged</code> event.
+		* When this property is modified, it dispatches the <code>handlersChanged</code> event.
 		*/
-		public function get eventTypes():Vector.<String> { return _eventTypes; }
+		public function get handlers():Vector.<Function> { return _handlers.concat(); }
 		
-		public function set eventTypes(value:Vector.<String>):void 
+		public function set handlers(value:Vector.<Function>):void 
 		{
-			if (_eventTypes === value) return;
-			var s:String;
-			if (_dispatcher)
+			if (_handlers == value) return;
+			_handlers.length = 0;
+			for each (var f:Function in value)
 			{
-				for each (s in _eventTypes)
-				{
-					_dispatcher.removeEventListener(s, omniListener);
-				}
+				if (_handlers.indexOf(f) < 0) _handlers.push(f);
 			}
-			_eventTypes.length = 0;
-			for each (s in value) _eventTypes.push(s);
-			super.dispatchEvent(new Event("eventTypesChanged"));
+			_handlers = value;
+			super.dispatchEvent(new Event("handlersChanged"));
 		}
 		
 		//--------------------------------------------------------------------------
@@ -84,10 +73,9 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		protected var _document:Map;
 		protected var _id:String;
-		protected var _dispatcher:IEventDispatcher;
-		protected var _eventTypes:Vector.<String> = new <String>[];
+		protected var _type:String;
+		protected var _handlers:Vector.<Function> = new <Function>[];
 		
 		//--------------------------------------------------------------------------
 		//
@@ -101,15 +89,11 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public function Link() { super(); }
+		public function Handler() { super(); }
 		
 		/* INTERFACE mx.core.IMXMLObject */
 		
-		public function initialized(document:Object, id:String):void
-		{
-			_document = document as Map;
-			_id = id;
-		}
+		public function initialized(document:Object, id:String):void { _id = id; }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -122,11 +106,6 @@
 		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
-		
-		protected function omniListener(event:Event):void 
-		{
-			super.dispatchEvent(_document.generateEvent(_id, _dispatcher, event));
-		}
 		
 		//--------------------------------------------------------------------------
 		//
