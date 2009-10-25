@@ -399,7 +399,7 @@ package org.wvxvws.gui
 			if (!_background) _background = graphics;
 			if (properties._backgroundColor !== undefined ||
 				properties._backgroundAlpha !== undefined ||
-				properties._bounds !== undefined) drawBackground();
+				properties._bounds !== undefined) this.drawBackground();
 			if (properties._userTransform) super.transform = _userTransform;
 			else if (properties._transformMatrix)
 			{

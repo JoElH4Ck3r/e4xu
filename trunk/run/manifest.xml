@@ -19,6 +19,7 @@
 	<!-- UI -->
 	<component id="Bar" class="org.wvxvws.gui.Bar"/>
 	<component id="Border" class="org.wvxvws.gui.Border"/>
+	<component id="Button" class="org.wvxvws.gui.Button"/>
 	<component id="DIV" class="org.wvxvws.gui.DIV"/>
 	<component id="FrameOne" class="org.wvxvws.base.FrameOne"/>
 	<component id="FrameTwo" class="org.wvxvws.base.FrameTwo"/>

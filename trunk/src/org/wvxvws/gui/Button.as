@@ -1,24 +1,31 @@
 ﻿package org.wvxvws.gui 
 {
 	//{ imports
+	import flash.display.DisplayObjectContainer;
 	import flash.display.Graphics;
 	import flash.display.Shape;
+	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
+	import flash.geom.Rectangle;
+	import flash.geom.Transform;
 	import flash.text.TextField;
+	import flash.text.TextFieldAutoSize;
+	import flash.text.TextFormat;
 	import mx.core.IMXMLObject;
 	import flash.display.SimpleButton;
 	import flash.display.DisplayObject;
 	import org.wvxvws.gui.layout.ILayoutClient;
 	import org.wvxvws.gui.layout.LayoutValidator;
+	import org.wvxvws.gui.skins.ButtonSkinProducer;
 	import org.wvxvws.gui.skins.SkinProducer;
 	//}
 	
+	[Event(name="initialized", type="org.wvxvws.gui.GUIEvent")]
+	[Event(name="validated", type="org.wvxvws.gui.GUIEvent")]
+	
 	[Exclude(type="property", name="hitTestState")]
-	[Exclude(type="property", name="upState")]
-	[Exclude(type="property", name="downState")]
-	[Exclude(type="property", name="overState")]
 	
 	/**
 	 * Button class.
@@ -38,17 +45,23 @@
 		
 		public override function set hitTestState(value:DisplayObject):void { }
 		
-		public override function get upState():DisplayObject { return null; }
+		public override function set upState(value:DisplayObject):void
+		{
+			if (value) value.addEventListener(Event.ADDED, addedHandler, false, 0, true);
+			super.upState = value;
+		}
 		
-		public override function set upState(value:DisplayObject):void { }
+		public override function set downState(value:DisplayObject):void
+		{
+			if (value) value.addEventListener(Event.ADDED, addedHandler, false, 0, true);
+			super.downState = value;
+		}
 		
-		public override function get downState():DisplayObject { return null; }
-		
-		public override function set downState(value:DisplayObject):void { }
-		
-		public override function get overState():DisplayObject { return null; }
-		
-		public override function set overState(value:DisplayObject):void { }
+		public override function set overState(value:DisplayObject):void
+		{
+			if (value) value.addEventListener(Event.ADDED, addedHandler, false, 0, true);
+			super.overState = value;
+		}
 		
 		//------------------------------------
 		//  Public property x
@@ -177,6 +190,29 @@
 		}
 		
 		//------------------------------------
+		//  Public property transform
+		//------------------------------------
+		
+		[Bindable("transformChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>transformChanged</code> event.
+		*/
+		public override function get transform():Transform
+		{
+			return _userTransform ? _userTransform : super.transform;
+		}
+		
+		public override function set transform(value:Transform):void 
+		{
+			invalidate("_userTransform", _userTransform, true);
+			_userTransform = value;
+			super.dispatchEvent(new Event("transformChanged"));
+		}
+		
+		//------------------------------------
 		//  Public property label
 		//------------------------------------
 		
@@ -193,101 +229,58 @@
 		{
 			if (_label.text == value) return;
 			_label.text = value;
+			_label.x = -0.5 * _label.width;
+			_label.y = -0.5 * _label.height;
 			this.invalidate("_label", _label.text, false);
 			super.dispatchEvent(new Event("labelChanged"));
 		}
 		
 		//------------------------------------
-		//  Public property upProducer
+		//  Public property producer
 		//------------------------------------
 		
-		[Bindable("upProducerChanged")]
+		[Bindable("producerChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>upProducerChanged</code> event.
+		* When this property is modified, it dispatches the <code>producerChanged</code> event.
 		*/
-		public function get upProducer():SkinProducer { return _upProducer; }
+		public function get producer():ButtonSkinProducer { return _producer; }
 		
-		public function set upProducer(value:SkinProducer):void 
+		public function set producer(value:ButtonSkinProducer):void 
 		{
-			if (_upProducer == value) return;
-			_upProducer = value;
-			if (_upProducer)
+			if (_producer == value) return;
+			_producer = value;
+			if (_producer)
 			{
-				super.upState = _upProducer.produce(this);
+				super.upState = _producer.produce(this, "upState");
+				super.overState = _producer.produce(this, "overState");
+				super.downState = _producer.produce(this, "downState");
 				if (super.upState)
 				{
 					super.upState.addEventListener(
 						Event.ADDED, addedHandler, false, 0, true);
 				}
-			}
-			else super.upState = null;
-			this.invalidate("_upProducer", _upProducer, false);
-			super.dispatchEvent(new Event("upProducerChanged"));
-		}
-		
-		//------------------------------------
-		//  Public property overProducer
-		//------------------------------------
-		
-		[Bindable("overProducerChanged")]
-		
-		/**
-		* ...
-		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>overProducerChanged</code> event.
-		*/
-		public function get overProducer():SkinProducer { return _overProducer; }
-		
-		public function set overProducer(value:SkinProducer):void 
-		{
-			if (_overProducer == value) return;
-			_overProducer = value;
-			if (_overProducer)
-			{
-				super.overState = _overProducer.produce(this);
 				if (super.overState)
 				{
 					super.overState.addEventListener(
 						Event.ADDED, addedHandler, false, 0, true);
 				}
-			}
-			else super.overState = null;
-			this.invalidate("_overProducer", _overProducer, false);
-			super.dispatchEvent(new Event("overProducerChanged"));
-		}
-		
-		//------------------------------------
-		//  Public property downProducer
-		//------------------------------------
-		
-		[Bindable("downProducerChanged")]
-		
-		/**
-		* ...
-		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>downProducerChanged</code> event.
-		*/
-		public function get downProducer():SkinProducer { return _downProducer; }
-		
-		public function set downProducer(value:SkinProducer):void 
-		{
-			if (_downProducer == value) return;
-			_downProducer = value;
-			if (_downProducer)
-			{
-				super.downState = _downProducer.produce(this);
 				if (super.downState)
 				{
 					super.downState.addEventListener(
 						Event.ADDED, addedHandler, false, 0, true);
 				}
 			}
-			else super.downState = null;
-			this.invalidate("_downProducer", _downProducer, false);
-			super.dispatchEvent(new Event("downProducerChanged"));
+			else
+			{
+				super.upState = null;
+				super.overState = null;
+				super.downState = null;
+			}
+			this.invalidate("_producer", _producer, false);
+			super.dispatchEvent(new Event("producerChanged"));
 		}
 		
 		/* INTERFACE org.wvxvws.gui.layout.ILayoutClient */
@@ -318,7 +311,7 @@
 			cs = super.overState;
 			if (cs && cs.parent) return cs;
 			cs = super.downState;
-			if (cd && cs.parent) return cs;
+			if (cs && cs.parent) return cs;
 			return null;
 		}
 		
@@ -331,20 +324,22 @@
 		protected var _document:Object;
 		protected var _id:String;
 		protected var _label:TextField = new TextField();
+		protected var _labelSprite:Sprite = new Sprite();
 		protected var _validator:LayoutValidator;
 		protected var _layoutParent:ILayoutClient;
 		protected var _invalidProperties:Object = { };
 		
-		protected var _upProducer:SkinProducer;
-		protected var _overProducer:SkinProducer;
-		protected var _downProducer:SkinProducer;
+		protected var _producer:ButtonSkinProducer;
 		protected var _invalidLayout:Boolean;
 		
 		protected var _hitState:Shape = new Shape();
 		protected var _hitGraphics:Graphics;
 		protected var _bounds:Point = new Point();
-		protected var _states:ButtonStates = new ButtonStates();
 		protected var _transformMatrix:Matrix = new Matrix();
+		protected var _userTransform:Transform;
+		protected var _nativeTransform:Transform;
+		protected var _lastState:DisplayObject;
+		protected var _labelFormat:TextFormat = new TextFormat("_sans", 11, 0, true);
 		
 		//--------------------------------------------------------------------------
 		//
@@ -360,22 +355,18 @@
 		
 		public function Button() 
 		{
-			super(null, null, null, drawHitState());
+			super();
+			super.hitTestState = this.drawHitState();
 			super.addEventListener(Event.ADDED, addedHandler);
-		}
-		
-		protected function drawHitState():Shape
-		{
-			_hitGraphics = _hitState.graphics;
-			_hitGraphics.clear();
-			_hitGraphics.beginFill(0);
-			_hitGraphics.drawRect(0, 0, _bounds.x, _bounds.y);
-			_hitGraphics.endFill();
-		}
-		
-		protected function addedHandler(event:Event):void 
-		{
-			trace(event.target);
+			_nativeTransform = new Transform(this);
+			_label.width = 1;
+			_label.height = 1;
+			_label.autoSize = TextFieldAutoSize.LEFT;
+			_label.defaultTextFormat = _labelFormat;
+			_label.selectable = false;
+			_label.tabEnabled = false;
+			_label.border = true;
+			_labelSprite.addChild(_label);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -389,12 +380,59 @@
 		public function initialized(document:Object, id:String):void
 		{
 			_document = document;
+			if (_document is ILayoutClient)
+			{
+				_validator = (_document as ILayoutClient).validator;
+				if (_validator)
+					_validator.append(this, _document as ILayoutClient);
+			}
+			if (_document is DisplayObjectContainer)
+			{
+				(_document as DisplayObjectContainer).addChild(this);
+			}
 			_id = id;
 		}
 		
 		public function validate(properties:Object):void
 		{
-			
+			if (!_validator)
+			{
+				if (_document is ILayoutClient)
+				{
+					_validator = (_document as ILayoutClient).validator;
+					_layoutParent = _document as ILayoutClient;
+					if ((_document as ILayoutClient).childLayouts.indexOf(this) < 0)
+					{
+						(_document as ILayoutClient).childLayouts.push(this);
+					}
+				}
+			}
+			else if (parent is ILayoutClient && !_validator)
+			{
+				_validator = (parent as ILayoutClient).validator;
+				_layoutParent = parent as ILayoutClient;
+				if ((parent as ILayoutClient).childLayouts.indexOf(this) < 0)
+				{
+					(parent as ILayoutClient).childLayouts.push(this);
+				}
+			}
+			if (!_validator) _validator = new LayoutValidator();
+			_validator.append(this, _layoutParent);
+			if (properties._bounds !== undefined) this.drawHitState();
+			if (properties._userTransform) super.transform = _userTransform;
+			else if (properties._transformMatrix)
+			{
+				_nativeTransform.matrix = _transformMatrix;
+			}
+			if (!_document) 
+			{
+				_document = this;
+				//this.initStyles();
+				super.dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
+			}
+			_invalidProperties = { };
+			_invalidLayout = false;
+			super.dispatchEvent(new GUIEvent(GUIEvent.VALIDATED));
 		}
 		
 		public function invalidate(property:String, cleanValue:*, 
@@ -411,19 +449,53 @@
 		//
 		//--------------------------------------------------------------------------
 		
+		protected function drawHitState():Shape
+		{
+			_hitGraphics = _hitState.graphics;
+			_hitGraphics.clear();
+			_hitGraphics.beginFill(0);
+			_hitGraphics.drawRect(0, 0, _bounds.x, _bounds.y);
+			_hitGraphics.endFill();
+			return _hitState;
+		}
+		
+		protected function addedHandler(event:Event):void 
+		{
+			switch (event.target)
+			{
+				case super.downState:
+				case super.upState:
+				case super.overState:
+					_lastState = event.target as DisplayObject;
+					if (_lastState)
+					{
+						if (_lastState is DisplayObjectContainer)
+						{
+							if (_labelSprite.parent) 
+								_labelSprite.parent.removeChild(_labelSprite);
+							_lastState.width = _bounds.x;
+							_lastState.height = _bounds.y;
+							
+							_labelSprite.scaleX = 1 / _lastState.scaleX;
+							_labelSprite.scaleY = 1 / _lastState.scaleY;
+							
+							_labelSprite.x = 
+								(_lastState.width / _lastState.scaleX) * 0.5;
+							_labelSprite.y = 
+								(_lastState.height / _lastState.scaleY) * 0.5;
+							(_lastState as 
+								DisplayObjectContainer).addChild(_labelSprite);
+						}
+					}
+					break;
+			}
+			
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Private methods
 		//
 		//--------------------------------------------------------------------------
 	}
-}
-import flash.display.DisplayObject;
-internal final class ButtonStates
-{
-	public var upState:DisplayObject;
-	public var overState:DisplayObject;
-	public var downState:DisplayObject;
-	
-	public function ButtonStates() { super(); }
 }
