@@ -3,7 +3,7 @@
    <benchmark>false</benchmark>
    <compiler>
       <!-- compiler.accessible: generate an accessible SWF-->
-      <accessible>false</accessible>
+      <accessible>true</accessible>
       <!-- compiler.actionscript-file-encoding: specifies actionscript file encoding. If there is no BOM in the AS3 source files, the compiler will use this file encoding.-->
       <!-- compiler.actionscript-file-encoding usage:
       <actionscript-file-encoding>string</actionscript-file-encoding>
@@ -34,8 +34,19 @@
          <value>string</value>
       </define>
       -->
+      <!-- compiler.enable-runtime-design-layers usage:
+      <enable-runtime-design-layers>boolean</enable-runtime-design-layers>
+      -->
       <!-- compiler.es: use the ECMAScript edition 3 prototype based object model to allow dynamic overriding of prototype properties. In the prototype based object model built-in functions are implemented as dynamic properties of prototype objects.-->
       <es>false</es>
+      <extensions>
+         <!-- compiler.extensions.extension usage:
+         <extension>
+            <extension>string</extension>
+            <parameters>string</parameters>
+         </extension>
+         -->
+      </extensions>
       <!-- compiler.external-library-path: list of SWC files or directories to compile against but to omit from linking-->
       <external-library-path>
          <path-element>libs/player/{targetPlayerMajorVersion}/playerglobal.swc</path-element>
@@ -57,6 +68,12 @@
             </language-range>
             -->
          </languages>
+         <!-- compiler.fonts.local-font-paths usage:
+         <local-font-paths>
+            <path-element>string</path-element>
+            <path-element>string</path-element>
+         </local-font-paths>
+         -->
          <!-- compiler.fonts.local-fonts-snapshot: File containing system font data produced by flex2.tools.FontSnapshot.-->
          <local-fonts-snapshot>${flexlib}/winFonts.ser</local-fonts-snapshot>
          <!-- compiler.fonts.managers: Compiler font manager classes, in policy resolution order-->
@@ -64,6 +81,7 @@
             <manager-class>flash.fonts.JREFontManager</manager-class>
             <manager-class>flash.fonts.AFEFontManager</manager-class>
             <manager-class>flash.fonts.BatikFontManager</manager-class>
+            <manager-class>flash.fonts.CFFFontManager</manager-class>
          </managers>
          <!-- compiler.fonts.max-cached-fonts: sets the maximum number of fonts to keep in the server cache.  The default value is 20.-->
          <max-cached-fonts>20</max-cached-fonts>
@@ -117,6 +135,9 @@
          <!-- compiler.mxml.compatibility-version usage:
          <compatibility-version>version</compatibility-version>
          -->
+         <!-- compiler.mxml.qualified-type-selectors usage:
+         <qualified-type-selectors>boolean</qualified-type-selectors>
+         -->
       </mxml>
       <namespaces>
          <!-- compiler.namespaces.namespace: Specify a URI to associate with a manifest of components for use as MXML elements-->
@@ -146,12 +167,9 @@
       <!-- compiler.strict: runs the AS3 compiler in strict error checking mode.-->
       <strict>true</strict>
       <!-- compiler.theme: list of CSS or SWC files to apply as a theme-->
-      <!-- compiler.theme usage:
       <theme>
-         <filename>string</filename>
-         <filename>string</filename>
+         <filename>${flexlib}/themes/Spark/spark.css</filename>
       </theme>
-      -->
       <!-- compiler.use-resource-bundle-metadata: determines whether resources bundles are included in the application.-->
       <use-resource-bundle-metadata>true</use-resource-bundle-metadata>
       <!-- compiler.verbose-stacktraces: save callstack information to the SWF for debugging-->
@@ -261,6 +279,7 @@
       </frame>
       -->
    </frames>
+   <framework>halo</framework>
    <!-- include-resource-bundles: a list of resource bundles to include in the output SWC-->
    <!-- include-resource-bundles usage:
    <include-resource-bundles>
@@ -318,10 +337,10 @@
       <!-- metadata.publisher: A publisher's name to store in the SWF metadata-->
       <publisher>unknown</publisher>
       <!-- metadata.title: The default title to store in the SWF metadata-->
-      <title>Adobe Flex 3 Application</title>
+      <title>Adobe Flex 4 Application</title>
    </metadata>
    <!-- output: the filename of the SWF movie to create-->
-   <output>obj\xmlhelpers633919410239801250</output>
+   <output>obj\xmlhelpers633921009617216250</output>
    <!-- raw-metadata: XML text to store in the SWF metadata (overrides metadata.* configuration)-->
    <!-- raw-metadata usage:
    <raw-metadata>text</raw-metadata>
@@ -338,16 +357,29 @@
    </runtime-shared-libraries>
    -->
    <runtime-shared-library-path>
-      <path-element>libs/framework.swc</path-element>
-      <rsl-url>framework_3.4.0.9271.swz</rsl-url>
+      <path-element>libs/textLayout.swc</path-element>
+      <rsl-url>textLayout_4.0.0.0.swf</rsl-url>
       <policy-file-url></policy-file-url>
-      <rsl-url>framework_3.4.0.9271.swf</rsl-url>
+   </runtime-shared-library-path>
+   <runtime-shared-library-path>
+      <path-element>libs/framework.swc</path-element>
+      <rsl-url>framework_4.0.0.0.swf</rsl-url>
+      <policy-file-url></policy-file-url>
+   </runtime-shared-library-path>
+   <runtime-shared-library-path>
+      <path-element>libs/spark.swc</path-element>
+      <rsl-url>spark_4.0.0.0.swf</rsl-url>
+      <policy-file-url></policy-file-url>
+   </runtime-shared-library-path>
+   <runtime-shared-library-path>
+      <path-element>libs/rpc.swc</path-element>
+      <rsl-url>rpc_4.0.0.0.swf</rsl-url>
       <policy-file-url></policy-file-url>
    </runtime-shared-library-path>
    <!-- static-link-runtime-shared-libraries: statically link the libraries specified by the -runtime-shared-libraries-path option.-->
    <static-link-runtime-shared-libraries>true</static-link-runtime-shared-libraries>
    <!-- target-player: specifies the version of the player the application is targeting. Features requiring a later version will not be compiled into the application. The minimum value supported is "9.0.0".-->
-   <target-player>9.0.124</target-player>
+   <target-player>10.0.0</target-player>
    <!-- use-network: toggle whether the SWF is flagged for access to network resources-->
    <use-network>true</use-network>
    <!-- verify-digests: verifies the libraries loaded at runtime are the correct ones.-->
