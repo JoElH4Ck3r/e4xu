@@ -14,6 +14,7 @@
 	<component id="TXTService" class="org.wvxvws.net.TXTService"/>
 	<!-- RESOURCES -->
 	<component id="Resource" class="org.wvxvws.resources.Resource"/>
+	<component id="ResourcesRepository" class="org.wvxvws.resources.ResourcesRepository"/>
 	<component id="ResourceManager" class="org.wvxvws.managers.ResourceManager"/>
 	<!-- UI -->
 	<component id="Bar" class="org.wvxvws.gui.Bar"/>
@@ -31,7 +32,7 @@
 	<component id="Scroller" class="org.wvxvws.gui.Scroller"/>
 	<component id="StatefulButton" class="org.wvxvws.gui.StatefulButton"/>
 	<!-- UI CHROME -->
-	<component id="ChromeBar" class="org.wvxvws.gui.ChromeBar"/>
+	<component id="ChromeBar" class="org.wvxvws.gui.windows.ChromeBar"/>
 	<component id="ChromeWindow" class="org.wvxvws.gui.containers.ChromeWindow"/>
 	<!-- TOOLS -->
 	<component id="Palette" class="org.wvxvws.tools.Palette"/>

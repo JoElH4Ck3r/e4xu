@@ -28,7 +28,7 @@
 			if (state === null) state = _states[0];
 			var index:int = _states.indexOf(state);
 			if (index < 0) return null;
-			if (_stateClasses.length > index && _stateClasses[index])
+			if (_stateClasses && _stateClasses.length > index && _stateClasses[index])
 				return new _stateClasses[index]();
 			if (_stateFactories && _stateFactories.length > index && 
 				_stateFactories[index])

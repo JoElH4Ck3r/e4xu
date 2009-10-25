@@ -1,16 +1,40 @@
-﻿package org.wvxvws.managers 
+﻿////////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (C) Oleg Sivokon email: olegsivokon@gmail.com
+//  
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or any later version.
+//  
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//  GNU General Public License for more details.
+//  
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, write to the Free Software
+//  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+//  Or visit http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+//
+////////////////////////////////////////////////////////////////////////////////
+
+package org.wvxvws.managers 
 {
+	//{ imports
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Graphics;
 	import flash.display.InteractiveObject;
 	import flash.display.Sprite;
 	import flash.display.Stage;
+	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.geom.Rectangle;
 	import mx.core.IMXMLObject;
 	import org.wvxvws.gui.windows.IPane;
 	import org.wvxvws.gui.windows.PaneEvent;
+	//}
 	
 	/**
 	 * WindowManager class.
@@ -18,6 +42,12 @@
 	 */
 	public class WindowManager
 	{
+		//--------------------------------------------------------------------------
+		//
+		//  Private properties
+		//
+		//--------------------------------------------------------------------------
+		
 		private static var _windows:Vector.<IPane> = new <IPane>[];
 		private static var _events:Object = { };
 		private static var _modal:IPane;
@@ -25,9 +55,25 @@
 		private static var _stage:Stage;
 		private static var _modalSprite:Sprite = new Sprite();
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+		
 		public function WindowManager() { super(); }
 		
-		public static function init(stage:Stage):void { _stage = stage; }
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
+		
+		public static function init(stage:Stage):void
+		{
+			_stage = stage;
+			_stage.addEventListener(Event.RESIZE, stage_resizeHandler, false, 0, true);
+		}
 		
 		public static function attach(windowClass:Class, 
 							context:DisplayObjectContainer = null, 
@@ -36,7 +82,7 @@
 			var window:IPane = new windowClass();
 			if (!window || !(window is DisplayObject)) return null;
 			var modal:Boolean = context === null;
-			if (!modal) context = _stage;
+			if (modal) context = _stage;
 			var v:Vector.<Function>;
 			var e:PaneEvent;
 			var f:Function;
@@ -52,9 +98,9 @@
 				_modal = window;
 				drawModalBG();
 			}
-			if (metrics is IMXMLObject)
+			if (window is IMXMLObject)
 			{
-				(metrics as IMXMLObject).initialized(
+				(window as IMXMLObject).initialized(
 								context, "window" + _windows.length);
 			}
 			if (metrics)
@@ -64,7 +110,8 @@
 				(window as DisplayObject).width = metrics.width;
 				(window as DisplayObject).height = metrics.height;
 			}
-			context.addChild(window);
+			if (!(window as DisplayObject).parent)
+				context.addChild(window as DisplayObject);
 			_windows.push(window);
 			window.created();
 			_choosen == window;
@@ -166,7 +213,8 @@
 		
 		public static function addHandler(eventType:String, handler:Function):void
 		{
-			if (!_events.evnetType) = new <Function>[];
+			var v:Vector.<Function>;
+			if (!_events.evnetType) v = new <Function>[];
 			if ((_events.evnetType as Vector.<Function>).indexOf(handler) > -1)
 				return;
 		}
@@ -177,6 +225,12 @@
 			var i:int = (_events.evnetType as Vector.<Function>).indexOf(handler);
 			if (i > -1) (_events.evnetType as Vector.<Function>).splice(i, 1)
 		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Private properties
+		//
+		//--------------------------------------------------------------------------
 		
 		private static function drawModalBG():void
 		{
@@ -210,6 +264,18 @@
 			_stage.addEventListener(KeyboardEvent.KEY_UP, 
 									stage_keyUpHandler, false, int.MAX_VALUE);
 			_stage.addChild(_modalSprite);
+		}
+		
+		private static function stage_resizeHandler(event:Event):void 
+		{
+			if (_stage.contains(_modalSprite))
+			{
+				var g:Graphics = _modalSprite.graphics;
+				g.clear();
+				g.beginFill(0xFFFFFF, 0.2);
+				g.drawRect(0, 0, _stage.stageWidth, _stage.stageHeight);
+				g.endFill();
+			}
 		}
 		
 		private static function stage_keyUpHandler(event:KeyboardEvent):void 
