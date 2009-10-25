@@ -1,7 +1,11 @@
 ﻿package org.wvxvws.gui 
 {
 	//{ imports
+	import flash.display.Graphics;
+	import flash.display.Shape;
 	import flash.events.Event;
+	import flash.geom.Matrix;
+	import flash.geom.Point;
 	import flash.text.TextField;
 	import mx.core.IMXMLObject;
 	import flash.display.SimpleButton;
@@ -10,6 +14,11 @@
 	import org.wvxvws.gui.layout.LayoutValidator;
 	import org.wvxvws.gui.skins.SkinProducer;
 	//}
+	
+	[Exclude(type="property", name="hitTestState")]
+	[Exclude(type="property", name="upState")]
+	[Exclude(type="property", name="downState")]
+	[Exclude(type="property", name="overState")]
 	
 	/**
 	 * Button class.
@@ -24,6 +33,148 @@
 		//  Public properties
 		//
 		//--------------------------------------------------------------------------
+		
+		public override function get hitTestState():DisplayObject { return null; }
+		
+		public override function set hitTestState(value:DisplayObject):void { }
+		
+		public override function get upState():DisplayObject { return null; }
+		
+		public override function set upState(value:DisplayObject):void { }
+		
+		public override function get downState():DisplayObject { return null; }
+		
+		public override function set downState(value:DisplayObject):void { }
+		
+		public override function get overState():DisplayObject { return null; }
+		
+		public override function set overState(value:DisplayObject):void { }
+		
+		//------------------------------------
+		//  Public property x
+		//------------------------------------
+		
+		[Bindable("xChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>xChange</code> event.
+		*/
+		public override function get x():Number { return _transformMatrix.tx; }
+		
+		public override function set x(value:Number):void 
+		{
+			if (_transformMatrix.tx == value) return;
+			_transformMatrix.tx = value;
+			this.invalidate("_transformMatrix", _transformMatrix, true);
+			super.dispatchEvent(new Event("xChange"));
+		}
+		
+		//------------------------------------
+		//  Public property y
+		//------------------------------------
+		
+		[Bindable("yChange")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>yChange</code> event.
+		*/
+		public override function get y():Number { return _transformMatrix.ty; }
+		
+		public override function set y(value:Number):void 
+		{
+			if (_transformMatrix.ty == value) return;
+			_transformMatrix.ty = value;
+			this.invalidate("_transformMatrix", _transformMatrix, true);
+			super.dispatchEvent(new Event("yChange"));
+		}
+		
+		//------------------------------------
+		//  Public property width
+		//------------------------------------
+		
+		[Bindable("widthChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>widthChanged</code> event.
+		*/
+		public override function get width():Number { return _bounds.x; }
+		
+		public override function set width(value:Number):void 
+		{
+			if (_bounds.x == value) return;
+			_bounds.x = value;
+			this.invalidate("_bounds", _bounds, true);
+			super.dispatchEvent(new Event("widthChanged"));
+		}
+		
+		//------------------------------------
+		//  Public property height
+		//------------------------------------
+		
+		[Bindable("heightChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>heightChanged</code> event.
+		*/
+		public override function get height():Number { return _bounds.y; }
+		
+		public override function set height(value:Number):void 
+		{
+			if (_bounds.y == value) return;
+			_bounds.y = value;
+			this.invalidate("_bounds", _bounds, true);
+			super.dispatchEvent(new Event("heightChanged"));
+		}
+		
+		//------------------------------------
+		//  Public property scaleX
+		//------------------------------------
+		
+		[Bindable("scaleXChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>scaleXChanged</code> event.
+		*/
+		public override function get scaleX():Number { return _transformMatrix.a; }
+		
+		public override function set scaleX(value:Number):void 
+		{
+			if (_transformMatrix.a == value) return;
+			_transformMatrix.a = value;
+			this.invalidate("_transformMatrix", _transformMatrix, true);
+			super.dispatchEvent(new Event("scaleXChanged"));
+		}
+		
+		//------------------------------------
+		//  Public property scaleY
+		//------------------------------------
+		
+		[Bindable("scaleYChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>scaleYChanged</code> event.
+		*/
+		public override function get scaleY():Number { return _transformMatrix.d; }
+		
+		public override function set scaleY(value:Number):void 
+		{
+			if (_transformMatrix.d == value) return;
+			_transformMatrix.d = value;
+			this.invalidate("_transformMatrix", _transformMatrix, true);
+			super.dispatchEvent(new Event("scaleYChanged"));
+		}
 		
 		//------------------------------------
 		//  Public property label
@@ -63,6 +214,16 @@
 		{
 			if (_upProducer == value) return;
 			_upProducer = value;
+			if (_upProducer)
+			{
+				super.upState = _upProducer.produce(this);
+				if (super.upState)
+				{
+					super.upState.addEventListener(
+						Event.ADDED, addedHandler, false, 0, true);
+				}
+			}
+			else super.upState = null;
 			this.invalidate("_upProducer", _upProducer, false);
 			super.dispatchEvent(new Event("upProducerChanged"));
 		}
@@ -84,6 +245,16 @@
 		{
 			if (_overProducer == value) return;
 			_overProducer = value;
+			if (_overProducer)
+			{
+				super.overState = _overProducer.produce(this);
+				if (super.overState)
+				{
+					super.overState.addEventListener(
+						Event.ADDED, addedHandler, false, 0, true);
+				}
+			}
+			else super.overState = null;
 			this.invalidate("_overProducer", _overProducer, false);
 			super.dispatchEvent(new Event("overProducerChanged"));
 		}
@@ -105,29 +276,18 @@
 		{
 			if (_downProducer == value) return;
 			_downProducer = value;
+			if (_downProducer)
+			{
+				super.downState = _downProducer.produce(this);
+				if (super.downState)
+				{
+					super.downState.addEventListener(
+						Event.ADDED, addedHandler, false, 0, true);
+				}
+			}
+			else super.downState = null;
 			this.invalidate("_downProducer", _downProducer, false);
 			super.dispatchEvent(new Event("downProducerChanged"));
-		}
-		
-		//------------------------------------
-		//  Public property hitProducer
-		//------------------------------------
-		
-		[Bindable("hitProducerChanged")]
-		
-		/**
-		* ...
-		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>hitProducerChanged</code> event.
-		*/
-		public function get hitProducer():SkinProducer { return _hitProducer; }
-		
-		public function set hitProducer(value:SkinProducer):void 
-		{
-			if (_hitProducer == value) return;
-			_hitProducer = value;
-			this.invalidate("_hitProducer", _hitProducer, false);
-			super.dispatchEvent(new Event("hitProducerChanged"));
 		}
 		
 		/* INTERFACE org.wvxvws.gui.layout.ILayoutClient */
@@ -174,11 +334,17 @@
 		protected var _validator:LayoutValidator;
 		protected var _layoutParent:ILayoutClient;
 		protected var _invalidProperties:Object = { };
+		
 		protected var _upProducer:SkinProducer;
 		protected var _overProducer:SkinProducer;
 		protected var _downProducer:SkinProducer;
-		protected var _hitProducer:SkinProducer;
 		protected var _invalidLayout:Boolean;
+		
+		protected var _hitState:Shape = new Shape();
+		protected var _hitGraphics:Graphics;
+		protected var _bounds:Point = new Point();
+		protected var _states:ButtonStates = new ButtonStates();
+		protected var _transformMatrix:Matrix = new Matrix();
 		
 		//--------------------------------------------------------------------------
 		//
@@ -192,13 +358,24 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public function Button(	upState:DisplayObject = null, 
-								overState:DisplayObject = null, 
-								downState:DisplayObject = null, 
-								hitTestState:DisplayObject = null) 
+		public function Button() 
 		{
-			super(upState, overState, downState, hitTestState);
-			
+			super(null, null, null, drawHitState());
+			super.addEventListener(Event.ADDED, addedHandler);
+		}
+		
+		protected function drawHitState():Shape
+		{
+			_hitGraphics = _hitState.graphics;
+			_hitGraphics.clear();
+			_hitGraphics.beginFill(0);
+			_hitGraphics.drawRect(0, 0, _bounds.x, _bounds.y);
+			_hitGraphics.endFill();
+		}
+		
+		protected function addedHandler(event:Event):void 
+		{
+			trace(event.target);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -240,5 +417,13 @@
 		//
 		//--------------------------------------------------------------------------
 	}
+}
+import flash.display.DisplayObject;
+internal final class ButtonStates
+{
+	public var upState:DisplayObject;
+	public var overState:DisplayObject;
+	public var downState:DisplayObject;
 	
+	public function ButtonStates() { super(); }
 }
