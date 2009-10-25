@@ -7,11 +7,11 @@
 	import flash.events.Event;
 	import flash.geom.Rectangle;
 	import org.wvxvws.gui.Border;
-	import org.wvxvws.gui.ChromeBar;
 	import org.wvxvws.gui.DIV;
 	import org.wvxvws.gui.skins.ButtonSkinProducer;
 	import org.wvxvws.gui.skins.SkinProducer;
 	import org.wvxvws.gui.SPAN;
+	import org.wvxvws.gui.windows.ChromeBar;
 	import org.wvxvws.gui.windows.IPane;
 	
 	[DefaultProperty("children")]
@@ -280,24 +280,40 @@
 		{
 			var titleChanged:Boolean = (("_titleBar" in properties) || 
 									("_transformMatrix" in properties)) && _titleBar;
-			var borderChanged:Boolean = ("_border" in properties) && _border;
-			var statusChanged:Boolean = ("_statusBar" in properties) && _statusBar;
+			var borderChanged:Boolean = (("_border" in properties) || 
+									("_transformMatrix" in properties)) && _border;
+			var statusChanged:Boolean = (("_statusBar" in properties)) || 
+									("_transformMatrix" in properties) && _statusBar;
 			var paneChanged:Boolean = ("_contentPane" in properties) || 
 									titleChanged || borderChanged || statusChanged;
 			var chromeHeight:int;
 			var chromeBounds:Rectangle = new Rectangle();
+			var controlsChanged:Boolean = ("_transformMatrix" in properties) ||
+											("_expandSkin" in properties) ||
+											("_dockSkin" in properties) ||
+											("_closeSkin" in properties);
 			super.validate(properties);
 			if (titleChanged)
 			{
 				if (!super.contains(_titleBar)) super.addChild(_titleBar);
+				var i:int = super.numChildren;
+				var a:int = 1;
+				var d:DisplayObject;
+				while (i--)
+				{
+					d = super.getChildAt(i);
+					if (d === _titleBar) break;
+					else if (d === _closeBTN || d === _dockBTN || d === _expandBTN)
+					{
+						a++;
+					}
+				}
+				super.setChildIndex(_titleBar, super.numChildren - a);
 				_titleBar.width = super._bounds.x;
 			}
 			if (borderChanged)
 			{
-				if (!super.contains(_border)) 
-				{
-					super.addChildAt(_border, 0);
-				}
+				if (!super.contains(_border)) super.addChildAt(_border, 0);
 				_border.width = super._bounds.x;
 				_border.height = super._bounds.y;
 			}
@@ -305,9 +321,11 @@
 			{
 				if (_border)
 				{
-					_statusBar.width = super._bounds.x - (_border.left + _border.right);
+					_statusBar.width = super._bounds.x - 
+										(_border.left + _border.right);
 					_statusBar.x = _border.left;
-					_statusBar.y = super._bounds.y - (_statusBar.height + _border.bottom);
+					_statusBar.y = super._bounds.y - 
+									(_statusBar.height + _border.bottom);
 				}
 				else
 				{
@@ -338,6 +356,16 @@
 				_contentPane.validate(_contentPane.invalidProperties);
 				_contentPane.scrollRect = chromeBounds;
 			}
+			if (controlsChanged) this.drawControlButtons();
+		}
+		
+		protected function drawControlButtons():void
+		{
+			if (_closeBTN && super.contains(_closeBTN))
+				super.removeChild(_closeBTN);
+			_closeBTN = _closeSkin.produce(this);
+			_closeBTN.x = super.width - (_closeBTN.width + _border.right + 2);
+			super.addChild(_closeBTN);
 		}
 		
 		/* INTERFACE org.wvxvws.gui.windows.IPane */

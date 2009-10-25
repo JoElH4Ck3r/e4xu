@@ -23,7 +23,7 @@ package org.wvxvws.resources
 {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
-	import flash.utils.getDefinitionByName;
+	import flash.system.ApplicationDomain;
 	import mx.core.IMXMLObject;
 	
 	[DefaultProperty("embed")]
@@ -46,27 +46,21 @@ package org.wvxvws.resources
 		//  Public property embed
 		//------------------------------------
 		
-		[Bindable("embedChange")]
-		
-		/**
-		* ...
-		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>embedChange</code> event.
-		*/
 		public function get embed():Class { return _embed; }
 		
 		public function set embed(value:Class):void 
 		{
-			if (_embed == value) return;
+			if (_embed === value) return;
 			_embed = value;
-			try
+			trace("EMBEDDING");
+			if (ApplicationDomain.currentDomain.hasDefinition(
+				"org.wvxvws.managers::ResourceManager") && _id !== null)
 			{
-				var rm:Class = 
-				getDefinitionByName("org.wvxvws.resources::ResourceManager") as Class;
-				if (rm) Object(rm).staticInstance.registerResource(value);
+				trace("REGISTERING");
+				var rm:Object = ApplicationDomain.currentDomain.getDefinition(
+					"org.wvxvws.managers::ResourceManager");
+				if (rm) rm.registerResource(value, _id);
 			}
-			catch (error:Error) { };
-			dispatchEvent(new Event("embedChange"));
 		}
 		
 		public function get id():String { return _id; }
@@ -100,6 +94,14 @@ package org.wvxvws.resources
 		{
 			_document = document;
 			_id = id;
+			if (_embed && ApplicationDomain.currentDomain.hasDefinition(
+				"org.wvxvws.managers::ResourceManager"))
+			{
+				trace("REGISTERING");
+				var rm:Object = ApplicationDomain.currentDomain.getDefinition(
+					"org.wvxvws.managers::ResourceManager");
+				if (rm) rm.registerResource(_embed, _id);
+			}
 		}
 		//--------------------------------------------------------------------------
 		//

@@ -49,34 +49,30 @@ package org.wvxvws.managers
 		//
 		//--------------------------------------------------------------------------
 		
-		private static var _managedResources:Object;
-		private static var _staticInstance:ResourceManager;
+		private static var _managedResources:Object = { };
 		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		public function ResourceManager() 
-		{
-			super();
-			if (!_managedResources) _managedResources = { };
-			if (!_staticInstance) _staticInstance = this;
-		}
+		
+		public function ResourceManager() { super(); }
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Public methods
 		//
 		//--------------------------------------------------------------------------
 		
-		public function registerResource(resource:Class):void
+		public static function registerResource(resource:Class, label:String):void
 		{
-			_managedResources[getQualifiedClassName(resource)] = resource;
+			_managedResources[label] = resource;
 		}
 		
-		public function getDefinitions():Array
+		public static function getDefinitions():Vector.<Class>
 		{
-			var ret:Array = [];
+			var ret:Vector.<Class> = new <Class>[];
 			for (var p:String in _managedResources)
 			{
 				ret.push(_managedResources[p]);
@@ -84,12 +80,10 @@ package org.wvxvws.managers
 			return ret;
 		}
 		
-		public function getResource(name:String):Class
+		public static function getResource(name:String):Class
 		{
 			return _managedResources[name];
 		}
-		
-		static public function get staticInstance():ResourceManager { return _staticInstance; }
 		
 		//--------------------------------------------------------------------------
 		//
