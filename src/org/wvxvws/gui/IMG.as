@@ -77,9 +77,17 @@
 		{
 			if (_embed === value) return;
 			_embed = value;
-			var bd:Bitmap = new value() as Bitmap;
-			this.bitmapData = bd.bitmapData.clone();
-			bd.bitmapData.dispose();
+			if (value)
+			{
+				var bd:Bitmap = new value() as Bitmap;
+				super.bitmapData = bd.bitmapData.clone();
+				bd.bitmapData.dispose();
+			}
+			else if (super.bitmapData)
+			{
+				super.bitmapData.dispose();
+				super.bitmapData = null;
+			}
 			super.dispatchEvent(new Event("embedChanged"));
 		}
 		
