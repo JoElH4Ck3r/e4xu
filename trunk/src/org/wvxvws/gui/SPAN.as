@@ -38,6 +38,7 @@ package org.wvxvws.gui
 	import mx.core.IMXMLObject;
 	import org.wvxvws.gui.layout.ILayoutClient;
 	import org.wvxvws.gui.layout.LayoutValidator;
+	import org.wvxvws.gui.renderers.ILabel;
 	import org.wvxvws.gui.styles.ICSSClient
 	//}
 	
@@ -50,7 +51,8 @@ package org.wvxvws.gui
 	 * TextSPAN class.
 	 * @author wvxvw
 	 */
-	public class SPAN extends TextField implements IMXMLObject, ICSSClient, ILayoutClient
+	public class SPAN extends TextField implements IMXMLObject, ICSSClient, 
+													ILayoutClient, ILabel
 	{
 		//--------------------------------------------------------------------------
 		//

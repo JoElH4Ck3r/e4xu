@@ -279,11 +279,14 @@
 		public override function validate(properties:Object):void 
 		{
 			var titleChanged:Boolean = (("_titleBar" in properties) || 
-									("_transformMatrix" in properties)) && _titleBar;
-			var borderChanged:Boolean = (("_border" in properties) || 
+									("_transformMatrix" in properties) ||
+									("_bounds" in properties)) && _titleBar;
+			var borderChanged:Boolean = (("_border" in properties) ||
+									("_bounds" in properties) || 
 									("_transformMatrix" in properties)) && _border;
 			var statusChanged:Boolean = (("_statusBar" in properties)) || 
-									("_transformMatrix" in properties) && _statusBar;
+									("_transformMatrix" in properties ||
+									("_bounds" in properties)) && _statusBar;
 			var paneChanged:Boolean = ("_contentPane" in properties) || 
 									titleChanged || borderChanged || statusChanged;
 			var chromeHeight:int;
@@ -309,13 +312,13 @@
 					}
 				}
 				super.setChildIndex(_titleBar, super.numChildren - a);
-				_titleBar.width = super._bounds.x;
+				_titleBar.width = _bounds.x;
 			}
 			if (borderChanged)
 			{
 				if (!super.contains(_border)) super.addChildAt(_border, 0);
-				_border.width = super._bounds.x;
-				_border.height = super._bounds.y;
+				_border.width = _bounds.x;
+				_border.height = _bounds.y;
 			}
 			if (statusChanged)
 			{
@@ -336,6 +339,7 @@
 			}
 			if (paneChanged)
 			{
+				trace("paneChanged");
 				if (_titleBar)
 				{
 					_contentPane.y = _titleBar.y + _titleBar.height;
@@ -350,22 +354,27 @@
 				if (_statusBar) chromeHeight += _statusBar.height;
 				if (_border) chromeHeight += _border.bottom;
 				_contentPane.height = super._bounds.y - chromeHeight;
-				if (!super.contains(_contentPane)) super.addChild(_contentPane);
+				if (!super.contains(_contentPane))
+					_contentPane.initialized(this, "contentPane");
 				chromeBounds.width = _contentPane.width;
 				chromeBounds.height = _contentPane.height;
 				_contentPane.validate(_contentPane.invalidProperties);
 				_contentPane.scrollRect = chromeBounds;
 			}
-			if (controlsChanged) this.drawControlButtons();
+			if (controlsChanged && (_closeBTN || _dockBTN || _expandBTN))
+				this.drawControlButtons();
 		}
 		
 		protected function drawControlButtons():void
 		{
 			if (_closeBTN && super.contains(_closeBTN))
 				super.removeChild(_closeBTN);
-			_closeBTN = _closeSkin.produce(this);
-			_closeBTN.x = super.width - (_closeBTN.width + _border.right + 2);
-			super.addChild(_closeBTN);
+			if (_closeBTN)
+			{
+				_closeBTN = _closeSkin.produce(this);
+				_closeBTN.x = super.width - (_closeBTN.width + _border.right + 2);
+				super.addChild(_closeBTN);
+			}
 		}
 		
 		/* INTERFACE org.wvxvws.gui.windows.IPane */

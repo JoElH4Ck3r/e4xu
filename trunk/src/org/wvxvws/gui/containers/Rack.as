@@ -158,7 +158,7 @@
 			if (_children === value) return;
 			if (!value) _children = new <DisplayObject>[];
 			else _children = value.concat();
-			this.constrain();
+			if (_performLayout) this.constrain();
 		}
 		
 		//--------------------------------------------------------------------------
@@ -175,6 +175,7 @@
 		protected var _allowOverlap:Boolean;
 		protected var _layoutRect:Rectangle = new Rectangle();
 		protected var _children:Vector.<DisplayObject> = new <DisplayObject>[];
+		protected var _performLayout:Boolean;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -199,7 +200,7 @@
 		public override function validate(properties:Object):void 
 		{
 			super.validate(properties);
-			this.constrain();
+			if (_performLayout) this.constrain();
 		}
 		
 		public override function addChild(child:DisplayObject):DisplayObject 
@@ -208,7 +209,7 @@
 			var i:int = _children.indexOf(child);
 			if (i > -1) _children.splice(i, 1);
 			_children.push(child);
-			this.constrain();
+			if (_performLayout) this.constrain();
 			return child;
 		}
 		
@@ -218,7 +219,7 @@
 			var i:int = _children.indexOf(child);
 			if (i > -1) _children.splice(i, 1);
 			_children.splice(index, 0, child);
-			this.constrain();
+			if (_performLayout) this.constrain();
 			return child;
 		}
 		
@@ -226,7 +227,7 @@
 		{
 			var child:DisplayObject = super.removeChild(child);
 			_children.pop();
-			this.constrain();
+			if (_performLayout) this.constrain();
 			return child;
 		}
 		
@@ -234,7 +235,7 @@
 		{
 			var child:DisplayObject = super.removeChildAt(index);
 			_children.splice(index, 1);
-			this.constrain();
+			if (_performLayout) this.constrain();
 			return child;
 		}
 		

@@ -353,6 +353,25 @@ package org.wvxvws.gui
 			_nativeTransform = new Transform(this);
 			this.invalidate("", undefined, true);
 			if (stage) super.addEventListener(Event.ENTER_FRAME, deferredInitialize);
+			super.addEventListener(Event.REMOVED_FROM_STAGE, removedHandler);
+			super.addEventListener(Event.ADDED_TO_STAGE, adtsHandler);
+		}
+		
+		protected function adtsHandler(event:Event):void 
+		{
+			if (!_validator)
+			{
+				if (super.parent is ILayoutClient)
+				{
+					_validator = (super.parent as ILayoutClient).validator;
+				}
+			}
+			if (_hasPendingValidation) this.validate(_invalidProperties);
+		}
+		
+		protected function removedHandler(event:Event):void 
+		{
+			if (_validator) _validator.exclude(this);
 		}
 		
 		private function deferredInitialize(event:Event):void 
