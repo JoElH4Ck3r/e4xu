@@ -35,6 +35,7 @@
 	<!-- UI CHROME -->
 	<component id="ChromeBar" class="org.wvxvws.gui.windows.ChromeBar"/>
 	<component id="ChromeWindow" class="org.wvxvws.gui.containers.ChromeWindow"/>
+	<component id="ChromeAlert" class="org.wvxvws.gui.windows.ChromeAlert"/>
 	<!-- TOOLS -->
 	<component id="Palette" class="org.wvxvws.tools.Palette"/>
 	<component id="Transformer" class="org.wvxvws.tools.Transformer"/>

@@ -31,6 +31,7 @@ package org.wvxvws.managers
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.geom.Rectangle;
+	import flash.utils.Dictionary;
 	import mx.core.IMXMLObject;
 	import org.wvxvws.gui.windows.IPane;
 	import org.wvxvws.gui.windows.PaneEvent;
@@ -55,6 +56,11 @@ package org.wvxvws.managers
 		private static var _stage:Stage;
 		private static var _modalSprite:Sprite = new Sprite();
 		
+		private static const _tabbed:Dictionary = new Dictionary(true);
+		private static const _moused:Dictionary = new Dictionary(true);
+		private static const _mChildren:Dictionary = new Dictionary(true);
+		private static const _tChildren:Dictionary = new Dictionary(true);
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
@@ -73,6 +79,56 @@ package org.wvxvws.managers
 		{
 			_stage = stage;
 			_stage.addEventListener(Event.RESIZE, stage_resizeHandler, false, 0, true);
+		}
+		
+		public static function append(window:IPane, 
+							context:DisplayObjectContainer = null, 
+							metrics:Rectangle = null):IPane
+		{
+			if (!window || !(window is DisplayObject)) return null;
+			var modal:Boolean = context === null;
+			if (modal) context = _stage;
+			var v:Vector.<Function>;
+			var e:PaneEvent;
+			var f:Function;
+			var lastChoosen:IPane = _choosen;
+			v = _events[PaneEvent.ATTACHED];
+			if (v)
+			{
+				e = new PaneEvent(PaneEvent.ATTACHED, window);
+				for each (f in v) f(e.clone());
+			}
+			if (modal)
+			{
+				_modal = window;
+				drawModalBG();
+			}
+			if (window is IMXMLObject)
+			{
+				(window as IMXMLObject).initialized(
+								context, "window" + _windows.length);
+			}
+			if (metrics)
+			{
+				(window as DisplayObject).x = metrics.x;
+				(window as DisplayObject).y = metrics.y;
+				(window as DisplayObject).width = metrics.width;
+				(window as DisplayObject).height = metrics.height;
+			}
+			if (!(window as DisplayObject).parent)
+				context.addChild(window as DisplayObject);
+			_windows.push(window);
+			window.created();
+			_choosen == window;
+			window.choosen();
+			if (lastChoosen)
+			{
+				e = new PaneEvent(PaneEvent.DESELECTED, lastChoosen);
+				v = _events[PaneEvent.DESELECTED];
+				for each (f in v) f(e.clone());
+			}
+			window.expanded();
+			return window;
 		}
 		
 		public static function attach(windowClass:Class, 
@@ -141,7 +197,6 @@ package org.wvxvws.managers
 					for each (f in v) f(e.clone());
 				}
 				window.destroyed();
-				v.splice(i, 1);
 				if (_modal == window) _modal = null;
 				if (_choosen == window)
 				{
@@ -151,7 +206,10 @@ package org.wvxvws.managers
 					_choosen.deselected();
 					_choosen = null;
 				}
+				_windows.splice(i, 1);
 			}
+			(window as DisplayObject).parent.removeChild(window as DisplayObject);
+			removeModalBG();
 		}
 		
 		public static function choose(window:IPane):Boolean
@@ -236,7 +294,7 @@ package org.wvxvws.managers
 		{
 			var g:Graphics = _modalSprite.graphics;
 			g.clear();
-			g.beginFill(0xFFFFFF, 0.2);
+			g.beginFill(0xFFFFFF, 0.3);
 			g.drawRect(0, 0, _stage.stageWidth, _stage.stageHeight);
 			g.endFill();
 			_modalSprite.mouseEnabled = false;
@@ -249,11 +307,15 @@ package org.wvxvws.managers
 				dos = _stage.getChildAt(i);
 				if (dos is InteractiveObject)
 				{
+					_moused[dos] = (dos as InteractiveObject).mouseEnabled;
+					_tabbed[dos] = (dos as InteractiveObject).tabEnabled;
 					(dos as InteractiveObject).mouseEnabled = false;
 					(dos as InteractiveObject).tabEnabled = false;
 				}
 				if (dos is DisplayObjectContainer)
 				{
+					_mChildren[dos] = (dos as DisplayObjectContainer).mouseChildren;
+					_tChildren[dos] = (dos as DisplayObjectContainer).tabChildren;
 					(dos as DisplayObjectContainer).mouseChildren = false;
 					(dos as DisplayObjectContainer).tabChildren = false;
 				}
@@ -290,7 +352,8 @@ package org.wvxvws.managers
 		
 		private static function removeModalBG():void
 		{
-			if (_stage.contains(_modalSprite)) _stage.addChild(_modalSprite);
+			_stage.focus = null;
+			if (_stage.contains(_modalSprite)) _stage.removeChild(_modalSprite);
 			var i:int = _stage.numChildren;
 			var dos:DisplayObject;
 			while (i--)
@@ -298,13 +361,13 @@ package org.wvxvws.managers
 				dos = _stage.getChildAt(i);
 				if (dos is InteractiveObject)
 				{
-					(dos as InteractiveObject).mouseEnabled = true;
-					(dos as InteractiveObject).tabEnabled = true;
+					(dos as InteractiveObject).mouseEnabled = _moused[dos];
+					(dos as InteractiveObject).tabEnabled = _tabbed[dos];
 				}
 				if (dos is DisplayObjectContainer)
 				{
-					(dos as DisplayObjectContainer).mouseChildren = true;
-					(dos as DisplayObjectContainer).tabChildren = true;
+					(dos as DisplayObjectContainer).mouseChildren = _mChildren[dos];
+					(dos as DisplayObjectContainer).tabChildren = _tChildren[dos];
 				}
 			}
 			_stage.removeEventListener(KeyboardEvent.KEY_DOWN, stage_keyDownHandler);

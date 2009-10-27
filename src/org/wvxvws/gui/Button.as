@@ -19,6 +19,7 @@
 	import org.wvxvws.gui.layout.ILayoutClient;
 	import org.wvxvws.gui.layout.LayoutValidator;
 	import org.wvxvws.gui.skins.ButtonSkinProducer;
+	import org.wvxvws.gui.skins.DefaultButonProducer;
 	import org.wvxvws.gui.skins.SkinProducer;
 	//}
 	
@@ -353,7 +354,7 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public function Button() 
+		public function Button(label:String = null) 
 		{
 			super();
 			super.hitTestState = this.drawHitState();
@@ -365,8 +366,8 @@
 			_label.defaultTextFormat = _labelFormat;
 			_label.selectable = false;
 			_label.tabEnabled = false;
-			_label.border = true;
 			_labelSprite.addChild(_label);
+			if (label) this.label = label;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -391,6 +392,7 @@
 				(_document as DisplayObjectContainer).addChild(this);
 			}
 			_id = id;
+			if (!_producer) this.producer = new DefaultButonProducer();
 		}
 		
 		public function validate(properties:Object):void
