@@ -53,6 +53,11 @@
 			return 0x909090;
 		}
 		
+		public static function get defaultBorderColor():uint
+		{
+			return 0x303030;
+		}
+		
 		public static function get defaultFormat():TextFormat
 		{
 			return new TextFormat("_sans", 11, defaultTextColor);
