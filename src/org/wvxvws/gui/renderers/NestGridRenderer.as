@@ -29,7 +29,10 @@ package org.wvxvws.gui.renderers
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import org.wvxvws.gui.GUIEvent;
+	import org.wvxvws.gui.skins.ButtonSkinProducer;
 	import org.wvxvws.gui.StatefulButton;
+	
+	// TODO: Need to implement ILayoutClient or add suspendLayout()
 	
 	/**
 	 * NestGridRenderer class.
@@ -87,7 +90,7 @@ package org.wvxvws.gui.renderers
 		{
 			if (_indent === value) return;
 			_indent = value;
-			if (_data) render();
+			if (_data) this.render();
 		}
 		
 		public function get depth():int { return _depth; }
@@ -96,7 +99,7 @@ package org.wvxvws.gui.renderers
 		{
 			if (_depth === value) return;
 			_depth = value;
-			if (_data) render();
+			if (_data) this.render();
 		}
 		
 		public function get gutter():int { return _gutter; }
@@ -105,7 +108,7 @@ package org.wvxvws.gui.renderers
 		{
 			if (_gutter === value) return;
 			_gutter = value;
-			if (_data) render();
+			if (_data) this.render();
 		}
 		
 		public function get closed():Boolean { return _closed; }
@@ -114,7 +117,7 @@ package org.wvxvws.gui.renderers
 		{
 			if (_closed === value) return;
 			_closed = value;
-			if (_data) render();
+			if (_data) this.render();
 		}
 		
 		public function get openClass():Class { return _openClass; }
@@ -123,7 +126,7 @@ package org.wvxvws.gui.renderers
 		{
 			if (_openClass === value) return;
 			_openClass = value;
-			if (_data) render();
+			if (_data) this.render();
 		}
 		
 		public function get closedClass():Class { return _closedClass; }
@@ -132,16 +135,16 @@ package org.wvxvws.gui.renderers
 		{
 			if (_closedClass === value) return;
 			_closedClass = value;
-			if (_data) render();
+			if (_data) this.render();
 		}
 		
-		public function get iconFactory():Function { return _iconFactory; }
+		public function get iconProducer():ButtonSkinProducer { return _iconProducer; }
 		
-		public function set iconFactory(value:Function):void 
+		public function set iconProducer(value:ButtonSkinProducer):void 
 		{
-			if (_iconFactory === value) return;
-			_iconFactory = value;
-			if (_data) render();
+			if (_iconProducer === value) return;
+			_iconProducer = value;
+			if (_data) this.render();
 		}
 		
 		public function get selected():Boolean { return _selected; }
@@ -150,7 +153,7 @@ package org.wvxvws.gui.renderers
 		{
 			if (_selected === value) return;
 			_selected = value;
-			if (_data) renderText();
+			if (_data) this.renderText();
 		}
 		
 		//--------------------------------------------------------------------------
@@ -172,8 +175,7 @@ package org.wvxvws.gui.renderers
 		
 		protected var _openClose:StatefulButton = new StatefulButton();
 		protected var _icon:InteractiveObject;
-		protected var _iconClass:Class;
-		protected var _iconFactory:Function;
+		protected var _iconProducer:ButtonSkinProducer;
 		
 		protected var _openClass:Class;
 		protected var _closedClass:Class;
@@ -214,16 +216,16 @@ package org.wvxvws.gui.renderers
 		
 		protected function render():void
 		{
-			drawIcon();
-			renderText();
-			drawBackground();
+			this.drawIcon();
+			this.renderText();
+			this.drawBackground();
 		}
 		
 		protected function drawIcon():void
 		{
 			if (!super.contains(_openClose) || 
 				!(_openClass in _openClose.states) || 
-				!(_openClass in _openClose.states))
+				!(_closedClass in _openClose.states))
 			{
 				_openClose.states = { "open": _openClass, "closed": _closedClass };
 				super.addChildAt(_openClose, 0);
@@ -232,18 +234,12 @@ package org.wvxvws.gui.renderers
 														openClose_mouseDownHandler);
 			}
 			_openClose.x = _depth * _indent;
-			if (_icon && (_icon as Object).constructor === _iconClass) return;
-			else if (_icon && super.contains(_icon))
+			if (_icon && super.contains(_icon))
 				super.removeChild(_icon);
-			if (_iconClass)
+			if (_iconProducer)
 			{
-				_icon = new _iconClass() as InteractiveObject;
-				super.addChild(_icon);
-			}
-			else if (_iconFactory !== null)
-			{
-				_icon = _iconFactory(_data.toString());
-				super.addChild(_icon);
+				_icon = _iconProducer.produce(this);
+				if (_icon) super.addChild(_icon);
 			}
 			if (_icon)
 			{
