@@ -75,7 +75,7 @@ package org.wvxvws.base
 		//
 		//--------------------------------------------------------------------------
 		
-		override public function initialized(document:Object, id:String):void 
+		public override function initialized(document:Object, id:String):void 
 		{
 			super.initialized(document, id);
 			if (document is DisplayObject)
@@ -87,7 +87,7 @@ package org.wvxvws.base
 		
 		public function create(...rest):Object { return { }; }
 		
-		public function info():Object {return { }; }
+		public function info():Object { return { }; }
 		
 		//[Mixin]
 		public static function init(obj:Object):void

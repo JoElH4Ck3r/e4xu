@@ -153,7 +153,7 @@ package org.wvxvws.gui.renderers
 			{
 				if (_labelFunction !== null)
 					_field.text = _labelFunction(_data.toXMLString());
-				else _field.text = _data.localName();
+				else _field.text = _data.localName() || "Error...";
 			}
 			this.drawBackground();
 		}

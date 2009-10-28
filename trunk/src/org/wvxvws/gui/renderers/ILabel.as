@@ -8,6 +8,7 @@
 	public interface ILabel 
 	{
 		function set text(value:String):void;
+		function get text():String;
 	}
 	
 }

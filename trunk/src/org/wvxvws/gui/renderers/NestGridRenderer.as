@@ -47,14 +47,14 @@ package org.wvxvws.gui.renderers
 		{
 			if (_width === value) return;
 			_width = value;
-			if (_data) render();
+			if (_data) this.render();
 		}
 		
 		public function set labelFunction(value:Function):void
 		{
 			if (_labelFunction === value) return;
 			_labelFunction = value;
-			if (_data) renderText();
+			if (_data) this.renderText();
 		}
 		
 		public function get data():XML { return _data; }
@@ -63,7 +63,7 @@ package org.wvxvws.gui.renderers
 		{
 			if (isValid && _data === value) return;
 			_data = value;
-			if (_data) render();
+			if (_data) this.render();
 		}
 		
 		public function get labelField():String { return _labelField; }
@@ -72,7 +72,7 @@ package org.wvxvws.gui.renderers
 		{
 			if (_labelField === value) return;
 			_labelField = value;
-			if (_data) renderText();
+			if (_data) this.renderText();
 		}
 		
 		public function get isValid():Boolean
@@ -286,12 +286,11 @@ package org.wvxvws.gui.renderers
 			{
 				if (_labelFunction !== null)
 					_field.text = _labelFunction(_data.toXMLString());
-				else _field.text = _data.localName();
+				else _field.text = _data.localName() || "Error...";
 			}
 			if (_icon) _field.x = _icon.x + _icon.width + _gutter;
 			else 
 			{
-				//trace(_depth, _indent);
 				_field.x = _depth * _indent;
 			}
 			if (_selected)
