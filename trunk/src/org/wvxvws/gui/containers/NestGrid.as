@@ -10,58 +10,119 @@
 	import org.wvxvws.gui.renderers.IRenderer;
 	import org.wvxvws.gui.renderers.NestGridRenderer;
 	import org.wvxvws.gui.renderers.Renderer;
+	import org.wvxvws.gui.skins.ButtonSkinProducer;
 	import org.wvxvws.tools.ToolEvent;
 	
 	[Event(name="opened", type="org.wvxvws.gui.GUIEvent")]
 	[Event(name="selected", type="org.wvxvws.gui.GUIEvent")]
 	
 	/**
-	 * ...
+	 * NestGrid class
 	 * @author wvxvw
 	 */
 	public class NestGrid extends Pane
 	{
+		//--------------------------------------------------------------------------
+		//
+		//  Public properties
+		//
+		//--------------------------------------------------------------------------
 		
-		public function get iconFactory():Function { return _iconFactory; }
+		//------------------------------------
+		//  Public property openClass
+		//------------------------------------
 		
-		public function set iconFactory(value:Function):void 
-		{
-			if (_iconFactory === value) return;
-			_iconFactory = value;
-			invalidate("_iconFactory", _iconFactory, false);
-			dispatchEvent(new Event("iconFactoryChanged"));
-		}
+		[Bindable("openClassChanged")]
 		
-		public function get folderFactory():Function { return _folderFactory; }
-		
-		public function set folderFactory(value:Function):void 
-		{
-			if (_folderFactory === value) return;
-			_folderFactory = value;
-			invalidate("_folderFactory", _folderFactory, false);
-			dispatchEvent(new Event("folderFactoryChanged"));
-		}
-		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>openClassChanged</code> event.
+		*/
 		public function get openClass():Class { return _openClass; }
 		
 		public function set openClass(value:Class):void 
 		{
 			if (_openClass === value) return;
 			_openClass = value;
-			invalidate("_openClass", _openClass, false);
-			dispatchEvent(new Event("openClassChanged"));
+			super.invalidate("_openClass", _openClass, false);
+			super.dispatchEvent(new Event("openClassChanged"));
 		}
 		
+		//------------------------------------
+		//  Public property closedClass
+		//------------------------------------
+		
+		[Bindable("closedClassChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>closedClassChanged</code> event.
+		*/
 		public function get closedClass():Class { return _closedClass; }
 		
 		public function set closedClass(value:Class):void 
 		{
 			if (_closedClass === value) return;
 			_closedClass = value;
-			invalidate("_closedClass", _closedClass, false);
-			dispatchEvent(new Event("closedClassChanged"));
+			super.invalidate("_closedClass", _closedClass, false);
+			super.dispatchEvent(new Event("closedClassChanged"));
 		}
 		
+		//------------------------------------
+		//  Public property iconProducer
+		//------------------------------------
+		
+		[Bindable("iconProducerChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>iconProducerChanged</code> event.
+		*/
+		public function get iconProducer():ButtonSkinProducer { return _iconProducer; }
+		
+		public function set iconProducer(value:ButtonSkinProducer):void 
+		{
+			if (_iconProducer == value) return;
+			_iconProducer = value;
+			super.invalidate("_iconProducer", _iconProducer, false);
+			super.dispatchEvent(new Event("iconProducerChanged"));
+		}
+		
+		//------------------------------------
+		//  Public property folderProducer
+		//------------------------------------
+		
+		[Bindable("folderProducerChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>folderProducerChanged</code> event.
+		*/
+		public function get folderProducer():ButtonSkinProducer { return _folderProducer; }
+		
+		public function set folderProducer(value:ButtonSkinProducer):void 
+		{
+			if (_folderProducer === value) return;
+			_folderProducer = value;
+			super.invalidate("_folderProducer", _folderProducer, false);
+			super.dispatchEvent(new Event("folderProducerChanged"));
+		}
+		
+		//------------------------------------
+		//  Public property columns
+		//------------------------------------
+		
+		[Bindable("columnsChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>columnsChanged</code> event.
+		*/
 		public function get columns():Vector.<Column> { return _columns; }
 		
 		public function set columns(value:Vector.<Column>):void 
@@ -76,53 +137,108 @@
 				_columns = new <Column>[_nestColumn].concat(_columns);
 				trace(_columns[0].filter, _columns.length);
 			}
-			invalidate("_columns", _columns, false);
-			dispatchEvent(new Event("columnsChanged"));
+			super.invalidate("_columns", _columns, false);
+			super.dispatchEvent(new Event("columnsChanged"));
 		}
+		
+		//------------------------------------
+		//  Public property iconProducer
+		//------------------------------------
 		
 		public function set firstColumnWidth(value:int):void 
 		{
 			if (value < 100) value = 100;
 			if (_nestColumn.width === value) return;
 			_nestColumn.width = value;
-			invalidate("_nestColumn", _nestColumn, false);
+			super.invalidate("_nestColumn", _nestColumn, false);
 		}
 		
+		//------------------------------------
+		//  Public property iconProducer
+		//------------------------------------
+		
+		[Bindable("headerRendererChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>headerRendererChanged</code> event.
+		*/
 		public function get headerRenderer():Class { return _headerRenderer; }
 		
 		public function set headerRenderer(value:Class):void 
 		{
 			if (_headerRenderer === value) return;
 			_headerRenderer = value;
-			invalidate("_headerRenderer", _headerRenderer, false);
-			dispatchEvent(new Event("headerRendererChanged"));
+			super.invalidate("_headerRenderer", _headerRenderer, false);
+			super.dispatchEvent(new Event("headerRendererChanged"));
 		}
 		
+		//------------------------------------
+		//  Public property headerLabel
+		//------------------------------------
+		
+		[Bindable("headerLabelChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>headerLabelChanged</code> event.
+		*/
 		public function get headerLabel():String { return _headerLabel; }
 		
 		public function set headerLabel(value:String):void 
 		{
 			if (_headerLabel === value) return;
 			_headerLabel = value;
-			invalidate("_headerLabel", _headerLabel, false);
-			dispatchEvent(new Event("headerLabelChanged"));
+			super.invalidate("_headerLabel", _headerLabel, false);
+			super.dispatchEvent(new Event("headerLabelChanged"));
 		}
 		
+		//------------------------------------
+		//  Public property headerFactory
+		//------------------------------------
+		
+		[Bindable("headerFactoryChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>headerFactoryChanged</code> event.
+		*/
 		public function get headerFactory():Function { return _headerFactory; }
 		
 		public function set headerFactory(value:Function):void 
 		{
 			if (_headerFactory === value) return;
 			_headerFactory = value;
-			invalidate("_headerFactory", _headerFactory, false);
-			dispatchEvent(new Event("headerFactoryChanged"));
+			super.invalidate("_headerFactory", _headerFactory, false);
+			super.dispatchEvent(new Event("headerFactoryChanged"));
 		}
+		
+		//------------------------------------
+		//  Public property selectedItem
+		//------------------------------------
 		
 		public function get selectedItem():XML { return _selectedItem; }
 		
+		//------------------------------------
+		//  Public property selectedChild
+		//------------------------------------
+		
 		public function get selectedChild():IRenderer { return _selectedChild; }
 		
+		//------------------------------------
+		//  Public property nestColumn
+		//------------------------------------
+		
 		public function get nestColumn():Column { return _nestColumn; }
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Public properties
+		//
+		//--------------------------------------------------------------------------
 		
 		protected var _cellHeight:int = -0x8000000;
 		protected var _itemCount:int;
@@ -138,8 +254,8 @@
 		protected var _currentList:XMLList;
 		protected var _indent:int = 16;
 		
-		protected var _iconFactory:Function;
-		protected var _folderFactory:Function;
+		protected var _iconProducer:ButtonSkinProducer;
+		protected var _folderProducer:ButtonSkinProducer;
 		
 		protected var _openClass:Class;
 		protected var _closedClass:Class;
@@ -153,58 +269,33 @@
 		protected var _headers:Vector.<IRenderer> = new <IRenderer>[];
 		protected var _columnsResizable:Boolean = true;
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Public properties
+		//
+		//--------------------------------------------------------------------------
+		
 		public function NestGrid() 
 		{
 			super();
 			super._rendererFactory = Renderer;
 			_headerRenderer = HeaderRenderer;
-			super.addEventListener(GUIEvent.OPENED, openedHandler, false, int.MAX_VALUE);
-			super.addEventListener(GUIEvent.SELECTED, selectedHandler, false, int.MAX_VALUE);
+			super.addEventListener(GUIEvent.OPENED, 
+									openedHandler, false, int.MAX_VALUE);
+			super.addEventListener(GUIEvent.SELECTED, 
+									selectedHandler, false, int.MAX_VALUE);
 			super.addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
 		}
 		
-		protected function addedToStageHandler(event:Event):void 
-		{
-			removeEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
-			Cursor.init(stage);
-		}
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
 		
-		private function selectedHandler(event:GUIEvent):void 
+		public override function getItemForNode(node:XML):DisplayObject
 		{
-			var lastSelected:IRenderer;
-			if (event.target is IRenderer) lastSelected = _selectedChild;
-			if (!(event.target is IRenderer)) return;
-			_selectedChild = event.target as IRenderer;
-			event.stopImmediatePropagation();
-			_selectedItem = _selectedChild.data;
-			if (lastSelected && lastSelected !== _selectedChild && 
-				(lastSelected as Object).hasOwnProperty("selected"))
-			{
-				(lastSelected as Object).selected = false;
-			}
-			super.dispatchEvent(new GUIEvent(GUIEvent.SELECTED));
-		}
-		
-		private function openedHandler(event:GUIEvent):void 
-		{
-			if (!(event.target is IRenderer)) return;
-			event.stopImmediatePropagation();
-			var index:int;
-			var renderer:NestGridRenderer = event.target as NestGridRenderer;
-			if (renderer.closed)
-			{
-				_closedNodes.push(renderer.data);
-			}
-			else
-			{
-				index = _closedNodes.indexOf(renderer.data);
-				if (index > -1)
-				{
-					_closedNodes.splice(index, 1);
-				}
-			}
-			super.validate(super._invalidProperties);
-			super.dispatchEvent(new GUIEvent(GUIEvent.OPENED));
+			return this;
 		}
 		
 		public function isNodeVisibe(node:XML):Boolean
@@ -216,6 +307,22 @@
 			}
 			return true;
 		}
+		
+		public override function validate(properties:Object):void 
+		{
+			var needLayout:Boolean = (!("_dataProvider" in properties)) &&
+			(("_iconProducer" in properties) || ("_folderProducer" in properties) ||
+			("_nestColumn" in properties) || ("_columns" in properties) ||
+			("_openClass" in properties) || ("_closedClass" in properties));
+			super.validate(properties);
+			if (needLayout) this.layOutChildren();
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
 		
 		protected override function layOutChildren():void 
 		{
@@ -328,13 +435,13 @@
 						(child as NestGridRenderer).gutter = 8;
 						if (nn.hasSimpleContent())
 						{
-							(child as NestGridRenderer).iconFactory = _iconFactory;
+							(child as NestGridRenderer).iconProducer = _iconProducer;
 						}
 						else
 						{
 							if (isClosed) 
 								(child as NestGridRenderer).closed = true;
-							(child as NestGridRenderer).iconFactory = _folderFactory;
+							(child as NestGridRenderer).iconProducer = _folderProducer;
 							(child as NestGridRenderer).openClass = _openClass;
 							(child as NestGridRenderer).closedClass = _closedClass;
 						}
@@ -366,6 +473,68 @@
 				dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED, false, true));
 		}
 		
+		protected function getNodeDepth(node:XML):int
+		{
+			var i:int;
+			while (node.parent() is XML)
+			{
+				node = node.parent();
+				i++;
+			}
+			return i;
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Event handlers
+		//
+		//--------------------------------------------------------------------------
+		
+		protected function selectedHandler(event:GUIEvent):void 
+		{
+			var lastSelected:IRenderer;
+			if (event.target is IRenderer) lastSelected = _selectedChild;
+			if (!(event.target is IRenderer)) return;
+			_selectedChild = event.target as IRenderer;
+			event.stopImmediatePropagation();
+			_selectedItem = _selectedChild.data;
+			if (lastSelected && lastSelected !== _selectedChild && 
+				(lastSelected as Object).hasOwnProperty("selected"))
+			{
+				(lastSelected as Object).selected = false;
+			}
+			super.dispatchEvent(new GUIEvent(GUIEvent.SELECTED));
+		}
+		
+		protected function openedHandler(event:GUIEvent):void 
+		{
+			if (!(event.target is IRenderer)) return;
+			event.stopImmediatePropagation();
+			var index:int;
+			var renderer:NestGridRenderer = event.target as NestGridRenderer;
+			if (renderer.closed)
+			{
+				_closedNodes.push(renderer.data);
+			}
+			else
+			{
+				index = _closedNodes.indexOf(renderer.data);
+				if (index > -1)
+				{
+					_closedNodes.splice(index, 1);
+				}
+			}
+			super._invalidProperties._dataProvider = _dataProvider;
+			super.validate(super._invalidProperties);
+			super.dispatchEvent(new GUIEvent(GUIEvent.OPENED));
+		}
+		
+		protected function addedToStageHandler(event:Event):void 
+		{
+			removeEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
+			Cursor.init(stage);
+		}
+		
 		protected function header_resizedHandler(event:ToolEvent):void 
 		{
 			
@@ -384,22 +553,6 @@
 		protected function header_resizeEndHandler(event:ToolEvent):void 
 		{
 			
-		}
-		
-		public override function getItemForNode(node:XML):DisplayObject
-		{
-			return this;
-		}
-		
-		protected function getNodeDepth(node:XML):int
-		{
-			var i:int;
-			while (node.parent() is XML)
-			{
-				node = node.parent();
-				i++;
-			}
-			return i;
 		}
 		
 	}
