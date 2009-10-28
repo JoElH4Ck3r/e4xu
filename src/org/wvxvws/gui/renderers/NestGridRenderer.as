@@ -38,7 +38,8 @@ package org.wvxvws.gui.renderers
 	 * NestGridRenderer class.
 	 * @author wvxvw
 	 */
-	public class NestGridRenderer extends Sprite implements IRenderer
+	public class NestGridRenderer extends Renderer 
+	//implements IRenderer
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -51,37 +52,6 @@ package org.wvxvws.gui.renderers
 			if (_width === value) return;
 			_width = value;
 			if (_data) this.render();
-		}
-		
-		public function set labelFunction(value:Function):void
-		{
-			if (_labelFunction === value) return;
-			_labelFunction = value;
-			if (_data) this.renderText();
-		}
-		
-		public function get data():XML { return _data; }
-		
-		public function set data(value:XML):void 
-		{
-			if (isValid && _data === value) return;
-			_data = value;
-			if (_data) this.render();
-		}
-		
-		public function get labelField():String { return _labelField; }
-		
-		public function set labelField(value:String):void 
-		{
-			if (_labelField === value) return;
-			_labelField = value;
-			if (_data) this.renderText();
-		}
-		
-		public function get isValid():Boolean
-		{
-			if (!_data) return false;
-			return _field.text == _data.toXMLString();
 		}
 		
 		public function get indent():int { return _indent; }
@@ -162,17 +132,6 @@ package org.wvxvws.gui.renderers
 		//
 		//--------------------------------------------------------------------------
 		
-		protected var _data:XML;
-		protected var _field:TextField = new TextField();
-		protected var _document:Object;
-		protected var _id:String;
-		protected var _labelField:String;
-		protected var _labelFunction:Function;
-		protected var _width:int;
-		protected var _backgroundColor:uint = 0xFFFFFF;
-		protected var _backgroundAlpha:Number = 1;
-		protected var _fieldFormat:TextFormat = new TextFormat("_sans", 11);
-		
 		protected var _openClose:StatefulButton = new StatefulButton();
 		protected var _icon:InteractiveObject;
 		protected var _iconProducer:ButtonSkinProducer;
@@ -199,14 +158,6 @@ package org.wvxvws.gui.renderers
 		//  Public methods
 		//
 		//--------------------------------------------------------------------------
-		
-		/* INTERFACE org.wvxvws.gui.renderers.IRenderer */
-		
-		public function initialized(document:Object, id:String):void
-		{
-			_document = document;
-			_id = id;
-		}
 		
 		//--------------------------------------------------------------------------
 		//
@@ -256,21 +207,15 @@ package org.wvxvws.gui.renderers
 			}
 		}
 		
-		protected function renderText():void
+		protected override function renderText():void
 		{
 			if (!_data) return;
-			if (!super.contains(_field))
+			if (!_field.hasEventListener(MouseEvent.CLICK))
 			{
-				_field.autoSize = TextFieldAutoSize.LEFT;
-				_field.selectable = false;
-				_field.defaultTextFormat = _fieldFormat;
-				_field.width = 1;
-				_field.height = 1;
 				_field.addEventListener(MouseEvent.CLICK, text_clickHandler);
 				_field.doubleClickEnabled = true;
 				_field.addEventListener(
 							MouseEvent.DOUBLE_CLICK, text_doubleClickHandler);
-				super.addChild(_field);
 			}
 			if (_labelField && _data.hasOwnProperty(_labelField))
 			{
@@ -298,15 +243,6 @@ package org.wvxvws.gui.renderers
 			{
 				_field.background = false;
 			}
-		}
-		
-		protected function drawBackground():void
-		{
-			var g:Graphics = super.graphics;
-			g.clear();
-			g.beginFill(_backgroundColor, _backgroundAlpha);
-			g.drawRect(0, 0, _width, _field.height);
-			g.endFill();
 		}
 		
 		//--------------------------------------------------------------------------
