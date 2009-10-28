@@ -117,6 +117,7 @@ package org.wvxvws.gui.renderers
 			_field.autoSize = TextFieldAutoSize.LEFT;
 			_field.width = 1;
 			_field.height = 1;
+			_field.defaultTextFormat = _textFormat;
 		}
 		
 		//--------------------------------------------------------------------------
