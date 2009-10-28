@@ -174,7 +174,10 @@ package org.wvxvws.tools
 		public function createEditor(from:DisplayObject = null):DisplayObject
 		{
 			if (_slideEditor)
-				_slideEditor.removeEventListener(ToolEvent.RESIZED, tool_resizedHandler);
+			{
+				_slideEditor.removeEventListener(
+					ToolEvent.RESIZED, tool_resizedHandler);
+			}
 			_slideEditor = from || _slideEditor;
 			if (!_slideEditor || !_selectedSlide) return null;
 			_slideEditor.x = _selectedSlide.x;
@@ -210,12 +213,14 @@ package org.wvxvws.tools
 		protected override function renderHandler(event:Event):void 
 		{
 			super.renderHandler(event);
-			createSlides();
+			this.createSlides();
 		}
 		
 		protected function createSlides():void
 		{
-			var list:XMLList = _dataProvider..*;
+			var list:XMLList;
+			if (_dataProvider) list = _dataProvider..*;
+			else list = new XMLList();
 			var slideWidth:int;
 			var slidePosition:int;
 			var i:int;

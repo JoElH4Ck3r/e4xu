@@ -208,8 +208,16 @@ package org.wvxvws.managers
 				}
 				_windows.splice(i, 1);
 			}
-			(window as DisplayObject).parent.removeChild(window as DisplayObject);
-			removeModalBG();
+			if ((window as DisplayObject).parent)
+			{
+				(window as DisplayObject).parent.removeChild(
+									window as DisplayObject);
+			}
+			if (!_windows.length) removeModalBG();
+			else
+			{
+				_stage.setChildIndex(_modalSprite, _stage.numChildren - 2);
+			}
 		}
 		
 		public static function choose(window:IPane):Boolean
@@ -292,6 +300,11 @@ package org.wvxvws.managers
 		
 		private static function drawModalBG():void
 		{
+			if (_stage.contains(_modalSprite))
+			{
+				_stage.setChildIndex(_modalSprite, _stage.numChildren - 1);
+				return;
+			}
 			var g:Graphics = _modalSprite.graphics;
 			g.clear();
 			g.beginFill(0xFFFFFF, 0.3);
@@ -299,7 +312,7 @@ package org.wvxvws.managers
 			g.endFill();
 			_modalSprite.mouseEnabled = false;
 			_modalSprite.tabEnabled = false;
-			_modalSprite.focusRect = null;
+			_modalSprite.focusRect = false;
 			var i:int = _stage.numChildren;
 			var dos:DisplayObject;
 			while (i--)

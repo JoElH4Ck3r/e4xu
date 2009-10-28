@@ -161,6 +161,16 @@
 			if (_performLayout) this.constrain();
 		}
 		
+		public function get performLayout():Boolean { return _performLayout; }
+		
+		public function set performLayout(value:Boolean):void 
+		{
+			if (_performLayout == value) return;
+			_performLayout = value;
+			super.invalidate("_performLayout", _performLayout, false);
+			super.dispatchEvent(new Event("performLayoutChanged"));
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties

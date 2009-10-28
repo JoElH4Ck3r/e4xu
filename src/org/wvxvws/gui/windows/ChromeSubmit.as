@@ -119,6 +119,7 @@
 		{
 			super();
 			_userActionHandler = actionHandler;
+			_field.type = TextFieldType.INPUT;
 		}
 		
 		public override function initialized(document:Object, id:String):void 
@@ -150,7 +151,6 @@
 				_field.y = 1;
 				_field.width = tw;
 				_field.height = _bounds.y - 3;
-				_field.type = TextFieldType.INPUT;
 				_field.addEventListener(FocusEvent.FOCUS_IN, field_focusInHandler);
 				_field.addEventListener(FocusEvent.FOCUS_OUT, field_focusOutHandler);
 				var f:TextFormat = TextFormatDefaults.defaultFormat;
@@ -197,6 +197,8 @@
 		}
 		
 		/* INTERFACE org.wvxvws.gui.renderers.ILabel */
+		
+		public function get text():String { return _field.text; }
 		
 		public function set text(value:String):void { _field.text = value; }
 	}

@@ -332,6 +332,7 @@ package org.wvxvws.gui
 		protected var _validator:LayoutValidator;
 		protected var _hasPendingValidation:Boolean;
 		protected var _hasPendingParentValidation:Boolean;
+		protected var _initialized:Boolean;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -359,6 +360,7 @@ package org.wvxvws.gui
 		
 		protected function adtsHandler(event:Event):void 
 		{
+			var dispatchInit:Boolean;
 			if (!_validator)
 			{
 				if (super.parent is ILayoutClient)
@@ -366,7 +368,17 @@ package org.wvxvws.gui
 					_validator = (super.parent as ILayoutClient).validator;
 				}
 			}
+			if (super.parent && !_document)
+			{
+				_document = super.parent;
+				dispatchInit = true;
+			}
 			if (_hasPendingValidation) this.validate(_invalidProperties);
+			if (dispatchInit) 
+			{
+				_initialized = true;
+				super.dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
+			}
 		}
 		
 		protected function removedHandler(event:Event):void 
@@ -377,22 +389,40 @@ package org.wvxvws.gui
 		private function deferredInitialize(event:Event):void 
 		{
 			super.removeEventListener(Event.ENTER_FRAME, deferredInitialize);
-			super.dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
+			if (!_initialized)
+			{
+				_initialized = true;
+				super.dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
+			}
 		}
 		
 		/* INTERFACE mx.core.IMXMLObject */
 		
 		public function initialized(document:Object, id:String):void
 		{
-			_document = document;
-			_id = id;
-			this.initStyles();
-			if (_document is DisplayObjectContainer)
+			var dispatchInit:Boolean;
+			if (super.parent && super.parent === _document)
 			{
-				(_document as DisplayObjectContainer).addChild(this);
+				_document = super.parent;
+				return;
 			}
+			else
+			{
+				dispatchInit = true;
+				_document = document;
+				this.initStyles();
+				if (_document is DisplayObjectContainer)
+				{
+					(_document as DisplayObjectContainer).addChild(this);
+				}
+			}
+			_id = id;
 			if (_hasPendingValidation) this.validate(_invalidProperties);
-			super.dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
+			if (dispatchInit && !_initialized)
+			{
+				_initialized = true;
+				super.dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
+			}
 		}
 		
 		//--------------------------------------------------------------------------
@@ -424,8 +454,9 @@ package org.wvxvws.gui
 			{
 				_nativeTransform.matrix = _transformMatrix;
 			}
-			if (!_document) 
+			if (!_document && !_initialized) 
 			{
+				_initialized = true;
 				_document = this;
 				this.initStyles();
 				super.dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
