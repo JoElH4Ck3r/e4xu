@@ -217,6 +217,27 @@
 		}
 		
 		//------------------------------------
+		//  Public property includeText
+		//------------------------------------
+		
+		[Bindable("includeTextChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>includeTextChanged</code> event.
+		*/
+		public function get includeText():Boolean { return _includeText; }
+		
+		public function set includeText(value:Boolean):void 
+		{
+			if (_includeText === value) return;
+			_includeText = value;
+			super.invalidate("_includeText", _includeText, false);
+			super.dispatchEvent(new Event("includeTextChanged"));
+		}
+		
+		//------------------------------------
 		//  Public property selectedItem
 		//------------------------------------
 		
@@ -268,6 +289,7 @@
 		protected var _headerheight:int = 18;
 		protected var _headers:Vector.<IRenderer> = new <IRenderer>[];
 		protected var _columnsResizable:Boolean = true;
+		protected var _includeText:Boolean;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -313,7 +335,8 @@
 			var needLayout:Boolean = (!("_dataProvider" in properties)) &&
 			(("_iconProducer" in properties) || ("_folderProducer" in properties) ||
 			("_nestColumn" in properties) || ("_columns" in properties) ||
-			("_openClass" in properties) || ("_closedClass" in properties));
+			("_openClass" in properties) || ("_closedClass" in properties) || 
+			("_includeText" in properties));
 			super.validate(properties);
 			if (needLayout) this.layOutChildren();
 		}
@@ -327,7 +350,8 @@
 		protected override function layOutChildren():void 
 		{
 			if (_dataProvider === null) return;
-			var dataList:XMLList = _dataProvider.*;
+			var dataList:XMLList = 
+				_dataProvider.*.(nodeKind() !== "text" || _includeText);
 			var dataLenght:int = dataList.length();
 			if (!dataLenght) return;
 			if (!_rendererFactory) return;
@@ -405,7 +429,7 @@
 			var maxChildHeight:int;
 			
 			var nn:XML;
-			_currentList = _dataProvider..*;
+			_currentList = _dataProvider..*.(nodeKind() !== "text" || _includeText);
 			_currentNode = _dataProvider;
 			_currentDepth = 0;
 			i = 0;
@@ -419,7 +443,7 @@
 				isClosed = false;
 				if (_closedNodes.indexOf(nn) > -1)
 				{
-					closedNodes = nn..*;
+					closedNodes = nn..*.(nodeKind() !== "text" || _includeText);
 					i += closedNodes.length();
 					isClosed = true;
 				}
@@ -441,7 +465,8 @@
 						{
 							if (isClosed) 
 								(child as NestGridRenderer).closed = true;
-							(child as NestGridRenderer).iconProducer = _folderProducer;
+							(child as NestGridRenderer).iconProducer = 
+																_folderProducer;
 							(child as NestGridRenderer).openClass = _openClass;
 							(child as NestGridRenderer).closedClass = _closedClass;
 						}
@@ -455,7 +480,8 @@
 			}
 			for each (col in _columns)
 			{
-				col.endLayoutChildren(super.height - (_padding.top + _padding.bottom));
+				col.endLayoutChildren(super.height - 
+										(_padding.top + _padding.bottom));
 			}
 			var sRect:Rectangle;
 			if (!super.scrollRect)
@@ -469,8 +495,11 @@
 				sRect.height = super.height;
 				super.scrollRect = sRect;
 			}
-			if (_dispatchCreated) 
-				dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED, false, true));
+			if (_dispatchCreated)
+			{
+				super.dispatchEvent(
+					new GUIEvent(GUIEvent.CHILDREN_CREATED, false, true));
+			}
 		}
 		
 		protected function getNodeDepth(node:XML):int

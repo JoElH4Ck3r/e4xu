@@ -24,9 +24,13 @@
 		
 		public function produce(inContext:Object, state:String = null):InteractiveObject
 		{
-			if (!_states || !_states.length) return null;
-			if (state === null) state = _states[0];
-			var index:int = _states.indexOf(state);
+			var index:int;
+			if (_states && _states.length)
+			{
+				if (state === null) state = _states[0];
+				index = _states.indexOf(state);
+			}
+			else index = 0;
 			if (index < 0) index = 0;
 			if (_stateClasses && _stateClasses.length > index && _stateClasses[index])
 				return new _stateClasses[index]();
