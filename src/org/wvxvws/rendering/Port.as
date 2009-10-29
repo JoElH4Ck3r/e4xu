@@ -82,13 +82,13 @@
 		
 		protected function renderHandler(event:Event):void 
 		{
-			var i:int = numChildren;
+			var i:int = super.numChildren;
 			graphics.clear();
 			graphics.beginFill(0, .2);
 			graphics.drawRect(_bounds.x, _bounds.y, _bounds.width, _bounds.height);
 			graphics.endFill();
 			while (i--) getChildAt(i).dispatchEvent(_updater);
-			invalidLayout = false;
+			this.invalidLayout = false;
 		}
 		
 	}

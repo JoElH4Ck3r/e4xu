@@ -56,8 +56,8 @@ package org.wvxvws.tools
 			_dataProvider = value;
 			_dataProviderCopy = value.copy();
 			_dataProvider.setNotification(providerNotifier);
-			invalidLayout = true;
-			dispatchEvent(new GUIEvent(GUIEvent.DATA_CHANGED));
+			super.invalidLayout = true;
+			super.dispatchEvent(new GUIEvent(GUIEvent.DATA_CHANGED));
 		}
 		
 		public function get slideWidthFactory():Function { return _slideWidthFactory; }
@@ -66,7 +66,7 @@ package org.wvxvws.tools
 		{
 			if (_slideWidthFactory === value) return;
 			_slideWidthFactory = value;
-			invalidLayout = true;
+			super.invalidLayout = true;
 		}
 		
 		public function get slidePositionFactory():Function { return _slidePositionFactory; }
@@ -75,7 +75,7 @@ package org.wvxvws.tools
 		{
 			if (_slidePositionFactory === value) return;
 			_slidePositionFactory = value;
-			invalidLayout = true;
+			super.invalidLayout = true;
 		}
 		
 		public function get slideHeight():int { return _slideHeight; }
@@ -84,7 +84,7 @@ package org.wvxvws.tools
 		{
 			if (_slideHeight === value) return;
 			_slideHeight = value;
-			invalidLayout = true;
+			super.invalidLayout = true;
 		}
 		
 		public function get zoom():Number { return _zoom; }
@@ -93,7 +93,7 @@ package org.wvxvws.tools
 		{
 			if (_zoom === value || value < 0.1 || value > 10) return;
 			_zoom = value;
-			invalidLayout = true;
+			super.invalidLayout = true;
 		}
 		
 		public function get slideVisible():Function { return _slideVisible; }
@@ -102,7 +102,7 @@ package org.wvxvws.tools
 		{
 			if (_slideVisible === value) return;
 			_slideVisible = value;
-			invalidLayout = true;
+			super.invalidLayout = true;
 		}
 		
 		public function get selectedSlide():Slide { return _selectedSlide; }
@@ -125,7 +125,7 @@ package org.wvxvws.tools
 		{
 			if (_gutter === value) return;
 			_gutter = value;
-			invalidLayout = true;
+			super.invalidLayout = true;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -234,7 +234,7 @@ package org.wvxvws.tools
 			while (i < j)
 			{
 				currentNode = list[i];
-				slide = slideForNode(currentNode);
+				slide = this.slideForNode(currentNode);
 				if (!slide)
 				{
 					slide = new Slide();
@@ -329,14 +329,14 @@ package org.wvxvws.tools
 									return;
 								}
 							}
-							invalidLayout = true;
+							super.invalidLayout = true;
 						}
 						break;
 					case "textSet":
 					case "nameSet":
 					case "nodeChanged":
 					case "nodeRemoved":
-						invalidLayout = true;
+						super.invalidLayout = true;
 						break;
 					case "namespaceAdded":
 						
