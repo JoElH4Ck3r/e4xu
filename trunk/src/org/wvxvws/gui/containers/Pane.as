@@ -7,6 +7,7 @@
 	import org.wvxvws.gui.DIV;
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.renderers.IRenderer;
+	import org.wvxvws.gui.skins.LabelProducer;
 	//}
 	
 	[Event(name="childrenCreated", type="org.wvxvws.gui.GUIEvent")]
@@ -36,44 +37,44 @@
 			_dataProvider = value;
 			_dataProviderCopy = value.copy();
 			_dataProvider.setNotification(providerNotifier);
-			invalidate("_dataProvider", _dataProvider, false);
-			dispatchEvent(new GUIEvent(GUIEvent.DATA_CHANGED));
+			super.invalidate("_dataProvider", _dataProvider, false);
+			super.dispatchEvent(new GUIEvent(GUIEvent.DATA_CHANGED));
 		}
 		
-		[Bindable("labelFieldChange")]
+		//[Bindable("labelFieldChange")]
+		//
+		///**
+		//* ...
+		//* This property can be used as the source for data binding.
+		//* When this property is modified, it dispatches the <code>labelFieldChange</code> event.
+		//*/
+		//public function get labelField():String { return _labelField; }
+		//
+		//public function set labelField(value:String):void 
+		//{
+			//if (_labelField === value) return;
+			//_labelField = value;
+			//_useLabelField = (value !== "" && value !== null)
+			//super.invalidate("_labelField", _labelField, false);
+			//super.dispatchEvent(new Event("labelFieldChange"));
+		//}
+		
+		[Bindable("labelProducerChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>labelFieldChange</code> event.
+		* When this property is modified, it dispatches the <code>labelProducerChanged</code> event.
 		*/
-		public function get labelField():String { return _labelField; }
+		public function get labelProducer():LabelProducer { return _labelProducer; }
 		
-		public function set labelField(value:String):void 
+		public function set labelProducer(value:LabelProducer):void 
 		{
-			if (_labelField === value) return;
-			_labelField = value;
-			_useLabelField = (value !== "" && value !== null)
-			invalidate("_labelField", _labelField, false);
-			dispatchEvent(new Event("labelFieldChange"));
-		}
-		
-		[Bindable("labelFunctionChange")]
-		
-		/**
-		* ...
-		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>labelFunctionChange</code> event.
-		*/
-		public function get labelFunction():Function { return _labelFunction; }
-		
-		public function set labelFunction(value:Function):void 
-		{
-			if (_labelFunction === value) return;
-			_labelFunction = value;
-			_useLabelFunction = Boolean(value);
-			invalidate("_labelFunction", _labelFunction, false);
-			dispatchEvent(new Event("labelFunctionChange"));
+			if (_labelProducer === value) return;
+			_labelProducer = value;
+			//_useLabelFunction = Boolean(value);
+			super.invalidate("_labelProducer", _labelProducer, false);
+			super.dispatchEvent(new Event("labelProducerChanged"));
 		}
 		
 		public function get subContainers():Vector.<Pane> { return _subContainers; }
@@ -89,12 +90,13 @@
 		protected var _currentItem:int;
 		protected var _removedChildren:Vector.<DisplayObject>;
 		protected var _rendererFactory:Class;
-		protected var _labelFunction:Function;
-		protected var _labelField:String;
+		//protected var _labelFunction:Function;
+		//protected var _labelField:String;
 		protected var _dispatchCreated:Boolean;
-		protected var _useLabelField:Boolean;
-		protected var _useLabelFunction:Boolean;
+		//protected var _useLabelField:Boolean;
+		//protected var _useLabelFunction:Boolean;
 		protected var _subContainers:Vector.<Pane>;
+		protected var _labelProducer:LabelProducer;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -221,9 +223,9 @@
 			}
 			if (!child) return null;
 			if (!(child is IRenderer)) return null;
-			if (_useLabelField) (child as IRenderer).labelField = _labelField;
-			if (_useLabelFunction)
-				(child as IRenderer).labelFunction = _labelFunction;
+			//if (_useLabelField) (child as IRenderer).labelField = _labelField;
+			//if (_useLabelFunction)
+			(child as IRenderer).labelProducer = _labelProducer;
 			if (!recycledChild || dirtyChild)
 			{
 				(child as IRenderer).data = xml;

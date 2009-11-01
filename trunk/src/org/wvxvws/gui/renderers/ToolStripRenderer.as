@@ -30,6 +30,7 @@ package org.wvxvws.gui.renderers
 	import org.wvxvws.gui.layout.ILayoutClient;
 	import org.wvxvws.gui.layout.LayoutValidator;
 	import org.wvxvws.gui.renderers.IRenderer;
+	import org.wvxvws.gui.skins.LabelProducer;
 	import org.wvxvws.gui.StatefulButton;
 	
 	/**
@@ -67,18 +68,11 @@ package org.wvxvws.gui.renderers
 			return _invalidLayout;
 		}
 		
-		public function set labelFunction(value:Function):void
+		public function set labelProducer(value:LabelProducer):void
 		{
-			if (_labelFunction === value) return;
-			_labelFunction = value;
-			this.invalidate("_labelFunction", _data, false);
-		}
-		
-		public function set labelField(value:String):void
-		{
-			if (_labelField === value) return;
-			_labelField = value;
-			this.invalidate("_labelField", _data, false);
+			if (_labelProducer === value) return;
+			_labelProducer = value;
+			this.invalidate("_labelProducer", _data, false);
 		}
 		
 		public function get data():XML { return _data; }
@@ -126,8 +120,7 @@ package org.wvxvws.gui.renderers
 		//--------------------------------------------------------------------------
 		
 		protected var _data:XML;
-		protected var _labelField:String;
-		protected var _labelFunction:Function;
+		protected var _labelProducer:LabelProducer;
 		protected var _validator:LayoutValidator;
 		protected var _layoutParent:ILayoutClient;
 		protected var _invalidProperties:Object = { };
@@ -185,27 +178,16 @@ package org.wvxvws.gui.renderers
 		
 		public function validate(properties:Object):void 
 		{
-			trace("validate");
 			if (!_data && !("_label" in properties)) properties._label = "";
 			else
 			{
-				if (_labelField && _data.hasOwnProperty(_labelField))
-				{
-					if (_labelFunction !== null)
-						properties._label = _labelFunction(_data[_labelField]);
-					else properties._label = _data[_labelField];
-				}
-				else
-				{
-					if (_labelFunction !== null)
-						properties._label = _labelFunction(_data.toXMLString());
-					else properties._label = _data.localName();
-				}
+				if (_labelProducer) 
+					properties._label = _labelProducer.produce(_data);
 			}
 			_label = properties._label;
 			if (_labelTXT.text !== _label)
 			{
-				_labelTXT.text = _label;
+				_labelTXT.text = _label || "";
 				_labelTXT.x = (Math.max(super.width, _width) - _labelTXT.width) >> 1;
 				_labelTXT.y = (Math.max(super.height, _height) - _labelTXT.height) >> 1;
 				if (_labelTXT.x < 0)

@@ -26,6 +26,7 @@ package org.wvxvws.gui.renderers
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
+	import org.wvxvws.gui.skins.LabelProducer;
 	
 	/**
 	* Renderer class.
@@ -48,26 +49,10 @@ package org.wvxvws.gui.renderers
 			this.drawBackground();
 		}
 		
-		public function get labelField():String { return _labelField; }
-		
-		public function set labelField(value:String):void 
-		{
-			if (_labelField === value) return;
-			_labelField = value;
-			if (_data) this.renderText();
-		}
-		
 		public function get isValid():Boolean
 		{
 			if (!_data) return false;
 			return _field.text == _data.toXMLString();
-		}
-		
-		public function set labelFunction(value:Function):void
-		{
-			if (_labelFunction === value) return;
-			_labelFunction = value;
-			if (_data) this.renderText();
 		}
 		
 		public function get data():XML { return _data; }
@@ -80,6 +65,15 @@ package org.wvxvws.gui.renderers
 			this.renderText();
 		}
 		
+		public function get labelProducer():LabelProducer { return _labelProducer; }
+		
+		public function set labelProducer(value:LabelProducer):void 
+		{
+			if (_labelProducer === value) return;
+			_labelProducer = value;
+			if (_data) this.renderText();
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
@@ -90,12 +84,11 @@ package org.wvxvws.gui.renderers
 		protected var _field:TextField = new TextField();
 		protected var _document:Object;
 		protected var _id:String;
-		protected var _labelField:String;
-		protected var _labelFunction:Function;
 		protected var _width:int;
 		protected var _backgroundColor:uint = 0xFFFFFF;
 		protected var _backgroundAlpha:Number = 1;
 		protected var _textFormat:TextFormat = new TextFormat("_sans", 11);
+		protected var _labelProducer:LabelProducer;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -144,18 +137,8 @@ package org.wvxvws.gui.renderers
 		{
 			if (!_data) return;
 			_field.defaultTextFormat = _textFormat;
-			if (_labelField && _data.hasOwnProperty(_labelField))
-			{
-				if (_labelFunction !== null)
-					_field.text = _labelFunction(_data[_labelField]);
-				else _field.text = _data[_labelField];
-			}
-			else
-			{
-				if (_labelFunction !== null)
-					_field.text = _labelFunction(_data.toXMLString());
-				else _field.text = _data.localName() || "Error...";
-			}
+			if (_labelProducer) _field.text = _labelProducer.produce(_data);
+			else _field.text = _data.localName();
 			this.drawBackground();
 		}
 		

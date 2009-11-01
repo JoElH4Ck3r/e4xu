@@ -100,29 +100,16 @@ package org.wvxvws.gui.windows
 			super.dispatchEvent(new Event("rendererProducerChanged"));
 		}
 		
-		//------------------------------------
-		//  Public property filter
-		//------------------------------------
-		
-		[Bindable("filterChanged")]
-		
-		/**
-		* ...
-		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>filterChanged</code> event.
-		*/
-		public function get filter():String { return _filter; }
-		
-		public function set filter(value:String):void 
-		{
-			if (_filter === value) return;
-			_filter = value;
-			super.invalidate("_filter", _filter, false);
-			super.invalidate("_dataProvider", _dataProvider, false);
-			super.dispatchEvent(new Event("filterChanged"));
-		}
-		
 		public function get currentNode():XML { return _currentNode; }
+		
+		public function get itemClickHandler():Function { return _itemClickHandler; }
+		
+		public function set itemClickHandler(value:Function):void 
+		{
+			if (_itemClickHandler === value) return;
+			_itemClickHandler = value;
+			_menu.itemClickHandler = value;
+		}
 		
 		//--------------------------------------------------------------------------
 		//
@@ -142,6 +129,7 @@ package org.wvxvws.gui.windows
 		protected var _cellWidth:int = int.MIN_VALUE;
 		protected var _filter:String;
 		protected var _gutter:int;
+		protected var _itemClickHandler:Function;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -163,10 +151,8 @@ package org.wvxvws.gui.windows
 		
 		public override function validate(properties:Object):void 
 		{
-			if (_menu && ("_filter" in properties))
-			{
-				_menu.labelField = _filter;
-			}
+			if (_menu && ("_labelProducer" in properties))
+				_menu.labelProducer = _labelProducer;
 			super.validate(properties);
 		}
 		
@@ -212,10 +198,8 @@ package org.wvxvws.gui.windows
 			super.addChild(_currentRenderer);
 			if (_currentRenderer is IRenderer)
 			{
-				if (_filter !== "")
-				{
-					(_currentRenderer as IRenderer).labelField = _filter;
-				}
+				if (_labelProducer)
+					(_currentRenderer as IRenderer).labelProducer = _labelProducer;
 			}
 			if (_currentRenderer is ILayoutClient)
 			{

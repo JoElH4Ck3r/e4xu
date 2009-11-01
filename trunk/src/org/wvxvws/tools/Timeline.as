@@ -128,6 +128,15 @@ package org.wvxvws.tools
 			super.invalidLayout = true;
 		}
 		
+		public function get useText():Boolean { return _useText; }
+		
+		public function set useText(value:Boolean):void 
+		{
+			if (_useText === value) return;
+			_useText = value;
+			super.invalidLayout = true;
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
@@ -147,6 +156,7 @@ package org.wvxvws.tools
 		protected var _gutter:int = 1;
 		protected var _selectedSlide:Slide;
 		protected var _slideEditor:DisplayObject;
+		protected var _useText:Boolean;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -219,7 +229,8 @@ package org.wvxvws.tools
 		protected function createSlides():void
 		{
 			var list:XMLList;
-			if (_dataProvider) list = _dataProvider..*;
+			if (_dataProvider) 
+				list = _dataProvider..*.(nodeKind() !== "text" || _useText);
 			else list = new XMLList();
 			var slideWidth:int;
 			var slidePosition:int;
@@ -248,6 +259,7 @@ package org.wvxvws.tools
 					slide.x = _slidePositionFactory(currentNode);
 				slide.y = cumulativeHeight;
 				slide.height = _slideHeight;
+				trace(slide.height, slide.width, slide.x, slide.y);
 				slidesCopy.push(slide);
 				if (_slideVisible !== null)
 				{

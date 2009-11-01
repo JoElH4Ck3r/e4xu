@@ -11,6 +11,7 @@
 	import org.wvxvws.gui.renderers.NestGridRenderer;
 	import org.wvxvws.gui.renderers.Renderer;
 	import org.wvxvws.gui.skins.ButtonSkinProducer;
+	import org.wvxvws.gui.skins.LabelProducer;
 	import org.wvxvws.tools.ToolEvent;
 	
 	[Event(name="opened", type="org.wvxvws.gui.GUIEvent")]
@@ -135,7 +136,6 @@
 			if (_columns.indexOf(_nestColumn) < 0)
 			{
 				_columns = new <Column>[_nestColumn].concat(_columns);
-				trace(_columns[0].filter, _columns.length);
 			}
 			super.invalidate("_columns", _columns, false);
 			super.dispatchEvent(new Event("columnsChanged"));
@@ -238,6 +238,27 @@
 		}
 		
 		//------------------------------------
+		//  Public property headerHeight
+		//------------------------------------
+		
+		[Bindable("headerHeightChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>headerHeightChanged</code> event.
+		*/
+		public function get headerHeight():int { return _headerHeight; }
+		
+		public function set headerHeight(value:int):void 
+		{
+			if (_headerHeight === value) return;
+			_headerHeight = value;
+			super.invalidate("_headerHeight", _headerHeight, false);
+			super.dispatchEvent(new Event("headerHeightChanged"));
+		}
+		
+		//------------------------------------
 		//  Public property selectedItem
 		//------------------------------------
 		
@@ -286,10 +307,11 @@
 		protected var _headerRenderer:Class;
 		protected var _headerLabel:String;
 		protected var _headerFactory:Function;
-		protected var _headerheight:int = 18;
+		protected var _headerHeight:int = 18;
 		protected var _headers:Vector.<IRenderer> = new <IRenderer>[];
 		protected var _columnsResizable:Boolean = true;
 		protected var _includeText:Boolean;
+		protected var _headerProducer:LabelProducer;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -336,7 +358,7 @@
 			(("_iconProducer" in properties) || ("_folderProducer" in properties) ||
 			("_nestColumn" in properties) || ("_columns" in properties) ||
 			("_openClass" in properties) || ("_closedClass" in properties) || 
-			("_includeText" in properties));
+			("_includeText" in properties) || ("_headerHeight" in properties));
 			super.validate(properties);
 			if (needLayout) this.layOutChildren();
 		}
@@ -388,7 +410,7 @@
 					if (j - i === 1 && totalWidth + _gutterH > 0)
 						col.width += totalWidth + _gutterH;
 					col.x = cumulativeX;
-					col.y = _headerheight + _padding.top;
+					col.y = _headerHeight + _padding.top;
 					col.gutter = _gutterV;
 					if (col === _nestColumn)
 						_nestColumn.rendererFactory = NestGridRenderer;
@@ -399,11 +421,9 @@
 				}
 				(_headers[i] as DisplayObject).width = col.width;
 				(_headers[i] as DisplayObject).x = col.x;
-				(_headers[i] as DisplayObject).height = _headerheight;
+				(_headers[i] as DisplayObject).height = _headerHeight;
 				(_headers[i] as HeaderRenderer).resizable = _columnsResizable;
-				if (_headerLabel !== null) _headers[i].labelField = _headerLabel;
-				if (_headerFactory !== null)
-					_headers[i].labelFunction = _headerFactory;
+					_headers[i].labelProducer = _headerProducer;
 				_headers[i].data = _dataProvider;
 				(_headers[i] as DisplayObject).addEventListener(
 						ToolEvent.RESIZE_END, header_resizeEndHandler);

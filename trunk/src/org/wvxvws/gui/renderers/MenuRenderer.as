@@ -283,9 +283,7 @@ package org.wvxvws.gui.renderers
 			}
 			_field.x = 30;
 			_field.y = Math.max((_height - _field.height) >> 1, 0);
-			if (_labelFunction !== null) _field.text = _labelFunction(data);
-			else if (_labelField !== null && _labelField !== "")
-				_field.text = _data[_labelField].toString();
+			if (_labelProducer) _field.text = _labelProducer.produce(_data);
 			else _field.text = _data.localName().toString();
 			
 			this.renderIcon();

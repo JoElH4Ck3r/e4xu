@@ -30,6 +30,8 @@ package org.wvxvws.gui.renderers
 	import org.wvxvws.tools.ToolEvent;
 	//}
 	
+	// TODO: Either implement ILayoutClient or add suspendLayout()
+	
 	[Event(name="resized", type="org.wvxvws.tools.ToolEvent")]
 	[Event(name="resizeEnd", type="org.wvxvws.tools.ToolEvent")]
 	[Event(name="resizeRequest", type="org.wvxvws.tools.ToolEvent")]
@@ -46,12 +48,18 @@ package org.wvxvws.gui.renderers
 		//
 		//--------------------------------------------------------------------------
 		
-		public override function get width():Number { return super.width; }
+		public override function set height(value:Number):void 
+		{
+			if (_height === value) return;
+			_height = value;
+			if (_data) super.renderText();
+		}
 		
 		public override function set width(value:Number):void 
 		{
 			if (value < _minWidth) value = _minWidth;
 			super.width = value;
+			if (_data) super.renderText();
 		}
 		
 		public function get resizable():Boolean { return _resizable; }
@@ -76,6 +84,7 @@ package org.wvxvws.gui.renderers
 		protected var _resizable:Boolean;
 		protected var _resizeHandle:Sprite = new Sprite();
 		protected var _resizing:Boolean;
+		protected var _height:int;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -97,23 +106,27 @@ package org.wvxvws.gui.renderers
 		
 		protected override function drawBackground():void 
 		{
-			super.drawBackground();
+			var g:Graphics = super.graphics;
+			g.clear();
+			g.beginFill(_backgroundColor, _backgroundAlpha);
+			g.drawRect(0, 0, _width, _height);
+			g.endFill();
 			if (_resizable)
 			{
 				if (!super.contains(_resizeHandle)) this.drawResizeHandle(false);
 			}
 			else this.drawResizeHandle(true);
+			_field.y = (_height - _field.height) >> 1;
 		}
 		
 		protected function drawResizeHandle(remove:Boolean):void
 		{
 			var g:Graphics = _resizeHandle.graphics;
 			g.clear();
-			super.scaleY = 1;
 			if (!remove)
 			{
 				g.beginFill(0xFF, 1);
-				g.drawRect( -5, 0, 5, super.height >> 0);
+				g.drawRect(-5, 0, 5, _height);
 				g.endFill();
 				_resizeHandle.addEventListener(
 						MouseEvent.MOUSE_OVER, resize_mouseOverHandler);
