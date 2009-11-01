@@ -97,6 +97,13 @@ package org.wvxvws.gui.containers
 			_borderColor = value;
 		}
 		
+		public function get itemClickHandler():Function { return _itemClickHandler; }
+		
+		public function set itemClickHandler(value:Function):void 
+		{
+			_itemClickHandler = value;
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
@@ -141,7 +148,6 @@ package org.wvxvws.gui.containers
 			super();
 			super._rendererFactory = MenuRenderer;
 			super.addEventListener(GUIEvent.OPENED, openedHandler);
-			super.addEventListener(GUIEvent.SELECTED, selectedHandler);
 			super.addEventListener(MouseEvent.ROLL_OUT, rollOutHandler);
 			super.addEventListener(Event.ADDED_TO_STAGE, atsHandler);
 		}
@@ -272,8 +278,11 @@ package org.wvxvws.gui.containers
 				(child as ILayoutClient).validate(
 					(child as ILayoutClient).invalidProperties);
 			}
-			if (child is MenuRenderer) 
+			if (child is MenuRenderer)
+			{
+				(child as MenuRenderer).clickHandler = _itemClickHandler;
 				childWidth = (child as MenuRenderer).desiredWidth;
+			}
 			else
 			{
 				childWidth = (child as DisplayObject).width + 
@@ -314,12 +323,9 @@ package org.wvxvws.gui.containers
 			if (_parentMenu && event.target is Menu) _parentMenu.collapseChildMenu();
 		}
 		
-		private function selectedHandler(event:GUIEvent):void 
+		private function selectedHandler(node:XML):void 
 		{
-			if (_itemClickHandler !== null)
-			{
-				_itemClickHandler((event.target as IMenuRenderer).data);
-			}
+			if (_itemClickHandler !== null) _itemClickHandler(node);
 		}
 		
 		private function openedHandler(event:GUIEvent):void 
@@ -338,13 +344,13 @@ package org.wvxvws.gui.containers
 			_childMenu.backgroundColor = _backgroundColor;
 			_childMenu.borderWidth = _borderWidth;
 			_childMenu.borderColor = _borderColor;
-			if (_useLabelField) _childMenu.labelField = _labelField;
-			if (_useLabelFunction) _childMenu.labelFunction = _labelFunction;
+			_childMenu.labelProducer = _labelProducer;
 			_childMenu.dataProvider = _openedItem.data;
 			_childMenu.x = (_openedItem as DisplayObject).x + 
 							(_openedItem as DisplayObject).width;
 			_childMenu.y = (_openedItem as DisplayObject).y;
 			_childMenu.visible = false;
+			_childMenu.itemClickHandler = _itemClickHandler;
 			_childMenu.initialized(this, "_childMenu");
 			_childMenu.validate(_childMenu.invalidProperties);
 			_childMenu.visible = true;

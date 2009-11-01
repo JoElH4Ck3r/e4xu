@@ -217,32 +217,16 @@ package org.wvxvws.gui.renderers
 				_field.addEventListener(
 							MouseEvent.DOUBLE_CLICK, text_doubleClickHandler);
 			}
-			if (_labelField && _data.hasOwnProperty(_labelField))
-			{
-				if (_labelFunction !== null)
-					_field.text = _labelFunction(_data[_labelField]);
-				else _field.text = _data[_labelField];
-			}
-			else
-			{
-				if (_labelFunction !== null)
-					_field.text = _labelFunction(_data.toXMLString());
-				else _field.text = _data.localName() || "Error...";
-			}
+			if (_labelProducer) _field.text = _labelProducer.produce(_data);
+			else _field.text = _data.localName();
 			if (_icon) _field.x = _icon.x + _icon.width + _gutter;
-			else 
-			{
-				_field.x = _depth * _indent;
-			}
+			else _field.x = _depth * _indent;
 			if (_selected)
 			{
 				_field.background = true;
 				_field.backgroundColor = 0xC0C0C0;
 			}
-			else
-			{
-				_field.background = false;
-			}
+			else _field.background = false;
 		}
 		
 		//--------------------------------------------------------------------------

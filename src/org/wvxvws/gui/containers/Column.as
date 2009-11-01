@@ -28,6 +28,7 @@ package org.wvxvws.gui.containers
 	import flash.geom.Rectangle;
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.renderers.IRenderer;
+	import org.wvxvws.gui.skins.LabelProducer;
 	//}
 	
 	/**
@@ -96,27 +97,27 @@ package org.wvxvws.gui.containers
 			super.invalidate("_cellHeight", _cellHeight, false);
 			super.dispatchEvent(new Event("cellHeightChanged"));
 		}
-		
+		//
 		//------------------------------------
-		//  Public property filter
+		//  Public property labelProducer
 		//------------------------------------
-		
-		[Bindable("filterChanged")]
-		
-		/**
-		* ...
-		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>filterChanged</code> event.
-		*/
-		public function get filter():String { return _filter; }
-		
-		public function set filter(value:String):void 
-		{
-			if (_filter === value) return;
-			_filter = value;
-			super.invalidate("_filter", _filter, false);
-			super.dispatchEvent(new Event("filterChanged"));
-		}
+		//
+		//[Bindable("filterChanged")]
+		//
+		///**
+		//* ...
+		//* This property can be used as the source for data binding.
+		//* When this property is modified, it dispatches the <code>labelProducerChanged</code> event.
+		//*/
+		//public ovefunction get labelProducer():LabelProducer { return _labelProducer; }
+		//
+		//public function set labelProducer(value:LabelProducer):void 
+		//{
+			//if (_labelProducer === value) return;
+			//_labelProducer = value;
+			//super.invalidate("_labelProducer", _labelProducer, false);
+			//super.dispatchEvent(new Event("labelProducerChanged"));
+		//}
 		
 		//------------------------------------
 		//  Public property gutter
@@ -207,7 +208,7 @@ package org.wvxvws.gui.containers
 		
 		protected var _cellHeight:int = int.MIN_VALUE;
 		protected var _itemCount:int;
-		protected var _filter:String;
+		//protected var _labelProducer:LabelProducer;
 		protected var _cumulativeHeight:int;
 		protected var _gutter:int;
 		protected var _padding:Rectangle = new Rectangle();
@@ -260,10 +261,8 @@ package org.wvxvws.gui.containers
 			super.addChild(_currentRenderer);
 			if (_currentRenderer is IRenderer)
 			{
-				if (_filter !== "")
-				{
-					(_currentRenderer as IRenderer).labelField = _filter;
-				}
+				if (_labelProducer)
+					(_currentRenderer as IRenderer).labelProducer = _labelProducer;
 			}
 			return _currentRenderer;
 		}
@@ -333,10 +332,8 @@ package org.wvxvws.gui.containers
 			super.addChild(_currentRenderer);
 			if (_currentRenderer is IRenderer)
 			{
-				if (_filter !== "")
-				{
-					(_currentRenderer as IRenderer).labelField = _filter;
-				}
+				if (_labelProducer)
+					(_currentRenderer as IRenderer).labelProducer = _labelProducer;
 			}
 			return _currentRenderer;
 		}

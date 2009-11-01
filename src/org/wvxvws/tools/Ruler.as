@@ -133,7 +133,7 @@ package org.wvxvws.tools
 							("_backgroundAlpha" in properties) || 
 							("_direction" in properties) || !_bitmapData;
 			var needRedraw:Boolean = ratioChanged || ("_position" in properties) ||
-							("_transformMatrix" in properties);
+							("_transformMatrix" in properties) || ("_bounds" in properties);
 			super.validate(properties);
 			var g:Graphics = super.graphics;
 			var m:Matrix = new Matrix();
