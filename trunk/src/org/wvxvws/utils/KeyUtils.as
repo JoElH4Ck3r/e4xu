@@ -61,7 +61,7 @@ package org.wvxvws.utils
 		
 		private static var _stage:Stage;
 		private static var _listeners:Dictionary = new Dictionary();
-		private static var _keySequence:Vector.<int> = new Vector.<int>(0, false);
+		private static var _keySequence:Vector.<int> = new <int>[];
 		private static var _lastPressed:uint;
 		
 		private static const _keyNamesWinUSqwerty:Object =
@@ -172,6 +172,12 @@ package org.wvxvws.utils
 		//
 		//--------------------------------------------------------------------------
 		
+		public static function clear():void
+		{
+			_lastPressed = 0;
+			_keySequence = new <int>[];
+		}
+		
 		public static function obtainStage(stage:Stage):void
 		{
 			_stage = stage;
@@ -181,6 +187,7 @@ package org.wvxvws.utils
 		
 		private static function keyDownHandler(event:KeyboardEvent):void 
 		{
+			trace("keydwon", event.keyCode, _keySequence.join("|"));
 			if (_lastPressed) 
 			{
 				if (_lastPressed === event.keyCode) return;
@@ -220,6 +227,7 @@ package org.wvxvws.utils
 		static private function keyUpHandler(event:KeyboardEvent):void 
 		{
 			var index:int = _keySequence.indexOf(event.keyCode);
+			trace("keyup", event.keyCode, index, _keySequence.join("|"));
 			if (index < 0) return;
 			if (_lastPressed === event.keyCode) _lastPressed = 0;
 			_keySequence.splice(index, 1);

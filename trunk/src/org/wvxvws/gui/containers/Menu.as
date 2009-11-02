@@ -128,7 +128,7 @@ package org.wvxvws.gui.containers
 		protected var _parentMenu:Menu;
 		protected var _isRootMenu:Boolean;
 		protected var _isDeferredKeyInit:Boolean;
-		protected var _keyListenersMap:Dictionary = new Dictionary(true);
+		protected var _keyListenersMap:Dictionary = new Dictionary();
 		protected var _cellHeight:int = 24;
 		
 		//--------------------------------------------------------------------------
@@ -188,6 +188,7 @@ package org.wvxvws.gui.containers
 					if (!node[_hotkeysField].toString().length) continue;
 					compositeKey = Vector.<int>(node[_hotkeysField].toString().split("|"));
 					_keyListenersMap[node] = KeyUtils.keysToKey(compositeKey);
+					trace("registered for", _keyListenersMap[node].toString(16));
 					KeyUtils.registerHotKeys(compositeKey, defaultKeyHandler);
 				}
 			}
@@ -197,11 +198,13 @@ package org.wvxvws.gui.containers
 		private function defaultKeyHandler(event:KeyboardEvent):void
 		{
 			var sequenceCode:uint = KeyUtils.currentCombination;
-			trace("defaultKeyHandler", sequenceCode.toString(16));
+			trace("defaultKeyHandler", sequenceCode.toString(16), _itemClickHandler);
+			trace(">>>", sequenceCode.toString(16), _itemClickHandler);
 			if (_itemClickHandler !== null)
 			{
 				for (var obj:Object in _keyListenersMap)
 				{
+					trace("_keyListenersMap[obj]", _keyListenersMap[obj]);
 					if (_keyListenersMap[obj] === sequenceCode)
 					{
 						_itemClickHandler(obj);

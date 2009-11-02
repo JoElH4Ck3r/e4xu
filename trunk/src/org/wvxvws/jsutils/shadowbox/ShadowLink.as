@@ -76,21 +76,13 @@ package org.wvxvws.jsutils.shadowbox
 		{
 			if (!ExternalInterface.available) return;
 			var script:XML = 
-			<script>
-				<![CDATA[
-					function() {
-						var lk = document.getElementById("]]>{ _uid }<![CDATA[");
-						if (typeof lk.click != "undefined") { lk.click(); }
-						else
-						{
-							var evt = document.createEvent("MouseEvents");
-							evt.initMouseEvent("click", true, true, window,
-								0, 0, 0, 0, 0, false, false, false, false, 0, null);
-							lk.dispatchEvent(evt);
-						}
-					}
-				]]>
-			</script>;
+<![CDATA[function(){
+	var lk = document.getElementById("]]>{ _uid }<![CDATA[");
+	if (typeof lk.click != "undefined") { lk.click(); }
+	else{var evt = document.createEvent("MouseEvents");
+		evt.initMouseEvent("click", true, true, window,
+			0, 0, 0, 0, 0, false, false, false, false, 0, null);
+		lk.dispatchEvent(evt);}}]]>;
 			ExternalInterface.call(script);
 		}
 		

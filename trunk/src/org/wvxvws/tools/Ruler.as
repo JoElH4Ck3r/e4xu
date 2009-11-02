@@ -227,7 +227,8 @@ package org.wvxvws.tools
 					while (recicledFields.length > super.width / (_step * _ratio * _zoom))
 					{
 						recicledFields.pop();
-						_textHolder.removeChildAt(_textHolder.numChildren - 1);
+						if (_textHolder.numChildren)
+							_textHolder.removeChildAt(_textHolder.numChildren - 1);
 					}
 					while (recicledFields.length <= super.width / (_step * _ratio * _zoom))
 					{
