@@ -339,7 +339,6 @@
 			}
 			if (paneChanged)
 			{
-				trace("paneChanged");
 				if (_titleBar)
 				{
 					_contentPane.y = _titleBar.y + _titleBar.height;

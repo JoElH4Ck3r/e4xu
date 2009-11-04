@@ -175,7 +175,7 @@ package org.wvxvws.gui.containers
 			else this.initiKeyListener();
 		}
 		
-		protected function initiKeyListener():void
+		public function initiKeyListener():void
 		{
 			_isRootMenu = true;
 			var hkList:XMLList;

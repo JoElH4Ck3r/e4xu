@@ -300,6 +300,7 @@ package org.wvxvws.managers
 		
 		private static function drawModalBG():void
 		{
+			trace("drawModalBG");
 			if (_stage.contains(_modalSprite))
 			{
 				_stage.setChildIndex(_modalSprite, _stage.numChildren - 1);
@@ -315,6 +316,7 @@ package org.wvxvws.managers
 			_modalSprite.focusRect = false;
 			var i:int = _stage.numChildren;
 			var dos:DisplayObject;
+			trace("mouse disabled");
 			while (i--)
 			{
 				dos = _stage.getChildAt(i);
@@ -365,6 +367,7 @@ package org.wvxvws.managers
 		
 		private static function removeModalBG():void
 		{
+			trace("mouse enabled");
 			_stage.focus = null;
 			if (_stage.contains(_modalSprite)) _stage.removeChild(_modalSprite);
 			var i:int = _stage.numChildren;

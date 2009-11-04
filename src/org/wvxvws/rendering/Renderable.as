@@ -19,6 +19,8 @@
 		//
 		//--------------------------------------------------------------------------
 		
+		public static const CHANGE_PROPERTY:String = "changeCroperty";
+		
 		public override function get x():Number { return _newBounds.x; }
 		
 		public override function set x(value:Number):void 
@@ -56,6 +58,7 @@
 		public function set valid(value:Boolean):void 
 		{
 			if (value === _valid) return;
+			super.dispatchEvent(_changeEvent);
 			if (value) super.removeEventListener(Event.ENTER_FRAME, renderHandler);
 			else if (stage) super.addEventListener(Event.ENTER_FRAME, renderHandler);
 			_valid = value;
@@ -79,6 +82,7 @@
 		protected var _port:Port;
 		protected var _newBounds:Rectangle = new Rectangle();
 		protected var _visibleBounds:Rectangle = new Rectangle();
+		protected var _changeEvent:Event = new Event(CHANGE_PROPERTY);
 		
 		//--------------------------------------------------------------------------
 		//

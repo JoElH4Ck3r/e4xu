@@ -1,14 +1,14 @@
 ﻿package org.wvxvws.rendering 
 {
+	import flash.events.Event;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	import org.wvxvws.rendering.Renderable;
 	
 	/**
 	 * SlaveSlide class.
 	 * @author wvxvw
 	 */
-	public class SlaveSlide extends Renderable
+	public class SlaveSlide extends Slide
 	{
 		public function get masterSlide():Slide { return _masterSlide; }
 		
@@ -39,13 +39,23 @@
 		
 		protected var _masterSlide:Slide;
 		protected var _keypoints:Vector.<int> = new <int>[];
-		protected var _trimPoint:Point;
-		protected var _trimBounds:Rectangle;
 		
 		public function SlaveSlide(master:Slide) 
 		{
 			super();
 			_masterSlide = master;
+			_masterSlide.addEventListener(
+				Renderable.CHANGE_PROPERTY, masterChangeHandler, false, 0, true);
+			//_color = 0xFF;
+			_alpha = .5;
+		}
+		
+		protected override function drawTrimmed():void {}
+		
+		protected function masterChangeHandler(event:Event):void
+		{
+			super.x = _masterSlide.x;
+			super.width = _masterSlide.width;
 		}
 		
 	}
