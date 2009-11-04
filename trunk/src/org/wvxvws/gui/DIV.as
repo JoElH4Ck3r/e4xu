@@ -410,10 +410,10 @@ package org.wvxvws.gui
 			{
 				dispatchInit = true;
 				_document = document;
-				this.initStyles();
-				if (_document is DisplayObjectContainer)
+				if (document is DisplayObjectContainer && !super.parent)
 				{
-					(_document as DisplayObjectContainer).addChild(this);
+					this.initStyles();
+					(document as DisplayObjectContainer).addChild(this);
 				}
 			}
 			_id = id;

@@ -23,6 +23,7 @@ package org.wvxvws.gui.windows
 {
 	//{ imports
 	import flash.display.DisplayObject;
+	import flash.display.DisplayObjectContainer;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -35,6 +36,7 @@ package org.wvxvws.gui.windows
 	import org.wvxvws.gui.renderers.ToolStripRenderer;
 	import org.wvxvws.gui.skins.SkinProducer;
 	import org.wvxvws.managers.DragManager;
+	import org.wvxvws.utils.KeyUtils;
 	//}
 	
 	/**
@@ -48,6 +50,35 @@ package org.wvxvws.gui.windows
 		//  Public properties
 		//
 		//--------------------------------------------------------------------------
+		
+		public override function set dataProvider(value:XML):void 
+		{
+			var list:XMLList;
+			var i:int;
+			var j:int;
+			var node:XML;
+			var menu:Menu;
+			if (value) list = value.*;
+			j = list.length();
+			_menus.length = 0;
+			if (j)
+			{
+				while (i < j)
+				{
+					node = list[i];
+					menu = new Menu();
+					menu.layoutParent = this;
+					menu.backgroundAlpha = 1;
+					menu.backgroundColor = 0xFF0000;
+					menu.itemClickHandler = _itemClickHandler;
+					menu.dataProvider = node;
+					menu.initiKeyListener();
+					_menus.push(menu);
+					i++;
+				}
+			}
+			super.dataProvider = value;
+		}
 		
 		//------------------------------------
 		//  Public property dragHandle
@@ -108,7 +139,11 @@ package org.wvxvws.gui.windows
 		{
 			if (_itemClickHandler === value) return;
 			_itemClickHandler = value;
-			_menu.itemClickHandler = value;
+			for each (var m:Menu in _menus)
+			{
+				m.itemClickHandler = _itemClickHandler;
+				m.initiKeyListener();
+			}
 		}
 		
 		//--------------------------------------------------------------------------
@@ -118,7 +153,8 @@ package org.wvxvws.gui.windows
 		//--------------------------------------------------------------------------
 		
 		protected var _rendererStates:Object;
-		protected var _menu:Menu = new Menu();
+		protected var _menu:Menu;
+		protected var _menus:Vector.<Menu> = new <Menu>[];
 		protected var _dragHandle:Sprite;
 		protected var _rendererProducer:SkinProducer;
 		protected var _currentNode:XML;
@@ -130,6 +166,8 @@ package org.wvxvws.gui.windows
 		protected var _filter:String;
 		protected var _gutter:int;
 		protected var _itemClickHandler:Function;
+		protected var _activated:Boolean;
+		protected var _activeRenderer:IRenderer;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -162,10 +200,37 @@ package org.wvxvws.gui.windows
 		//
 		//--------------------------------------------------------------------------
 		
+		protected override function adtsHandler(event:Event):void 
+		{
+			super.adtsHandler(event);
+			KeyUtils.obtainStage(stage);
+			stage.addEventListener(MouseEvent.MOUSE_UP, stage_menuUpHandler, false, 0, true);
+		}
+		
+		protected function stage_menuUpHandler(event:MouseEvent):void 
+		{
+			var p:Point = new Point(super.mouseX, super.mouseY);
+			var r:Rectangle = new Rectangle(0, 0, _bounds.x, _bounds.y);
+			var a:Array = stage.getObjectsUnderPoint(p);
+			if (_activated)
+			{
+				if (_menu && !r.containsPoint(p) && !_menu.hasMouse)
+				{
+					_menu.collapseChildMenu();
+					super.removeChild(_menu);
+					_activated = false;
+				}
+				else if (!_menu && !r.containsPoint(p))
+				{
+					_activated = false;
+				}
+			}
+		}
+		
 		protected override function layOutChildren():void
 		{
 			var hadMenu:Boolean;
-			if (super.contains(_menu))
+			if (_menu && super.contains(_menu))
 			{
 				_menu.collapseChildMenu();
 				hadMenu = Boolean(super.removeChild(_menu));
@@ -191,6 +256,8 @@ package org.wvxvws.gui.windows
 			if (!_currentRenderer) return null;
 			_currentRenderer.addEventListener(MouseEvent.MOUSE_DOWN, 
 									renderer_mouseDownHandler, false, 0, true);
+			_currentRenderer.addEventListener(MouseEvent.MOUSE_OVER, 
+									renderer_mouseOverHandler, false, 0, true);
 			_currentRenderer.height = super.height - (_padding.top + _padding.bottom);
 			if (_cellWidth !== int.MIN_VALUE) _currentRenderer.width = _cellWidth;
 			_currentRenderer.y = _padding.top;
@@ -220,23 +287,77 @@ package org.wvxvws.gui.windows
 			_background.endFill();
 		}
 		
+		protected function renderer_mouseOverHandler(event:MouseEvent):void
+		{
+			var dos:DisplayObject = event.currentTarget as DisplayObject;
+			if (_activeRenderer == dos || !_activated) return;
+			_activeRenderer = dos as IRenderer;
+			var node:XML;
+			var list:XMLList;
+			var i:int;
+			var j:int;
+			if (_activeRenderer && _activeRenderer.data) node = _activeRenderer.data;
+			if (_dataProvider)
+			{
+				list = _dataProvider.*;
+				j = list.length();
+			}
+			if (_menu && super.contains(_menu))
+			{
+				_menu.collapseChildMenu();
+				super.removeChild(_menu);
+			}
+			while (i < j)
+			{
+				if (node === list[i])
+				{
+					_menu = _menus[i];
+					_menu.x = dos.x;
+					_menu.y = super._bounds.y;
+					_menu.initialized(this, "menu");
+				}
+				i++;
+			}
+		}
+		
 		protected function renderer_mouseDownHandler(event:MouseEvent):void
 		{
 			var dos:DisplayObject = event.currentTarget as DisplayObject;
-			var ir:IRenderer = event.currentTarget as IRenderer;
-			if (_menu) _menu.collapseChildMenu();
-			if (!ir || !ir.data.*.length())
+			_activeRenderer = dos as IRenderer;
+			var node:XML;
+			var list:XMLList;
+			var i:int;
+			var j:int;
+			if (_activeRenderer && _activeRenderer.data) node = _activeRenderer.data;
+			if (_dataProvider)
 			{
-				if (super.contains(_menu)) super.removeChild(_menu);
-				return;
+				list = _dataProvider.*;
+				j = list.length();
 			}
-			_menu.x = dos.x;
-			_menu.y = super._bounds.y;
-			_menu.dataProvider = ir.data;
-			_menu.backgroundAlpha = 1;
-			_menu.backgroundColor = 0xFF0000;
-			super.addChild(_menu);
-			_menu.initialized(this, "menu");
+			if (_activated)
+			{
+				if (_menu)
+				{
+					_menu.collapseChildMenu();
+					super.removeChild(_menu);
+				}
+				_activated = false;
+			}
+			else
+			{
+				while (i < j)
+				{
+					if (node === list[i])
+					{
+						_menu = _menus[i];
+						_menu.x = dos.x;
+						_menu.y = super._bounds.y;
+						_menu.initialized(this, "menu");
+					}
+					i++;
+				}
+				_activated = true;
+			}
 			super.scrollRect = null;
 		}
 		

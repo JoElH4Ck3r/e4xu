@@ -387,7 +387,7 @@
 				if (_validator)
 					_validator.append(this, _document as ILayoutClient);
 			}
-			if (_document is DisplayObjectContainer)
+			if (_document is DisplayObjectContainer && !super.parent)
 			{
 				(_document as DisplayObjectContainer).addChild(this);
 			}
