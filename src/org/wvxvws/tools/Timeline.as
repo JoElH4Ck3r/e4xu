@@ -302,7 +302,6 @@ package org.wvxvws.tools
 					slide.x = _slidePositionFactory(currentNode);
 				slide.y = cumulativeHeight;
 				slide.height = _slideHeight;
-				trace(slide.height, slide.width, slide.x, slide.y);
 				slidesCopy.push(slide);
 				if (_slideVisible !== null)
 				{

@@ -7,6 +7,7 @@
 	import mx.core.IMXMLObject;
 	import org.wvxvws.gui.DIV;
 	import org.wvxvws.gui.layout.Constraints;
+	import org.wvxvws.gui.layout.ILayoutClient;
 	//}
 	
 	[DefaultProperty("children")]
@@ -225,8 +226,18 @@
 		
 		public override function validate(properties:Object):void 
 		{
+			var lc:ILayoutClient;
+			var i:int = super.numChildren;
 			super.validate(properties);
 			if (_performLayout) this.constrain();
+			else
+			{
+				while (i--)
+				{
+					lc = super.getChildAt(i) as ILayoutClient;
+					if (lc) lc.validate(lc.invalidProperties);
+				}
+			}
 		}
 		
 		public override function addChild(child:DisplayObject):DisplayObject 

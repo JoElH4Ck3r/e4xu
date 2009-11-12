@@ -1,11 +1,14 @@
 ﻿package org.wvxvws.gui 
 {
 	import flash.display.DisplayObject;
+	import flash.display.DisplayObjectContainer;
 	import flash.display.Sprite;
 	import mx.core.IMXMLObject;
 	
+	[DefaultProperty("states")]
+	
 	/**
-	 * ...
+	 * StatefulButton class.
 	 * @author wvxvw
 	 */
 	public class StatefulButton extends Sprite implements IMXMLObject
@@ -23,6 +26,17 @@
 		public function initialized(document:Object, id:String):void
 		{
 			_document = document;
+			if (super.parent && super.parent !== _document && 
+				(_document is DisplayObjectContainer))
+			{
+				super.parent.removeChild(this);
+				(_document as DisplayObjectContainer).addChild(this);
+			}
+			else if (!super.parent && 
+				(_document is DisplayObjectContainer))
+			{
+				(_document as DisplayObjectContainer).addChild(this);
+			}
 			_id = id;
 		}
 		
@@ -33,6 +47,11 @@
 			{
 				if (_states[value] && _states[value] is Class)
 					newState = new (_states[value])() as DisplayObject;
+				else if (_states[value] && _states[value] is DisplayObject)
+				{
+					newState = _states[value] as DisplayObject;
+					if (newState.parent) newState.parent.removeChild(newState);
+				}
 				else return;
 				if (!newState) return;
 				_cachedStates[value] = newState;

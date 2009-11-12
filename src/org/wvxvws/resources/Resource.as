@@ -26,6 +26,8 @@ package org.wvxvws.resources
 	import flash.system.ApplicationDomain;
 	import mx.core.IMXMLObject;
 	
+	[Event(name="embedded", type="flash.events.Event")]
+	
 	[DefaultProperty("embed")]
 	
 	/**
@@ -52,15 +54,19 @@ package org.wvxvws.resources
 		{
 			if (_embed === value) return;
 			_embed = value;
-			trace("EMBEDDING");
 			if (ApplicationDomain.currentDomain.hasDefinition(
 				"org.wvxvws.managers::ResourceManager") && _id !== null)
 			{
-				trace("REGISTERING");
 				var rm:Object = ApplicationDomain.currentDomain.getDefinition(
 					"org.wvxvws.managers::ResourceManager");
 				if (rm) rm.registerResource(value, _id);
 			}
+			if (_document)
+			{
+				_dispatchLater = false;
+				super.dispatchEvent(new Event("embedded"));
+			}
+			else _dispatchLater = true;
 		}
 		
 		public function get id():String { return _id; }
@@ -74,6 +80,7 @@ package org.wvxvws.resources
 		protected var _document:Object;
 		protected var _id:String;
 		protected var _embed:Class;
+		protected var _dispatchLater:Boolean;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -97,10 +104,14 @@ package org.wvxvws.resources
 			if (_embed && ApplicationDomain.currentDomain.hasDefinition(
 				"org.wvxvws.managers::ResourceManager"))
 			{
-				trace("REGISTERING");
 				var rm:Object = ApplicationDomain.currentDomain.getDefinition(
 					"org.wvxvws.managers::ResourceManager");
 				if (rm) rm.registerResource(_embed, _id);
+			}
+			if (_dispatchLater)
+			{
+				_dispatchLater = false;
+				super.dispatchEvent(new Event("embedded"));
 			}
 		}
 		//--------------------------------------------------------------------------

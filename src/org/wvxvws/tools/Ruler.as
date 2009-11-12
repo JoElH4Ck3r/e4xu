@@ -52,9 +52,9 @@ package org.wvxvws.tools
 		{
 			var temp:Number = Math.max(1, value);
 			if (temp === _ratio) return;
-			invalidate("_ratio", _ratio, false);
+			super.invalidate("_ratio", _ratio, false);
 			_ratio = temp;
-			dispatchEvent(new Event("ratioChange"));
+			super.dispatchEvent(new Event("ratioChange"));
 		}
 		
 		public function get step():uint { return _step; }
@@ -63,9 +63,9 @@ package org.wvxvws.tools
 		{
 			var temp:Number = Math.max(2, value);
 			if (temp === _step) return;
-			invalidate("_step", _step, false);
+			super.invalidate("_step", _step, false);
 			_step = value;
-			dispatchEvent(new Event("setpChange"));
+			super.dispatchEvent(new Event("setpChange"));
 		}
 		
 		public function get position():int { return _position; }
@@ -73,9 +73,9 @@ package org.wvxvws.tools
 		public function set position(value:int):void 
 		{
 			if (_position === value) return;
-			invalidate("_position", _position, false);
+			super.invalidate("_position", _position, false);
 			_position = value;
-			dispatchEvent(new Event("positionChange"));
+			super.dispatchEvent(new Event("positionChange"));
 		}
 		
 		public function get direction():Boolean { return _direction; }
@@ -83,9 +83,9 @@ package org.wvxvws.tools
 		public function set direction(value:Boolean):void 
 		{
 			if (_direction === value) return;
-			invalidate("_direction", _direction, false);
+			super.invalidate("_direction", _direction, false);
 			_direction = value;
-			dispatchEvent(new Event("directionChange"));
+			super.dispatchEvent(new Event("directionChange"));
 		}
 		
 		public function get zoom():Number { return _zoom; }
@@ -93,9 +93,9 @@ package org.wvxvws.tools
 		public function set zoom(value:Number):void 
 		{
 			if (_zoom === value) return;
-			invalidate("_zoom", _zoom, false);
+			super.invalidate("_zoom", _zoom, false);
 			_zoom = value;
-			dispatchEvent(new Event("zoomChange"));
+			super.dispatchEvent(new Event("zoomChange"));
 		}
 		
 		//--------------------------------------------------------------------------
@@ -212,25 +212,32 @@ package org.wvxvws.tools
 				}
 				if (_direction)
 				{
-					while (recicledFields.length > super.height / (_step * _ratio * _zoom))
+					while (recicledFields.length > 
+						super.height / (_step * _ratio * _zoom) && 
+						_textHolder.numChildren)
 					{
 						recicledFields.pop();
-						_textHolder.removeChildAt(_textHolder.numChildren - 1);
+						if (_textHolder.numChildren)
+							_textHolder.removeChildAt(_textHolder.numChildren - 1);
 					}
-					while (recicledFields.length <= super.height / (_step * _ratio * _zoom))
+					while (recicledFields.length <= 
+						super.height / (_step * _ratio * _zoom))
 					{
 						recicledFields.push(createTextField(_textHolder));
 					}
 				}
 				else
 				{
-					while (recicledFields.length > super.width / (_step * _ratio * _zoom))
+					while (recicledFields.length > 
+						super.width / (_step * _ratio * _zoom) && 
+						_textHolder.numChildren)
 					{
 						recicledFields.pop();
 						if (_textHolder.numChildren)
 							_textHolder.removeChildAt(_textHolder.numChildren - 1);
 					}
-					while (recicledFields.length <= super.width / (_step * _ratio * _zoom))
+					while (recicledFields.length <= 
+						super.width / (_step * _ratio * _zoom))
 					{
 						recicledFields.push(createTextField(_textHolder));
 					}

@@ -19,6 +19,7 @@
 	import org.wvxvws.gui.layout.ILayoutClient;
 	import org.wvxvws.gui.layout.LayoutValidator;
 	import org.wvxvws.gui.skins.ButtonSkinProducer;
+	// TODO: have to remove this dependency
 	import org.wvxvws.gui.skins.DefaultButonProducer;
 	import org.wvxvws.gui.skins.SkinProducer;
 	//}

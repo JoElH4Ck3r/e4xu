@@ -187,7 +187,6 @@ package org.wvxvws.utils
 		
 		private static function keyDownHandler(event:KeyboardEvent):void 
 		{
-			trace("keydwon", event.keyCode, _keySequence.join("|"));
 			if (_lastPressed) 
 			{
 				if (_lastPressed === event.keyCode) return;
@@ -227,7 +226,6 @@ package org.wvxvws.utils
 		static private function keyUpHandler(event:KeyboardEvent):void 
 		{
 			var index:int = _keySequence.indexOf(event.keyCode);
-			trace("keyup", event.keyCode, index, _keySequence.join("|"));
 			if (index < 0) return;
 			if (_lastPressed === event.keyCode) _lastPressed = 0;
 			_keySequence.splice(index, 1);

@@ -27,6 +27,7 @@ package org.wvxvws.gui.skins
 	import flash.display.Shape;
 	import flash.geom.ColorTransform;
 	import flash.geom.Matrix;
+	import flash.geom.Point;
 	//}
 	
 	/**
@@ -132,7 +133,7 @@ package org.wvxvws.gui.skins
 			return s;
 		}
 		
-		public static function drawRoundedCorners(g:Graphics, rx:int, ry:int,
+		public static function roundedRectangle(g:Graphics, rx:int, ry:int,
 							top:int, left:int, w:int, h:int, flags:uint):void
 		{
 			rx = rx > w >> 1 ? w >> 1 : rx;
@@ -166,10 +167,68 @@ package org.wvxvws.gui.skins
 			else g.lineTo(left, top);
 		}
 		
-		public static function drawPolygon(g:Graphics, rx:int, ry:int, top:int, 
-				left:int, segments:uint, isStar:Boolean = false, delta:int = 0):void
+		public static function polygon(graphics:Graphics, rx:int, ry:int, 
+						segments:uint, star:Boolean = false, center:Point = null, 
+						delta:Number = 0.5, scew:Number = 0.5):void
 		{
-			
+			var d:Number = Math.min(rx, ry);
+			var s:Number = Math.PI * 2 / segments;
+			var i:int;
+			var tx:Number;
+			var ty:Number;
+			if (!center)
+			{
+				tx = 0;
+				ty = 0;
+			}
+			else
+			{
+				tx = center.x;
+				ty = center.y;
+			}
+			graphics.moveTo(tx + rx, ty + ry + ry * delta);
+			for (i; i < segments; i++)
+			{
+				graphics.lineTo(tx + rx + rx * delta * Math.sin(s * i), 
+								ty + ry + ry * delta * Math.cos(s * i));
+				if (star)
+				{
+					graphics.lineTo(tx + rx + rx * Math.sin(s * (i + scew)), 
+								ty + ry + ry * Math.cos(s * (i + scew)));
+				}
+			}
+		}
+		
+		public static function circle(graphics:Graphics, 
+									radius:Number, center:Point = null):void
+		{
+			var c1:Number = radius * (Math.SQRT2 - 1);
+			var c2:Number = radius * Math.SQRT2 / 2;
+			var d:Number = radius * 2;
+			var tx:Number;
+			var ty:Number;
+			if (!center)
+			{
+				tx = 0;
+				ty = 0;
+			}
+			else
+			{
+				tx = center.x;
+				ty = center.y;
+			}
+			var txr:Number = tx + radius;
+			var tyr:Number = ty + radius;
+			graphics.moveTo(tx + d, ty + radius);
+			graphics.curveTo(tx + d, tyr + c1, txr + c2, tyr + c2);
+			graphics.curveTo(txr + c1, ty + d, txr, ty + d);
+			graphics.curveTo(txr - c1, ty + d, txr - c2, tyr + c2);
+			graphics.curveTo(tx, tyr + c1, tx, tyr);
+			graphics.curveTo(tx, tyr - c1, txr - c2, tyr - c2);
+			graphics.curveTo(txr - c1, ty, txr, ty);
+			graphics.curveTo(txr + c1, ty, txr + c2, tyr - c2);
+			graphics.curveTo(tx + d, tyr - c1, tx + d, tyr);
+			graphics.endFill();
 		}
 		
 		//--------------------------------------------------------------------------
