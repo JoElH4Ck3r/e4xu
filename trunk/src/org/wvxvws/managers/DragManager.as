@@ -103,8 +103,7 @@ package org.wvxvws.managers
 			_target.y = _stage.mouseY;
 			_stage.addEventListener(MouseEvent.MOUSE_MOVE, stage_MouseMoveHandler, 
 																	false, 0, true);
-			var top:int = _stage.numChildren;
-			_stage.addChildAt(_target, top);
+			_stage.addChild(_target);
 		}
 		
 		public static function drop():void

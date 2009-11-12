@@ -46,7 +46,6 @@
 				j = inputs.length;
 				while (i < j)
 				{
-					trace("adding field", i);
 					label = inputs[i];
 					if (_fields.indexOf(label) < 0) _fields.push(label);
 					if (label is IMXMLObject)
@@ -81,7 +80,6 @@
 				var j:int = _fields.length;
 				while (i < j)
 				{
-					trace(_fields[i].text);
 					v.push(_fields[i].text);
 					i++;
 				}

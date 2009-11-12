@@ -7,6 +7,7 @@
 	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.filters.DropShadowFilter;
 	import flash.ui.Mouse;
 	import flash.ui.MouseCursor;
 	//}
@@ -29,6 +30,7 @@
 		{
 			if (value < 0)
 			{
+				if (_cursor && _cursor.stage) _stage.removeChild(_cursor);
 				_cursor = null;
 				Mouse.show();
 				switch (value)
@@ -99,6 +101,7 @@
 							stage_rollOverHandler, false, 0, true);
 					_cursor.x = _stage.mouseX;
 					_cursor.y = _stage.mouseY;
+					_cursor.filters = _filters;
 					_stage.addChild(_cursor);
 				}
 			}
@@ -110,23 +113,12 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public static const NONE:int = -3;
-		public static const AUTO:int = -2;
-		public static const ARROW:int = -1;
-		public static const RESIZE_H:int = 0;
-		public static const RESIZE_V:int = 1;
-		public static const RESIZE_LR:int = 2;
-		public static const RESIZE_RL:int = 3;
-		public static const MOVE:int = 4;
-		public static const ROTATE:int = 5;
-		public static const SKEW_H:int = 7;
-		public static const SKEW_V:int = 8;
-		public static const WAIT:int = 9;
-		public static const PAN:int = 10;
-		public static const HELP:int = 11;
-		public static const IBEAM:int = 12;
-		public static const BUTTON:int = 13;
-		public static const HAND:int = 14;
+		public static const NONE:int = -6;
+		public static const AUTO:int = -5;
+		public static const ARROW:int = -4;
+		public static const IBEAM:int = -3;
+		public static const BUTTON:int = -2;
+		public static const HAND:int = -1;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -135,8 +127,9 @@
 		//--------------------------------------------------------------------------
 		
 		private static var _stage:Stage;
-		private static var _cursors:Vector.<DisplayObject>;
+		private static var _cursors:Vector.<DisplayObject> = new <DisplayObject>[];
 		private static var _cursor:DisplayObject;
+		private static var _filters:Array = [new DropShadowFilter(4, 45, 0, 0.5, 6, 6, 0.8)];
 		
 		//--------------------------------------------------------------------------
 		//
@@ -152,14 +145,32 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public static function init(stage:Stage):void { _stage = stage; }
-		
-		public static function setCursors(cursors:Vector.<DisplayObject>):void
+		public static function init(stage:Stage):void
 		{
-			if (cursors)
-				_cursors = cursors.concat();
-			if (!_cursors) _cursors = new Vector.<DisplayObject>(12, false);
-			while (_cursors.length < 14) _cursors.push(null);
+			_stage = stage;
+			_stage.addEventListener(Event.ADDED, addedHandler, false, 0, true);
+		}
+		
+		protected static function addedHandler(event:Event):void 
+		{
+			if (_cursor && _cursor.stage) _stage.addChild(_cursor);
+		}
+		
+		public static function registerCursor(type:DisplayObject):int
+		{
+			if (_cursors.indexOf(type) < 0) return _cursors.push(type);
+			return -1;
+		}
+		
+		public static function enumerateCursors(closure:Function):void
+		{
+			var i:int;
+			var j:int = _cursors.length;
+			while (i < j)
+			{
+				if (closure(i, (_cursors[i] as Object).constructor)) break;
+				i++;
+			}
 		}
 		
 		//--------------------------------------------------------------------------
@@ -181,8 +192,9 @@
 		private static function stage_mouseMoveHandler(event:MouseEvent):void 
 		{
 			if (!_cursor) return;
-			_cursor.x = event.stageX;
-			_cursor.y = event.stageY;
+			_cursor.visible = true;
+			_cursor.x = event.stageX >> 0;
+			_cursor.y = event.stageY >> 0;
 		}
 		
 	}

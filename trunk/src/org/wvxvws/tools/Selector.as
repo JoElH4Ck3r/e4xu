@@ -103,8 +103,8 @@ package org.wvxvws.tools
 			if (!_target.stage) return;
 			var s:Stage = _target.stage;
 			var r:DisplayObjectContainer = _target.root as DisplayObjectContainer;
-			if (!r) return;
-			_downLocation = r.localToGlobal(point);
+			if (!s) return;
+			_downLocation = _target.localToGlobal(point);
 			if (parent !== r)
 			{
 				if (parent) parent.removeChild(this);

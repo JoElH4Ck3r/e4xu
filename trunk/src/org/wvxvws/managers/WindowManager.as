@@ -50,6 +50,7 @@ package org.wvxvws.managers
 		//--------------------------------------------------------------------------
 		
 		private static var _windows:Vector.<IPane> = new <IPane>[];
+		private static var _modalWindows:Vector.<IPane> = new <IPane>[];
 		private static var _events:Object = { };
 		private static var _modal:IPane;
 		private static var _choosen:IPane;
@@ -118,6 +119,8 @@ package org.wvxvws.managers
 			if (!(window as DisplayObject).parent)
 				context.addChild(window as DisplayObject);
 			_windows.push(window);
+			if (modal && _modalWindows.indexOf(window) < 0)
+				_modalWindows.push(window);
 			window.created();
 			_choosen == window;
 			window.choosen();
@@ -169,6 +172,7 @@ package org.wvxvws.managers
 			if (!(window as DisplayObject).parent)
 				context.addChild(window as DisplayObject);
 			_windows.push(window);
+			if (modal) _modalWindows.push(window);
 			window.created();
 			_choosen == window;
 			window.choosen();
@@ -188,6 +192,7 @@ package org.wvxvws.managers
 			var v:Vector.<Function>;
 			var e:PaneEvent;
 			var f:Function;
+			var mi:int;
 			if (i > -1)
 			{
 				v = _events[PaneEvent.DESTROYED];
@@ -207,13 +212,16 @@ package org.wvxvws.managers
 					_choosen = null;
 				}
 				_windows.splice(i, 1);
+				mi = _modalWindows.indexOf(window);
+				if (mi > -1) _modalWindows.splice(mi, 1);
 			}
 			if ((window as DisplayObject).parent)
 			{
 				(window as DisplayObject).parent.removeChild(
 									window as DisplayObject);
 			}
-			if (!_windows.length) removeModalBG();
+			trace("Removing window", _modalWindows.length, _modalWindows.join("-"));
+			if (!_modalWindows.length) removeModalBG();
 			else
 			{
 				_stage.setChildIndex(_modalSprite, _stage.numChildren - 2);
@@ -300,12 +308,12 @@ package org.wvxvws.managers
 		
 		private static function drawModalBG():void
 		{
-			trace("drawModalBG");
 			if (_stage.contains(_modalSprite))
 			{
 				_stage.setChildIndex(_modalSprite, _stage.numChildren - 1);
 				return;
 			}
+			trace("drawModalBG");
 			var g:Graphics = _modalSprite.graphics;
 			g.clear();
 			g.beginFill(0xFFFFFF, 0.3);
@@ -316,7 +324,6 @@ package org.wvxvws.managers
 			_modalSprite.focusRect = false;
 			var i:int = _stage.numChildren;
 			var dos:DisplayObject;
-			trace("mouse disabled");
 			while (i--)
 			{
 				dos = _stage.getChildAt(i);
@@ -367,7 +374,7 @@ package org.wvxvws.managers
 		
 		private static function removeModalBG():void
 		{
-			trace("mouse enabled");
+			trace("removeModalBG");
 			_stage.focus = null;
 			if (_stage.contains(_modalSprite)) _stage.removeChild(_modalSprite);
 			var i:int = _stage.numChildren;
@@ -375,6 +382,11 @@ package org.wvxvws.managers
 			while (i--)
 			{
 				dos = _stage.getChildAt(i);
+				if (!(_moused[dos] is Boolean))
+				{
+					trace("unregisterd object found", dos);
+					continue;
+				}
 				if (dos is InteractiveObject)
 				{
 					(dos as InteractiveObject).mouseEnabled = _moused[dos];

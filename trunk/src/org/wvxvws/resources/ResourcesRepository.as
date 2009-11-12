@@ -14,7 +14,6 @@
 		
 		public function set resources(value:Vector.<Resource>):void 
 		{
-			trace("we should have ResourceManager");
 			_resources.length = 0;
 			for each (var r:Resource in value)
 			{

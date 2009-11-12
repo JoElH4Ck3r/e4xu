@@ -47,7 +47,7 @@
 					g.beginFill(0xA0A0A0);
 					break;
 			}
-			Drawings.drawRoundedCorners(g, 4, 4, 0, 0, 20, 20, 16);
+			Drawings.roundedRectangle(g, 4, 4, 0, 0, 20, 20, 16);
 			s.scale9Grid = new Rectangle(4, 4, 12, 12);
 			return s;
 		}
