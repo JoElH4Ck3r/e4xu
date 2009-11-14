@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<o:Map 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:o="http://e4xu.googlecode.com"
+	>
+	<o:dispatchers>
+		<o:AMFService 
+			id="service" 
+			baseURL="http://localhost/amfphp/gateway.php"
+			>
+			<o:ServiceMethod
+				id="testMethod"
+				name="getList"
+				>
+				<o:ServiceArguments>
+					<mx:String>foo</mx:String>
+					<mx:String>bar</mx:String>
+				</o:ServiceArguments>
+			</o:ServiceMethod>
+		</o:AMFService>
+	</o:dispatchers>
+	
+	<o:links>
+		<o:Link id="callSomeService" dispatcher="{service}">
+			<mx:String>result</mx:String>
+			<mx:String>complete</mx:String>
+		</o:Link>
+		<o:Link id="callTheService" dispatcher="{service}">
+			<mx:String>fault</mx:String>
+			<mx:String>complete</mx:String>
+		</o:Link>
+	</o:links>
+</o:Map>

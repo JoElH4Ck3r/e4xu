@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<o:DIV 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:o="http://e4xu.googlecode.com"
+	xmlns:t="tests.*"
+	width="800" height="600"
+	initialized="init()"
+	>
+	<mx:Script>
+		<![CDATA[
+		import flash.events.Event;
+		import org.wvxvws.mapping.MappingEvent;
+		import org.wvxvws.net.AMFService;
+		import org.wvxvws.net.ServiceEvent;
+		
+		private function init():void
+		{
+			(cnt0.dispatcher as AMFService).send("getList");
+		}
+		
+		private function handlerA(event:Event):void
+		{
+			trace("handlerA", event, event.target);
+			trace((event.target as AMFService).result);
+			trace((event.target as AMFService).fault);
+		}
+		
+		private function handlerB(event:ServiceEvent):void
+		{
+			trace("handlerB", event, event.target, event.currentTarget);
+			trace((event.target as AMFService).result);
+			trace((event.target as AMFService).fault);
+		}
+		]]>
+	</mx:Script>
+	<t:TestMap/>
+	
+	<o:Connector id="cnt0" link="callSomeService">
+		<o:Handler type="complete">
+			<mx:Function>handlerA</mx:Function>
+		</o:Handler>
+	</o:Connector>
+	
+	<o:Connector id="cnt1" link="callTheService">
+		<o:Handler type="fault">
+			<mx:Function>handlerB</mx:Function>
+			<mx:Function>handlerA</mx:Function>
+		</o:Handler>
+		<o:Handler type="result">
+			<mx:Function>handlerA</mx:Function>
+		</o:Handler>
+	</o:Connector>
+</o:DIV>
