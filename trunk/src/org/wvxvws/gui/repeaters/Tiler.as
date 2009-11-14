@@ -23,6 +23,7 @@ package org.wvxvws.gui.repeaters
 {
 	//{ imports
 	import flash.display.DisplayObject;
+	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.TimerEvent;
@@ -208,6 +209,7 @@ package org.wvxvws.gui.repeaters
 		protected var _index:int;
 		protected var _bounds:Point = new Point();
 		protected var _timer:Timer = new Timer(1, 1);
+		protected var _host:IRepeaterHost;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -226,7 +228,11 @@ package org.wvxvws.gui.repeaters
 		public function Tiler(host:IRepeaterHost = null)
 		{
 			super();
-			if (host) _creationCallback = host.repeatCallback;
+			if (host)
+			{
+				_creationCallback = host.repeatCallback;
+				_host
+			}
 			_timer.addEventListener(TimerEvent.TIMER, timerHandler);
 		}
 		
@@ -248,7 +254,8 @@ package org.wvxvws.gui.repeaters
 		{
 			if (!(document is IRepeaterHost))
 				throw new ArgumentError(document + " cannot host repeater.");
-			_creationCallback = (host as IRepeaterHost).repeatCallback;
+			_host = host as IRepeaterHost;
+			_creationCallback = _host.repeatCallback;
 			_id = id;
 		}
 		
@@ -268,7 +275,7 @@ package org.wvxvws.gui.repeaters
 			
 			image.x = _padding.left + (_index % cellsH) * (_cellWidth + _hSpace)
 			image.y = _padding.top + ((_index / cellsH) >> 0) * (_cellHeight + _vSpace);
-			super.addChild(image);
+			(_host as DisplayObjectContainer).addChild(image);
 			_index++;
 			if (_index % 0xFF)
 			{
