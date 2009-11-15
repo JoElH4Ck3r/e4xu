@@ -38,25 +38,25 @@
 			{
 				case UP_STATE:
 				default:
-					g.beginFill(0xB0B0B0);
+					g.beginFill(SkinDefaults.UP_COLOR);
 					break;
 				case OVER_STATE:
-					g.beginFill(0xC0C0C0);
+					g.beginFill(SkinDefaults.OVER_COLOR);
 					break;
 				case DOWN_STATE:
-					g.beginFill(0xA0A0A0);
+					g.beginFill(SkinDefaults.DOWN_COLOR);
 					break;
 			}
 			Drawings.roundedRectangle(g, 4, 4, 0, 0, 20, 20, 16);
 			s.scale9Grid = new Rectangle(4, 4, 12, 12);
 			return s;
 		}
-		
-		public override function produce(inContext:Object, 
-										state:String = null):InteractiveObject 
-		{
-			return super.produce(inContext, state);
-		}
+		//
+		//public override function produce(inContext:Object, 
+										//state:String = null):InteractiveObject 
+		//{
+			//return super.produce(inContext, state);
+		//}
 	}
 
 }

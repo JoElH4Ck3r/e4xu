@@ -228,7 +228,6 @@ package org.wvxvws.gui.skins
 			graphics.curveTo(txr - c1, ty, txr, ty);
 			graphics.curveTo(txr + c1, ty, txr + c2, tyr - c2);
 			graphics.curveTo(tx + d, tyr - c1, tx + d, tyr);
-			graphics.endFill();
 		}
 		
 		//--------------------------------------------------------------------------

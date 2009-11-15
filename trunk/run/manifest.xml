@@ -57,6 +57,8 @@
 	<!-- RENDERERS -->
 	<component id="BranchRenderer" class="org.wvxvws.gui.renderers.BranchRenderer"/>
 	<component id="MenuRenderer" class="org.wvxvws.gui.renderers.MenuRenderer"/>
+	<!-- CONTROLS -->
+	<component id="Option" class="org.wvxvws.gui.controls.Option"/>
 	<!-- CSS -->
 	<component id="STYLE" class="org.wvxvws.gui.styles.STYLE"/>
 	<!-- GEOMETRY -->
