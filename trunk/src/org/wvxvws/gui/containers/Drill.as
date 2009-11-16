@@ -2,6 +2,7 @@
 {
 	import flash.display.DisplayObject;
 	import flash.geom.Rectangle;
+	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.containers.Pane;
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.renderers.DrillRenderer;
@@ -32,6 +33,8 @@
 			if (_padding === value) return;
 			_padding = value;
 			super.invalidate("_padding", _padding, false);
+			if (super.hasEventListener(EventGenerator.getEventType("padding")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		public function get selectedChild():IDrillRenderer { return _selectedChild; }

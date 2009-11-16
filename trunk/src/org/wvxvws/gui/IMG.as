@@ -14,6 +14,7 @@
 	import mx.core.IMXMLObject;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
+	import org.wvxvws.binding.EventGenerator;
 	//}
 	
 	[Event(name="complete", type="flash.events.Event")]
@@ -57,7 +58,8 @@
 			var context:LoaderContext = 
 				new LoaderContext(true, ApplicationDomain.currentDomain);
 			_loader.load(new URLRequest(_src), context);
-			super.dispatchEvent(new Event("srcChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("src")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -88,7 +90,8 @@
 				super.bitmapData.dispose();
 				super.bitmapData = null;
 			}
-			super.dispatchEvent(new Event("embedChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("embed")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		public function get id():String { return _id; }

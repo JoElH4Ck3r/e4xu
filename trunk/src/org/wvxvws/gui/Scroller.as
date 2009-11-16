@@ -19,6 +19,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+// TODO: Need to ged rif of ISkin. Maybe use StatefulButton instead.
+
 package org.wvxvws.gui 
 {
 	//{imports
@@ -28,6 +30,7 @@ package org.wvxvws.gui
 	import flash.events.MouseEvent;
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
+	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.skins.ISkin;
 	//}
 	
@@ -51,12 +54,12 @@ package org.wvxvws.gui
 		//  Public property target
 		//------------------------------------
 		
-		[Bindable("targetChange")]
+		[Bindable("targetChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>targetChange</code> event.
+		* When this property is modified, it dispatches the <code>targetChanged</code> event.
 		*/
 		public function get target():DisplayObject { return _target; }
 		
@@ -64,20 +67,21 @@ package org.wvxvws.gui
 		{
 			if (_target == value) return;
 			_target = value;
-			invalidate("_target", _target, false);
-			dispatchEvent(new Event("targetChange"));
+			super.invalidate("_target", _target, false);
+			if (super.hasEventListener(EventGenerator.getEventType("target")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
 		//  Public property area
 		//------------------------------------
 		
-		[Bindable("areaChange")]
+		[Bindable("areaChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>areaChange</code> event.
+		* When this property is modified, it dispatches the <code>areaChanged</code> event.
 		*/
 		public function get area():Rectangle { return _area; }
 		
@@ -85,20 +89,21 @@ package org.wvxvws.gui
 		{
 			if (_area == value) return;
 			_area = value;
-			invalidate("_area", _area, false);
-			dispatchEvent(new Event("areaChange"));
+			super.invalidate("_area", _area, false);
+			if (super.hasEventListener(EventGenerator.getEventType("area")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
 		//  Public property minHandle
 		//------------------------------------
 		
-		[Bindable("minHandleChange")]
-		[Skinable(states="mouseUp,mouseDown,mouseOver")]
+		[Bindable("minHandleChanged")]
+		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>minHandleChange</code> event.
+		* When this property is modified, it dispatches the <code>minHandleChanged</code> event.
 		*/
 		public function get minHandle():DisplayObject { return _minHandle; }
 		
@@ -108,8 +113,9 @@ package org.wvxvws.gui
 			if (_minHandle && super.contains(_minHandle))	_garbage.push(_minHandle);
 			_minHandle = value;
 			if (_minHandle is ISkin) (_minHandle as ISkin).state = MouseEvent.MOUSE_UP;
-			invalidate("_minHandle", _minHandle, false);
-			dispatchEvent(new Event("minHandleChange"));
+			super.invalidate("_minHandle", _minHandle, false);
+			if (super.hasEventListener(EventGenerator.getEventType("minHandle")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -117,7 +123,7 @@ package org.wvxvws.gui
 		//------------------------------------
 		
 		[Bindable("maxHandleChange")]
-		[Skinable(states="mouseUp,mouseDown,mouseOver")]
+		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
@@ -132,8 +138,9 @@ package org.wvxvws.gui
 			_maxHandle = value;
 			if (_maxHandle is ISkin) 
 				(_maxHandle as ISkin).state = MouseEvent.MOUSE_UP;
-			invalidate("_maxHandle", _maxHandle, false);
-			dispatchEvent(new Event("maxHandleChange"));
+			super.invalidate("_maxHandle", _maxHandle, false);
+			if (super.hasEventListener(EventGenerator.getEventType("maxHandle")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -154,10 +161,10 @@ package org.wvxvws.gui
 			if (_handle === value) return;
 			if (_handle && super.contains(_handle)) _garbage.push(_handle);
 			_handle = value;
-			trace("handle", _handle);
 			if (_handle is ISkin) (_handle as ISkin).state = MouseEvent.MOUSE_UP;
-			invalidate("_handle", _handle, false);
-			dispatchEvent(new Event("handleChange"));
+			super.invalidate("_handle", _handle, false);
+			if (super.hasEventListener(EventGenerator.getEventType("handle")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -165,7 +172,7 @@ package org.wvxvws.gui
 		//------------------------------------
 		
 		[Bindable("bodyChange")]
-		[Skinable(states="up,over,down,disabled")]
+		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
@@ -179,8 +186,9 @@ package org.wvxvws.gui
 			if (_body && super.contains(_body)) _garbage.push(_body);
 			_body = value;
 			if (_body is ISkin) (_body as ISkin).state = MouseEvent.MOUSE_UP;
-			invalidate("_body", _body, false);
-			dispatchEvent(new Event("bodyChange"));
+			super.invalidate("_body", _body, false);
+			if (super.hasEventListener(EventGenerator.getEventType("body")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -200,8 +208,9 @@ package org.wvxvws.gui
 		{
 			if (_direction === value) return;
 			_direction = value;
-			invalidate("_direction", _direction, false);
-			dispatchEvent(new Event("directionChange"));
+			super.invalidate("_direction", _direction, false);
+			if (super.hasEventListener(EventGenerator.getEventType("direction")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		[Bindable("handleWidthChange")]
@@ -217,8 +226,9 @@ package org.wvxvws.gui
 		{
 			if (_handleWidth === value) return;
 			_handleWidth = value;
-			invalidate("_handleWidth", _handleWidth, false);
-			dispatchEvent(new Event("handleWidthChange"));
+			super.invalidate("_handleWidth", _handleWidth, false);
+			if (super.hasEventListener(EventGenerator.getEventType("handleWidth")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		[Bindable("minMaxHandleSizeChange")]
@@ -234,8 +244,9 @@ package org.wvxvws.gui
 		{
 			if (_minMaxHandleSize === value) return;
 			_minMaxHandleSize = value;
-			invalidate("_minMaxHandleSize", _minMaxHandleSize, false);
-			dispatchEvent(new Event("minMaxHandleSizeChange"));
+			super.invalidate("_minMaxHandleSize", _minMaxHandleSize, false);
+			if (super.hasEventListener(EventGenerator.getEventType("minMaxHandleSize")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		[Bindable("gutterChange")]
@@ -251,8 +262,9 @@ package org.wvxvws.gui
 		{
 			if (_gutter === value) return;
 			_gutter = value;
-			invalidate("_gutter", _gutter, false);
-			dispatchEvent(new Event("gutterChange"));
+			super.invalidate("_gutter", _gutter, false);
+			if (super.hasEventListener(EventGenerator.getEventType("gutter")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//--------------------------------------------------------------------------
@@ -267,7 +279,7 @@ package org.wvxvws.gui
 		protected var _maxHandle:DisplayObject = new Sprite();
 		protected var _handle:DisplayObject = new Sprite();
 		protected var _body:DisplayObject = new Sprite();
-		protected var _garbage:Vector.<DisplayObject> = new Vector.<DisplayObject>(0, false);
+		protected var _garbage:Vector.<DisplayObject> = new <DisplayObject>[];
 		
 		protected var _direction:Boolean;
 		protected var _path:Number = 160;
@@ -305,7 +317,6 @@ package org.wvxvws.gui
 		
 		override public function validate(properties:Object):void 
 		{
-			trace("scroller validated", _handle);
 			super.validate(properties);
 			var m:Matrix;
 			while (_garbage.length)
@@ -324,7 +335,6 @@ package org.wvxvws.gui
 			if ((_handle is ISkin) && !(_handle as ISkin).state)
 			{
 				(_handle as ISkin).state = MouseEvent.MOUSE_UP;
-				trace("_handle as ISkin");
 			}
 			if ((_body is ISkin) && !(_body as ISkin).state)
 			{

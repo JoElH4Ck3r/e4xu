@@ -19,6 +19,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+// TODO: Requires major rewrite.
+
 package org.wvxvws.gui.containers
 {
 	//{imports
@@ -29,6 +31,8 @@ package org.wvxvws.gui.containers
 	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
 	import org.wvxvws.animation.easingDefault;
+	import org.wvxvws.binding.EventGenerator;
+	import org.wvxvws.gui.DIV;
 	//}
 	
 	/**
@@ -47,63 +51,67 @@ package org.wvxvws.gui.containers
 		//  Public property easing
 		//------------------------------------
 		
-		[Bindable("easingChange")]
+		[Bindable("easingChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>easingChange</code> event.
+		* When this property is modified, it dispatches the <code>easingChanged</code> event.
 		*/
 		public function get easing():Function { return _easing; }
 		
 		public function set easing(value:Function):void 
 		{
-		   if (_easing == value) return;
-		   _easing = value;
-		   invalidLayout = true;
-		   dispatchEvent(new Event("easingChange"));
+			if (_easing == value) return;
+			_easing = value;
+			super.invalidLayout = true;
+			if (super.hasEventListener(EventGenerator.getEventType("easing")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
 		//  Public property duration
 		//------------------------------------
 		
-		[Bindable("durationChange")]
+		[Bindable("durationChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>durationChange</code> event.
+		* When this property is modified, it dispatches the <code>durationChanged</code> event.
 		*/
 		public function get duration():int { return _duration; }
 		
 		public function set duration(value:int):void 
 		{
-		   if (_duration == value) return;
-		   _duration = value;
-		   invalidLayout = true;
-		   dispatchEvent(new Event("durationChange"));
+			if (_duration == value) return;
+			_duration = value;
+			super.invalidLayout = true;
+			super.invalidLayout = true;
+			if (super.hasEventListener(EventGenerator.getEventType("duration")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
 		//  Public property distance
 		//------------------------------------
 		
-		[Bindable("distanceChange")]
+		[Bindable("distanceChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>distanceChange</code> event.
+		* When this property is modified, it dispatches the <code>distanceChanged</code> event.
 		*/
 		public function get distance():int { return _distance; }
 		
 		public function set distance(value:int):void 
 		{
-		   if (_distance == value) return;
-		   _distance = value;
-		   invalidLayout = true;
-		   dispatchEvent(new Event("distanceChange"));
+			if (_distance == value) return;
+			_distance = value;
+			super.invalidLayout = true;
+			if (super.hasEventListener(EventGenerator.getEventType("distance")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -121,10 +129,11 @@ package org.wvxvws.gui.containers
 		
 		public function set gutter(value:int):void 
 		{
-		   if (_gutter == value) return;
-		   _gutter = value;
-		   invalidLayout = true;
-		   dispatchEvent(new Event("gutterChange"));
+			if (_gutter == value) return;
+			_gutter = value;
+			super.invalidLayout = true;
+			if (super.hasEventListener(EventGenerator.getEventType("gutter")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -146,8 +155,9 @@ package org.wvxvws.gui.containers
 			_dataProvider = value;
 			_dataProviderCopy = value.copy();
 			_dataProvider.setNotification(providerNotifier);
-			invalidLayout = true;
-			dispatchEvent(new Event("dataProviderChange"));
+			super.invalidLayout = true;
+			if (super.hasEventListener(EventGenerator.getEventType("dataProvider")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -216,7 +226,7 @@ package org.wvxvws.gui.containers
 		override public function validateLayout(event:Event = null):void 
 		{
 			super.validateLayout(event);
-			layOutChildren();
+			this.layOutChildren();
 		}
 		
 		protected function enterFrameHandler(event:Event):void 
@@ -228,7 +238,7 @@ package org.wvxvws.gui.containers
 				_playing = false;
 				animate(1);
 				removeEventListener(Event.ENTER_FRAME, enterFrameHandler);
-				dispatchEvent(new Event("playingChange"));
+				super.dispatchEvent(new Event("playingChange"));
 				return;
 			}
 			animate(d / _distance);
@@ -238,11 +248,11 @@ package org.wvxvws.gui.containers
 		{
 			_selection = event.currentTarget as DisplayObject;
 			_playing = true;
-			dispatchEvent(new Event("playingChange"));
-			positionForItem(_selection);
+			super.dispatchEvent(new Event("playingChange"));
+			this.positionForItem(_selection);
 			_startTime = getTimer();
 			_currentTime = 0;
-			addEventListener(Event.ENTER_FRAME, enterFrameHandler, false, 0, true);
+			super.addEventListener(Event.ENTER_FRAME, enterFrameHandler, false, 0, true);
 		}
 		
 		public function selectItem(itemPos:int):void

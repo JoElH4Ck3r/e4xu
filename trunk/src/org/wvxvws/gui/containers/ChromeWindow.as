@@ -6,6 +6,7 @@
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.geom.Rectangle;
+	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.Border;
 	import org.wvxvws.gui.DIV;
 	import org.wvxvws.gui.skins.ButtonSkinProducer;
@@ -66,7 +67,8 @@
 			if (_modal === value) return;
 			_modal = value;
 			super.invalidate("_modal", _modal, false);
-			super.dispatchEvent(new Event("modalChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("modal")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -87,7 +89,8 @@
 			if (_resizable === value) return;
 			_resizable = value;
 			super.invalidate("_resizable", _resizable, false);
-			super.dispatchEvent(new Event("resizableChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("resizable")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -110,7 +113,8 @@
 				super.removeChild(_titleBar);
 			_titleBar = value;
 			super.invalidate("_titleBar", _titleBar, false);
-			super.dispatchEvent(new Event("titleBarChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("titleBar")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -133,7 +137,8 @@
 				super.removeChild(_statusBar);
 			_statusBar = value;
 			super.invalidate("_statusBar", _statusBar, false);
-			super.dispatchEvent(new Event("statusBarChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("statusBar")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -154,7 +159,8 @@
 			if (_closeSkin === value) return;
 			_closeSkin = value;
 			super.invalidate("_closeSkin", _closeSkin, false);
-			super.dispatchEvent(new Event("closeSkinChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("closeSkin")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -175,7 +181,8 @@
 			if (_dockSkin === value) return;
 			_dockSkin = value;
 			super.invalidate("_dockSkin", _dockSkin, false);
-			super.dispatchEvent(new Event("dockSkinChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("dockSkin")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -196,7 +203,8 @@
 			if (_expandSkin === value) return;
 			_expandSkin = value;
 			super.invalidate("_expandSkin", _expandSkin, false);
-			super.dispatchEvent(new Event("expandSkinChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("expandSkin")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -217,7 +225,8 @@
 			if (_border === value) return;
 			_border = value;
 			super.invalidate("_border", _border, false);
-			super.dispatchEvent(new Event("borderChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("border")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------

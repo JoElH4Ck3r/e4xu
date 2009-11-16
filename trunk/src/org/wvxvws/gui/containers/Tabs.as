@@ -4,6 +4,7 @@
 	import flash.display.DisplayObject;
 	import flash.display.InteractiveObject;
 	import flash.events.Event;
+	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.DIV;
 	import org.wvxvws.gui.renderers.TabRenderer;
 	import org.wvxvws.gui.skins.SkinProducer;
@@ -63,7 +64,8 @@
 				}
 			}
 			super.invalidate("_documents", _documents, false);
-			super.dispatchEvent(new Event("documentsChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("documents")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -90,7 +92,8 @@
 			if (_labelFactory === value) return;
 			_labelFactory = value;
 			super.invalidate("_labelFactory", _labelFactory, false);
-			super.dispatchEvent(new Event("labelFactoryChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("labelFactory")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//--------------------------------------------------------------------------

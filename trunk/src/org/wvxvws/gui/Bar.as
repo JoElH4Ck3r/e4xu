@@ -27,6 +27,7 @@ package org.wvxvws.gui
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Matrix;
+	import org.wvxvws.binding.EventGenerator;
 	//}
 	
 	[Event(name="dataChanged", type="org.wvxvws.gui.GUIEvent")]
@@ -62,10 +63,11 @@ package org.wvxvws.gui
 		{
 			var temp:Number = Math.max(Math.min(value, 1), 0);
 			if (temp === _position) return;
-			invalidate("_position", temp, false);
+			super.invalidate("_position", temp, false);
 			_position = temp;
-			dispatchEvent(new Event("positionChange"));
-			dispatchEvent(new GUIEvent(GUIEvent.DATA_CHANGED));
+			if (super.hasEventListener(EventGenerator.getEventType("position")))
+				super.dispatchEvent(EventGenerator.getEvent());
+			super.dispatchEvent(new GUIEvent(GUIEvent.DATA_CHANGED));
 		}
 		
 		//------------------------------------
@@ -84,11 +86,12 @@ package org.wvxvws.gui
 		public function set handle(value:Sprite):void 
 		{
 			if (_handle === value) return;
-			invalidate("_handle", _handle, false);
+			super.invalidate("_handle", _handle, false);
 			if (_handle && super.contains(_handle))
 				super.removeChild(_handle);
 			_handle = value;
-			dispatchEvent(new Event("handleChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("handle")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -107,11 +110,12 @@ package org.wvxvws.gui
 		public function set body(value:Sprite):void 
 		{
 			if (_body === value) return;
-			invalidate("_body", _body, false);
+			super.invalidate("_body", _body, false);
 			if (_body && super.contains(_body))
 				super.removeChild(_body);
 			_body = value;
-			dispatchEvent(new Event("bodyChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("body")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -131,8 +135,9 @@ package org.wvxvws.gui
 		{
 			if (value === _direction) return;
 			_direction = value;
-			invalidate("_direction", _direction, true);
-			dispatchEvent(new Event("directionChange"));
+			super.invalidate("_direction", _direction, true);
+			if (super.hasEventListener(EventGenerator.getEventType("direction")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//--------------------------------------------------------------------------

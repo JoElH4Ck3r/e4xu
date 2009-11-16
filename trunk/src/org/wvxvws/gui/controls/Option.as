@@ -4,6 +4,7 @@
 	import flash.events.MouseEvent;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
+	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.DIV;
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.skins.ButtonSkinProducer;
@@ -47,7 +48,8 @@
 			_selected = value;
 			_button.state = _selected ? SELECTED_STATE : UP_STATE; 
 			super.invalidate("_selected", _selected, false);
-			super.dispatchEvent(new Event("selectedChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("selected")))
+				super.dispatchEvent(EventGenerator.getEvent());
 			if (_selected) super.dispatchEvent(new GUIEvent(GUIEvent.SELECTED));
 		}
 		
@@ -69,7 +71,8 @@
 			if (_disabled === value) return;
 			_disabled = value;
 			super.invalidate("_disabled", _disabled, false);
-			super.dispatchEvent(new Event("disabledChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("disabled")))
+				super.dispatchEvent(EventGenerator.getEvent());
 			if (_disabled) super.dispatchEvent(new GUIEvent(GUIEvent.DISABLED));
 		}
 		
@@ -112,7 +115,8 @@
 				delete _button.states[SELECTED_DISABLED_STATE];
 			}
 			super.invalidate("_producer", _producer, false);
-			super.dispatchEvent(new Event("producerChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("producer")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -133,7 +137,8 @@
 			if (_label === value) return;
 			_label = value;
 			super.invalidate("_label", _label, false);
-			super.dispatchEvent(new Event("labelChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("label")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -159,7 +164,8 @@
 			if (_selected === value) return;
 			_labelPlacement = value;
 			super.invalidate("_labelPlacement", _labelPlacement, false);
-			super.dispatchEvent(new Event("labelPlacementChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("labelPlacement")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		protected var _selected:Boolean;

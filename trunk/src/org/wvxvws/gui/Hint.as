@@ -16,6 +16,7 @@
 	import flash.text.TextFormat;
 	import flash.utils.Timer;
 	import mx.core.IMXMLObject;
+	import org.wvxvws.binding.EventGenerator;
 	//}
 	
 	/**
@@ -36,52 +37,54 @@
 		//  Public property factory
 		//------------------------------------
 		
-		[Bindable("factoryChange")]
+		[Bindable("factoryChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>factoryChange</code> event.
+		* When this property is modified, it dispatches the <code>factoryChanged</code> event.
 		*/
 		public function get factory():Class { return _factory; }
 		
 		public function set factory(value:Class):void 
 		{
-			if (_factory == value) return;
+			if (_factory === value) return;
 			_factory = value;
-			dispatchEvent(new Event("factoryChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("factory")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
 		//  Public property point
 		//------------------------------------
 		
-		[Bindable("pointChange")]
+		[Bindable("pointChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>pointChange</code> event.
+		* When this property is modified, it dispatches the <code>pointChanged</code> event.
 		*/
 		public function get point():Point { return _point; }
 		
 		public function set point(value:Point):void 
 		{
-			if (_point == value) return;
+			if (_point === value) return;
 			_point = value;
-			dispatchEvent(new Event("pointChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("point")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
 		//  Public property text
 		//------------------------------------
 		
-		[Bindable("textChange")]
+		[Bindable("textChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>textChange</code> event.
+		* When this property is modified, it dispatches the <code>textChanged</code> event.
 		*/
 		public function get text():String { return _text; }
 		
@@ -89,19 +92,20 @@
 		{
 			if (_text == value) return;
 			_text = value;
-			dispatchEvent(new Event("textChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("text")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
 		//  Public property target
 		//------------------------------------
 		
-		[Bindable("targetChange")]
+		[Bindable("targetChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>targetChange</code> event.
+		* When this property is modified, it dispatches the <code>targetChanged</code> event.
 		*/
 		public function get target():DisplayObject { return _target; }
 		
@@ -112,19 +116,20 @@
 			_target = value;
 			_target.addEventListener(MouseEvent.MOUSE_OVER, mouseOverHandler, false, 0, true);
 			_target.addEventListener(MouseEvent.MOUSE_OUT, mouseOutHandler, false, 0, true);
-			dispatchEvent(new Event("targetChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("target")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
 		//  Public property time
 		//------------------------------------
 		
-		[Bindable("timeChange")]
+		[Bindable("timeChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>timeChange</code> event.
+		* When this property is modified, it dispatches the <code>timeChanged</code> event.
 		*/
 		public function get time():int { return _time; }
 		
@@ -139,29 +144,20 @@
 			}
 			_hideTimer = new Timer(value, 1);
 			_hideTimer.addEventListener(TimerEvent.TIMER_COMPLETE, hideTimerCompleteHandler, false, 0, true);
-			dispatchEvent(new Event("timeChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("time")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
 		//  Public property instance
 		//------------------------------------
 		
-		[Bindable("instanceChange")]
-		
-		/**
-		* ...
-		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>instanceChange</code> event.
-		*/
 		public function get instance():DisplayObject { return _instance; }
 		
-		[Bindable("hasInstanceChange")]
+		//------------------------------------
+		//  Public property hasInstance
+		//------------------------------------
 		
-		/**
-		* ...
-		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>hasInstanceChange</code> event.
-		*/
 		public function get hasInstance():Boolean { return _hasInstance; }
 		
 		//--------------------------------------------------------------------------

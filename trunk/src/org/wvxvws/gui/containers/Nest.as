@@ -19,6 +19,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+// TODO: Have to use SkinProducers.
+
 package org.wvxvws.gui.containers 
 {
 	import flash.display.BlendMode;
@@ -29,6 +31,7 @@ package org.wvxvws.gui.containers
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	import mx.core.IMXMLObject;
+	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.layout.ILayoutClient;
 	import org.wvxvws.gui.renderers.IBranchRenderer;
@@ -51,6 +54,132 @@ package org.wvxvws.gui.containers
 	 */
 	public class Nest extends Pane
 	{
+		public function get selectedItem():XML { return _selectedItem; }
+		
+		public function get selectedChild():IRenderer { return _selectedChild; }
+		
+		[Bindable("branchLabelFieldChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>branchLabelFieldChanged</code> event.
+		*/
+		public function get branchLabelField():String { return _branchLabelField; }
+		
+		public function set branchLabelField(value:String):void 
+		{
+			if (_branchLabelField === value) return;
+			_useBranchLabel = (value !== "" && value !== null);
+			_branchLabelField = value;
+			super.invalidate("_branchLabelField", _branchLabelField, false);
+			if (super.hasEventListener(EventGenerator.getEventType("branchLabelField")))
+				super.dispatchEvent(EventGenerator.getEvent());
+		}
+		
+		[Bindable("leafLabelFieldChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>leafLabelFieldChanged</code> event.
+		*/
+		public function get leafLabelField():String { return _leafLabelField; }
+		
+		public function set leafLabelField(value:String):void 
+		{
+			if (_leafLabelField === value) return;
+			_leafLabelField = value;
+			_useLeafLabel = (value !== "" && value !== null);
+			super.invalidate("_leafLabelField", _leafLabelField, false);
+			if (super.hasEventListener(EventGenerator.getEventType("leafLabelField")))
+				super.dispatchEvent(EventGenerator.getEvent());
+		}
+		
+		[Bindable("leafLabelFunctionChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>leafLabelFunctionChanged</code> event.
+		*/
+		public function get leafLabelFunction():Function { return _leafLabelFunction; }
+		
+		public function set leafLabelFunction(value:Function):void 
+		{
+			if (_leafLabelFunction === value) return;
+			_leafLabelFunction = value;
+			super.invalidate("_leafLabelFunction", _leafLabelFunction, false);
+			if (super.hasEventListener(EventGenerator.getEventType("leafLabelFunction")))
+				super.dispatchEvent(EventGenerator.getEvent());
+		}
+		
+		[Bindable("branchLabelFunctionChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>branchLabelFunctionChanged</code> event.
+		*/
+		public function get branchLabelFunction():Function { return _branchLabelFunction; }
+		
+		public function set branchLabelFunction(value:Function):void 
+		{
+			if (_branchLabelFunction === value) return;
+			_branchLabelFunction = value;
+			_useBrunchFunction = Boolean(value);
+			super.invalidate("_branchLabelFunction", _branchLabelFunction, false);
+			if (super.hasEventListener(EventGenerator.getEventType("branchLabelFunction")))
+				super.dispatchEvent(EventGenerator.getEvent());
+		}
+		
+		public function get folderIcon():Class { return _folderIcon; }
+		
+		public function set folderIcon(value:Class):void 
+		{
+			if (_folderIcon === value) return;
+			_folderIcon = value;
+			super.invalidate("_folderIcon", _folderIcon, false);
+		}
+		
+		public function get closedIcon():Class { return _closedIcon; }
+		
+		public function set closedIcon(value:Class):void 
+		{
+			if (_closedIcon === value) return;
+			_closedIcon = value;
+			super.invalidate("_closedIcon", _closedIcon, false);
+		}
+		
+		public function get openIcon():Class { return _openIcon; }
+		
+		public function set openIcon(value:Class):void 
+		{
+			if (_openIcon === value) return;
+			_openIcon = value;
+			super.invalidate("_openIcon", _openIcon, false);
+		}
+		
+		public function get docIcon():Class { return _docIcon; }
+		
+		public function set docIcon(value:Class):void 
+		{
+			if (_docIcon === value) return;
+			_docIcon = value;
+			super.invalidate("_docIcon", _docIcon, false);
+		}
+		
+		public function get docIconFactory():Function { return _docIconFactory; }
+		
+		public function set docIconFactory(value:Function):void 
+		{
+			if (_docIconFactory === value) return;
+			_docIconFactory = value;
+			super.invalidate("_docIconFactory", _docIconFactory, false);
+		}
+		
+		public function get lastOpened():int { return _lastOpened; }
+		
 		protected var _branchRenderer:Class = BranchRenderer;
 		protected var _leafRenderer:Class = LeafRenderer;
 		protected var _nextY:int;
@@ -197,7 +326,6 @@ package org.wvxvws.gui.containers
 				_childLayouts.push(child as ILayoutClient);
 			if (child is IMXMLObject)
 				(child as IMXMLObject).initialized(this, xml.localName());
-			trace("_nextY", _nextY, child);
 			child.y = _nextY;
 			_nextY += child.height;
 			_cumulativeHeight += child.height;
@@ -309,127 +437,6 @@ package org.wvxvws.gui.containers
 			return null;
 		}
 		
-		public function get selectedItem():XML { return _selectedItem; }
-		
-		public function get selectedChild():IRenderer { return _selectedChild; }
-		
-		[Bindable("branchLabelFieldChange")]
-		
-		/**
-		* ...
-		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>branchLabelFieldChange</code> event.
-		*/
-		public function get branchLabelField():String { return _branchLabelField; }
-		
-		public function set branchLabelField(value:String):void 
-		{
-			if (_branchLabelField === value) return;
-			_useBranchLabel = (value !== "" && value !== null);
-			_branchLabelField = value;
-			invalidate("_branchLabelField", _branchLabelField, false);
-			dispatchEvent(new Event("branchLabelFieldChange"));
-		}
-		
-		[Bindable("leafLabelFieldChange")]
-		
-		/**
-		* ...
-		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>leafLabelFieldChange</code> event.
-		*/
-		public function get leafLabelField():String { return _leafLabelField; }
-		
-		public function set leafLabelField(value:String):void 
-		{
-			if (_leafLabelField === value) return;
-			_leafLabelField = value;
-			_useLeafLabel = (value !== "" && value !== null);
-			invalidate("_leafLabelField", _leafLabelField, false);
-			dispatchEvent(new Event("leafLabelFieldChange"));
-		}
-		
-		[Bindable("leafLabelFunctionChange")]
-		
-		/**
-		* ...
-		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>leafLabelFunctionChange</code> event.
-		*/
-		public function get leafLabelFunction():Function { return _leafLabelFunction; }
-		
-		public function set leafLabelFunction(value:Function):void 
-		{
-			if (_leafLabelFunction === value) return;
-			_leafLabelFunction = value;
-			invalidate("_leafLabelFunction", _leafLabelFunction, false);
-			dispatchEvent(new Event("leafLabelFunctionChange"));
-		}
-		
-		[Bindable("branchLabelFunctionChange")]
-		
-		/**
-		* ...
-		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>branchLabelFunctionChange</code> event.
-		*/
-		public function get branchLabelFunction():Function { return _branchLabelFunction; }
-		
-		public function set branchLabelFunction(value:Function):void 
-		{
-			if (_branchLabelFunction === value) return;
-			_branchLabelFunction = value;
-			_useBrunchFunction = Boolean(value);
-			invalidate("_branchLabelFunction", _branchLabelFunction, false);
-			dispatchEvent(new Event("branchLabelFunctionChange"));
-		}
-		
-		public function get folderIcon():Class { return _folderIcon; }
-		
-		public function set folderIcon(value:Class):void 
-		{
-			if (_folderIcon === value) return;
-			_folderIcon = value;
-			invalidate("_folderIcon", _folderIcon, false);
-		}
-		
-		public function get closedIcon():Class { return _closedIcon; }
-		
-		public function set closedIcon(value:Class):void 
-		{
-			if (_closedIcon === value) return;
-			_closedIcon = value;
-			invalidate("_closedIcon", _closedIcon, false);
-		}
-		
-		public function get openIcon():Class { return _openIcon; }
-		
-		public function set openIcon(value:Class):void 
-		{
-			if (_openIcon === value) return;
-			_openIcon = value;
-			invalidate("_openIcon", _openIcon, false);
-		}
-		
-		public function get docIcon():Class { return _docIcon; }
-		
-		public function set docIcon(value:Class):void 
-		{
-			if (_docIcon === value) return;
-			_docIcon = value;
-			invalidate("_docIcon", _docIcon, false);
-		}
-		
-		public function get docIconFactory():Function { return _docIconFactory; }
-		
-		public function set docIconFactory(value:Function):void 
-		{
-			if (_docIconFactory === value) return;
-			_docIconFactory = value;
-			invalidate("_docIconFactory", _docIconFactory, false);
-		}
-		
-		public function get lastOpened():int { return _lastOpened; }
 	}
 	
 }

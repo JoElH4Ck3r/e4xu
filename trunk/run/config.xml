@@ -78,8 +78,8 @@
          <local-fonts-snapshot>${flexlib}/winFonts.ser</local-fonts-snapshot>
          <!-- compiler.fonts.managers: Compiler font manager classes, in policy resolution order-->
          <managers>
-            <manager-class>flash.fonts.AFEFontManager</manager-class>
             <manager-class>flash.fonts.JREFontManager</manager-class>
+            <manager-class>flash.fonts.AFEFontManager</manager-class>
             <manager-class>flash.fonts.BatikFontManager</manager-class>
             <manager-class>flash.fonts.CFFFontManager</manager-class>
          </managers>
@@ -101,10 +101,6 @@
       -->
       <!-- compiler.incremental: enables incremental compilation-->
       <incremental>true</incremental>
-      <!-- compiler.isolate-styles: enables the compiled application or module to set styles that only affect itself and its children-->
-      <!-- compiler.isolate-styles usage:
-      <isolate-styles>boolean</isolate-styles>
-      -->
       <!-- compiler.keep-all-type-selectors: disables the pruning of unused CSS type selectors-->
       <!-- compiler.keep-all-type-selectors usage:
       <keep-all-type-selectors>boolean</keep-all-type-selectors>
@@ -134,16 +130,10 @@
       <locale>
          <locale-element>en_US</locale-element>
       </locale>
-      <!-- compiler.minimum-supported-version usage:
-      <minimum-supported-version>string</minimum-supported-version>
-      -->
       <mxml>
          <!-- compiler.mxml.compatibility-version: specifies a compatibility version. e.g. -compatibility-version=2.0.1-->
          <!-- compiler.mxml.compatibility-version usage:
          <compatibility-version>version</compatibility-version>
-         -->
-         <!-- compiler.mxml.minimum-supported-version usage:
-         <minimum-supported-version>string</minimum-supported-version>
          -->
          <!-- compiler.mxml.qualified-type-selectors usage:
          <qualified-type-selectors>boolean</qualified-type-selectors>
@@ -178,9 +168,12 @@
       <!-- compiler.strict: runs the AS3 compiler in strict error checking mode.-->
       <strict>true</strict>
       <!-- compiler.theme: list of CSS or SWC files to apply as a theme-->
+      <!-- compiler.theme usage:
       <theme>
-         <filename>themes/Spark/spark.css</filename>
+         <filename>string</filename>
+         <filename>string</filename>
       </theme>
+      -->
       <!-- compiler.use-resource-bundle-metadata: determines whether resources bundles are included in the application.-->
       <use-resource-bundle-metadata>true</use-resource-bundle-metadata>
       <!-- compiler.verbose-stacktraces: save callstack information to the SWF for debugging-->
@@ -351,7 +344,7 @@
       <title>Adobe Flex 4 Application</title>
    </metadata>
    <!-- output: the filename of the SWF movie to create-->
-   <output>obj\xmlhelpers633938144542213750</output>
+   <output>obj\xmlhelpers633940096447633750</output>
    <!-- raw-metadata: XML text to store in the SWF metadata (overrides metadata.* configuration)-->
    <!-- raw-metadata usage:
    <raw-metadata>text</raw-metadata>
@@ -369,22 +362,30 @@
    -->
    <runtime-shared-library-path>
       <path-element>libs/textLayout.swc</path-element>
-      <rsl-url>textLayout_4.0.0.0.swf</rsl-url>
+      <rsl-url>http://fpdownload.adobe.com/pub/swz/flex/4.0.0.10485/textLayout_4.0.0.10485.swz</rsl-url>
+      <policy-file-url>http://fpdownload.adobe.com/pub/swz/crossdomain.xml</policy-file-url>
+      <rsl-url>textLayout_4.0.0.10485.swz</rsl-url>
       <policy-file-url></policy-file-url>
    </runtime-shared-library-path>
    <runtime-shared-library-path>
       <path-element>libs/framework.swc</path-element>
-      <rsl-url>framework_4.0.0.0.swf</rsl-url>
+      <rsl-url>http://fpdownload.adobe.com/pub/swz/flex/4.0.0.10485/framework_4.0.0.10485.swz</rsl-url>
+      <policy-file-url>http://fpdownload.adobe.com/pub/swz/crossdomain.xml</policy-file-url>
+      <rsl-url>framework_4.0.0.10485.swz</rsl-url>
       <policy-file-url></policy-file-url>
    </runtime-shared-library-path>
    <runtime-shared-library-path>
       <path-element>libs/spark.swc</path-element>
-      <rsl-url>spark_4.0.0.0.swf</rsl-url>
+      <rsl-url>http://fpdownload.adobe.com/pub/swz/flex/4.0.0.10485/spark_4.0.0.10485.swz</rsl-url>
+      <policy-file-url>http://fpdownload.adobe.com/pub/swz/crossdomain.xml</policy-file-url>
+      <rsl-url>spark_4.0.0.10485.swz</rsl-url>
       <policy-file-url></policy-file-url>
    </runtime-shared-library-path>
    <runtime-shared-library-path>
       <path-element>libs/rpc.swc</path-element>
-      <rsl-url>rpc_4.0.0.0.swf</rsl-url>
+      <rsl-url>http://fpdownload.adobe.com/pub/swz/flex/4.0.0.10485/rpc_4.0.0.10485.swz</rsl-url>
+      <policy-file-url>http://fpdownload.adobe.com/pub/swz/crossdomain.xml</policy-file-url>
+      <rsl-url>rpc_4.0.0.10485.swz</rsl-url>
       <policy-file-url></policy-file-url>
    </runtime-shared-library-path>
    <!-- static-link-runtime-shared-libraries: statically link the libraries specified by the -runtime-shared-libraries-path option.-->

@@ -35,6 +35,7 @@ package org.wvxvws.gui
 	import flash.utils.getDefinitionByName;
 	import flash.utils.getQualifiedClassName;
 	import mx.core.IMXMLObject;
+	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.layout.ILayoutClient;
 	import org.wvxvws.gui.layout.LayoutValidator;
 	import org.wvxvws.gui.styles.ICSSClient;
@@ -61,7 +62,7 @@ package org.wvxvws.gui
 		//  Public property x
 		//------------------------------------
 		
-		[Bindable("xChange")]
+		[Bindable("xChanged")]
 		
 		/**
 		* ...
@@ -75,14 +76,15 @@ package org.wvxvws.gui
 			if (_transformMatrix.tx == value) return;
 			_transformMatrix.tx = value;
 			this.invalidate("_transformMatrix", _transformMatrix, true);
-			super.dispatchEvent(new Event("xChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("x")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
 		//  Public property y
 		//------------------------------------
 		
-		[Bindable("yChange")]
+		[Bindable("yChanged")]
 		
 		/**
 		* ...
@@ -96,7 +98,8 @@ package org.wvxvws.gui
 			if (_transformMatrix.ty == value) return;
 			_transformMatrix.ty = value;
 			this.invalidate("_transformMatrix", _transformMatrix, true);
-			super.dispatchEvent(new Event("yChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("y")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -117,7 +120,8 @@ package org.wvxvws.gui
 			if (_bounds.x == value) return;
 			_bounds.x = value;
 			this.invalidate("_bounds", _bounds, true);
-			super.dispatchEvent(new Event("widthChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("width")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -138,7 +142,8 @@ package org.wvxvws.gui
 			if (_bounds.y == value) return;
 			_bounds.y = value;
 			this.invalidate("_bounds", _bounds, true);
-			super.dispatchEvent(new Event("heightChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("height")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -159,7 +164,8 @@ package org.wvxvws.gui
 			if (_transformMatrix.a == value) return;
 			_transformMatrix.a = value;
 			this.invalidate("_transformMatrix", _transformMatrix, true);
-			super.dispatchEvent(new Event("scaleXChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("scaleX")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -180,7 +186,8 @@ package org.wvxvws.gui
 			if (_transformMatrix.d == value) return;
 			_transformMatrix.d = value;
 			this.invalidate("_transformMatrix", _transformMatrix, true);
-			super.dispatchEvent(new Event("scaleYChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("scaleY")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -201,9 +208,10 @@ package org.wvxvws.gui
 		
 		public override function set transform(value:Transform):void 
 		{
-			invalidate("_userTransform", _userTransform, true);
+			this.invalidate("_userTransform", _userTransform, true);
 			_userTransform = value;
-			super.dispatchEvent(new Event("transformChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("transform")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -221,10 +229,11 @@ package org.wvxvws.gui
 		
 		public function set style(value:IEventDispatcher):void 
 		{
-		   if (_style == value) return;
-		   this.invalidate("_invalidProperties", _invalidProperties, true);
-		   _style = value;
-		   super.dispatchEvent(new Event("styleChanged"));
+			if (_style == value) return;
+			this.invalidate("_invalidProperties", _invalidProperties, true);
+			_style = value;
+			if (super.hasEventListener(EventGenerator.getEventType("style")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -245,7 +254,8 @@ package org.wvxvws.gui
 			if (value == _backgroundColor) return;
 			this.invalidate("_backgroundColor", _backgroundColor, false);
 			_backgroundColor = value;
-			super.dispatchEvent(new Event("backgroundColorChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("backgroundColor")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -266,7 +276,8 @@ package org.wvxvws.gui
 			if (value == _backgroundAlpha) return;
 			this.invalidate("_backgroundAlpha", _backgroundAlpha, false);
 			_backgroundAlpha = value;
-			super.dispatchEvent(new Event("backgroundAlphaChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("backgroundAlpha")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		/* INTERFACE org.wvxvws.gui.styles.ICSSClient */
@@ -333,6 +344,7 @@ package org.wvxvws.gui
 		protected var _hasPendingValidation:Boolean;
 		protected var _hasPendingParentValidation:Boolean;
 		protected var _initialized:Boolean;
+		protected var _bindingEvent:Event;
 		
 		//--------------------------------------------------------------------------
 		//
