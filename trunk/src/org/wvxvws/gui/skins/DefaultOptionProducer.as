@@ -59,15 +59,14 @@
 					g.beginFill(SkinDefaults.DISABLED_SELECTED_COLOR);
 					break;
 			}
-			Drawings.circle(g, 8, new Point(4, 4));
+			Drawings.circle(g, 6, new Point(0, 0));
 			g.beginFill(0);
-			Drawings.circle(g, 8, new Point(4, 4));
-			Drawings.circle(g, 7, new Point(5, 5));
+			Drawings.circle(g, 6, new Point(0, 0));
+			Drawings.circle(g, 5, new Point(1, 1));
 			if (state === Option.SELECTED_STATE || state === Option.SELECTED_DISABLED_STATE)
 			{
-				Drawings.circle(g, 3, new Point(9, 9));
+				Drawings.circle(g, 2, new Point(4, 4));
 			}
-			trace(s.width, s.height);
 			//s.scale9Grid = new Rectangle(4, 4, 8, 8);
 			return s;
 		}
