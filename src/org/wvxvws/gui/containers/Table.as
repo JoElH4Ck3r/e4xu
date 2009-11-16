@@ -19,12 +19,15 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+// TODO: Needs major update
+
 package org.wvxvws.gui.containers
 {
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.renderers.Renderer;
 	
@@ -41,6 +44,73 @@ package org.wvxvws.gui.containers
 		//  Public properties
 		//
 		//--------------------------------------------------------------------------
+		
+		public function get columns():Vector.<Column> { return _columns; }
+		
+		public function set columns(value:Vector.<Column>):void 
+		{
+			if (_columns === value) return;
+			_columns = value;
+			super.invalidate("_columns", _columns, false);
+			if (super.hasEventListener(EventGenerator.getEventType("columns")))
+				super.dispatchEvent(EventGenerator.getEvent());
+		}
+		
+		public function get rendererFactory():Class { return _rendererFactory; }
+		
+		public function set rendererFactory(value:Class):void 
+		{
+			if (_rendererFactory === value) return;
+			_rendererFactory = value;
+			super.invalidate("_rendererFactory", _rendererFactory, false);
+			if (super.hasEventListener(EventGenerator.getEventType("rendererFactory")))
+				super.dispatchEvent(EventGenerator.getEvent());
+		}
+		
+		public function get cellHeight():int { return _cellHeight; }
+		
+		public function set cellHeight(value:int):void 
+		{
+			if (_cellHeight === value) return;
+			_cellHeight = value;
+			super.invalidate("_cellHeight", _cellHeight, false);
+			if (super.hasEventListener(EventGenerator.getEventType("cellHeight")))
+				super.dispatchEvent(EventGenerator.getEvent());
+		}
+		
+		public function get gutterH():int { return _gutterH; }
+		
+		public function set gutterH(value:int):void 
+		{
+			if (_gutterH === value) return;
+			_gutterH = value;
+			super.invalidate("_gutterH", _gutterH, false);
+			if (super.hasEventListener(EventGenerator.getEventType("gutterH")))
+				super.dispatchEvent(EventGenerator.getEvent());
+		}
+		
+		public function get gutterV():int { return _gutterV; }
+		
+		public function set gutterV(value:int):void 
+		{
+			if (_gutterV === value) return;
+			_gutterV = value;
+			super.invalidate("_gutterV", _gutterV, false);
+			if (super.hasEventListener(EventGenerator.getEventType("gutterV")))
+				super.dispatchEvent(EventGenerator.getEvent());
+		}
+		
+		public function get padding():Rectangle { return _padding; }
+		
+		public function set padding(value:Rectangle):void 
+		{
+			if (_padding === value || _padding && value && _padding.equals(value))
+				return;
+			_padding = value;
+			super.invalidate("_padding", _padding, false);
+			if (super.hasEventListener(EventGenerator.getEventType("padding")))
+				super.dispatchEvent(EventGenerator.getEvent());
+		}
 		
 		//--------------------------------------------------------------------------
 		//
@@ -70,67 +140,6 @@ package org.wvxvws.gui.containers
 		{
 			super();
 			
-		}
-		
-		public function get columns():Vector.<Column> { return _columns; }
-		
-		public function set columns(value:Vector.<Column>):void 
-		{
-			if (_columns === value) return;
-			_columns = value;
-			invalidate("_columns", _columns, false);
-			dispatchEvent(new Event("columnsChanged"));
-		}
-		
-		public function get rendererFactory():Class { return _rendererFactory; }
-		
-		public function set rendererFactory(value:Class):void 
-		{
-			if (_rendererFactory === value) return;
-			_rendererFactory = value;
-			invalidate("_rendererFactory", _rendererFactory, false);
-			dispatchEvent(new Event("rendererFactoryChanged"));
-		}
-		
-		public function get cellHeight():int { return _cellHeight; }
-		
-		public function set cellHeight(value:int):void 
-		{
-			if (_cellHeight === value) return;
-			_cellHeight = value;
-			invalidate("_cellHeight", _cellHeight, false);
-			dispatchEvent(new Event("cellHeightChanged"));
-		}
-		
-		public function get gutterH():int { return _gutterH; }
-		
-		public function set gutterH(value:int):void 
-		{
-			if (_gutterH === value) return;
-			_gutterH = value;
-			invalidate("_gutterH", _gutterH, false);
-			dispatchEvent(new Event("gutterHChanged"));
-		}
-		
-		public function get gutterV():int { return _gutterV; }
-		
-		public function set gutterV(value:int):void 
-		{
-			if (_gutterV === value) return;
-			_gutterV = value;
-			invalidate("_gutterV", _gutterV, false);
-			dispatchEvent(new Event("gutterVChanged"));
-		}
-		
-		public function get padding():Rectangle { return _padding; }
-		
-		public function set padding(value:Rectangle):void 
-		{
-			if (_padding === value || _padding && value && _padding.equals(value))
-				return;
-			_padding = value;
-			invalidate("_padding", _padding, false);
-			dispatchEvent(new Event("paddingChanged"));
 		}
 		
 		//--------------------------------------------------------------------------
@@ -216,7 +225,7 @@ package org.wvxvws.gui.containers
 			{
 				col.endLayoutChildren(super.height - (_padding.top + _padding.bottom));
 			}
-			dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED));
+			super.dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED));
 		}
 		
 		//--------------------------------------------------------------------------

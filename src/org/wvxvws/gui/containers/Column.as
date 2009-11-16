@@ -26,6 +26,7 @@ package org.wvxvws.gui.containers
 	import flash.events.Event;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.renderers.IRenderer;
 	import org.wvxvws.gui.skins.LabelProducer;
@@ -74,7 +75,8 @@ package org.wvxvws.gui.containers
 			if (_rendererFactory === value) return;
 			_rendererFactory = value;
 			super.invalidate("_rendererFactory", _rendererFactory, false);
-			super.dispatchEvent(new Event("rendererFactoryChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("rendererFactory")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -95,7 +97,8 @@ package org.wvxvws.gui.containers
 			if (_cellHeight === value) return;
 			_cellHeight = value;
 			super.invalidate("_cellHeight", _cellHeight, false);
-			super.dispatchEvent(new Event("cellHeightChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("cellHeight")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		//
 		//------------------------------------
@@ -137,7 +140,8 @@ package org.wvxvws.gui.containers
 			if (_gutter === value) return;
 			_gutter = value;
 			super.invalidate("_gutter", _gutter, false);
-			super.dispatchEvent(new Event("gutterChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("gutter")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -158,7 +162,8 @@ package org.wvxvws.gui.containers
 			if (_padding === value) return;
 			_padding = value;
 			super.invalidate("_padding", _padding, false);
-			super.dispatchEvent(new Event("paddingChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("padding")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -179,7 +184,8 @@ package org.wvxvws.gui.containers
 			if (_parentIsCreator === value) return;
 			_parentIsCreator = value;
 			super.invalidate("_parentIsCreator", _parentIsCreator, false);
-			super.dispatchEvent(new Event("parentIsCreatorChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("parentIsCreator")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------

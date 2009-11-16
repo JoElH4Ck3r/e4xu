@@ -16,6 +16,7 @@
 	import mx.core.IMXMLObject;
 	import flash.display.SimpleButton;
 	import flash.display.DisplayObject;
+	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.layout.ILayoutClient;
 	import org.wvxvws.gui.layout.LayoutValidator;
 	import org.wvxvws.gui.skins.ButtonSkinProducer;
@@ -69,12 +70,12 @@
 		//  Public property x
 		//------------------------------------
 		
-		[Bindable("xChange")]
+		[Bindable("xChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>xChange</code> event.
+		* When this property is modified, it dispatches the <code>xChanged</code> event.
 		*/
 		public override function get x():Number { return _transformMatrix.tx; }
 		
@@ -83,19 +84,20 @@
 			if (_transformMatrix.tx == value) return;
 			_transformMatrix.tx = value;
 			this.invalidate("_transformMatrix", _transformMatrix, true);
-			super.dispatchEvent(new Event("xChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("x")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
 		//  Public property y
 		//------------------------------------
 		
-		[Bindable("yChange")]
+		[Bindable("yChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>yChange</code> event.
+		* When this property is modified, it dispatches the <code>yChanged</code> event.
 		*/
 		public override function get y():Number { return _transformMatrix.ty; }
 		
@@ -104,7 +106,8 @@
 			if (_transformMatrix.ty == value) return;
 			_transformMatrix.ty = value;
 			this.invalidate("_transformMatrix", _transformMatrix, true);
-			super.dispatchEvent(new Event("yChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("y")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -125,7 +128,8 @@
 			if (_bounds.x == value) return;
 			_bounds.x = value;
 			this.invalidate("_bounds", _bounds, true);
-			super.dispatchEvent(new Event("widthChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("width")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -146,7 +150,8 @@
 			if (_bounds.y == value) return;
 			_bounds.y = value;
 			this.invalidate("_bounds", _bounds, true);
-			super.dispatchEvent(new Event("heightChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("height")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -167,7 +172,8 @@
 			if (_transformMatrix.a == value) return;
 			_transformMatrix.a = value;
 			this.invalidate("_transformMatrix", _transformMatrix, true);
-			super.dispatchEvent(new Event("scaleXChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("scaleX")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -188,7 +194,8 @@
 			if (_transformMatrix.d == value) return;
 			_transformMatrix.d = value;
 			this.invalidate("_transformMatrix", _transformMatrix, true);
-			super.dispatchEvent(new Event("scaleYChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("scaleY")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -209,9 +216,10 @@
 		
 		public override function set transform(value:Transform):void 
 		{
-			invalidate("_userTransform", _userTransform, true);
+			this.invalidate("_userTransform", _userTransform, true);
 			_userTransform = value;
-			super.dispatchEvent(new Event("transformChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("transform")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -234,7 +242,9 @@
 			_label.x = -0.5 * _label.width;
 			_label.y = -0.5 * _label.height;
 			this.invalidate("_label", _label.text, false);
-			super.dispatchEvent(new Event("labelChanged"));
+			EventGenerator.eventName.label = true;
+			if (super.hasEventListener(EventGenerator.getEventType))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -282,7 +292,9 @@
 				super.downState = null;
 			}
 			this.invalidate("_producer", _producer, false);
-			super.dispatchEvent(new Event("producerChanged"));
+			EventGenerator.eventName.producer = true;
+			if (super.hasEventListener(EventGenerator.getEventType))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		/* INTERFACE org.wvxvws.gui.layout.ILayoutClient */
@@ -398,7 +410,6 @@
 		
 		public function validate(properties:Object):void
 		{
-			trace("button validate ", super.stage);
 			if (!_validator)
 			{
 				if (_document is ILayoutClient)

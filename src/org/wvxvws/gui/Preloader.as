@@ -65,7 +65,7 @@ package org.wvxvws.gui
 			if (_target == value) return;
 			_target = value;
 			_target.addEventListener(Event.COMPLETE, completeHandler);
-			invalidate("_target", _target, false);
+			super.invalidate("_target", _target, false);
 		}
 		
 		public function get target():IEventDispatcher { return _target; }
@@ -74,7 +74,7 @@ package org.wvxvws.gui
 		{
 			if (_percent == value) return;
 			_percent = value;
-			invalidate("_percent", _percent, false);
+			super.invalidate("_percent", _percent, false);
 		}
 		
 		public function get percent():int { return _percent; }
@@ -85,7 +85,7 @@ package org.wvxvws.gui
 		{
 			if (_radius == value) return;
 			_radius = value;
-			invalidate("_radius", _radius, true);
+			super.invalidate("_radius", _radius, true);
 		}
 		
 		public function get circleRadius():int { return _circleRadius; }
@@ -94,7 +94,7 @@ package org.wvxvws.gui
 		{
 			if (_circleRadius == value) return;
 			_circleRadius = value;
-			invalidate("_circleRadius", _circleRadius, false);
+			super.invalidate("_circleRadius", _circleRadius, false);
 		}
 		
 		public function get circleColor():uint { return _circleColor; }
@@ -103,7 +103,7 @@ package org.wvxvws.gui
 		{
 			if (_circleColor == value) return;
 			_circleColor = value;
-			invalidate("_circleColor", _circleColor, false);
+			super.invalidate("_circleColor", _circleColor, false);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -151,13 +151,13 @@ package org.wvxvws.gui
 		public function start():void
 		{
 			_isPlaying = true;
-			addEventListener(Event.ENTER_FRAME, renderFrame, false, 0, true);
+			super.addEventListener(Event.ENTER_FRAME, renderFrame, false, 0, true);
 		}
 		
 		public function stop():void
 		{
 			_isPlaying = false;
-			removeEventListener(Event.ENTER_FRAME, renderFrame);
+			super.removeEventListener(Event.ENTER_FRAME, renderFrame);
 		}
 		
 		override public function initialized(document:Object, id:String):void 
@@ -172,7 +172,7 @@ package org.wvxvws.gui
 		override public function validate(properties:Object):void 
 		{
 			super.validate(properties);
-			init();
+			this.init();
 			if (_isPlaying) start();
 		}
 		
@@ -184,7 +184,7 @@ package org.wvxvws.gui
 		
 		protected function init(numCircles:int = 12):void
 		{
-			drawPatternedBacground();
+			this.drawPatternedBacground();
 			var step:int = numCircles / 2;
 			if (_container && contains(_container))
 			{
@@ -201,7 +201,7 @@ package org.wvxvws.gui
 			_container.y = _preTY = height >> 1;
 			_container.filters = [new DropShadowFilter(_radius >> 1, 90, 0, .2, 8, 8, 1.8),
 									new GlowFilter(0, .6, 4, 4, 2, 1, true)];
-			addChild(_container);
+			super.addChild(_container);
 			_cTransform = new Transform(_container);
 		}
 		
@@ -232,7 +232,7 @@ package org.wvxvws.gui
 		
 		protected function completeHandler(event:Event):void 
 		{
-			dispatchEvent(event);
+			super.dispatchEvent(event);
 		}
 		
 		protected function drawPatternedBacground():void

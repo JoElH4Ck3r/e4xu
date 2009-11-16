@@ -5,6 +5,7 @@
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
 	import mx.core.IMXMLObject;
+	import org.wvxvws.binding.EventGenerator;
 	
 	/**
 	 * Border class.
@@ -31,7 +32,8 @@
 			if (_thikness.top === value) return;
 			_thikness.top = value;
 			super.invalidate("_thikness", _thikness, false);
-			super.dispatchEvent(new Event("topChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("top")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -52,7 +54,8 @@
 			if (_thikness.left === value) return;
 			_thikness.left = value;
 			super.invalidate("_thikness", _thikness, false);
-			super.dispatchEvent(new Event("leftChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("left")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -73,7 +76,8 @@
 			if (_thikness.bottom === value) return;
 			_thikness.bottom = value;
 			super.invalidate("_thikness", _thikness, false);
-			super.dispatchEvent(new Event("bottomChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("bottom")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -94,7 +98,8 @@
 			if (_thikness.right === value) return;
 			_thikness.right = value;
 			super.invalidate("_thikness", _thikness, false);
-			super.dispatchEvent(new Event("rightChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("right")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -116,7 +121,8 @@
 			if (_pattern) _pattern.dispose();
 			_pattern = value;
 			super.invalidate("_pattern", _pattern, false);
-			super.dispatchEvent(new Event("patternChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("pattern")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -138,7 +144,8 @@
 			if (_cornerPattern) _cornerPattern.dispose();
 			_cornerPattern = value;
 			super.invalidate("_cornerPattern", _cornerPattern, true);
-			super.dispatchEvent(new Event("cornerPatternChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("cornerPattern")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -159,7 +166,8 @@
 			if (_repeat === value) return;
 			_repeat = value;
 			super.invalidate("_repeat", _repeat, true);
-			super.dispatchEvent(new Event("repeatChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("repeat")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -180,7 +188,8 @@
 			if (_smooth === value) return;
 			_smooth = value;
 			super.invalidate("_smooth", _smooth, true);
-			super.dispatchEvent(new Event("smoothChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("smooth")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		protected var _thikness:Rectangle = new Rectangle(1, 1, 0, 0);

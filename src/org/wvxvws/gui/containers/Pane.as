@@ -4,6 +4,7 @@
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import mx.core.IMXMLObject;
+	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.DIV;
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.renderers.IRenderer;
@@ -41,24 +42,6 @@
 			super.dispatchEvent(new GUIEvent(GUIEvent.DATA_CHANGED));
 		}
 		
-		//[Bindable("labelFieldChange")]
-		//
-		///**
-		//* ...
-		//* This property can be used as the source for data binding.
-		//* When this property is modified, it dispatches the <code>labelFieldChange</code> event.
-		//*/
-		//public function get labelField():String { return _labelField; }
-		//
-		//public function set labelField(value:String):void 
-		//{
-			//if (_labelField === value) return;
-			//_labelField = value;
-			//_useLabelField = (value !== "" && value !== null)
-			//super.invalidate("_labelField", _labelField, false);
-			//super.dispatchEvent(new Event("labelFieldChange"));
-		//}
-		
 		[Bindable("labelProducerChanged")]
 		
 		/**
@@ -72,9 +55,9 @@
 		{
 			if (_labelProducer === value) return;
 			_labelProducer = value;
-			//_useLabelFunction = Boolean(value);
 			super.invalidate("_labelProducer", _labelProducer, false);
-			super.dispatchEvent(new Event("labelProducerChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("labelProducer")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		public function get subContainers():Vector.<Pane> { return _subContainers; }
@@ -90,11 +73,7 @@
 		protected var _currentItem:int;
 		protected var _removedChildren:Vector.<DisplayObject>;
 		protected var _rendererFactory:Class;
-		//protected var _labelFunction:Function;
-		//protected var _labelField:String;
 		protected var _dispatchCreated:Boolean;
-		//protected var _useLabelField:Boolean;
-		//protected var _useLabelFunction:Boolean;
 		protected var _subContainers:Vector.<Pane>;
 		protected var _labelProducer:LabelProducer;
 		

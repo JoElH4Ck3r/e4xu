@@ -4,6 +4,7 @@
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import mx.core.IMXMLObject;
+	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.GUIEvent;
 	
 	[Event(name="selected", type="org.wvxvws.gui.GUIEvent")]
@@ -52,7 +53,8 @@
 				}
 			}
 			if (_document) this.reparentOptions();
-			super.dispatchEvent(new Event("optionsChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("options")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		protected function option_selectedHandler(event:GUIEvent):void 

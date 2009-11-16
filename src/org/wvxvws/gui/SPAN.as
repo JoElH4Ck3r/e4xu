@@ -36,6 +36,7 @@ package org.wvxvws.gui
 	import flash.utils.getDefinitionByName;
 	import flash.utils.getQualifiedClassName;
 	import mx.core.IMXMLObject;
+	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.layout.ILayoutClient;
 	import org.wvxvws.gui.layout.LayoutValidator;
 	import org.wvxvws.gui.renderers.ILabel;
@@ -64,12 +65,12 @@ package org.wvxvws.gui
 		//  Public property x
 		//------------------------------------
 		
-		[Bindable("xChange")]
+		[Bindable("xChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>xChange</code> event.
+		* When this property is modified, it dispatches the <code>xChanged</code> event.
 		*/
 		public override function get x():Number { return _transformMatrix.tx; }
 		
@@ -78,19 +79,20 @@ package org.wvxvws.gui
 			if (_transformMatrix.tx == value) return;
 			_transformMatrix.tx = value;
 			this.invalidate("_transformMatrix", _transformMatrix, true);
-			super.dispatchEvent(new Event("xChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("x")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
 		//  Public property y
 		//------------------------------------
 		
-		[Bindable("yChange")]
+		[Bindable("yChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>yChange</code> event.
+		* When this property is modified, it dispatches the <code>yChanged</code> event.
 		*/
 		public override function get y():Number { return _transformMatrix.ty; }
 		
@@ -99,19 +101,20 @@ package org.wvxvws.gui
 			if (_transformMatrix.ty == value) return;
 			_transformMatrix.ty = value;
 			this.invalidate("_transformMatrix", _transformMatrix, true);
-			super.dispatchEvent(new Event("yChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("y")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
 		//  Public property width
 		//------------------------------------
 		
-		[Bindable("widthChange")]
+		[Bindable("widthChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>widthChange</code> event.
+		* When this property is modified, it dispatches the <code>widthChanged</code> event.
 		*/
 		public override function get width():Number { return _bounds.x; }
 		
@@ -122,19 +125,20 @@ package org.wvxvws.gui
 			_autoSize = TextFieldAutoSize.NONE;
 			this.invalidate("_bounds", _bounds, true);
 			this.invalidate("_autoSize", _autoSize, true);
-			super.dispatchEvent(new Event("widthChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("width")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
 		//  Public property height
 		//------------------------------------
 		
-		[Bindable("heightChange")]
+		[Bindable("heightChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>heightChange</code> event.
+		* When this property is modified, it dispatches the <code>heightChanged</code> event.
 		*/
 		public override function get height():Number { return _bounds.y; }
 		
@@ -145,19 +149,20 @@ package org.wvxvws.gui
 			_autoSize = TextFieldAutoSize.NONE;
 			this.invalidate("_bounds", _bounds, true);
 			this.invalidate("_autoSize", _autoSize, true);
-			super.dispatchEvent(new Event("heightChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("height")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
 		//  Public property scaleX
 		//------------------------------------
 		
-		[Bindable("scaleXChange")]
+		[Bindable("scaleXChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>scaleXChange</code> event.
+		* When this property is modified, it dispatches the <code>scaleXChanged</code> event.
 		*/
 		public override function get scaleX():Number { return _transformMatrix.a; }
 		
@@ -166,19 +171,20 @@ package org.wvxvws.gui
 			if (_transformMatrix.a == value) return;
 			_transformMatrix.a = value;
 			this.invalidate("_transformMatrix", _transformMatrix, true);
-			super.dispatchEvent(new Event("scaleXChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("scaleX")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
 		//  Public property scaleY
 		//------------------------------------
 		
-		[Bindable("scaleYChange")]
+		[Bindable("scaleYChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>scaleYChange</code> event.
+		* When this property is modified, it dispatches the <code>scaleYChanged</code> event.
 		*/
 		public override function get scaleY():Number { return _transformMatrix.d; }
 		
@@ -187,19 +193,20 @@ package org.wvxvws.gui
 			if (_transformMatrix.d == value) return;
 			_transformMatrix.d = value;
 			this.invalidate("_transformMatrix", _transformMatrix, true);
-			super.dispatchEvent(new Event("scaleYChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("scaleY")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
 		//  Public property transform
 		//------------------------------------
 		
-		[Bindable("transformChange")]
+		[Bindable("transformChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>transformChange</code> event.
+		* When this property is modified, it dispatches the <code>transformChanged</code> event.
 		*/
 		public override function get transform():Transform { return super.transform; }
 		
@@ -207,19 +214,20 @@ package org.wvxvws.gui
 		{
 			_userTransform = value;
 			this.invalidate("_userTransform", _userTransform, true);
-			super.dispatchEvent(new Event("transformChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("transform")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
 		//  Public property backgroundColor
 		//------------------------------------
 		
-		[Bindable("backgroundColorChange")]
+		[Bindable("backgroundColorChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>backgroundColorChange</code> event.
+		* When this property is modified, it dispatches the <code>backgroundColorChanged</code> event.
 		*/
 		public override function get backgroundColor():uint { return _backgroundColor; }
 		
@@ -228,19 +236,20 @@ package org.wvxvws.gui
 			if (value == _backgroundColor) return;
 			_backgroundColor = value;
 			this.invalidate("_backgroundColor", _backgroundColor, true);
-			super.dispatchEvent(new Event("backgroundColorChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("backgroundColor")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
 		//  Public property background
 		//------------------------------------
 		
-		[Bindable("backgroundChange")]
+		[Bindable("backgroundChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>backgroundChange</code> event.
+		* When this property is modified, it dispatches the <code>backgroundChanged</code> event.
 		*/
 		public override function get background():Boolean { return _background; }
 		
@@ -249,19 +258,20 @@ package org.wvxvws.gui
 			if (value == _background) return;
 			_background = value;
 			this.invalidate("_background", _background, true);
-			super.dispatchEvent(new Event("backgroundChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("background")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
 		//  Public property text
 		//------------------------------------
 		
-		[Bindable("textChange")]
+		[Bindable("textChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>textChange</code> event.
+		* When this property is modified, it dispatches the <code>textChanged</code> event.
 		*/
 		public override function get text():String { return super.text; }
 		
@@ -270,19 +280,20 @@ package org.wvxvws.gui
 			if (value == _text) return;
 			_text = value;
 			this.invalidate("_text", _text, true);
-			super.dispatchEvent(new Event("textChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("text")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
 		//  Public property autoSize
 		//------------------------------------
 		
-		[Bindable("autoSizeChange")]
+		[Bindable("autoSizeChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>autoSizeChange</code> event.
+		* When this property is modified, it dispatches the <code>autoSizeChanged</code> event.
 		*/
 		public override function get autoSize():String { return super.autoSize; }
 		
@@ -291,19 +302,20 @@ package org.wvxvws.gui
 			if (value == _autoSize) return;
 			_autoSize = value;
 			this.invalidate("_autoSize", _autoSize, true);
-			super.dispatchEvent(new Event("autoSizeChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("autoSize")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
 		//  Public property autoSize
 		//------------------------------------
 		
-		[Bindable("alignChange")]
+		[Bindable("alignChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>alignChange</code> event.
+		* When this property is modified, it dispatches the <code>alignChanged</code> event.
 		*/
 		public function get align():String { return _textFormat.align; }
 		
@@ -312,7 +324,8 @@ package org.wvxvws.gui
 			if (value == _textFormat.align) return;
 			_textFormat.align = value;
 			this.invalidate("_textFormat", _textFormat, true);
-			super.dispatchEvent(new Event("alignChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("align")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		/* INTERFACE org.wvxvws.gui.styles.ICSSClient */

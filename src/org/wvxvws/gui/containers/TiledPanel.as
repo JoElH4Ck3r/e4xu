@@ -79,7 +79,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_rendererFactory === value) return;
 			_rendererFactory = value;
-			invalidLayout = true;
+			super.invalidLayout = true;
 		}
 		
 		public function get cellSize():Point { return _cellSize; }
@@ -88,7 +88,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_cellSize === value) return;
 			_cellSize = value;
-			invalidLayout = true;
+			super.invalidLayout = true;
 		}
 		
 		public function get rowCount():int { return _rowCount; }
@@ -97,7 +97,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_rowCount === value) return;
 			_rowCount = value;
-			invalidLayout = true;
+			super.invalidLayout = true;
 		}
 		
 		public function get columnCount():int { return _columnCount; }
@@ -106,7 +106,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_rowCount === value) return;
 			_columnCount = value;
-			invalidLayout = true;
+			super.invalidLayout = true;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -114,30 +114,6 @@ package org.wvxvws.gui.containers
 		//  Public methods
 		//
 		//--------------------------------------------------------------------------
-		
-		override public function addChild(child:DisplayObject):DisplayObject 
-		{
-			throw new Error("Use dataProvider to add or remove children");
-			return null;
-		}
-		
-		override public function addChildAt(child:DisplayObject, index:int):DisplayObject 
-		{
-			throw new Error("Use dataProvider to add or remove children");
-			return null;
-		}
-		
-		override public function removeChild(child:DisplayObject):DisplayObject 
-		{
-			throw new Error("Use dataProvider to add or remove children");
-			return null;
-		}
-		
-		override public function removeChildAt(index:int):DisplayObject 
-		{
-			throw new Error("Use dataProvider to add or remove children");
-			return null;
-		}
 		
 		//--------------------------------------------------------------------------
 		//

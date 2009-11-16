@@ -4,6 +4,7 @@
 	import flash.events.Event;
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
+	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.cursor.Cursor;
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.renderers.HeaderRenderer;
@@ -47,7 +48,8 @@
 			if (_openClass === value) return;
 			_openClass = value;
 			super.invalidate("_openClass", _openClass, false);
-			super.dispatchEvent(new Event("openClassChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("openClass")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -68,7 +70,8 @@
 			if (_closedClass === value) return;
 			_closedClass = value;
 			super.invalidate("_closedClass", _closedClass, false);
-			super.dispatchEvent(new Event("closedClassChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("closedClass")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -89,7 +92,8 @@
 			if (_iconProducer == value) return;
 			_iconProducer = value;
 			super.invalidate("_iconProducer", _iconProducer, false);
-			super.dispatchEvent(new Event("iconProducerChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("iconProducer")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -110,7 +114,8 @@
 			if (_folderProducer === value) return;
 			_folderProducer = value;
 			super.invalidate("_folderProducer", _folderProducer, false);
-			super.dispatchEvent(new Event("folderProducerChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("folderProducer")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -138,7 +143,8 @@
 				_columns = new <Column>[_nestColumn].concat(_columns);
 			}
 			super.invalidate("_columns", _columns, false);
-			super.dispatchEvent(new Event("columnsChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("columns")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -171,7 +177,8 @@
 			if (_headerRenderer === value) return;
 			_headerRenderer = value;
 			super.invalidate("_headerRenderer", _headerRenderer, false);
-			super.dispatchEvent(new Event("headerRendererChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("headerRenderer")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -192,7 +199,8 @@
 			if (_headerLabel === value) return;
 			_headerLabel = value;
 			super.invalidate("_headerLabel", _headerLabel, false);
-			super.dispatchEvent(new Event("headerLabelChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("headerLabel")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -213,7 +221,8 @@
 			if (_headerFactory === value) return;
 			_headerFactory = value;
 			super.invalidate("_headerFactory", _headerFactory, false);
-			super.dispatchEvent(new Event("headerFactoryChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("headerFactory")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -234,7 +243,8 @@
 			if (_includeText === value) return;
 			_includeText = value;
 			super.invalidate("_includeText", _includeText, false);
-			super.dispatchEvent(new Event("includeTextChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("includeText")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -255,7 +265,8 @@
 			if (_headerHeight === value) return;
 			_headerHeight = value;
 			super.invalidate("_headerHeight", _headerHeight, false);
-			super.dispatchEvent(new Event("headerHeightChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("headerHeight")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------

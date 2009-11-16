@@ -5,6 +5,7 @@
 	import flash.events.Event;
 	import flash.geom.Rectangle;
 	import mx.core.IMXMLObject;
+	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.DIV;
 	import org.wvxvws.gui.layout.Constraints;
 	import org.wvxvws.gui.layout.ILayoutClient;
@@ -44,7 +45,8 @@
 			if (_direction === value) return;
 			_direction = value;
 			this.invalidate("_direction", _direction, false);
-			super.dispatchEvent(new Event("directionChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("direction")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -65,7 +67,8 @@
 			if (_distribute == value || value > 1 || value < 0) return;
 			_distribute = value;
 			super.invalidate("_distribute", _distribute, false);
-			super.dispatchEvent(new Event("distributeChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("distribute")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -87,7 +90,8 @@
 				return;
 			_padding = value ? value.clone() : null;
 			super.invalidate("_padding", _padding, false);
-			super.dispatchEvent(new Event("paddingChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("padding")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -108,7 +112,8 @@
 			if (_gutterH == value) return;
 			_gutterH = value;
 			super.invalidate("_gutterH", _gutterH, false);
-			super.dispatchEvent(new Event("gutterHChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("gutterH")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -129,7 +134,8 @@
 			if (_gutterV == value) return;
 			_gutterV = value;
 			super.invalidate("_gutterV", _gutterV, false);
-			super.dispatchEvent(new Event("gutterVChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("gutterV")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -150,7 +156,8 @@
 			if (_allowOverlap == value) return;
 			_allowOverlap = value;
 			super.invalidate("_allowOverlap", _allowOverlap, false);
-			super.dispatchEvent(new Event("allowOverlapChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("allowOverlap")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		public function get children():Vector.<DisplayObject> { return _children.concat(); }
@@ -184,7 +191,8 @@
 			if (_performLayout == value) return;
 			_performLayout = value;
 			super.invalidate("_performLayout", _performLayout, false);
-			super.dispatchEvent(new Event("performLayoutChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("performLayout")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//--------------------------------------------------------------------------
