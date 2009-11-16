@@ -7,7 +7,7 @@
 	import org.wvxvws.gui.DIV;
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.skins.ButtonSkinProducer;
-	import org.wvxvws.gui.skins.DefaultOptionProducer;
+	import org.wvxvws.gui.skins.DefaultCheckProducer;
 	import org.wvxvws.gui.skins.LabelProducer;
 	import org.wvxvws.gui.skins.SkinDefaults;
 	import org.wvxvws.gui.StatefulButton;
@@ -16,10 +16,10 @@
 	[Event(name="disabled", type="org.wvxvws.gui.GUIEvent")]
 	
 	/**
-	 * Option class.
+	 * Check class.
 	 * @author wvxvw
 	 */
-	public class Option extends DIV
+	public class Check extends DIV
 	{
 		public static const UP_STATE:String = "upState";
 		public static const OVER_STATE:String = "overState";
@@ -164,19 +164,17 @@
 		
 		protected var _selected:Boolean;
 		protected var _disabled:Boolean;
-		
+		protected var _producer:ButtonSkinProducer;
 		protected var _label:LabelProducer;
-		protected var _labelPlacement:int = 4;
 		protected var _labelField:TextField = new TextField();
+		protected var _button:StatefulButton = new StatefulButton();
+		protected var _labelPlacement:int = 4;
 		protected var _gutter:int = 5;
 		
-		protected var _button:StatefulButton = new StatefulButton();
-		protected var _producer:ButtonSkinProducer;
-		
-		public function Option() 
+		public function Check() 
 		{
 			super();
-			this.producer = new DefaultOptionProducer();
+			this.producer = new DefaultCheckProducer();
 			super.addEventListener(
 				MouseEvent.CLICK, button_clickHandler, false, int.MAX_VALUE);
 			super.addEventListener(

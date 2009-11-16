@@ -20,10 +20,12 @@
 		
 		public function produce(inContext:Object):String
 		{
-			if (_label && _label.length)
+			if (_label !== "" && _label !== null && _label.length)
 			{
 				if (inContext.hasOwnProperty(_label))
 					return inContext[_label].toString();
+				else if (_label !== "" && _label !== null)
+					return _label;
 			}
 			else if (_factory !== null)
 			{

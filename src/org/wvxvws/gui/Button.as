@@ -398,6 +398,7 @@
 		
 		public function validate(properties:Object):void
 		{
+			trace("button validate ", super.stage);
 			if (!_validator)
 			{
 				if (_document is ILayoutClient)
