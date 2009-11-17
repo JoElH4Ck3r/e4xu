@@ -59,6 +59,7 @@
 	<component id="MenuRenderer" class="org.wvxvws.gui.renderers.MenuRenderer"/>
 	<!-- CONTROLS -->
 	<component id="Check" class="org.wvxvws.gui.controls.Check"/>
+	<component id="NumStepper" class="org.wvxvws.gui.controls.NumStepper"/>
 	<component id="Option" class="org.wvxvws.gui.controls.Option"/>
 	<component id="OptionGroup" class="org.wvxvws.gui.controls.OptionGroup"/>
 	<!-- CSS -->

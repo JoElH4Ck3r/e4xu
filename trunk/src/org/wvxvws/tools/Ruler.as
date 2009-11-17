@@ -31,6 +31,7 @@ package org.wvxvws.tools
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
+	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.DIV;
 	//}
 	
@@ -54,7 +55,8 @@ package org.wvxvws.tools
 			if (temp === _ratio) return;
 			super.invalidate("_ratio", _ratio, false);
 			_ratio = temp;
-			super.dispatchEvent(new Event("ratioChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("ratio")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		public function get step():uint { return _step; }
@@ -65,7 +67,8 @@ package org.wvxvws.tools
 			if (temp === _step) return;
 			super.invalidate("_step", _step, false);
 			_step = value;
-			super.dispatchEvent(new Event("setpChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("step")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		public function get position():int { return _position; }
@@ -75,7 +78,8 @@ package org.wvxvws.tools
 			if (_position === value) return;
 			super.invalidate("_position", _position, false);
 			_position = value;
-			super.dispatchEvent(new Event("positionChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("position")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		public function get direction():Boolean { return _direction; }
@@ -85,7 +89,8 @@ package org.wvxvws.tools
 			if (_direction === value) return;
 			super.invalidate("_direction", _direction, false);
 			_direction = value;
-			super.dispatchEvent(new Event("directionChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("direction")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		public function get zoom():Number { return _zoom; }
@@ -95,7 +100,8 @@ package org.wvxvws.tools
 			if (_zoom === value) return;
 			super.invalidate("_zoom", _zoom, false);
 			_zoom = value;
-			super.dispatchEvent(new Event("zoomChange"));
+			if (super.hasEventListener(EventGenerator.getEventType("zoom")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//--------------------------------------------------------------------------

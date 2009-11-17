@@ -75,7 +75,8 @@
 									GraphicsPathCommand.LINE_TO,
 									GraphicsPathCommand.LINE_TO
 									],
-							new <Number>[2, 4, 5, 8, 9, 3, 9, 5, 5, 9, 2, 6, 2, 4], GraphicsPathWinding.NON_ZERO);
+							new <Number>[2, 4, 5, 8, 9, 3, 9, 5, 5, 9, 2, 6, 2, 4], 
+							GraphicsPathWinding.NON_ZERO);
 			}
 			//s.scale9Grid = new Rectangle(4, 4, 8, 8);
 			return s;

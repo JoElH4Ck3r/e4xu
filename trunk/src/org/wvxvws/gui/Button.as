@@ -242,8 +242,7 @@
 			_label.x = -0.5 * _label.width;
 			_label.y = -0.5 * _label.height;
 			this.invalidate("_label", _label.text, false);
-			EventGenerator.eventName.label = true;
-			if (super.hasEventListener(EventGenerator.getEventType))
+			if (super.hasEventListener(EventGenerator.getEventType("label")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
@@ -292,8 +291,7 @@
 				super.downState = null;
 			}
 			this.invalidate("_producer", _producer, false);
-			EventGenerator.eventName.producer = true;
-			if (super.hasEventListener(EventGenerator.getEventType))
+			if (super.hasEventListener(EventGenerator.getEventType("producer")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
