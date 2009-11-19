@@ -26,7 +26,6 @@
 		public function set state(value:String):void
 		{
 			var newState:DisplayObject;
-			trace("_states[value] ", _states[value], value);
 			if (!_cachedStates[value])
 			{
 				if (_states[value] && _states[value] is Class)
@@ -41,7 +40,6 @@
 				_cachedStates[value] = newState;
 			}
 			else newState = _cachedStates[value];
-			trace("state", value);
 			if (_currentState && super.contains(_currentState))
 				super.removeChild(_currentState);
 			_currentState = super.addChildAt(newState, 0);

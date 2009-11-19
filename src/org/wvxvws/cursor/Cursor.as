@@ -158,7 +158,7 @@
 		
 		public static function registerCursor(type:DisplayObject):int
 		{
-			if (_cursors.indexOf(type) < 0) return _cursors.push(type);
+			if (_cursors.indexOf(type) < 0) return _cursors.push(type) - 1;
 			return -1;
 		}
 		

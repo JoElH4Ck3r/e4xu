@@ -319,6 +319,8 @@ package org.wvxvws.gui
 		
 		public function get childLayouts():Vector.<ILayoutClient> { return _childLayouts; }
 		
+		public function get id():String { return _id; }
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties

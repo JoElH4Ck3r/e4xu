@@ -5,6 +5,7 @@
 	import flash.display.GraphicsPathWinding;
 	import flash.display.InteractiveObject;
 	import flash.display.Sprite;
+	import flash.geom.Rectangle;
 	import org.wvxvws.gui.controls.Check;
 	import org.wvxvws.gui.skins.ButtonSkinProducer;
 	
@@ -78,7 +79,7 @@
 							new <Number>[2, 4, 5, 8, 9, 3, 9, 5, 5, 9, 2, 6, 2, 4], 
 							GraphicsPathWinding.NON_ZERO);
 			}
-			//s.scale9Grid = new Rectangle(4, 4, 8, 8);
+			s.scale9Grid = new Rectangle(1, 1, 10, 10);
 			return s;
 		}
 	}
