@@ -57,6 +57,8 @@
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
+		public function get selectedOtion():Option { return _selected; }
+		
 		protected function option_selectedHandler(event:GUIEvent):void 
 		{
 			if (_selected && event.currentTarget !== _selected)

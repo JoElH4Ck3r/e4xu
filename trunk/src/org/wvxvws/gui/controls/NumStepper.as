@@ -1,6 +1,7 @@
 ﻿package org.wvxvws.gui.controls 
 {
 	import flash.events.MouseEvent;
+	import flash.geom.Matrix;
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.DIV;
 	import org.wvxvws.gui.skins.ButtonSkinProducer;
@@ -108,9 +109,20 @@
 		
 		/**
 		* <pre>
-		* X 1 X
-		* 2 X 3
-		* X 4 X</pre>
+		* 1.  < [text] >
+		* ----------------
+		*         /\
+		*  2.   [text]
+		*         \/
+		* ----------------
+		*              /\
+		* 3.    [text] --
+		*              \/
+		* ----------------
+		*    /\
+		* 4. -- [text]
+		*    \/
+		* </pre>
 		* @default	3.
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>buttonPlacementChanged</code> event.
@@ -240,18 +252,58 @@
 			var placementChanged:Boolean = ("_buttonPlacement" in properties);
 			var sizeChanged:Boolean = ("_bounds" in properties);
 			super.validate(properties);
+			var mI:Matrix;
+			var mD:Matrix;
 			if (placementChanged || sizeChanged)
 			{
 				switch (_buttonPlacement)
 				{
 					case 1:
-						
+						_incrementButton.rotation = 0;
+						_decrementButton.rotation = 0;
+						_decrementButton.scaleX = 1;
+						_incrementButton.scaleX = 1;
+						_decrementButton.scaleY = 1;
+						_incrementButton.scaleY = 1;
+						mI = new Matrix();
+						mI.rotate(Math.PI * 0.5);
+						mI.scale(_buttonWidth / _incrementButton.width, 
+								_bounds.y / _incrementButton.height);
+						_incrementButton.transform.matrix = mI;
+						mD = new Matrix();
+						mD.rotate(Math.PI * -0.5);
+						mD.scale(_buttonWidth / _decrementButton.width, 
+								_bounds.y / _decrementButton.height);
+						_decrementButton.transform.matrix = mD;
+						if (_bounds.x - _buttonWidth * 2 < _minTextWidth) 
+							_stepper.width = _minTextWidth;
+						else _stepper.width = _bounds.x - _buttonWidth * 2;
+						_stepper.height = Math.max(_textHeight, _bounds.y);
+						_decrementButton.x = 0;
+						_decrementButton.y = _stepper.height;
+						_incrementButton.x = _stepper.width + _incrementButton.width * 2;
+						_incrementButton.y = 0;
+						_stepper.x = _incrementButton.width;
 						break;
 					case 2:
-						
+						_incrementButton.rotation = 0;
+						_decrementButton.rotation = 180;
+						_incrementButton.x = 0;
+						_decrementButton.width = Math.max(_buttonWidth, _bounds.x);
+						_incrementButton.width = _decrementButton.width;
+						_stepper.width = _decrementButton.width;
+						_decrementButton.height = Math.min(_buttonWidth >> 1, _bounds.y >> 1);
+						_incrementButton.height = _decrementButton.height;
+						_decrementButton.x = _decrementButton.width;
+						_stepper.height = _bounds.y - _decrementButton.height * 2;
+						_decrementButton.y = _bounds.y;
+						_stepper.x = 0;
+						_stepper.y = _incrementButton.height
 						break;
 					default:
 					case 3:
+						_incrementButton.rotation = 0;
+						_decrementButton.transform.matrix = new Matrix();
 						_incrementButton.width = _buttonWidth;
 						_decrementButton.width = _buttonWidth;
 						if (_bounds.x - _buttonWidth < _minTextWidth) 
@@ -261,11 +313,27 @@
 						_incrementButton.height = _stepper.height >> 1;
 						_decrementButton.height = _stepper.height - _incrementButton.height;
 						_incrementButton.x = _stepper.width;
-						_decrementButton.x = _stepper.width;
-						_decrementButton.y = _incrementButton.height;
+						_decrementButton.rotation = 180;
+						_decrementButton.x = _stepper.width + _decrementButton.width;
+						_decrementButton.y = _incrementButton.height + _decrementButton.height;
 						break;
 					case 4:
-						
+						_incrementButton.rotation = 0;
+						_stepper.y = 0;
+						_decrementButton.transform.matrix = new Matrix();
+						_incrementButton.width = _buttonWidth;
+						_decrementButton.width = _buttonWidth;
+						if (_bounds.x - _buttonWidth < _minTextWidth) 
+							_stepper.width = _minTextWidth;
+						else _stepper.width = _bounds.x - _buttonWidth;
+						_stepper.height = Math.max(_textHeight, _bounds.y);
+						_incrementButton.height = _stepper.height >> 1;
+						_decrementButton.height = _stepper.height - _incrementButton.height;
+						_incrementButton.x = 0;
+						_decrementButton.rotation = 180;
+						_decrementButton.x = _decrementButton.width;
+						_decrementButton.y = _decrementButton.height * 2;
+						_stepper.x = _incrementButton.width;
 						break;
 				}
 			}
