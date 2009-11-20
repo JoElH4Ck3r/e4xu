@@ -17,26 +17,18 @@
 		
 		public override function set width(value:Number):void 
 		{
-			if (_width === value || value < 0) return;
-			_width = value;
+			if (this._width === value || value < 0) return;
+			this._width = value;
 			this.draw();
 		}
 		
 		public override function set height(value:Number):void 
 		{
 			if (_height === value || value < 0) return;
-			_height = value;
+			this._height = value;
 			this.draw();
 		}
 		
-		protected var _web:Vector.<Rectangle> = 
-		new <Rectangle>[new Rectangle(), new Rectangle(), new Rectangle(), 
-						new Rectangle(), new Rectangle(), new Rectangle(), 
-						new Rectangle(), new Rectangle(), new Rectangle()];
-		protected var _webMatrix:Vector.<Matrix> = 
-		new <Matrix>[	new Matrix(), new Matrix(), new Matrix(), 
-						new Matrix(), new Matrix(), new Matrix(), 
-						new Matrix(), new Matrix(), new Matrix()];
 		protected var _bitmapData:BitmapData;
 		protected var _originalWidth:uint;
 		protected var _originalHeight:uint;
@@ -48,13 +40,33 @@
 		protected var _height:Number;
 		protected var _scaleMode:int;
 		
+		protected var _web0:Rectangle = new Rectangle();
+		protected var _web1:Rectangle = new Rectangle();
+		protected var _web2:Rectangle = new Rectangle();
+		protected var _web3:Rectangle = new Rectangle();
+		protected var _web4:Rectangle = new Rectangle();
+		protected var _web5:Rectangle = new Rectangle();
+		protected var _web6:Rectangle = new Rectangle();
+		protected var _web7:Rectangle = new Rectangle();
+		protected var _web8:Rectangle = new Rectangle();
+		
+		protected var _webMatrix0:Matrix = new Matrix();
+		protected var _webMatrix1:Matrix = new Matrix();
+		protected var _webMatrix2:Matrix = new Matrix();
+		protected var _webMatrix3:Matrix = new Matrix();
+		protected var _webMatrix4:Matrix = new Matrix();
+		protected var _webMatrix5:Matrix = new Matrix();
+		protected var _webMatrix6:Matrix = new Matrix();
+		protected var _webMatrix7:Matrix = new Matrix();
+		protected var _webMatrix8:Matrix = new Matrix();
+		
 		public function Slices(bitmapData:BitmapData, 
 							centralSlice:Rectangle, scaleMode:int = 0) 
 		{
 			super();
 			_bitmapData = bitmapData;
-			_width = _originalWidth = bitmapData.width;
-			_height = _originalHeight = bitmapData.height;
+			this._width = this._originalWidth = bitmapData.width;
+			_height = this._originalHeight = bitmapData.height;
 			_scaleMode = scaleMode;
 			this.rebuildWeb(centralSlice);
 			this.draw();
@@ -62,20 +74,21 @@
 		
 		protected function rebuildWeb(middle:Rectangle):void
 		{
-			if (middle.width > _originalWidth - 2 || middle.height > _originalHeight - 2)
+			if (middle.width > this._originalWidth - 2 || 
+				middle.height > this._originalHeight - 2)
 				throw new RangeError("\"middle\" is to big.");
 			if (middle.x < 1 || middle.y < 1)
 				throw new RangeError("\"middle\" cannot be positioned in negative space.");
-			_leftWidth = middle.x;
-			_rightWidth = _originalWidth - (middle.width + _leftWidth);
-			_web[0].width = _web[3].width = _web[6].width = _leftWidth;
-			_web[2].width = _web[5].width = _web[8].width = _rightWidth;
-			_web[1].width = _web[4].width = _web[7].width = middle.width;
-			_topHeight = middle.y;
-			_bottomHeight = _originalHeight - (middle.height + _topHeight);
-			_web[0].height = _web[1].height = _web[2].height = _topHeight;
-			_web[3].height = _web[4].height = _web[5].height = middle.height;
-			_web[6].height = _web[7].height = _web[8].height = _bottomHeight;
+			this._leftWidth = middle.x;
+			this._rightWidth = this._originalWidth - (middle.width + this._leftWidth);
+			this._web0.width = this._web3.width = this._web6.width = this._leftWidth;
+			this._web2.width = this._web5.width = this._web8.width = this._rightWidth;
+			this._web1.width = this._web4.width = this._web7.width = middle.width;
+			this._topHeight = middle.y;
+			this._bottomHeight = this._originalHeight - (middle.height + this._topHeight);
+			this._web0.height = this._web1.height = this._web2.height = this._topHeight;
+			this._web3.height = this._web4.height = this._web5.height = middle.height;
+			this._web6.height = this._web7.height = this._web8.height = this._bottomHeight;
 		}
 		
 		/**
@@ -85,64 +98,73 @@
 		 */
 		protected function draw():void
 		{
-			var o4Width:Number = _originalWidth - (_web[0].width + _web[2].width);
-			var o4Height:Number = _originalHeight - (_web[0].height + _web[6].height);
+			var o4Width:Number = this._originalWidth - (this._web0.width + this._web2.width);
+			var o4Height:Number = this._originalHeight - (this._web0.height + this._web6.height);
+			
+			var m4Width:Number = this._width - (this._web0.width + this._web2.width);
+			var m4Height:Number = _height - (this._web0.height + this._web6.height);
+			
+			var a:Number;
+			var d:Number;
+			
+			var g:Graphics = super.graphics;
+			
 			switch (_scaleMode)
 			{
 				case 0:
-					_web[1].width = _width - (_web[0].width + _web[2].width);
-					_web[4].width = _width - (_web[0].width + _web[2].width);
-					_web[7].width = _width - (_web[0].width + _web[2].width);
+					this._web1.width = this._web4.width = this._web7.width = m4Width;
+					this._web3.height = this._web4.height = this._web5.height = m4Height;
 					
-					_web[3].height = _height - (_web[0].height + _web[6].height);
-					_web[4].height = _height - (_web[0].height + _web[6].height);
-					_web[5].height = _height - (_web[0].height + _web[6].height);
+					a = this._web1.width / o4Width;
+					d = this._web3.height / o4Height;
 					
-					_web[1].x = _web[4].x = _web[7].x = _web[0].width;
-					_web[2].x = _web[5].x = _web[8].x = _web[1].width + _web[1].x;
+					this._web1.x = this._web4.x = this._web7.x = this._web0.width;
+					this._web2.x = this._web5.x = this._web8.x = this._web1.width + this._web1.x;
 					
-					_web[3].y = _web[4].y = _web[5].y = _web[0].height;
-					_web[6].y = _web[7].y = _web[8].y = _web[3].height + _web[3].y;
+					this._web3.y = this._web4.y = this._web5.y = this._web0.height;
+					this._web6.y = this._web7.y = this._web8.y = this._web3.height + this._web3.y;
 					
-					_webMatrix[1].a = _web[1].width / o4Width;
-					_webMatrix[4].a = _web[1].width / o4Width;
-					_webMatrix[7].a = _web[1].width / o4Width;
+					this._webMatrix1.a = this._webMatrix4.a = this._webMatrix7.a = a;
+					this._webMatrix3.d = this._webMatrix4.d = this._webMatrix5.d = d;
 					
-					_webMatrix[3].d = _web[3].height / o4Height;
-					_webMatrix[4].d = _web[3].height / o4Height;
-					_webMatrix[5].d = _web[3].height / o4Height;
+					this._webMatrix1.tx = this._webMatrix4.tx = this._webMatrix7.tx = 
+						this._web0.width - this._web0.width * this._web1.width / o4Width;
 					
-					_webMatrix[1].tx = _webMatrix[4].tx = _webMatrix[7].tx = 
-						_web[0].width - _web[0].width * _web[1].width / o4Width;
-					_webMatrix[2].tx = _webMatrix[5].tx = _webMatrix[8].tx = 
-						(_width - (_web[0].width + _web[2].width)) - 
-						(_originalWidth - (_web[0].width + _web[2].width));
+					o4Width = this._web0.width + this._web2.width;
+					this._webMatrix2.tx = this._webMatrix5.tx = this._webMatrix8.tx = 
+						(this._width - o4Width) - (this._originalWidth - o4Width);
 					
-					_webMatrix[3].ty = _webMatrix[4].ty = _webMatrix[5].ty = 
-						_web[0].height - _web[0].height * _web[3].height / o4Height;
+					this._webMatrix3.ty = this._webMatrix4.ty = this._webMatrix5.ty = 
+						this._web0.height - this._web0.height * this._web3.height / o4Height;
 					
-					_webMatrix[6].ty = _webMatrix[7].ty = _webMatrix[8].ty = 
-						(_height - (_web[0].height + _web[6].height)) - 
-						(_originalHeight - (_web[0].height + _web[6].height));
+					o4Height = this._web0.height + this._web6.height;
+					this._webMatrix6.ty = this._webMatrix7.ty = this._webMatrix8.ty = 
+						(this._height - o4Height) - (this._originalHeight - o4Height);
 					break;
 				case 1:
 					
 					break;
 			}
-			var g:Graphics = super.graphics;
-			var i:int;
-			var j:int = 9;
 			g.clear();
-			while (i < j)
-			{
-				trace(_web[i], _webMatrix[i]);
-				g.lineStyle(1, 0xFF);
-				g.beginBitmapFill(_bitmapData, _webMatrix[i], false, true);
-				//g.beginFill(Math.random() * 0xFFFFFF, 0.5);
-				g.drawRect(_web[i].x, _web[i].y, _web[i].width, _web[i].height);
-				g.endFill();
-				i++;
-			}
+			g.beginBitmapFill(this._bitmapData, this._webMatrix0, false, true);
+			g.drawRect(this._web0.x, this._web0.y, this._web0.width, this._web0.height);
+			g.beginBitmapFill(this._bitmapData, this._webMatrix1, false, true);
+			g.drawRect(this._web1.x, this._web1.y, this._web1.width, this._web1.height);
+			g.beginBitmapFill(this._bitmapData, this._webMatrix2, false, true);
+			g.drawRect(this._web2.x, this._web2.y, this._web2.width, this._web2.height);
+			g.beginBitmapFill(this._bitmapData, this._webMatrix3, false, true);
+			g.drawRect(this._web3.x, this._web3.y, this._web3.width, this._web3.height);
+			g.beginBitmapFill(this._bitmapData, this._webMatrix4, false, true);
+			g.drawRect(this._web4.x, this._web4.y, this._web4.width, this._web4.height);
+			g.beginBitmapFill(this._bitmapData, this._webMatrix5, false, true);
+			g.drawRect(this._web5.x, this._web5.y, this._web5.width, this._web5.height);
+			g.beginBitmapFill(this._bitmapData, this._webMatrix6, false, true);
+			g.drawRect(this._web6.x, this._web6.y, this._web6.width, this._web6.height);
+			g.beginBitmapFill(this._bitmapData, this._webMatrix7, false, true);
+			g.drawRect(this._web7.x, this._web7.y, this._web7.width, this._web7.height);
+			g.beginBitmapFill(this._bitmapData, this._webMatrix8, false, true);
+			g.drawRect(this._web8.x, this._web8.y, this._web8.width, this._web8.height);
+			g.endFill();
 		}
 	}
 	
