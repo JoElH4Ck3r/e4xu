@@ -34,6 +34,7 @@ package org.wvxvws.gui.renderers
 	import flash.text.TextFieldType;
 	import flash.text.TextFormat;
 	import org.wvxvws.gui.GUIEvent;
+	import org.wvxvws.gui.skins.LabelProducer;
 	//}
 	
 	[Event(name="selected", type="org.wvxvws.gui.GUIEvent")]
@@ -68,13 +69,6 @@ package org.wvxvws.gui.renderers
 		
 		/* INTERFACE org.wvxvws.gui.renderers.IRenderer */
 		
-		public function set labelFunction(value:Function):void
-		{
-			if (_labelFunction === value) return;
-			_labelFunction = value;
-			if (_data) this.rendrerText();
-		}
-		
 		public function get iconClass():Class { return _iconClass; }
 		
 		public function set iconClass(value:Class):void 
@@ -106,13 +100,13 @@ package org.wvxvws.gui.renderers
 			else _field.background = false;
 		}
 		
-		public function get labelField():String { return _labelField; }
+		/* INTERFACE org.wvxvws.gui.renderers.IRenderer */
 		
-		public function set labelField(value:String):void 
+		public function set labelProducer(value:LabelProducer):void
 		{
-			if (_labelField === value) return;
-			_labelField = value;
-			if (_data) this.rendrerText();
+			if (_labelProducer === value) return;
+			_labelProducer = value;
+			this.render();
 		}
 		
 		//--------------------------------------------------------------------------
@@ -128,14 +122,13 @@ package org.wvxvws.gui.renderers
 		protected var _icon:DisplayObject;
 		protected var _field:TextField;
 		protected var _lines:Shape;
-		protected var _labelField:String = "@label";
-		protected var _labelFunction:Function;
 		protected var _textFormat:TextFormat = new TextFormat("_sans", 11);
 		protected var _gutter:int = 6;
 		protected var _iconClass:Class;
 		protected var _iconFactory:Function;
 		protected var _dot:BitmapData;
 		protected var _selected:Boolean;
+		protected var _labelProducer:LabelProducer;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -237,18 +230,8 @@ package org.wvxvws.gui.renderers
 		protected function rendrerText():void
 		{
 			if (!_data) return;
-			if (_labelField && _data.hasOwnProperty(_labelField))
-			{
-				if (_labelFunction !== null)
-					_field.text = _labelFunction(_data[_labelField]);
-				else _field.text = _data[_labelField];
-			}
-			else
-			{
-				if (_labelFunction !== null)
-					_field.text = _labelFunction(_data.toXMLString());
-				else _field.text = _data.localName();
-			}
+			if (_labelProducer) _field.text = _labelProducer.produce(_data);
+			else _field.text = _data.localName();
 		}
 		
 		//--------------------------------------------------------------------------
