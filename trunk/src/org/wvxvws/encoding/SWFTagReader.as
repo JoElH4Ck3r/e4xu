@@ -114,6 +114,7 @@
 				tagLongLNT = swf.readUnsignedInt();
 				if (onTag != null)
 				{
+					trace("tagLongLNT", tagLongLNT, tagID);
 					swf.readBytes(data, 0, tagLongLNT);
 					onTag(tagID, tagLongLNT, position + tagLongLNT + 6, data);
 				}
@@ -122,6 +123,7 @@
 			{
 				if (onTag != null)
 				{
+					trace("tagShortLNT", tagShortLNT, tagID);
 					swf.readBytes(data, 0, tagShortLNT);
 					onTag(tagID, tagShortLNT, position + tagShortLNT + 2, data);
 				}

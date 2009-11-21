@@ -95,7 +95,7 @@
 			symbol.numSymbols = 1;
 			symbol.tagIDs = [1];
 			
-			var frames:Array = FLVTranscoder.read(input);
+			var frames:Vector.<ByteArray> = FLVTranscoder.read(input);
 			var videoStream:DefineVideoStream = new DefineVideoStream();
 			videoStream.characterID = 1;
 			videoStream.codecID = FLVTranscoder.videoCodec;

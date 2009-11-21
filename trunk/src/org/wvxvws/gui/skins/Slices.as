@@ -91,6 +91,7 @@
 			this._web6.height = this._web7.height = this._web8.height = this._bottomHeight;
 		}
 		
+		// TODO: inverse grid
 		/**
 		 * 0 1 2
 		 * 3 4 5

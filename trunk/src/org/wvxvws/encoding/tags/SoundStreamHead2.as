@@ -23,7 +23,7 @@
 		
 		public function SoundStreamHead2() { super(45); }
 		
-		override protected function compileTagParams():void 
+		protected override function compileTagParams():void 
 		{
 			var u:uint;
 			u = (reserved | (u << 4)); // write 4 bits <Reserved>
