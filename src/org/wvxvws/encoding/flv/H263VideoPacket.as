@@ -3,7 +3,7 @@
 	import flash.utils.ByteArray;
 	
 	/**
-	 * ...
+	 * H263VideoPacket class.
 	 * @author wvxvw
 	 */
 	public class H263VideoPacket 

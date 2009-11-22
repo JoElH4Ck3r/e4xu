@@ -109,12 +109,12 @@
 			var tagLongLNT:uint;
 			var data:ByteArray = new ByteArray();
 			data.endian = Endian.LITTLE_ENDIAN;
+			trace("tagID", tagID, tagShortLNT);
 			if (tagShortLNT >= 63)
 			{
 				tagLongLNT = swf.readUnsignedInt();
 				if (onTag != null)
 				{
-					trace("tagLongLNT", tagLongLNT, tagID);
 					swf.readBytes(data, 0, tagLongLNT);
 					onTag(tagID, tagLongLNT, position + tagLongLNT + 6, data);
 				}
@@ -123,7 +123,6 @@
 			{
 				if (onTag != null)
 				{
-					trace("tagShortLNT", tagShortLNT, tagID);
 					swf.readBytes(data, 0, tagShortLNT);
 					onTag(tagID, tagShortLNT, position + tagShortLNT + 2, data);
 				}

@@ -169,7 +169,8 @@ package org.wvxvws.gui.renderers
 				{
 					_layoutParent = super.parent as ILayoutClient;
 					_validator = _layoutParent.validator;
-					_validator.append(this, _layoutParent);
+					if (_validator)
+						_validator.append(this, _layoutParent);
 				}
 			}
 			if (_validator)  _validator.requestValidation(this, validateParent);

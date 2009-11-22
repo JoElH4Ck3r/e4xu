@@ -82,9 +82,11 @@
 			return temp;
 		}
 		
-		// \x0a\x0f                 | \x01\x00 | \x9e\x01 | \x40\x01  | \xf0\x00 | \x00  | \x04" |
-		// \x3F\x0F\x0A\x00\x00\x00 | \x01\x00 | \x9E\x01 | \x40\x01  | \xF0\x00 | \x00  | \x04" |
-		//|------ define tag -------|--- id ---|- frames -|-- width --|- height -| flags | codec |
+		/**
+		 * "\x0A\x0F"                 | "\x01\x00" | "\x9E\x01" | "\x40\x01"  | "\xF0\x00" | "\x00"  | "\x04" |
+		 * "\x3F\x0F\x0A\x00\x00\x00" | "\x01\x00" | "\x9E\x01" | "\x40\x01"  | "\xF0\x00" | "\x00"  | "\x04" |
+		 * |------ define tag --------|---- id ----|-- frames --|--- width ---|-- height --|- flags -|- codec |
+		 */
 		protected override function compileTagParams():void
 		{
 			_data.writeShort(characterID);

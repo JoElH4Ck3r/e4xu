@@ -19,6 +19,10 @@
 		
 		public static function get height():int { return _height; }
 		
+		public static function get soundFrames():Vector.<ByteArray> { return _soundFrames; }
+		
+		public static function get soundStreamHead():SoundStreamHead { return _soundStreamHead; }
+		
 		public static const CODEC_JPEG:int = 1;
 		public static const CODEC_H263:int = 2;
 		public static const CODEC_SCREEN_VIDEO:int = 3;
@@ -47,7 +51,7 @@
 		public static function read(input:ByteArray):Vector.<ByteArray>
 		{
 			var fileStart:int;
-			if (input.length < 9) 
+			if (input.length < 9)
 			{
 				_error = new Error("Not enough bytes");
 				return null;
@@ -55,7 +59,7 @@
 			_frames = new Vector.<ByteArray>(0, false);
 			_soundFrames = new Vector.<ByteArray>(0, false);
 			_soundStreamHead = null;
-			if ((fileStart = readHeader(input)) < 9) 
+			if ((fileStart = readHeader(input)) < 9)
 			{
 				_error = new Error("Cannot read header");
 				return null;
@@ -100,17 +104,17 @@
 				input.readUnsignedByte() === 0x56)
 			{
 				_version = input.readUnsignedByte();
-				headerChars = input.readUnsignedByte().toString(2);
-				while (headerChars.length < 8) headerChars = "0" + headerChars;
-				if (headerChars.charAt(5) !== "0")
+				headerChars = input.readUnsignedByte().toString(0x2);
+				while (headerChars.length < 0x8) headerChars = "0" + headerChars;
+				if (headerChars.charAt(0x5) !== "0")
 				{
 					_hasAudio = true;
 				}
-				if (headerChars.charAt(7) !== "0")
+				if (headerChars.charAt(0x7) !== "0")
 				{
 					_hasVideo = true;
 				}
-				_pointer = input.position + 4;
+				_pointer = input.position + 0x4;
 				return input.readUnsignedInt();
 			}
 			input.position = 0;
@@ -144,12 +148,12 @@
 		 */
 		private static function readBody(input:ByteArray):Error
 		{
-			var nextTagStart:uint = input.position + 4;
+			var nextTagStart:uint = input.position + 0x4;
 			var tagLength:uint;
 			var previousTag:uint;
 			while (tagLength = readTag(input, nextTagStart))
 			{
-				nextTagStart += tagLength + 4;
+				nextTagStart += tagLength + 0x4;
 				previousTag = input.readUnsignedInt();
 			}
 			return null;
@@ -281,6 +285,9 @@
 				var soundRate:uint = (flags >>> 0x2) & 0x3;
 				var soundSize:uint = (flags >>> 0x1) & 0x1;
 				var soundType:uint = flags & 0x1;
+				
+				//2 3 1 1
+				trace(soundFormat, soundRate, soundSize, soundType);
 				
 				_soundStreamHead.playBackSoundRate = soundRate;
 				_soundStreamHead.playBackSoundType = soundType;
