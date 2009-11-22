@@ -12,42 +12,45 @@
 	 */
 	public class MP3Transcoder 
 	{
-		private static const mp3frequencies:Array /* of Array */ =
+		private static const _mp3frequencies:Vector.<Vector.<int>> = 
+		Vector.<Vector.<int>>(
 		[
-			[11025, 0, 22050, 44100],
-			[12000, 0, 24000, 48000],
-			[8000, 0, 16000, 32000],
-			[0, 0, 0, 0]
-		];
+			Vector.<int>([11025, 0, 22050, 44100]),
+			Vector.<int>([12000, 0, 24000, 48000]),
+			Vector.<int>([8000, 0, 16000, 32000]),
+			Vector.<int>([0, 0, 0, 0])
+		]);
 		
-		private static const mp3bitrates:Array /* of Array */ =
+		private static const _mp3bitrates:Vector.<Vector.<int>> = 
+		Vector.<Vector.<int>>(
 		[
-			[0, 0, 0, 0, 0],
-			[32, 32, 32, 32, 8],
-			[64, 48, 40, 48, 16],
-			[96, 56, 48, 56, 24],
-			[128, 64, 56, 64, 32],
-			[160, 80, 64, 80, 40],
-			[192, 96, 80, 96, 48],
-			[224, 112, 96, 112, 56],
-			[256, 128, 112, 128, 64],
-			[288, 160, 128, 144, 80],
-			[320, 192, 160, 160, 96],
-			[352, 224, 192, 176, 112],
-			[384, 256, 224, 192, 128],
-			[416, 320, 256, 224, 144],
-			[448, 384, 320, 256, 160],
-			[-1, -1, -1, -1, -1]
-		];
+			Vector.<int>([0, 0, 0, 0, 0]),
+			Vector.<int>([32, 32, 32, 32, 8]),
+			Vector.<int>([64, 48, 40, 48, 16]),
+			Vector.<int>([96, 56, 48, 56, 24]),
+			Vector.<int>([128, 64, 56, 64, 32]),
+			Vector.<int>([160, 80, 64, 80, 40]),
+			Vector.<int>([192, 96, 80, 96, 48]),
+			Vector.<int>([224, 112, 96, 112, 56]),
+			Vector.<int>([256, 128, 112, 128, 64]),
+			Vector.<int>([288, 160, 128, 144, 80]),
+			Vector.<int>([320, 192, 160, 160, 96]),
+			Vector.<int>([352, 224, 192, 176, 112]),
+			Vector.<int>([384, 256, 224, 192, 128]),
+			Vector.<int>([416, 320, 256, 224, 144]),
+			Vector.<int>([448, 384, 320, 256, 160]),
+			Vector.<int>([-1, -1, -1, -1, -1])
+		]);
 		
-		private static const mp3bitrateIndices:Array /* of Array */ =
+		private static const _mp3bitrateIndices:Vector.<Vector.<int>> = 
+		Vector.<Vector.<int>>(
 		[
 			// reserved, layer III, layer II, layer I
-			[-1, 4, 4, 3], // version 2.5
-			[-1, -1, -1, -1], // reserved
-			[-1, 4, 4, 3], // version 2
-			[-1, 2, 1, 0]
-		];
+			Vector.<int>([-1, 4, 4, 3]), // version 2.5
+			Vector.<int>([-1, -1, -1, -1]), // reserved
+			Vector.<int>([-1, 4, 4, 3]), // version 2
+			Vector.<int>([-1, 2, 1, 0])
+		]);
 		
 		public function MP3Transcoder() { super(); }
 		
@@ -56,14 +59,14 @@
 			var size:int = input.length;
 			var sound:ByteArray = readFully(input, size);
 			
-			if (sound == null || sound.length < 5)
+			if (sound === null || sound.length < 0x5)
 			{
 				throw new Error("Not MP3");
 			}
 
 			var ds:DefineSound = new DefineSound();
-			ds.soundFormat = 2; // MP3
-			ds.soundSize = 1; // always 16-bit for compressed formats
+			ds.soundFormat = 0x2; // MP3
+			ds.soundSize = 0x1; // always 16-bit for compressed formats
 			//ds.name = className;
 
 			/**
@@ -72,8 +75,8 @@
 			 * 2 - version 2
 			 * 3 - version 1
 			 */
-			sound.position = 3; // MB 2?
-			var version:int = sound.readUnsignedByte() >> 3 & 0x3;
+			sound.position = 0x3; // MB 2?
+			var version:int = sound.readUnsignedByte() >> 0x3 & 0x3;
 
 			/**
 			 * 0 - reserved
@@ -81,11 +84,11 @@
 			 * 2 - layer II  => 1152 samples
 			 * 3 - layer I   => 384  samples
 			 */
-			sound.position = 3; // MB 2?
-			var layer:int = sound.readUnsignedByte() >> 1 & 0x3;
+			sound.position = 0x3; // MB 2?
+			var layer:int = sound.readUnsignedByte() >> 0x1 & 0x3;
 			
-			sound.position = 4; // MB 3?
-			var samplingRate:int = sound.readUnsignedByte() >> 2 & 0x3;
+			sound.position = 0x4; // MB 3?
+			var samplingRate:int = sound.readUnsignedByte() >> 0x2 & 0x3;
 
 			/**
 			 * 0 - stereo
@@ -93,10 +96,10 @@
 			 * 2 - dual channel
 			 * 3 - single channel
 			 */
-			sound.position = 5; // MB 4?
-			var channelMode:int = sound.readUnsignedByte() >> 6 & 0x3;
+			sound.position = 0x5; // MB 4?
+			var channelMode:int = sound.readUnsignedByte() >> 0x6 & 0x3;
 
-			var frequency:int = mp3frequencies[samplingRate][version];
+			var frequency:int = _mp3frequencies[samplingRate][version];
 
 			/**
 			 * 1 - 11kHz
@@ -105,14 +108,14 @@
 			 */
 			switch (frequency)
 			{
-				case 11025:
-					ds.soundRate = 1;
+				case 0x2B11:
+					ds.soundRate = 0x1;
 					break;
-				case 22050:
-					ds.soundRate = 2;
+				case 0x5622:
+					ds.soundRate = 0x2;
 					break;
-				case 44100:
-					ds.soundRate = 3;
+				case 0xAC44:
+					ds.soundRate = 0x3;
 					break;
 				default:
 					throw new Error("Frequency " + frequency + " not supported");
@@ -122,101 +125,117 @@
 			 * 0 - mono
 			 * 1 - stereo
 			 */
-			ds.soundType = channelMode == 3 ? 0 : 1;
+			ds.soundType = channelMode === 0x3 ? 0x0 : 0x1;
 
 			/**
 			 * assume that the whole thing plays in one SWF frame
 			 *
 			 * sample count = number of MP3 frames * number of samples per MP3
 			 */
-			ds.sampleCount = countFrames(sound) * (layer == 3 ? 384 : 1152);
+			ds.sampleCount = countFrames(sound) * (layer === 0x3 ? 0x180 : 0x480);
 
-			if (ds.sampleCount < 0)
+			if (ds.sampleCount < 0x0)
 			{
 				// frame count == -1, error!
 				throw new Error("Could not determine sample frame count");
 			}
-			sound.position = 0;
+			sound.position = 0x0;
 			ds.compile(sound)
 			return ds;
 		}
 		
-		private static function readFully(input:ByteArray, inLength:int):ByteArray
+		public static function readFully(input:ByteArray, inLength:int):ByteArray
 		{
 			var baos:ByteArray = new ByteArray();
 			baos.endian = Endian.LITTLE_ENDIAN;
 			// write 2 bytes - number of frames to skip...
-			baos.writeByte(0); // see if this is unsigned byte
-			baos.writeByte(0); // see if this is unsigned byte
+			baos.writeShort(0x0); // see if this is unsigned byte
+			//baos.writeByte(0x0); // see if this is unsigned byte
 
 			// look for the first 11-bit frame sync. skip everything before the frame sync
 			var b:int;
-			var state:int = 0;
+			var state:int;
 
 			// 3-state FSM
-			while (input.position < input.length && (b = input.readUnsignedByte()) != -1) // see if this is unsigned byte
+			while (input.position < input.length && (b = input.readUnsignedByte()) !== -0x1) // see if this is unsigned byte
 			{
-				if (state == 0)
+				if (state === 0x0)
 				{
-					if (b == 255)
-					{
-						state = 1;
-					}
+					if (b === 0xFF) state = 0x1;
 				}
-				else if (state == 1)
+				else if (state === 0x1)
 				{
-					if ((b >> 5 & 0x7) == 7)
+					if ((b >> 0x5 & 0x7) === 0x7)
 					{
-						baos.writeByte(255); // see if this is unsigned byte
+						baos.writeByte(0xFF); // see if this is unsigned byte
 						baos.writeByte(b); // see if this is unsigned byte
-						state = 2;
+						state = 0x2;
 					}
-					else
-					{
-						state = 0;
-					}
+					else state = 0x0;
 				}
-				else if (state == 2)
+				else if (state === 0x2)
 				{
 					baos.writeByte(b); // see if this is unsigned byte
 				}
-				else
-				{
-					// assert false;
-				}
+				else trace("Error reading");
 			}
-
 			return baos;
 		}
 		
-		private static function countFrames(input:ByteArray):int
+		public static function countFrames(input:ByteArray):int
 		{
-			var count:int = 0;
-			var start:int = 2;
+			var count:int;
+			var start:int = 0x2;
 			var b1:int;
 			var b2:int;
 			var b3:int;//, b4;
 			var skipped:Boolean;
-
-			while (start + 2 < input.length)
+			var inputLenght:int = input.length;
+			var stopper:int = 100;
+			
+			/**
+			 * 0 - version 2.5
+			 * 1 - reserved
+			 * 2 - version 2
+			 * 3 - version 1
+			 */
+			var version:int;
+			
+			/**
+			 * 0 - reserved
+			 * 1 - layer III => 1152 samples
+			 * 2 - layer II  => 1152 samples
+			 * 3 - layer I   => 384  samples
+			 */
+			var layer:int;
+			var bits:int;
+			var bitrateIndex:int;
+			var bitrate:int;
+			var samplingRate:int;
+			var frequency:int;
+			var padding:int;
+			var frameLength:int;
+			
+			while (start + 0x2 < inputLenght)// && stopper--)
 			{
 				input.position = start; // maybe start - 1
-				b1 = input.readUnsignedByte() & 0xff;
-				b2 = input.readUnsignedByte() & 0xff;
-				b3 = input.readUnsignedByte() & 0xff;
-
+				b1 = input.readUnsignedByte() & 0xFF;
+				b2 = input.readUnsignedByte() & 0xFF;
+				b3 = input.readUnsignedByte() & 0xFF;
 				// check frame sync
-				if (b1 != 255 || (b2 >> 5 & 0x7) != 7)
+				//trace("b2", b2, (b2 >> 0x5 & 0x7));
+				if (b1 !== 0xFF || (b2 >> 0x5 & 0x7) !== 0x7)
 				{
-					if (!skipped && start > 0)  // LAME has a bug where they do padding wrong sometimes
+					if (!skipped && start > 0x0)  // LAME has a bug where they do padding wrong sometimes
 					{
 						b3 = b2;
 						b2 = b1;
-						input.position = start - 1; // maybe start - 2
-						b1 = input.readUnsignedByte() & 0xff;
-						if (b1 != 255 || (b2 >> 5 & 0x7) != 7)
+						input.position = start - 0x1; // maybe start - 2
+						b1 = input.readUnsignedByte() & 0xFF;
+						if (b1 !== 0xFF || (b2 >> 0x5 & 0x7) !== 0x7)
 						{
 							++start;
+							//trace("1 continue");
 							continue;
 						}
 						else
@@ -227,63 +246,52 @@
 					else
 					{
 						++start;
+						//trace("2 continue");
 						continue;
 					}
 				}
+				version = b2 >> 0x3 & 0x3;
+				layer = b2 >> 0x1 & 0x3;
+				//trace("version", version);
+				bits = b3 >> 0x4 & 0xF;
+				bitrateIndex = _mp3bitrateIndices[version][layer];
+				bitrate = (bitrateIndex != -0x1) ? _mp3bitrates[bits][bitrateIndex] * 0x3E8 : -1;
 
-				/**
-				 * 0 - version 2.5
-				 * 1 - reserved
-				 * 2 - version 2
-				 * 3 - version 1
-				 */
-				var version:int = b2 >> 3 & 0x3;
-
-				/**
-				 * 0 - reserved
-				 * 1 - layer III => 1152 samples
-				 * 2 - layer II  => 1152 samples
-				 * 3 - layer I   => 384  samples
-				 */
-				var layer:int = b2 >> 1 & 0x3;
-
-				var bits:int = b3 >> 4 & 0xf;
-				var bitrateIndex:int = mp3bitrateIndices[version][layer];
-				var bitrate:int = (bitrateIndex != -1) ? mp3bitrates[bits][bitrateIndex] * 1000 : -1;
-
-				if (bitrate == -1)
+				if (bitrate === -0x1)
 				{
 					skipped = true;
 					++start;
+					//trace("3 continue");
 					continue;
 				}
+				samplingRate = b3 >> 0x2 & 0x3;
+				frequency = _mp3frequencies[samplingRate][version];
 
-				var samplingRate:int = b3 >> 2 & 0x3;
-
-				var frequency:int = mp3frequencies[samplingRate][version];
-
-				if (frequency == 0)
+				if (frequency === 0x0)
 				{
 					skipped = true;
 					++start;
+					//trace("4 continue");
 					continue;
 				}
-				var padding:int = b3 >> 1 & 0x1;
-				var frameLength:int = layer == 3 ?
-						(12 * bitrate / frequency + padding) * 4 :
-						144 * bitrate / frequency + padding;
-				if (frameLength == 0)
+				padding = b3 >> 0x1 & 0x1;
+				frameLength = layer === 0x3 ?
+						(0xC * bitrate / frequency + padding) * 0x4 :
+						0x90 * bitrate / frequency + padding;
+				if (frameLength === 0x0)
 				{
 					// just in case. if we don't check frameLength, we may end up running an infinite loop!
 					break;
 				}
 				else
 				{
+					//trace("start += frameLength", start, frameLength);
 					start += frameLength;
 				}
 				skipped = false;
-				count += 1;
+				count += 0x1;
 			}
+			//trace("start, inputLenght", start, inputLenght, count);
 			return count;
 		}
 	}
