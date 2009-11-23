@@ -23,6 +23,8 @@
 		
 		public static function get soundStreamHead():SoundStreamHead { return _soundStreamHead; }
 		
+		public static function get seekSamples():Vector.<int> { return _seekSamples; }
+		
 		public static const CODEC_JPEG:int = 1;
 		public static const CODEC_H263:int = 2;
 		public static const CODEC_SCREEN_VIDEO:int = 3;
@@ -45,6 +47,8 @@
 		private static var _frames:Vector.<ByteArray>;
 		private static var _soundFrames:Vector.<ByteArray>;
 		private static var _soundStreamHead:SoundStreamHead;
+		private static var _soundPayLoad:ByteArray;
+		private static var _seekSamples:Vector.<int>;
 		
 		public function FLVTranscoder() { super(); }
 		
@@ -59,6 +63,8 @@
 			_frames = new Vector.<ByteArray>(0, false);
 			_soundFrames = new Vector.<ByteArray>(0, false);
 			_soundStreamHead = null;
+			_seekSamples = null;
+			_soundPayLoad = new ByteArray();
 			if ((fileStart = readHeader(input)) < 9)
 			{
 				_error = new Error("Cannot read header");
@@ -66,7 +72,16 @@
 			}
 			input.position = fileStart;
 			_error = readBody(input);
-			if (!_error) return _frames;
+			if (!_error)
+			{
+				if (_soundStreamHead && 
+					_soundStreamHead.streamSoundCompression === 0x2)
+				{
+					_soundFrames = new Vector.<ByteArray>(0, false);
+					distributeAudioFrames();
+				}
+				return _frames;
+			}
 			return null;
 		}
 		
@@ -199,34 +214,34 @@
 		 */
 		private static function readTag(input:ByteArray, from:uint):uint
 		{
-			if (from + 11 >= input.length) return 0;
+			if (from + 0xB >= input.length) return 0x0;
 			input.position = from;
 			var tagType:int = input.readUnsignedByte();
-			if (tagType !== 8 && tagType !== 9 && tagType !== 18) return 0;
-			var dataSize:int = ((input.readUnsignedByte() << 8) | 
-								input.readUnsignedByte() << 8) | 
+			if (tagType !== 0x8 && tagType !== 0x9 && tagType !== 0x12) return 0x0;
+			var dataSize:int = ((input.readUnsignedByte() << 0x8) | 
+								input.readUnsignedByte() << 0x8) | 
 								input.readUnsignedByte();
-			var timeStamp:uint = ((input.readUnsignedByte() << 8) | 
-								input.readUnsignedByte() << 8) | 
+			var timeStamp:uint = ((input.readUnsignedByte() << 0x8) | 
+								input.readUnsignedByte() << 0x8) | 
 								input.readUnsignedByte();
 			var timestampExtended:uint = input.readUnsignedByte();
 			var data:ByteArray;
-			var streamID:uint = ((input.readUnsignedByte() << 8) | 
-								input.readUnsignedByte() << 8) | 
+			var streamID:uint = ((input.readUnsignedByte() << 0x8) | 
+								input.readUnsignedByte() << 0x8) | 
 								input.readUnsignedByte();
 			switch (tagType)
 			{
-				case 8:
+				case 0x8:
 					readAudio(input, input.position, dataSize);
 					break;
-				case 9:
+				case 0x9:
 					readVideo(input, input.position, dataSize);
 					break;
-				case 18:
+				case 0x12:
 					readScript(input, input.position, dataSize);
 					break;
 			}
-			return 11 + dataSize;
+			return 0xB + dataSize;
 		}
 		
 		/**
@@ -275,6 +290,7 @@
 		private static function readAudio(input:ByteArray, 
 											from:uint, lenght:uint):void
 		{
+			var soundData:ByteArray;
 			if (!_soundStreamHead)
 			{
 				_soundStreamHead = new SoundStreamHead();
@@ -299,9 +315,16 @@
 				
 				_soundStreamHead.latencySeek;
 			}
-			var soundData:ByteArray = new ByteArray();
-			soundData.writeBytes(input, from + 0x2, lenght - 0x1);
-			_soundFrames.push(soundData);
+			if (_soundStreamHead.streamSoundCompression === 0x2)
+			{
+				_soundPayLoad.writeBytes(input, from + 0x1, lenght - 0x2);
+			}
+			else
+			{
+				soundData = new ByteArray();
+				soundData.writeBytes(input, from + 0x1, lenght - 0x2);
+				_soundFrames.push(soundData);
+			}
 		}
 		
 		/**
@@ -361,6 +384,46 @@
 			}
 			videoData.position = 0;
 			_frames.push(videoData);
+		}
+		
+		// TODO: Need better algorithm to do distribution
+		// TODO: How do we know samples per frame?
+		private static function distributeAudioFrames():void
+		{
+			_soundPayLoad.position = 0;
+			var sound:ByteArray = 
+				MP3Transcoder.readFully(_soundPayLoad, _soundPayLoad.length);
+			var frames:int = MP3Transcoder.countFrames(sound, true);
+			var sFrames:Vector.<ByteArray> = MP3Transcoder.frames;
+			
+			var samplesWritten:int = -0x1;
+			var samplesToWrite:int = 0x480 * frames;
+			_soundStreamHead.streamSoundSampleCount = samplesToWrite;
+			var destLength:int = _frames.length;
+			var samplesPerSWFFrame:int = samplesToWrite / destLength;
+			
+			var result:Vector.<ByteArray> = new Vector.<ByteArray>(0x0, false);
+			var seekOffsets:Vector.<int> = new Vector.<int>(0x0, false);
+			
+			var temp:ByteArray;
+			var position:int;
+			
+			while (result.length < destLength)
+			{
+				temp = new ByteArray();
+				while (samplesWritten < result.length * samplesPerSWFFrame)
+				{
+					samplesWritten += 0x480;
+					temp.writeBytes(sFrames[position]);
+					position++;
+				} 
+				result.push(temp);
+				seekOffsets.push(result.length * samplesPerSWFFrame - samplesWritten);
+			}
+			if (samplesToWrite > samplesWritten)
+				temp.writeBytes(sFrames[position]);
+			_soundFrames = result;
+			_seekSamples = seekOffsets;
 		}
 		
 		private static function readScript(input:ByteArray, 

@@ -12,6 +12,8 @@
 	 */
 	public class MP3Transcoder 
 	{
+		public static function get frames():Vector.<ByteArray> { return _frames; }
+		
 		private static const _mp3frequencies:Vector.<Vector.<int>> = 
 		Vector.<Vector.<int>>(
 		[
@@ -52,6 +54,8 @@
 			Vector.<int>([-1, 2, 1, 0])
 		]);
 		
+		private static var _frames:Vector.<ByteArray>;
+		
 		public function MP3Transcoder() { super(); }
 		
 		public static function transcode(input:ByteArray):DefineSound
@@ -87,7 +91,7 @@
 			sound.position = 0x3; // MB 2?
 			var layer:int = sound.readUnsignedByte() >> 0x1 & 0x3;
 			
-			sound.position = 0x4; // MB 3?
+			//sound.position = 0x4; // MB 3?
 			var samplingRate:int = sound.readUnsignedByte() >> 0x2 & 0x3;
 
 			/**
@@ -96,7 +100,7 @@
 			 * 2 - dual channel
 			 * 3 - single channel
 			 */
-			sound.position = 0x5; // MB 4?
+			//sound.position = 0x5; // MB 4?
 			var channelMode:int = sound.readUnsignedByte() >> 0x6 & 0x3;
 
 			var frequency:int = _mp3frequencies[samplingRate][version];
@@ -182,7 +186,8 @@
 			return baos;
 		}
 		
-		public static function countFrames(input:ByteArray):int
+		public static function countFrames(input:ByteArray, 
+											saveFrames:Boolean = false):int
 		{
 			var count:int;
 			var start:int = 0x2;
@@ -191,8 +196,8 @@
 			var b3:int;//, b4;
 			var skipped:Boolean;
 			var inputLenght:int = input.length;
-			var stopper:int = 100;
-			
+			//var stopper:int = 100;
+			if (saveFrames) _frames = new Vector.<ByteArray>(0, false);
 			/**
 			 * 0 - version 2.5
 			 * 1 - reserved
@@ -215,6 +220,8 @@
 			var frequency:int;
 			var padding:int;
 			var frameLength:int;
+			
+			var frame:ByteArray;
 			
 			while (start + 0x2 < inputLenght)// && stopper--)
 			{
@@ -289,10 +296,17 @@
 					start += frameLength;
 				}
 				skipped = false;
+				if (saveFrames)
+				{
+					frame = new ByteArray();
+					frame.writeBytes(input, start - (frameLength + 0x1), frameLength);
+					_frames[count] = frame;
+				}
 				count += 0x1;
 			}
 			//trace("start, inputLenght", start, inputLenght, count);
 			return count;
 		}
+		
 	}
 }

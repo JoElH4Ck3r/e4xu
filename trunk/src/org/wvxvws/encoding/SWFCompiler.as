@@ -4,6 +4,7 @@
 	import flash.geom.Matrix;
 	import flash.utils.ByteArray;
 	import flash.utils.Endian;
+	import org.wvxvws.encoding.sound.MP3SoundData;
 	import org.wvxvws.encoding.tags.DefineSceneAndFrameLabelData;
 	import org.wvxvws.encoding.tags.DefineSound;
 	import org.wvxvws.encoding.tags.DefineVideoStream;
@@ -14,6 +15,8 @@
 	import org.wvxvws.encoding.tags.ScriptLimits;
 	import org.wvxvws.encoding.tags.SetBackgroundColor;
 	import org.wvxvws.encoding.tags.ShowFrame;
+	import org.wvxvws.encoding.tags.SoundStreamBlock;
+	import org.wvxvws.encoding.tags.SoundStreamHead;
 	import org.wvxvws.encoding.tags.SoundStreamHead2;
 	import org.wvxvws.encoding.tags.SymbolClass;
 	import org.wvxvws.encoding.tags.VideoFrame;
@@ -33,12 +36,12 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public static const MP3:int = 2;
-		public static const WAVE:int = 0;
+		public static const MP3:int = 0x2;
+		public static const WAVE:int = 0x0;
 		
 		public static var signature:String = "\x46\x57\x53";
 		public static var version:uint = 0x9;
-		public static var fileLength:uint = 0;
+		public static var fileLength:uint = 0x0;
 		public static var frameRect:String = "\x78\x00\x06\x40\x00\x00\x12\xc0\x00";
 		//"\x78\x00\x07\xD0\x00\x00\x17\x70\x00";
 		public static var frameRate:uint = 0x1900;
@@ -138,36 +141,53 @@
 			fakePlaceObject.writeByte(0x00);
 			fakePlaceObject.writeByte(0x00);
 			fakePlaceObject.writeByte(0x00);
-			fakePlaceObject.position = 0;
+			fakePlaceObject.position = 0x0;
+			
+			var soundBlock:SoundStreamBlock = new SoundStreamBlock();
+			var soundHead:SoundStreamHead = FLVTranscoder.soundStreamHead;
+			var mp3Data:MP3SoundData = new MP3SoundData();
+			var soundFrames:Vector.<ByteArray> = FLVTranscoder.soundFrames;
+			var hasSound:Boolean = soundFrames !== null;
+			var seekSamples:Vector.<int> = FLVTranscoder.seekSamples;
+			
+			if (hasSound) swf.writeBytes(soundBlock.compile());
 			
 			for each (var arr:ByteArray in frames)
 			{
 				videoFrame.frameNum = i;
 				videoFrame.videoData = arr;
 				
-				if (i === 0)
+				if (i === 0x0)
 				{
-					poBA.position = 0;
+					poBA.position = 0x0;
 					swf.writeBytes(poBA);
 				}
 				else
 				{
-					fakePlaceObject.position = 5;
+					fakePlaceObject.position = 0x5;
 					fakePlaceObject.writeShort(i);
-					fakePlaceObject.position = 0;
+					fakePlaceObject.position = 0x0;
 					swf.writeBytes(fakePlaceObject);
 				}
 				swf.writeBytes(videoFrame.compile());
 				
-				sfBA.position = 0;
+				if (hasSound)
+				{
+					mp3Data.data = soundFrames[i];
+					mp3Data.seekSamples = seekSamples[i];
+					soundBlock.streamSoundData = mp3Data.write();
+					swf.writeBytes(soundBlock.compile());
+				}
+				
+				sfBA.position = 0x0;
 				swf.writeBytes(sfBA);
 				i++;
 			}
 			
 			writeEnd(swf);
-			swf.position = 4;
+			swf.position = 0x4;
 			swf.writeUnsignedInt(swf.length);
-			swf.position = 0;
+			swf.position = 0x0;
 			return swf;
 		}
 		

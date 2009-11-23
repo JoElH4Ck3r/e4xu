@@ -109,7 +109,7 @@
 			var tagLongLNT:uint;
 			var data:ByteArray = new ByteArray();
 			data.endian = Endian.LITTLE_ENDIAN;
-			trace("tagID", tagID, tagShortLNT);
+			//trace("tagID", tagID, tagShortLNT);
 			if (tagShortLNT >= 63)
 			{
 				tagLongLNT = swf.readUnsignedInt();
