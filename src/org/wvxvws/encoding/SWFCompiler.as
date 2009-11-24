@@ -147,10 +147,10 @@
 			var soundHead:SoundStreamHead = FLVTranscoder.soundStreamHead;
 			var mp3Data:MP3SoundData = new MP3SoundData();
 			var soundFrames:Vector.<ByteArray> = FLVTranscoder.soundFrames;
-			var hasSound:Boolean = soundFrames !== null;
+			var hasSound:Boolean = soundHead !== null;
 			var seekSamples:Vector.<int> = FLVTranscoder.seekSamples;
 			
-			if (hasSound) swf.writeBytes(soundBlock.compile());
+			if (hasSound) swf.writeBytes(soundHead.compile());
 			
 			for each (var arr:ByteArray in frames)
 			{
@@ -174,8 +174,9 @@
 				if (hasSound)
 				{
 					mp3Data.data = soundFrames[i];
-					mp3Data.seekSamples = seekSamples[i];
+					mp3Data.seekSamples = 0;//seekSamples[i];
 					soundBlock.streamSoundData = mp3Data.write();
+					soundBlock.arcane = Boolean(i % 2) ? 0x480 : 0x8F0;
 					swf.writeBytes(soundBlock.compile());
 				}
 				
