@@ -25,6 +25,10 @@
 		
 		public static function get seekSamples():Vector.<int> { return _seekSamples; }
 		
+		public static function get bigSoundFrame():int { return _bigSoundFrame; }
+		
+		public static function get smallSoundFrame():int { return _smallSoundFrame; }
+		
 		public static const CODEC_JPEG:int = 1;
 		public static const CODEC_H263:int = 2;
 		public static const CODEC_SCREEN_VIDEO:int = 3;
@@ -50,6 +54,9 @@
 		private static var _soundPayLoad:ByteArray;
 		private static var _seekSamples:Vector.<int>;
 		
+		private static var _bigSoundFrame:int;
+		private static var _smallSoundFrame:int;
+		
 		public function FLVTranscoder() { super(); }
 		
 		public static function read(input:ByteArray):Vector.<ByteArray>
@@ -64,6 +71,8 @@
 			_soundFrames = new Vector.<ByteArray>(0, false);
 			_soundStreamHead = null;
 			_seekSamples = null;
+			_smallSoundFrame = 0;
+			_bigSoundFrame = 0;
 			_soundPayLoad = new ByteArray();
 			if ((fileStart = readHeader(input)) < 9)
 			{
@@ -417,6 +426,8 @@
 					if (samplesWritten < 0x0) samplesWritten = 0x0;
 					samplesWritten += 0x480;
 					temp.writeBytes(sFrames[position]);
+					_bigSoundFrame = Math.max(_bigSoundFrame, temp.length);
+					_smallSoundFrame = Math.min(_smallSoundFrame, temp.length);
 					position++;
 				} 
 				result.push(temp);

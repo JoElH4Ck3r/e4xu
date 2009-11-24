@@ -176,7 +176,9 @@
 					mp3Data.data = soundFrames[i];
 					mp3Data.seekSamples = 0;//seekSamples[i];
 					soundBlock.streamSoundData = mp3Data.write();
-					soundBlock.arcane = Boolean(i % 2) ? 0x480 : 0x8F0;
+					soundBlock.arcane = 
+						(mp3Data.data.length === FLVTranscoder.bigSoundFrame) ? 
+						0x480 : 0x8F0;
 					swf.writeBytes(soundBlock.compile());
 				}
 				
