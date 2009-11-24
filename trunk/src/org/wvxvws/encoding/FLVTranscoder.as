@@ -398,9 +398,10 @@
 			
 			var samplesWritten:int = -0x1;
 			var samplesToWrite:int = 0x480 * frames;
-			_soundStreamHead.streamSoundSampleCount = samplesToWrite;
 			var destLength:int = _frames.length;
 			var samplesPerSWFFrame:int = samplesToWrite / destLength;
+			_soundStreamHead.streamSoundSampleCount = samplesPerSWFFrame;
+			var isFirstBlock:Boolean = true;
 			
 			var result:Vector.<ByteArray> = new Vector.<ByteArray>(0x0, false);
 			var seekOffsets:Vector.<int> = new Vector.<int>(0x0, false);
@@ -413,12 +414,19 @@
 				temp = new ByteArray();
 				while (samplesWritten < result.length * samplesPerSWFFrame)
 				{
+					if (samplesWritten < 0x0) samplesWritten = 0x0;
 					samplesWritten += 0x480;
 					temp.writeBytes(sFrames[position]);
 					position++;
 				} 
 				result.push(temp);
 				seekOffsets.push(result.length * samplesPerSWFFrame - samplesWritten);
+				if (isFirstBlock)
+				{
+					_soundStreamHead.latencySeek = 
+						result.length * samplesPerSWFFrame - samplesWritten;
+					isFirstBlock = false;
+				}
 			}
 			if (samplesToWrite > samplesWritten)
 				temp.writeBytes(sFrames[position]);

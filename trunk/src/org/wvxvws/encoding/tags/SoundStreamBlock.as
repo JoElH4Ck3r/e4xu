@@ -21,6 +21,8 @@
 		
 		public var streamSoundData:ByteArray;
 		
+		public var arcane:int;
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
@@ -68,7 +70,7 @@
 		//--------------------------------------------------------------------------
 		
 		/**
-		 *        RECORDHEADER (MP3)     | SeekSamples |
+		 *        RECORDHEADER (MP3)     |      ?      | SeekSamples
 		 * ------------------------------+-------------+-------
 		 * "\xFF\x04" "\x18\x04\x00\x00" |  "\x00\x09" | ...
 		 * ------------------------------+-------------+-------
@@ -77,7 +79,9 @@
 		protected override function compileTagParams():void 
 		{
 			this.streamSoundData.position = 0;
-			this._data.writeBytes(this.streamSoundData);
+			// TODO: This is needed, but no idea what this is...
+			super._data.writeShort(arcane);
+			super._data.writeBytes(this.streamSoundData);
 		}
 		
 		//--------------------------------------------------------------------------
