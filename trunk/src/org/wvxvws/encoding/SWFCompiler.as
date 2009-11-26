@@ -174,7 +174,7 @@
 				if (hasSound)
 				{
 					mp3Data.data = soundFrames[i];
-					mp3Data.seekSamples = 0;//seekSamples[i];
+					mp3Data.seekSamples = seekSamples[i];
 					soundBlock.streamSoundData = mp3Data.write();
 					soundBlock.arcane = 
 						(mp3Data.data.length === FLVTranscoder.bigSoundFrame) ? 

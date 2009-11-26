@@ -1,6 +1,7 @@
 ﻿package org.wvxvws.encoding 
 {
 	import flash.utils.ByteArray;
+	import flash.utils.Endian;
 	import org.wvxvws.encoding.tags.SoundStreamHead;
 	
 	/**
@@ -20,6 +21,8 @@
 		public static function get height():int { return _height; }
 		
 		public static function get soundFrames():Vector.<ByteArray> { return _soundFrames; }
+		
+		public static function get soundPayLoad():ByteArray { return _soundPayLoad; }
 		
 		public static function get soundStreamHead():SoundStreamHead { return _soundStreamHead; }
 		
@@ -294,12 +297,15 @@
 		 * </pre>
 		 * @param	input
 		 * @param	from
-		 * @param	lenght
+		 * @param	dataLength
 		 */
 		private static function readAudio(input:ByteArray, 
-											from:uint, lenght:uint):void
+											from:uint, dataLength:uint):void
 		{
 			var soundData:ByteArray;
+			var syncByte:uint;
+			var syncByte2:uint;
+			var pad:int;
 			if (!_soundStreamHead)
 			{
 				_soundStreamHead = new SoundStreamHead();
@@ -312,6 +318,7 @@
 				var soundType:uint = flags & 0x1;
 				
 				//2 3 1 1
+				//2 2 1 0
 				trace(soundFormat, soundRate, soundSize, soundType);
 				
 				_soundStreamHead.playBackSoundRate = soundRate;
@@ -326,12 +333,35 @@
 			}
 			if (_soundStreamHead.streamSoundCompression === 0x2)
 			{
-				_soundPayLoad.writeBytes(input, from + 0x1, lenght - 0x2);
+				if (_soundStreamHead.playBackSoundRate === 0x2)
+				{
+					input.position = from;
+					while (input.position < from + dataLength)
+					{
+						syncByte = input.readUnsignedByte();
+						if (syncByte === 0xFF)
+						{
+							syncByte2 = input.readUnsignedByte();
+							if ((syncByte2 >>> 0x5 & 0x7) === 0x7)
+							{
+								break;
+							}
+						}
+						pad++;
+					}
+					input.position = from + pad + 1;
+					_soundPayLoad.writeBytes(input, from + pad, dataLength - pad);
+				}
+				else
+				{
+					//trace("adding sound bytes", lenght - (pad + 1));
+					_soundPayLoad.writeBytes(input, from + 0x1, dataLength - 0x1);
+				}
 			}
 			else
 			{
 				soundData = new ByteArray();
-				soundData.writeBytes(input, from + 0x1, lenght - 0x2);
+				soundData.writeBytes(input, from + 0x1, dataLength - 0x1);
 				_soundFrames.push(soundData);
 			}
 		}
@@ -400,13 +430,18 @@
 		private static function distributeAudioFrames():void
 		{
 			_soundPayLoad.position = 0;
-			var sound:ByteArray = 
-				MP3Transcoder.readFully(_soundPayLoad, _soundPayLoad.length);
-			var frames:int = MP3Transcoder.countFrames(sound, true);
+			//var sound:ByteArray = 
+				//MP3Transcoder.readFully(_soundPayLoad, _soundPayLoad.length);
+			//var frames:int = MP3Transcoder.countFrames(sound, true);
+			var frames:int = MP3Transcoder.countFrames(_soundPayLoad, true);
 			var sFrames:Vector.<ByteArray> = MP3Transcoder.frames;
 			
-			var samplesWritten:int = -0x1;
-			var samplesToWrite:int = 0x480 * frames;
+			trace("-------frames-------", frames, _frames.length, _soundPayLoad.length);
+			
+			// TODO: how do we get samples per MP3 frame?
+			var samples:int = 0x480;
+			var samplesWritten:int;
+			var samplesToWrite:int = samples * frames;
 			var destLength:int = _frames.length;
 			var samplesPerSWFFrame:int = samplesToWrite / destLength;
 			_soundStreamHead.streamSoundSampleCount = samplesPerSWFFrame;
@@ -421,15 +456,20 @@
 			while (result.length < destLength)
 			{
 				temp = new ByteArray();
-				while (samplesWritten < result.length * samplesPerSWFFrame)
+				do
 				{
-					if (samplesWritten < 0x0) samplesWritten = 0x0;
-					samplesWritten += 0x480;
+					samplesWritten += samples;
+					if (sFrames.length <= position)
+					{
+						trace("not enough frames");
+						break;
+					}
 					temp.writeBytes(sFrames[position]);
 					_bigSoundFrame = Math.max(_bigSoundFrame, temp.length);
 					_smallSoundFrame = Math.min(_smallSoundFrame, temp.length);
 					position++;
-				} 
+				}
+				while (samplesWritten + samples < result.length * samplesPerSWFFrame)
 				result.push(temp);
 				seekOffsets.push(result.length * samplesPerSWFFrame - samplesWritten);
 				if (isFirstBlock)
