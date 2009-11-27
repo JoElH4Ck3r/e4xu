@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fl:Sprite 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:img="$(PackagePath).img.*"
+	xmlns:snd="$(PackagePath).snd."
+	xmlns:fnt="$(PackagePath).fnt."
+	xmlns:swf="$(PackagePath).swf."
+	xmlns:fxg="$(PackagePath).fxg."
+	xmlns:svg="$(PackagePath).svg."
+	xmlns:txt="$(PackagePath).txt."
+	xmlns:bin="$(PackagePath).bin."
+	xmlns:fl="flash.display.*"
+	>
+	<!-- Entry point -->
+</fl:Sprite>

@@ -1,0 +1,353 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<project>
+  <!-- Output SWC options -->
+  <output>
+	<compc>
+		<!-- output performance benchmark -->
+		<benchmark>bool</benchmark>
+		<compiler>
+			<!-- generate an accessible SWF -->
+			<accessible>bool</accessible>
+			<!-- specifies actionscript file encoding. If there is no BOM in the AS3
+					source files, the compiler will use this file encoding. -->
+			<actionscript-file-encoding>bool</actionscript-file-encoding>
+			<!-- checks if a source-path entry is a subdirectory of another
+					source-path entry. It helps make the package names of MXML components
+					unambiguous. (advanced) -->
+			<allow-source-path-overlap>bool</allow-source-path-overlap>
+			<!-- use the ActionScript 3 class based object model for greater
+					performance and better error reporting. In the class based object
+					model most built-in functions are implemented as fixed methods of
+					classes. (advanced) -->
+			<as3>bool</as3>
+			<!-- path to replace {context.root} tokens for service channel endpoints -->
+			<context-root>string</context-root>
+			<!-- generates a movie that is suitable for debugging -->
+			<debug>string</debug>
+			<defaults-css-files>(Collection)string</defaults-css-files>
+			<!-- defines the location of the default style sheet. Setting this option
+					overrides the implicit use of the defaults.css style sheet in the
+					framework.swc file. (advanced) -->
+			<defaults-css-url>string</defaults-css-url>
+			<!-- define a global AS3 conditional compilation definition, e.g.
+					-define=CONFIG::debugging,true or -define+=CONFIG::debugging,true (to
+					append to existing definitions in flex-config.xml)  (advanced,
+					repeatable) -->
+			<define>string</define>
+			<!-- use the ECMAScript edition 3 prototype based object model to allow
+					dynamic overriding of prototype properties. In the prototype based
+					object model built-in functions are implemented as dynamic properties
+					of prototype objects. (advanced) -->
+			<es>bool</es>
+			<!-- list of SWC files or directories to compile against but to omit from
+					linking (repeatable) -->
+			<external-library-path>(Collection)path-element</external-library-path>
+			<fonts>
+				<!-- enables advanced anti-aliasing for embedded fonts, which provides
+					greater clarity for small fonts. -->
+				<advanced-anti-aliasing>bool</advanced-anti-aliasing>
+				<!-- enables FlashType for embedded fonts, which provides greater clarity
+					for small fonts. -->
+				<flash-type>bool</flash-type>
+				<languages>
+					<!-- a range to restrict the number of font glyphs embedded into the SWF
+					(advanced, repeatable) -->
+					<language-range>string</language-range>
+				</languages>
+				<!-- File containing system font data produced by
+					flex2.tools.FontSnapshot. (advanced) -->
+				<local-fonts-snapshot>string</local-fonts-snapshot>
+				<!-- Compiler font manager classes, in policy resolution order (advanced) -->
+				<managers>(Collection)string</managers>
+				<!-- sets the maximum number of fonts to keep in the server cache.  The
+					default value is 20. (advanced) -->
+				<max-cached-fonts>uint</max-cached-fonts>
+				<!-- sets the maximum number of character glyph-outlines to keep in the
+					server cache for each font face. The default value is 1000. -->
+				<max-glyphs-per-face>uint</max-glyphs-per-face>
+			</fonts>
+			<!-- a flag to set when Flex is running on a server without a display
+				(advanced) -->
+			<headless-server>bool</headless-server>
+			<!-- a list of libraries (SWCs) to completely include in the SWF
+				(repeatable) -->
+			<include-libraries>(Collection)string</include-libraries>
+			<!-- enables incremental compilation -->
+			<incremental>(Collection)string</incremental>
+			<!-- disables the pruning of unused CSS type selectors (advanced) -->
+			<keep-all-type-selectors>bool</keep-all-type-selectors>
+			<!-- keep the specified metadata in the SWF (advanced, repeatable) -->
+			<keep-as3-metadata>(Collection)string</keep-as3-metadata>
+			<!-- save temporary source files generated during MXML compilation
+				(advanced) -->
+			<keep-generated-actionscript>bool</keep-generated-actionscript>
+			<!-- list of SWC files or directories that contain SWC files (repeatable) -->
+			<library-path>(Collection)path-element</library-path>
+			<!-- specifies the locale for internationalization (repeatable) -->
+			<locale>(Collection)locale-element</locale>
+			<mxml>
+				<!-- specifies a compatibility version. e.g. -compatibility-version=2.0.1 -->
+				<compatibility-version>string</compatibility-version>
+			</mxml>
+			<namespaces>
+				<!-- Specify a URI to associate with a manifest of components for use as
+					MXML elements (repeatable) -->
+				<namespace>(Collection)uri(Collection)maifest</namespace>
+			</namespaces>
+			<!-- Enable post-link SWF optimization -->
+			<optimize>bool</optimize>
+			<!-- path to Flex Data Services configuration file -->
+			<services>string</services>
+			<!-- runs the AS3 compiler in a mode that detects legal but potentially
+					incorrect code -->
+			<show-actionscript-warnings>bool</show-actionscript-warnings>
+			<!-- toggle whether warnings generated from data binding code are
+					displayed -->
+			<show-binding-warnings>bool</show-binding-warnings>
+			<!-- toggles whether warnings are displayed when an embedded font name
+					shadows a device font name -->
+			<show-shadowed-device-font-warnings>bool</show-shadowed-device-font-warnings>
+			<!-- toggle whether warnings generated from unused CSS type selectors are
+					displayed -->
+			<show-unused-type-selector-warnings>bool</show-unused-type-selector-warnings>
+			<!-- list of path elements that form the roots of ActionScript class
+					hierarchies (repeatable) -->
+			<source-path>(Collection)path-element</source-path>
+			<!-- runs the AS3 compiler in strict error checking mode. -->
+			<strict>bool</strict>
+			<!-- list of CSS or SWC files to apply as a theme (repeatable) -->
+			<theme>(Collection)filename</theme>
+			<!-- determines whether resources bundles are included in the application. -->
+			<use-resource-bundle-metadata>bool</use-resource-bundle-metadata>
+			<!-- save callstack information to the SWF for debugging (advanced) -->
+			<verbose-stacktraces>bool</verbose-stacktraces>
+			<!-- Array.toString() format has changed. (advanced) -->
+			<warn-array-tostring-changes>bool</warn-array-tostring-changes>
+			<!-- Assignment within conditional. (advanced) -->
+			<warn-assignment-within-conditional>bool</warn-assignment-within-conditional>
+			<!-- Possibly invalid Array cast operation. (advanced) -->
+			<warn-bad-array-cast>bool</warn-bad-array-cast>
+			<!-- Non-Boolean value used where a Boolean value was expected. (advanced) -->
+			<warn-bad-bool-assignment>bool</warn-bad-bool-assignment>
+			<!-- Invalid Date cast operation. (advanced) -->
+			<warn-bad-date-cast>bool</warn-bad-date-cast>
+			<!-- Unknown method. (advanced) -->
+			<warn-bad-es3-type-method>bool</warn-bad-es3-type-method>
+			<!-- Unknown property. (advanced) -->
+			<warn-bad-es3-type-prop>bool</warn-bad-es3-type-prop>
+			<!-- Illogical comparison with NaN. Any comparison operation involving NaN
+					will evaluate to false because NaN != NaN. (advanced) -->
+			<warn-bad-nan-comparison>bool</warn-bad-nan-comparison>
+			<!-- Impossible assignment to null. (advanced) -->
+			<warn-bad-null-assignment>bool</warn-bad-null-assignment>
+			<!-- Illogical comparison with null. (advanced) -->
+			<warn-bad-null-comparison>bool</warn-bad-null-comparison>
+			<!-- Illogical comparison with undefined.  Only untyped variables (or
+					variables of type *) can be undefined. (advanced) -->
+			<warn-bad-undefined-comparison>bool</warn-bad-undefined-comparison>
+			<!-- Boolean() with no arguments returns false in ActionScript 3.0.
+					Boolean() returned undefined in ActionScript 2.0. (advanced) -->
+			<warn-boolean-constructor-with-no-args>bool</warn-boolean-constructor-with-no-args>
+			<!-- __resolve is no longer supported. (advanced) -->
+			<warn-changes-in-resolve>bool</warn-changes-in-resolve>
+			<!-- Class is sealed.  It cannot have members added to it dynamically.
+					(advanced) -->
+			<warn-class-is-sealed>bool</warn-class-is-sealed>
+			<!-- Constant not initialized. (advanced) -->
+			<warn-const-not-initialized>bool</warn-const-not-initialized>
+			<!-- Function used in new expression returns a value.  Result will be what
+					the function returns, rather than a new instance of that function.
+					(advanced) -->
+			<warn-constructor-returns-value>bool</warn-constructor-returns-value>
+			<!-- EventHandler was not added as a listener. (advanced) -->
+			<warn-deprecated-event-handler-error>bool</warn-deprecated-event-handler-error>
+			<!-- Unsupported ActionScript 2.0 function. (advanced) -->
+			<warn-deprecated-function-error>bool</warn-deprecated-function-error>
+			<!-- Unsupported ActionScript 2.0 property. (advanced) -->
+			<warn-deprecated-property-error>bool</warn-deprecated-property-error>
+			<!-- More than one argument by the same name. (advanced) -->
+			<warn-duplicate-argument-names>bool</warn-duplicate-argument-names>
+			<!-- Duplicate variable definition  (advanced) -->
+			<warn-duplicate-variable-def>bool</warn-duplicate-variable-def>
+			<!-- ActionScript 3.0 iterates over an object's properties within a "for x
+					in target" statement in random order. (advanced) -->
+			<warn-for-var-in-changes>bool</warn-for-var-in-changes>
+			<!-- Importing a package by the same name as the current class will hide
+					that class identifier in this scope. (advanced) -->
+			<warn-import-hides-class>bool</warn-import-hides-class>
+			<!-- Use of the instanceof operator. (advanced) -->
+			<warn-instance-of-changes>bool</warn-instance-of-changes>
+			<!-- Internal error in compiler. (advanced) -->
+			<warn-internal-error>bool</warn-internal-error>
+			<!-- _level is no longer supported. For more information, see the
+					flash.display package. (advanced) -->
+			<warn-level-not-supported>bool</warn-level-not-supported>
+			<!-- Missing namespace declaration (e.g. variable is not defined to be
+					public, private, etc.). (advanced) -->
+			<warn-missing-namespace-decl>bool</warn-missing-namespace-decl>
+			<!-- Negative value will become a large positive value when assigned to a
+					uint data type. (advanced) -->
+			<warn-negative-uint-literal>bool</warn-negative-uint-literal>
+			<!-- Missing constructor. (advanced) -->
+			<warn-no-constructor>bool</warn-no-constructor>
+			<!-- alias -warn-no-explicit-super-call-in-constructor
+					The super() statement was not called within the constructor.
+					(advanced) -->
+			<warn-no-explicit-super-call-in-constructor>bool</warn-no-explicit-super-call-in-constructor>
+			<!-- Missing type declaration. (advanced) -->
+			<warn-no-type-decl>bool</warn-no-type-decl>
+			<!-- In ActionScript 3.0, white space is ignored and '' returns 0.
+					Number() returns NaN in ActionScript 2.0 when the parameter is '' or
+					contains white space. (advanced) -->
+			<warn-number-from-string-changes>bool</warn-number-from-string-changes>
+			<!-- Change in scoping for the this keyword.  Class methods extracted from
+					an instance of a class will always resolve this back to that
+					instance.  In ActionScript 2.0 this is looked up dynamically based on
+					where the method is invoked from. (advanced) -->
+			<warn-scoping-change-in-this>bool</warn-scoping-change-in-this>
+			<!-- Inefficient use of += on a TextField. (advanced) -->
+			<warn-slow-text-field-addition>bool</warn-slow-text-field-addition>
+			<!-- Possible missing parentheses. (advanced) -->
+			<warn-unlikely-function-value>bool</warn-unlikely-function-value>
+			<!-- Possible usage of the ActionScript 2.0 XML class. (advanced) -->
+			<warn-xml-class-has-changed>bool</warn-xml-class-has-changed>
+		</compiler>
+		<!-- writes a digest to the catalog.xml of a library. This is required
+				when the library will be used in the -runtime-shared-libraries-path
+				option. -->
+		<compute-digest>bool</compute-digest>
+		<!-- the password to include in debuggable SWFs (advanced) -->
+		<debug-password>string</debug-password>
+		<!-- default background color (may be overridden by the application code)
+				(advanced) -->
+		<default-background-color>uint</default-background-color>
+		<!-- default frame rate to be used in the SWF. (advanced) -->
+		<default-frame-rate>uint</default-frame-rate>
+		<!-- default script execution limits (may be overridden by root
+				attributes) (advanced) -->
+		<default-script-limits>uint,uint</default-script-limits>
+		<!-- default application size (may be overridden by root attributes in the
+				application) (advanced) -->
+		<default-size>uint,uint</default-size>
+		<!-- output the library as an open directory instead of a SWC file -->
+		<directory>bool</directory>
+		<!-- write a file containing all currently set configuration values in a
+				format suitable for use as a flex config file (advanced) -->
+		<dump-config>string</dump-config>
+		<!-- a list of symbols to omit from linking when building a SWF (advanced,
+				repeatable) -->
+		<externs>(Collection)symbol</externs>
+		<!-- A SWF frame label with a sequence of classnames that will be linked
+				onto the frame. (advanced, repeatable) -->
+		<frames>(Collection)frame</frames>
+		<!-- a list of classes to include in the output SWC (repeatable, default
+				variable) -->
+		<include-classes>(Collection)class</include-classes>
+		<!-- a list of named files to include in the output SWC (repeatable) -->
+		<include-file>(Collection)string</include-file>
+		<!-- if true, manifest entries with lookupOnly=true are included in SWC
+				catalog. Default is false. (advanced) -->
+		<include-lookup-only>(Collection)string</include-lookup-only>
+		<!-- all classes in the listed namespaces are included in the output SWC
+				(repeatable) -->
+		<include-namespaces>(Collection)uri</include-namespaces>
+		<!-- a list of resource bundles to include in the output SWC (repeatable) -->
+		<include-resource-bundles>(Collection)bundle</include-resource-bundles>
+		<!-- a list of directories and source files to include in the output SWC
+				(repeatable) -->
+		<include-sources>(Collection)path-element</include-sources>
+		<!-- a list of named stylesheet resources to include in the output SWC
+				(repeatable) -->
+		<include-stylesheet>string</include-stylesheet>
+		<!-- a list of symbols to always link in when building a SWF (advanced,
+				repeatable) -->
+		<includes>(Collection)symbol</includes>
+		<licenses>
+			<!-- specifies a product and a serial number.  (repeatable) -->
+			<license>string</license>
+		</licenses>
+		<!-- Output a XML-formatted report of all definitions linked into the
+				application. (advanced) -->
+		<link-report>string</link-report>
+		<!-- load a file containing configuration options (repeatable) -->
+		<load-config>string</load-config>
+		<!-- an XML file containing <def>, <pre>, and <ext> symbols to omit from
+				linking when building a SWF (advanced, repeatable) -->
+		<load-externs>string</load-externs>
+		<metadata>
+			<!-- A contributor's name to store in the SWF metadata (repeatable) -->
+			<contributor>string</contributor>
+			<!-- A creator's name to store in the SWF metadata (repeatable) -->
+			<creator>string</creator>
+			<!-- The creation date to store in the SWF metadata -->
+			<date>string</date>
+			<!-- The default description to store in the SWF metadata -->
+			<description>string</description>
+			<!-- The language to store in the SWF metadata (i.e. EN, FR) (repeatable) -->
+			<language>string</language>
+			<!-- A localized RDF/XMP description to store in the SWF metadata
+				(repeatable) -->
+			<localized-description>string</localized-description>
+			<!-- A localized RDF/XMP title to store in the SWF metadata (repeatable) -->
+			<localized-title>string</localized-title>
+			<!-- A publisher's name to store in the SWF metadata (repeatable) -->
+			<publisher>string</publisher>
+			<!-- The default title to store in the SWF metadata -->
+			<title>string</title>
+		</metadata>
+		<!-- XML text to store in the SWF metadata (overrides metadata.*
+				configuration) (advanced) -->
+		<raw-metadata>string</raw-metadata>
+		<!-- prints a list of resource bundles to a file for input to the compc
+				compiler to create a resource bundle SWC file.  (advanced) -->
+		<resource-bundle-list>string</resource-bundle-list>
+		<!-- a list of runtime shared library URLs to be loaded before the
+				application starts (repeatable) -->
+		<runtime-shared-libraries>(Collection)url</runtime-shared-libraries>
+		<runtime-shared-library-path>(Collection)path-element,(Collection)rsl-url,(Collection)policy-file-url</runtime-shared-library-path>
+		<static-link-runtime-shared-libraries>bool</static-link-runtime-shared-libraries>
+		<!-- specifies the version of the player the application is targeting.
+				Features requiring a later version will not be compiled into the
+				application. The minimum value supported is "9.0.0". -->
+		<target-player>string</target-player>
+		<!-- toggle whether the SWF is flagged for access to network resources -->
+		<use-network>bool</use-network>
+		<!-- verifies the libraries loaded at runtime are the correct ones.
+				(advanced) -->
+		<verify-digests>bool</verify-digests>
+		<!-- display the build version of the program -->
+		<version>string</version>
+		<!-- toggle the display of warnings -->
+		<warnings>bool</warnings>
+	</compc>
+    <movie disabled="False" />
+    <movie path="rsx\$(ProjectID).swc" />
+  </output>
+  <!-- Other classes to be compiled into your SWF -->
+  <classpaths>
+    <class path="rsx" />
+  </classpaths>
+  <!-- Build options -->
+  <build>
+    <option customSDK="" />
+  </build>
+  <intrinsics>
+    <element path="Library\AS3\frameworks\Flex3" />
+  </intrinsics>
+  <!-- Class files to compile (other referenced classes will automatically be included) -->
+  <compileTargets>
+    <compile path="rsx\$(PackageSlash)Assets.mxml" />
+  </compileTargets>
+  <!-- Paths to exclude from the Project Explorer tree -->
+  <hiddenPaths>
+    <!-- example: <hidden path="..." /> -->
+  </hiddenPaths>
+  <!-- Executed before build -->
+  <preBuildCommand />
+  <!-- Executed after build -->
+  <postBuildCommand alwaysRun="False" />
+  <!-- Other project options -->
+  <options>
+    <option showHiddenPaths="False" />
+  </options>
+</project>
