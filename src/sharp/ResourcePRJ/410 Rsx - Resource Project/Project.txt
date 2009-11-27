@@ -1,0 +1,1 @@
+A resource project for managing assets using Flex SDK
