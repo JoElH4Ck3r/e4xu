@@ -2,7 +2,7 @@
 <e4xu:FrameOne 
 	xmlns:mx="http://www.adobe.com/2006/mxml"
 	xmlns:e4xu="http://e4xu.googlecode.com"
-	frameTwoAlias="view.SecondFrame"
+	frameTwoAlias="'view.SecondFrame'"
 	width="800"
 	height="600"
 	>
@@ -21,21 +21,13 @@
 			id="testPreloader" 
 			width="800" 
 			height="600"
-			complete="testInvoker.call()"
+			complete="test(s1, s2, s3, s4);"
 			/>
 	</e4xu:preloader>
 	
-	<e4xu:Invoker id="testInvoker">
-		<e4xu:callbacks>
-			<e4xu:CallBack method="{test}">
-				<e4xu:parameters>
-					<mx:String>This</mx:String>
-					<mx:String>is</mx:String>
-					<mx:String>test</mx:String>
-					<mx:String>method</mx:String>
-				</e4xu:parameters>
-			</e4xu:CallBack>
-		</e4xu:callbacks>
-	</e4xu:Invoker>
+	<mx:String id="s1">"This"</mx:String>
+	<mx:String id="s2">"is"</mx:String>
+	<mx:String id="s3">"test"</mx:String>
+	<mx:String id="s4">"method"</mx:String>
 	
 </e4xu:FrameOne>
