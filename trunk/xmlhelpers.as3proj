@@ -14,8 +14,7 @@
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
     <class path="src" />
-    <class path="..\..\amfphp\services" />
-    <class path="..\..\..\flex_sdk_trunk\frameworks\libs" />
+    <class path="examples" />
   </classpaths>
   <!-- Build options -->
   <build>
