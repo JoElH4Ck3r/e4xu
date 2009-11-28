@@ -1,0 +1,68 @@
+﻿<project name="E4XU build and test" default="index">
+	<!--!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!-->
+	<!-- Increase Java heap memory to avoid getting out-of memory error (example) -->
+	<!-- ANT_OPTS=-Xmx5120M -->
+	<!-- Set the Javac location if it differs from the one where flexTask.jar
+		 believs it to be (example):
+		 JAVA_HOME="/cygdrive/c/Program Files/Java/jdk1.6.0_16" -->
+	<!--!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!-->
+	
+	<!-- load properties file -->
+	<property file="build.properties" />
+	<property name="FLEX_HOME" value="C:/flex_sdk_trunk" />
+	
+	<!-- points to our flexTasks.jar we copied to the libs folder to distribute with the project -->
+	<taskdef resource="flexTasks.tasks" classpath="${basedir}/tasks/flexTasks.jar"/> 
+	
+	<!-- delete and recreate the DEPLOY dir -->
+	<target name="init">
+		<delete dir="${DEPLOY_DIR}" />
+		<mkdir dir="${DEPLOY_DIR}" />
+		<mkdir dir="${DEPLOY_DIR}/js" />
+		<copy file="${RSX_DIR}/index.html" todir="${DEPLOY_DIR}"/>
+		<copy file="${RSX_DIR}/swfobject.js" todir="${DEPLOY_DIR}/js"/>
+		<copy file="${RSX_DIR}/expressInstall.swf" todir="${DEPLOY_DIR}"/>
+		<tstamp>
+			<format property="TODAY" pattern="d-MM-yy"/>
+		</tstamp>
+		<replace file="${DEPLOY_DIR}/index.html">
+			<replacefilter token="@swf@" value="index${TODAY}"/>
+		</replace>
+	</target>
+	
+	<!-- Build framework.swc -->
+	<target name="frameworkSWC" depends="init">
+		<compc output="${LIBS_DIR}/framework.swc" 
+			defaults-css-url="${FLEX_FRAMEWORK_DIR}/default.css"
+			debug="${DEBUGGING}">
+			<load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
+	        <load-config filename="${CONFIG_DIR}/build-framework.xml"/>
+	        <source-path path-element="${FLEX_FRAMEWORK_DIR}"/>
+		</compc>
+	</target>
+	
+	<!-- Build e4xu.swc -->
+		<target name="e4xuSWC" depends="frameworkSWC">
+		<compc output="${LIBS_DIR}/e4xu${TODAY}.swc" 
+			debug="${DEBUGGING}">
+	        <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
+	        <load-config filename="${CONFIG_DIR}/build-e4xu.xml"/>
+	        <source-path path-element="${FLEX_HOME}/frameworks"/>
+	        <source-path path-element="${SRC_DIR}"/>
+		</compc>
+	</target>
+	
+	<!-- Build test (index.swf) -->
+	<target name="index" depends="e4xuSWC">
+		<mxmlc file="${SRC_DIR}/view/SecondFrame.mxml" 
+				output="${DEPLOY_DIR}/index${TODAY}.swf"
+				static-link-runtime-shared-libraries="true"
+				debug="${DEBUGGING}"
+				keep-generated-actionscript="true"
+				use-network="true">
+	        <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
+	        <load-config filename="${CONFIG_DIR}/build-index.xml"/>
+		</mxmlc>
+	</target>
+	
+</project>
