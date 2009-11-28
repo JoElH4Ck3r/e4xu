@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<flex-config>
+  <compiler>
+    <source-path append="true">
+      <path-element>../src</path-element>
+    </source-path>
+	<namespaces>
+		<namespace>
+			<uri>http://e4xu.googlecode.com</uri>
+			<manifest>manifest.xml</manifest>
+		</namespace>
+	</namespaces>
+  </compiler>
+  <include-classes>
+	<!-- MAPPING -->
+	<class>org.wvxvws.mapping.Connector</class>
+	<class>org.wvxvws.mapping.Handler</class>
+	<class>org.wvxvws.mapping.Link</class>
+	<class>org.wvxvws.mapping.Map</class>
+	<!-- NET -->
+	<class>org.wvxvws.net.AMFService</class>
+	<class>org.wvxvws.net.MultiAMFService</class>
+	<class>org.wvxvws.net.ServiceMethod</class>
+	<class>org.wvxvws.net.ServiceArguments</class>
+	<!-- FIXME
+		<class>org.wvxvws.net.TXTService</class>
+	-->
+	<!-- RESOURCES -->
+	<class>org.wvxvws.resources.Resource</class>
+	<class>org.wvxvws.resources.ResourcesRepository</class>
+	<class>org.wvxvws.managers.ResourceManager</class>
+	<!-- UI -->
+	<class>org.wvxvws.gui.Bar</class>
+	<class>org.wvxvws.gui.Border</class>
+	<class>org.wvxvws.gui.Button</class>
+	<class>org.wvxvws.gui.DIV</class>
+	<class>org.wvxvws.base.FrameOne</class>
+	<class>org.wvxvws.base.FrameTwo</class>
+	<class>org.wvxvws.gui.Hint</class>
+	<class>org.wvxvws.gui.IMG</class>
+	<class>org.wvxvws.gui.Preloader</class>
+	<class>org.wvxvws.gui.SPAN</class>
+	<class>org.wvxvws.gui.ButtonS</class>
+	<class>org.wvxvws.gui.Scroller</class>
+	<class>org.wvxvws.gui.StatefulButton</class>
+	<!-- UI CHROME -->
+	<class>org.wvxvws.gui.windows.ChromeBar</class>
+	<class>org.wvxvws.gui.containers.ChromeWindow</class>
+	<class>org.wvxvws.gui.windows.ChromeAlert</class>
+	<class>org.wvxvws.gui.windows.ChromeSubmit</class>
+	<!-- TOOLS -->
+	<class>org.wvxvws.tools.Graph</class>
+	<class>org.wvxvws.tools.Palette</class>
+	<class>org.wvxvws.tools.Transformer</class>
+	<class>org.wvxvws.tools.Ruler</class>
+	<class>org.wvxvws.tools.Timeline</class>
+	<!-- CONTAINERS -->
+	<class>org.wvxvws.gui.containers.Column</class>
+	<class>org.wvxvws.gui.containers.Drill</class>
+	<!-- FIXME
+		<class>org.wvxvws.gui.containers.Nest</class>
+	-->
+	<class>org.wvxvws.gui.containers.Table</class>
+	<!-- FIXME
+		<class>org.wvxvws.gui.containers.TiledPanel</class>
+	-->
+	<!-- FIXME
+		<class>org.wvxvws.gui.containers.Tris</class>
+	-->
+	<class>org.wvxvws.gui.containers.Menu</class>
+	<class>org.wvxvws.gui.containers.NestGrid</class>
+	<class>org.wvxvws.gui.containers.Rack</class>
+	<class>org.wvxvws.gui.windows.ChromeToolStrip</class>
+	<!-- RENDERERS -->
+	<!-- FIXME
+		<class>org.wvxvws.gui.renderers.BranchRenderer</class>
+	-->
+	<class>org.wvxvws.gui.renderers.Renderer</class>
+	<!-- FIXME
+		<class>org.wvxvws.gui.renderers.ImageRenderer</class>
+	-->
+	<class>org.wvxvws.gui.renderers.MenuRenderer</class>
+	<!-- CONTROLS -->
+	<class>org.wvxvws.gui.controls.Check</class>
+	<class>org.wvxvws.gui.controls.NumStepper</class>
+	<class>org.wvxvws.gui.controls.Option</class>
+	<class>org.wvxvws.gui.controls.OptionGroup</class>
+	<!-- CSS -->
+	<class>org.wvxvws.gui.styles.STYLE</class>
+	<!-- GEOMETRY -->
+	<class>org.wvxvws.geometry.Rect</class>
+	<class>org.wvxvws.geometry.Dot</class>
+	<!-- SKINS -->
+	<class>org.wvxvws.gui.skins.Skin</class>
+	<class>org.wvxvws.gui.skins.SkinState</class>
+	<class>org.wvxvws.gui.skins.TextFormatMXML</class>
+	<!-- DATA -->
+	<class>org.wvxvws.data.Collection</class>
+  </include-classes>
+</flex-config>
