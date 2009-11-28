@@ -19,17 +19,17 @@
 			private function testMe():void
 			{
 				trace("testMe()");
-				this.testService.send("SimpleService.sayHi");
-				this.testService.send("SimpleService.sayBoo");
+				this.testService.send("sayHi");
+				this.testService.send("sayBoo");
 			}
 			private function serviceSuccess(value:Object):void
 			{
-				trace("serviceSuccess", value);
+				this.testSPAN.text = value.toString();
 			}
 			
 			private function serviceFault(value:Object):void
 			{
-				trace("serviceFault");
+				this.testSPAN.text = value.toString();
 			}
 		]]>
 	</mx:Script>
