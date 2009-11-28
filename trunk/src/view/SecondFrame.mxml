@@ -19,9 +19,8 @@
 			private function testMe():void
 			{
 				trace("testMe()");
-				//trace(ServerConfig.xml);
-				testService.send("SimpleService.sayHi");
-				testService.send("SimpleService.sayBoo");
+				this.testService.send("SimpleService.sayHi");
+				this.testService.send("SimpleService.sayBoo");
 			}
 			private function serviceSuccess(value:Object):void
 			{
@@ -36,8 +35,8 @@
 	</mx:Script>
 	<e4xu:SPAN 
 		id="testSPAN"
-		text="Test text"
-		align="center"
+		text="'Test text'"
+		align="'center'"
 		background="true"
 		backgroundColor="#FF8811"
 		width="700"
@@ -50,24 +49,18 @@
 		id="testService"
 		resultCallBack="serviceSuccess" 
 		faultCallBack="serviceFault"
-		baseURL="http://localhost/amfphp/gateway.php"
+		baseURL="'http://localhost/amfphp/gateway.php'"
 		>
-		<e4xu:ServiceMethod
-			name="SimpleService"
-			operation="sayHi"
-			>
+		<e4xu:ServiceMethod name="'sayHi'" >
 			<e4xu:ServiceArguments>
-				<mx:String id="foo">bar</mx:String>
+				<mx:String id="foo">"bar"</mx:String>
 				<mx:Number id="bar">22222</mx:Number>
 			</e4xu:ServiceArguments>
 		</e4xu:ServiceMethod>
 		
-		<e4xu:ServiceMethod
-			name="SimpleService"
-			operation="sayBoo"
-			>
+		<e4xu:ServiceMethod name="'sayBoo'" >
 			<e4xu:ServiceArguments>
-				<mx:String id="oof">rab</mx:String>
+				<mx:String id="oof">"rab"</mx:String>
 				<mx:Number id="rab">11111</mx:Number>
 			</e4xu:ServiceArguments>
 		</e4xu:ServiceMethod>
