@@ -2,19 +2,16 @@
 <flex-config>
   <compiler>
     <source-path append="true">
-      <path-element>C:\bugs\src</path-element>
-      <path-element>C:\Program Files\FlashDevelop\Library\AS3\classes</path-element>
+      <path-element>framework</path-element>
     </source-path>
-	<namespaces>
-		<namespace>
-			<uri>http://e4xu.googlecode.com</uri>
-			<manifest>C:\bugs\external\run\manifest.xml</manifest>
-		</namespace>
+	<!-- 
+		<namespaces>
 		<namespace>
 			<uri>http://ns.adobe.com/mxml/2009</uri>
 			<manifest>C:\sdks\trunk\frameworks\mxml-2009-manifest.xml</manifest>
 		</namespace>
 	</namespaces>
+	-->
   </compiler>
   <include-classes>
 	<class>mx.accessibility.UIComponentAccProps</class> <!-- fake -->
