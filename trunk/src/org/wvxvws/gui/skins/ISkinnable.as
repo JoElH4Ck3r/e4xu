@@ -22,16 +22,12 @@
 package org.wvxvws.gui.skins 
 {
 	/**
-	* ISkin interface.
-	* @author wvxvw
-	* @langVersion 3.0
-	* @playerVersion 10.0.12.36
-	*/
-	public interface ISkin 
+	 * ISkinnable interface.
+	 * @author wvxvw
+	 */
+	public interface ISkinnable 
 	{
-		function get host():ISkinnable; 
-		function set host(value:ISkinnable):void;
-		
-		function produce(inContext:Object, ...args):Object;
+		function set skin(value:ISkin):void;
+		function get skin():ISkin;
 	}
 }
