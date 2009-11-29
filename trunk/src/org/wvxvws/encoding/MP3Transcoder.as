@@ -6,6 +6,7 @@
 	
 	/**
 	 * MP3Transcoder class.
+	 * @author Clement Wong 
 	 * @author wvxvw 
 	 * port of Clement Wong's SoundTranscoder.java
 	 * at http://opensource.adobe.com/svn/opensource/flex/sdk/trunk/modules/compiler/src/java/flex2/compiler/media/SoundTranscoder.java
@@ -200,28 +201,24 @@
 											saveFrames:Boolean = false):int
 		{
 			var count:int;
-			var start:int;// = 0x2;
+			var start:int;
 			var b1:uint;
 			var b2:uint;
-			var b3:uint;//, b4;
+			var b3:uint;
 			var skipped:Boolean;
 			var inputLenght:int = input.length;
-			//var stopper:int = 100;
 			if (saveFrames) _frames = new Vector.<ByteArray>(0, false);
-			/**
-			 * 0 - version 2.5
-			 * 1 - reserved
-			 * 2 - version 2
-			 * 3 - version 1
-			 */
+			
+			//0 - version 2.5
+			//1 - reserved
+			//2 - version 2
+			//3 - version 1
 			var version:int;
 			
-			/**
-			 * 0 - reserved
-			 * 1 - layer III => 1152 samples
-			 * 2 - layer II  => 1152 samples
-			 * 3 - layer I   => 384  samples
-			 */
+			//0 - reserved
+			//1 - layer III => 1152 samples
+			//2 - layer II  => 1152 samples
+			//3 - layer I   => 384  samples
 			var layer:int;
 			var bits:int;
 			var bitrateIndex:int;
@@ -264,22 +261,20 @@
 				
 				version = b2 >>> 0x3 & 0x3;
 				layer = b2 >>> 0x1 & 0x3;
-				bits = b3 >>> 0x4 & 0xF;
 				bitrateIndex = _mp3bitrateIndices[version][layer];
 				if (bitrateIndex < 0x0)
 				{
-					if (maxTraces) trace("incorrect bitrateIndex", 
-						b1.toString(16), b2.toString(16), b3.toString(16));
 					start++;
 					continue;
 				}
-				bitrate = _mp3bitrates[bits][bitrateIndex] * 0x3E8;
+				bits = b3 >>> 0x4 & 0xF;
+				bitrate = _mp3bitrates[bits][bitrateIndex] * 0x3E8; // 8 * 0x3E8
 				samplingRate = b3 >>> 0x2 & 0x3;
-				frequency = _mp3frequencies[samplingRate][version];
+				frequency = 44100; // _mp3frequencies[samplingRate][version];
+				//52 8000 2 1  22050
+				//L  BR   V LR FR
 				if (frequency < 0x1)
 				{
-					if (maxTraces) trace("incorrect frequency", 
-						b1.toString(16), b2.toString(16), b3.toString(16));
 					start++;
 					continue;
 				}
@@ -290,19 +285,10 @@
 				if (frameLength < 0x1)
 				{
 					start++;
-					//trace("EARLY EXIT");
-					// just in case. if we don't check frameLength, we may end up running an infinite loop!
 					continue;
 				}
 				else
 				{
-					if (maxTraces)
-					{
-						trace("start += frameLength", start, frameLength, 
-						bitrate, version, layer, 
-						b1.toString(16), b2.toString(16), b3.toString(16));
-						maxTraces--;
-					}
 					formatB2 = b2;
 					start += frameLength;
 				}
@@ -316,93 +302,6 @@
 				}
 				count += 0x1;
 			}
-			/*
-			while (start + 0x2 < inputLenght)// && stopper--)
-			{
-				input.position = start; // maybe start - 1
-				b1 = input.readUnsignedByte();// & 0xFF;
-				b2 = input.readUnsignedByte();// & 0xFF;
-				b3 = input.readUnsignedByte();// & 0xFF;
-				// check frame sync
-				trace("check frame sync", b1, b2, b3);
-				if (b1 !== 0xFF || (b2 >>> 0x5 & 0x7) !== 0x7)
-				{
-					if (!skipped && start > 0x0)  // LAME has a bug where they do padding wrong sometimes
-					{
-						b3 = b2;
-						b2 = b1;
-						input.position = start - 0x1; // maybe start - 2
-						b1 = input.readUnsignedByte();// & 0xFF;
-						if (b1 !== 0xFF || (b2 >>> 0x5 & 0x7) !== 0x7)
-						{
-							++start;
-							//trace("1 continue");
-							continue;
-						}
-						else
-						{
-							--start;
-						}
-					}
-					else
-					{
-						++start;
-						//trace("2 continue");
-						continue;
-					}
-				}
-				version = b2 >>> 0x3 & 0x3;
-				layer = b2 >>> 0x1 & 0x3;
-				//trace("version", version);
-				bits = b3 >>> 0x4 & 0xF;
-				bitrateIndex = _mp3bitrateIndices[version][layer];
-				bitrate = (bitrateIndex !== -0x1) ? _mp3bitrates[bits][bitrateIndex] * 0x3E8 : -1;
-
-				if (bitrate < 0x0)
-				{
-					skipped = true;
-					++start;
-					//trace("3 continue");
-					continue;
-				}
-				samplingRate = b3 >>> 0x2 & 0x3;
-				frequency = _mp3frequencies[samplingRate][version];
-				//trace("samplingRate", samplingRate);
-				if (frequency < 0x1)
-				{
-					skipped = true;
-					++start;
-					//trace("4 continue");
-					continue;
-				}
-				padding = b3 >>> 0x1 & 0x1;
-				frameLength = layer === 0x3 ?
-						(0xC * bitrate / frequency + padding) * 0x4 :
-						0x90 * bitrate / frequency + padding;
-				if (frameLength < 0x1)
-				{
-					// just in case. if we don't check frameLength, we may end up running an infinite loop!
-					break;
-				}
-				else
-				{
-					if (maxTraces)
-					{
-						trace("start += frameLength", start, frameLength, bitrate, version, layer);
-						maxTraces--;
-					}
-					start += frameLength;
-				}
-				skipped = false;
-				if (saveFrames)
-				{
-					frame = new ByteArray();
-					frame.writeBytes(input, start - (frameLength + 0x1), frameLength);
-					_frames[count] = frame;
-				}
-				count += 0x1;
-			}*/
-			//trace("start, inputLenght", start, inputLenght, count);
 			return count;
 		}
 		

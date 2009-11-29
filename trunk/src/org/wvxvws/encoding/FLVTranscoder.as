@@ -32,6 +32,8 @@
 		
 		public static function get smallSoundFrame():int { return _smallSoundFrame; }
 		
+		public static function get sampleCounter():Vector.<int> { return _sampleCounter; }
+		
 		public static const CODEC_JPEG:int = 1;
 		public static const CODEC_H263:int = 2;
 		public static const CODEC_SCREEN_VIDEO:int = 3;
@@ -56,6 +58,7 @@
 		private static var _soundStreamHead:SoundStreamHead;
 		private static var _soundPayLoad:ByteArray;
 		private static var _seekSamples:Vector.<int>;
+		private static var _sampleCounter:Vector.<int>;
 		
 		private static var _bigSoundFrame:int;
 		private static var _smallSoundFrame:int;
@@ -333,30 +336,7 @@
 			}
 			if (_soundStreamHead.streamSoundCompression === 0x2)
 			{
-				if (_soundStreamHead.playBackSoundRate === 0x2)
-				{
-					input.position = from;
-					while (input.position < from + dataLength)
-					{
-						syncByte = input.readUnsignedByte();
-						if (syncByte === 0xFF)
-						{
-							syncByte2 = input.readUnsignedByte();
-							if ((syncByte2 >>> 0x5 & 0x7) === 0x7)
-							{
-								break;
-							}
-						}
-						pad++;
-					}
-					input.position = from + pad + 1;
-					_soundPayLoad.writeBytes(input, from + pad, dataLength - pad);
-				}
-				else
-				{
-					//trace("adding sound bytes", lenght - (pad + 1));
-					_soundPayLoad.writeBytes(input, from + 0x1, dataLength - 0x1);
-				}
+				_soundPayLoad.writeBytes(input, from + 0x1, dataLength - 0x1);
 			}
 			else
 			{
@@ -430,16 +410,13 @@
 		private static function distributeAudioFrames():void
 		{
 			_soundPayLoad.position = 0;
-			//var sound:ByteArray = 
-				//MP3Transcoder.readFully(_soundPayLoad, _soundPayLoad.length);
-			//var frames:int = MP3Transcoder.countFrames(sound, true);
 			var frames:int = MP3Transcoder.countFrames(_soundPayLoad, true);
 			var sFrames:Vector.<ByteArray> = MP3Transcoder.frames;
 			
 			trace("-------frames-------", frames, _frames.length, _soundPayLoad.length);
 			
 			// TODO: how do we get samples per MP3 frame?
-			var samples:int = 0x480;
+			var samples:int = 0x480; // 1152 or 384
 			var samplesWritten:int;
 			var samplesToWrite:int = samples * frames;
 			var destLength:int = _frames.length;
@@ -448,14 +425,17 @@
 			var isFirstBlock:Boolean = true;
 			
 			var result:Vector.<ByteArray> = new Vector.<ByteArray>(0x0, false);
-			var seekOffsets:Vector.<int> = new Vector.<int>(0x0, false);
+			_seekSamples = new Vector.<int>(0x0, false);
+			_sampleCounter = new Vector.<int>(0x0, false);
 			
 			var temp:ByteArray;
 			var position:int;
+			var samplesCount:int;
 			
 			while (result.length < destLength)
 			{
 				temp = new ByteArray();
+				samplesCount = 0;
 				do
 				{
 					samplesWritten += samples;
@@ -468,21 +448,24 @@
 					_bigSoundFrame = Math.max(_bigSoundFrame, temp.length);
 					_smallSoundFrame = Math.min(_smallSoundFrame, temp.length);
 					position++;
+					samplesCount += samples;
 				}
 				while (samplesWritten + samples < result.length * samplesPerSWFFrame)
 				result.push(temp);
-				seekOffsets.push(result.length * samplesPerSWFFrame - samplesWritten);
+				_seekSamples.push(result.length * samplesPerSWFFrame - samplesWritten);
+				trace("_seekSamples", _seekSamples[_seekSamples.length - 1]);
+				_sampleCounter.push(samplesCount);
 				if (isFirstBlock)
 				{
 					_soundStreamHead.latencySeek = 
 						result.length * samplesPerSWFFrame - samplesWritten;
 					isFirstBlock = false;
+					trace("latencySeek", _soundStreamHead.latencySeek.toString(16));
 				}
 			}
 			if (samplesToWrite > samplesWritten)
 				temp.writeBytes(sFrames[position]);
 			_soundFrames = result;
-			_seekSamples = seekOffsets;
 		}
 		
 		private static function readScript(input:ByteArray, 
