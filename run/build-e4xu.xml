@@ -40,8 +40,9 @@
 	<class>org.wvxvws.gui.IMG</class>
 	<class>org.wvxvws.gui.Preloader</class>
 	<class>org.wvxvws.gui.SPAN</class>
-	<class>org.wvxvws.gui.ButtonS</class>
-	<class>org.wvxvws.gui.Scroller</class>
+	<!-- FIXME
+		<class>org.wvxvws.gui.Scroller</class>
+	-->
 	<class>org.wvxvws.gui.StatefulButton</class>
 	<!-- UI CHROME -->
 	<class>org.wvxvws.gui.windows.ChromeBar</class>
@@ -91,8 +92,6 @@
 	<class>org.wvxvws.geometry.Rect</class>
 	<class>org.wvxvws.geometry.Dot</class>
 	<!-- SKINS -->
-	<class>org.wvxvws.gui.skins.Skin</class>
-	<class>org.wvxvws.gui.skins.SkinState</class>
 	<class>org.wvxvws.gui.skins.TextFormatMXML</class>
 	<!-- DATA -->
 	<class>org.wvxvws.data.Collection</class>

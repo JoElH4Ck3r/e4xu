@@ -20,6 +20,9 @@
 	import org.wvxvws.gui.layout.ILayoutClient;
 	import org.wvxvws.gui.layout.LayoutValidator;
 	import org.wvxvws.gui.skins.ButtonSkinProducer;
+	import org.wvxvws.gui.skins.ISkin;
+	import org.wvxvws.gui.skins.ISkinnable;
+	import org.wvxvws.gui.skins.SkinManager;
 	// TODO: have to remove this dependency
 	import org.wvxvws.gui.skins.DefaultButonProducer;
 	import org.wvxvws.gui.skins.SkinProducer;
@@ -30,19 +33,45 @@
 	
 	[Exclude(type="property", name="hitTestState")]
 	
+	[Skin("org.wvxvws.skins.ButtonSkin")]
+	
 	/**
 	 * Button class.
 	 * @author wvxvw
 	 * @langVersion 3.0
 	 * @playerVersion 10.0.28
 	 */
-	public class Button extends SimpleButton implements IMXMLObject, ILayoutClient
+	public class Button extends SimpleButton implements IMXMLObject, ILayoutClient, ISkinnable
 	{
 		//--------------------------------------------------------------------------
 		//
 		//  Public properties
 		//
 		//--------------------------------------------------------------------------
+		
+		/* INTERFACE org.wvxvws.gui.skins.ISkinnable */
+		
+		//------------------------------------
+		//  Public property skin
+		//------------------------------------
+		
+		[Bindable("skinChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>skinChanged</code> event.
+		*/
+		public function get skin():ISkin { return _skin; }
+		
+		public function set skin(value:ISkin):void
+		{
+			if (_skin === value) return;
+			_skin = value;
+			this.invalidate("_skin", _skin, true);
+			if (super.hasEventListener(EventGenerator.getEventType("skin")))
+				super.dispatchEvent(EventGenerator.getEvent());
+		}
 		
 		public override function get hitTestState():DisplayObject { return null; }
 		
@@ -352,6 +381,7 @@
 		protected var _nativeTransform:Transform;
 		protected var _lastState:DisplayObject;
 		protected var _labelFormat:TextFormat = new TextFormat("_sans", 11, 0, true);
+		protected var _skin:ISkin;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -370,6 +400,9 @@
 			super();
 			super.hitTestState = this.drawHitState();
 			super.addEventListener(Event.ADDED, addedHandler);
+			var skins:Vector.<ISkin> = SkinManager.getSkin(this);
+			if (skins) this.skin = skins[0];
+			trace("this.skin", this.skin);
 			_nativeTransform = new Transform(this);
 			_label.width = 1;
 			_label.height = 1;
