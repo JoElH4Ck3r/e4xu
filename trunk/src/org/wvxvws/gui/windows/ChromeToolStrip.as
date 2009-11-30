@@ -34,7 +34,7 @@ package org.wvxvws.gui.windows
 	import org.wvxvws.gui.layout.ILayoutClient;
 	import org.wvxvws.gui.renderers.IRenderer;
 	import org.wvxvws.gui.renderers.ToolStripRenderer;
-	import org.wvxvws.gui.skins.SkinProducer;
+	import org.wvxvws.gui.skins.ISkin;
 	import org.wvxvws.managers.DragManager;
 	import org.wvxvws.utils.KeyUtils;
 	//}
@@ -120,9 +120,9 @@ package org.wvxvws.gui.windows
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>rendererProducerChanged</code> event.
 		*/
-		public function get rendererProducer():SkinProducer { return _rendererProducer; }
+		public function get rendererProducer():ISkin { return _rendererProducer; }
 		
-		public function set rendererProducer(value:SkinProducer):void 
+		public function set rendererProducer(value:ISkin):void 
 		{
 			if (_rendererProducer === value) return;
 			_rendererProducer = value;
@@ -156,7 +156,7 @@ package org.wvxvws.gui.windows
 		protected var _menu:Menu;
 		protected var _menus:Vector.<Menu> = new <Menu>[];
 		protected var _dragHandle:Sprite;
-		protected var _rendererProducer:SkinProducer;
+		protected var _rendererProducer:ISkin;
 		protected var _currentNode:XML;
 		protected var _clickLocation:Point = new Point();
 		protected var _currentRenderer:DisplayObject;
@@ -189,8 +189,8 @@ package org.wvxvws.gui.windows
 		
 		public override function validate(properties:Object):void 
 		{
-			if (_menu && ("_labelProducer" in properties))
-				_menu.labelProducer = _labelProducer;
+			if (_menu && ("_labelSkin" in properties))
+				_menu.labelSkin = _labelSkin;
 			super.validate(properties);
 		}
 		
@@ -250,7 +250,7 @@ package org.wvxvws.gui.windows
 			if (_rendererProducer)
 			{
 				_currentNode = xml;
-				_currentRenderer = _rendererProducer.produce(this);
+				_currentRenderer = _rendererProducer.produce(this) as DisplayObject;
 			}
 			else _currentRenderer = super.createChild(xml);
 			if (!_currentRenderer) return null;
@@ -265,8 +265,8 @@ package org.wvxvws.gui.windows
 			super.addChild(_currentRenderer);
 			if (_currentRenderer is IRenderer)
 			{
-				if (_labelProducer)
-					(_currentRenderer as IRenderer).labelProducer = _labelProducer;
+				if (_labelSkin)
+					(_currentRenderer as IRenderer).labelSkin = _labelSkin;
 			}
 			if (_currentRenderer is ILayoutClient)
 			{

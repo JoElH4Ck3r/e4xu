@@ -4,16 +4,19 @@
 	import flash.geom.Matrix;
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.DIV;
-	import org.wvxvws.gui.skins.ButtonSkinProducer;
-	import org.wvxvws.gui.skins.DefaultStepperProducer;
+	import org.wvxvws.gui.skins.ISkin;
+	import org.wvxvws.gui.skins.ISkinnable;
+	import org.wvxvws.gui.skins.SkinManager;
 	import org.wvxvws.gui.StatefulButton;
 	import org.wvxvws.tools.Stepper;
+	
+	[Skin("org.wvxvws.skins.StepperSkin")]
 	
 	/**
 	 * NumStepper class.
 	 * @author wvxvw
 	 */
-	public class NumStepper extends DIV
+	public class NumStepper extends DIV implements ISkinnable
 	{
 		public static const UP_STATE:String = "upState";
 		public static const DOWN_STATE:String = "downState";
@@ -21,32 +24,32 @@
 		public static const DISABLED_STATE:String = "disabledState";
 		
 		//------------------------------------
-		//  Public property incrementProducer
+		//  Public property incrementSkin
 		//------------------------------------
 		
-		[Bindable("incrementProducerChanged")]
+		[Bindable("incrementSkinChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>incrementProducerChanged</code> event.
+		* When this property is modified, it dispatches the <code>incrementSkinChanged</code> event.
 		*/
-		public function get incrementProducer():ButtonSkinProducer { return _incrementProducer; }
+		public function get incrementSkin():ISkin { return _incrementSkin; }
 		
-		public function set incrementProducer(value:ButtonSkinProducer):void 
+		public function set incrementSkin(value:ISkin):void 
 		{
-			if (_incrementProducer === value) return;
-			_incrementProducer = value;
-			if (_incrementProducer)
+			if (_incrementSkin === value) return;
+			_incrementSkin = value;
+			if (_incrementSkin)
 			{
 				_incrementButton.states[UP_STATE] = 
-					_incrementProducer.produce(_incrementButton, UP_STATE);
+					_incrementSkin.produce(_incrementButton, UP_STATE);
 				_incrementButton.states[DOWN_STATE] = 
-					_incrementProducer.produce(_incrementButton, DOWN_STATE);
+					_incrementSkin.produce(_incrementButton, DOWN_STATE);
 				_incrementButton.states[OVER_STATE] = 
-					_incrementProducer.produce(_incrementButton, OVER_STATE);
+					_incrementSkin.produce(_incrementButton, OVER_STATE);
 				_incrementButton.states[DISABLED_STATE] = 
-					_incrementProducer.produce(_incrementButton, DISABLED_STATE);
+					_incrementSkin.produce(_incrementButton, DISABLED_STATE);
 			}
 			else
 			{
@@ -55,39 +58,38 @@
 				delete _incrementButton.states[OVER_STATE];
 				delete _incrementButton.states[DISABLED_STATE];
 			}
-			super.invalidate("_incrementProducer", _incrementProducer, false);
-			if (super.hasEventListener(EventGenerator.getEventType("incrementProducer")))
+			super.invalidate("_incrementSkin", _incrementSkin, false);
+			if (super.hasEventListener(EventGenerator.getEventType("incrementSkin")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
-		//  Public property decrementProducer
+		//  Public property decrementSkin
 		//------------------------------------
 		
-		[Bindable("decrementProducerChanged")]
+		[Bindable("decrementSkinChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>decrementProducerChanged</code> event.
+		* When this property is modified, it dispatches the <code>decrementSkinChanged</code> event.
 		*/
-		public function get decrementProducer():ButtonSkinProducer { return _decrementProducer; }
+		public function get decrementSkin():ISkin { return _decrementSkin; }
 		
-		public function set decrementProducer(value:ButtonSkinProducer):void 
+		public function set decrementSkin(value:ISkin):void 
 		{
-			
-			if (_decrementProducer === value) return;
-			_decrementProducer = value;
-			if (_decrementProducer)
+			if (_decrementSkin === value) return;
+			_decrementSkin = value;
+			if (_decrementSkin)
 			{
 				_decrementButton.states[UP_STATE] = 
-					_decrementProducer.produce(_decrementButton, UP_STATE);
+					_decrementSkin.produce(_decrementButton, UP_STATE);
 				_decrementButton.states[DOWN_STATE] = 
-					_decrementProducer.produce(_decrementButton, DOWN_STATE);
+					_decrementSkin.produce(_decrementButton, DOWN_STATE);
 				_decrementButton.states[OVER_STATE] = 
-					_decrementProducer.produce(_decrementButton, OVER_STATE);
+					_decrementSkin.produce(_decrementButton, OVER_STATE);
 				_decrementButton.states[DISABLED_STATE] = 
-					_decrementProducer.produce(_decrementButton, DISABLED_STATE);
+					_decrementSkin.produce(_decrementButton, DISABLED_STATE);
 			}
 			else
 			{
@@ -96,8 +98,8 @@
 				delete _decrementButton.states[OVER_STATE];
 				delete _decrementButton.states[DISABLED_STATE];
 			}
-			super.invalidate("_decrementProducer", _decrementProducer, false);
-			if (super.hasEventListener(EventGenerator.getEventType("decrementProducer")))
+			super.invalidate("_decrementSkin", _decrementSkin, false);
+			if (super.hasEventListener(EventGenerator.getEventType("decrementSkin")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
@@ -134,7 +136,7 @@
 			value = Math.min(Math.max(value, 1), 4);
 			if (_buttonPlacement === value) return;
 			_buttonPlacement = value;
-			super.invalidate("_buttonPlacement", _decrementProducer, false);
+			super.invalidate("_buttonPlacement", _decrementSkin, false);
 			if (super.hasEventListener(EventGenerator.getEventType("buttonPlacement")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -215,8 +217,33 @@
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
-		protected var _incrementProducer:ButtonSkinProducer;
-		protected var _decrementProducer:ButtonSkinProducer;
+		/* INTERFACE org.wvxvws.gui.skins.ISkinnable */
+		
+		public function get skin():Vector.<ISkin>
+		{
+			return new <ISkin>[_incrementSkin, _decrementSkin];
+		}
+		
+		public function set skin(value:Vector.<ISkin>):void
+		{
+			if (value && value.length)
+			{
+				_incrementSkin = value[0];
+				if (value.length > 1) _decrementSkin = value[1];
+			}
+			else
+			{
+				_incrementSkin = null;
+				_decrementSkin = null;
+			}
+		}
+		
+		public function get parts():Object { return null; }
+		
+		public function set parts(value:Object):void { }
+		
+		protected var _incrementSkin:ISkin;
+		protected var _decrementSkin:ISkin;
 		protected var _incrementButton:StatefulButton = new StatefulButton();
 		protected var _decrementButton:StatefulButton = new StatefulButton();
 		protected var _stepper:Stepper = new Stepper();
@@ -228,11 +255,19 @@
 		public function NumStepper() 
 		{
 			super();
-			this.incrementProducer = new DefaultStepperProducer();
+			var skins:Vector.<ISkin>;
+			if (!_incrementSkin)
+			{
+				skins = SkinManager.getSkin(this);
+				if (skins && skins.length)
+				{
+					this.incrementSkin = skins[0];
+					this.decrementSkin = skins[0];
+				}
+			}
 			_incrementButton.state = UP_STATE;
 			_incrementButton.addEventListener(MouseEvent.MOUSE_DOWN, button_downHandler);
 			_incrementButton.addEventListener(MouseEvent.MOUSE_UP, button_upHandler);
-			this.decrementProducer = new DefaultStepperProducer();
 			_decrementButton.state = UP_STATE;
 			_decrementButton.addEventListener(MouseEvent.MOUSE_DOWN, button_downHandler);
 			_decrementButton.addEventListener(MouseEvent.MOUSE_UP, button_upHandler);
@@ -344,5 +379,4 @@
 			}
 		}
 	}
-
 }

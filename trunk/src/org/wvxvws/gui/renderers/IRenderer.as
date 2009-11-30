@@ -22,7 +22,7 @@
 package org.wvxvws.gui.renderers
 {
 	import mx.core.IMXMLObject;
-	import org.wvxvws.gui.skins.LabelProducer;
+	import org.wvxvws.gui.skins.ISkin;
 	
 	/**
 	* IRenderer interface.
@@ -34,7 +34,7 @@ package org.wvxvws.gui.renderers
 	{
 		function get isValid():Boolean;
 		
-		function set labelProducer(value:LabelProducer):void;
+		function set labelSkin(value:ISkin):void;
 		
 		function get data():XML;
 		function set data(value:XML):void;

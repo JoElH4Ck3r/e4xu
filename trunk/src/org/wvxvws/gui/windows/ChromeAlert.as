@@ -10,7 +10,6 @@
 	import flash.text.TextFormatAlign;
 	import org.wvxvws.gui.Button;
 	import org.wvxvws.gui.containers.ChromeWindow;
-	import org.wvxvws.gui.skins.ButtonSkinProducer;
 	import org.wvxvws.gui.skins.TextFormatDefaults;
 	import org.wvxvws.managers.WindowManager;
 	//}
@@ -25,7 +24,6 @@
 		protected var _message:String;
 		protected var _okButton:Button;
 		protected var _cancelButton:Button;
-		protected var _producer:ButtonSkinProducer;
 		protected var _userActionHandler:Function;
 		protected var _field:TextField = new TextField();
 		

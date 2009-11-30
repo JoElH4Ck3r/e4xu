@@ -29,7 +29,6 @@ package org.wvxvws.gui.containers
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.renderers.IRenderer;
-	import org.wvxvws.gui.skins.LabelProducer;
 	//}
 	
 	/**
@@ -100,27 +99,6 @@ package org.wvxvws.gui.containers
 			if (super.hasEventListener(EventGenerator.getEventType("cellHeight")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
-		//
-		//------------------------------------
-		//  Public property labelProducer
-		//------------------------------------
-		//
-		//[Bindable("filterChanged")]
-		//
-		///**
-		//* ...
-		//* This property can be used as the source for data binding.
-		//* When this property is modified, it dispatches the <code>labelProducerChanged</code> event.
-		//*/
-		//public ovefunction get labelProducer():LabelProducer { return _labelProducer; }
-		//
-		//public function set labelProducer(value:LabelProducer):void 
-		//{
-			//if (_labelProducer === value) return;
-			//_labelProducer = value;
-			//super.invalidate("_labelProducer", _labelProducer, false);
-			//super.dispatchEvent(new Event("labelProducerChanged"));
-		//}
 		
 		//------------------------------------
 		//  Public property gutter
@@ -214,7 +192,6 @@ package org.wvxvws.gui.containers
 		
 		protected var _cellHeight:int = int.MIN_VALUE;
 		protected var _itemCount:int;
-		//protected var _labelProducer:LabelProducer;
 		protected var _cumulativeHeight:int;
 		protected var _gutter:int;
 		protected var _padding:Rectangle = new Rectangle();
@@ -267,8 +244,8 @@ package org.wvxvws.gui.containers
 			super.addChild(_currentRenderer);
 			if (_currentRenderer is IRenderer)
 			{
-				if (_labelProducer)
-					(_currentRenderer as IRenderer).labelProducer = _labelProducer;
+				if (_labelSkin)
+					(_currentRenderer as IRenderer).labelSkin = _labelSkin;
 			}
 			return _currentRenderer;
 		}
@@ -338,8 +315,8 @@ package org.wvxvws.gui.containers
 			super.addChild(_currentRenderer);
 			if (_currentRenderer is IRenderer)
 			{
-				if (_labelProducer)
-					(_currentRenderer as IRenderer).labelProducer = _labelProducer;
+				if (_labelSkin)
+					(_currentRenderer as IRenderer).labelSkin = _labelSkin;
 			}
 			return _currentRenderer;
 		}

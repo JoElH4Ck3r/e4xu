@@ -1,30 +1,31 @@
-﻿package org.wvxvws.gui.skins 
+﻿package org.wvxvws.skins 
 {
 	import flash.display.Graphics;
 	import flash.display.GraphicsPathCommand;
 	import flash.display.GraphicsPathWinding;
 	import flash.display.InteractiveObject;
 	import flash.display.Sprite;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	import org.wvxvws.gui.controls.Check;
-	import org.wvxvws.gui.skins.ButtonSkinProducer;
+	import org.wvxvws.gui.controls.Option;
+	import org.wvxvws.gui.skins.Drawings;
+	import org.wvxvws.gui.skins.SkinDefaults;
 	
 	/**
-	 * DefaultCheckProducer class.
+	 * StepperSkin skin.
 	 * @author wvxvw
 	 */
-	public class DefaultCheckProducer extends ButtonSkinProducer
+	public class OptionSkin extends ButtonSkin
 	{
-		
-		public function DefaultCheckProducer(states:Vector.<String> = null,
+		public function OptionSkin(states:Vector.<String> = null,
 										stateClasses:Vector.<Class> = null, 
 										stateFactories:Vector.<Function> = null) 
 		{
 			super(states, stateClasses, stateFactories);
 			if (!states) 
-				super._states = new <String>[Check.UP_STATE, Check.OVER_STATE, 
-							Check.DOWN_STATE, Check.DISABLED_STATE, 
-							Check.SELECTED_STATE, Check.SELECTED_DISABLED_STATE];
+				super._states = new <String>[Option.UP_STATE, Option.OVER_STATE, 
+							Option.DOWN_STATE, Option.DISABLED_STATE, 
+							Option.SELECTED_STATE, Option.SELECTED_DISABLED_STATE];
 			if (!stateFactories) 
 				super._stateFactories = new <Function>[defaultStateFactory, 
 													defaultStateFactory,
@@ -41,47 +42,36 @@
 			var g:Graphics = s.graphics;
 			switch (state)
 			{
-				case Check.UP_STATE:
+				case Option.UP_STATE:
 				default:
 					g.beginFill(SkinDefaults.UP_COLOR);
 					break;
-				case Check.OVER_STATE:
+				case Option.OVER_STATE:
 					g.beginFill(SkinDefaults.OVER_COLOR);
 					break;
-				case Check.DOWN_STATE:
+				case Option.DOWN_STATE:
 					g.beginFill(SkinDefaults.DOWN_COLOR);
 					break;
-				case Check.DISABLED_STATE:
+				case Option.DISABLED_STATE:
 					g.beginFill(SkinDefaults.DISABLED_COLOR);
 					break;
-				case Check.SELECTED_STATE:
+				case Option.SELECTED_STATE:
 					g.beginFill(SkinDefaults.SELECTED_COLOR);
 					break;
-				case Check.SELECTED_DISABLED_STATE:
+				case Option.SELECTED_DISABLED_STATE:
 					g.beginFill(SkinDefaults.DISABLED_SELECTED_COLOR);
 					break;
 			}
-			g.drawRect(0, 0, 12, 12);
+			Drawings.circle(g, 6, new Point(0, 0));
 			g.beginFill(0);
-			g.drawRect(0, 0, 12, 12);
-			g.drawRect(1, 1, 10, 10);
-			if (state === Check.SELECTED_STATE || state === Check.SELECTED_DISABLED_STATE)
+			Drawings.circle(g, 6, new Point(0, 0));
+			Drawings.circle(g, 5, new Point(1, 1));
+			if (state === Option.SELECTED_STATE || state === Option.SELECTED_DISABLED_STATE)
 			{
-				g.drawPath(new <int>[GraphicsPathCommand.MOVE_TO, 
-									GraphicsPathCommand.LINE_TO,
-									GraphicsPathCommand.LINE_TO,
-									GraphicsPathCommand.LINE_TO,
-									GraphicsPathCommand.LINE_TO,
-									GraphicsPathCommand.LINE_TO,
-									GraphicsPathCommand.LINE_TO,
-									GraphicsPathCommand.LINE_TO
-									],
-							new <Number>[2, 4, 5, 8, 9, 3, 9, 5, 5, 9, 2, 6, 2, 4], 
-							GraphicsPathWinding.NON_ZERO);
+				Drawings.circle(g, 2, new Point(4, 4));
 			}
-			s.scale9Grid = new Rectangle(1, 1, 10, 10);
+			//s.scale9Grid = new Rectangle(4, 4, 8, 8);
 			return s;
 		}
 	}
-
 }

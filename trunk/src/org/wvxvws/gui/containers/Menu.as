@@ -35,7 +35,7 @@ package org.wvxvws.gui.containers
 	import org.wvxvws.gui.layout.ILayoutClient;
 	import org.wvxvws.gui.renderers.IMenuRenderer;
 	import org.wvxvws.gui.renderers.MenuRenderer;
-	import org.wvxvws.gui.skins.SkinProducer;
+	import org.wvxvws.gui.skins.ISkin;
 	import org.wvxvws.utils.KeyUtils;
 	//}
 	
@@ -111,7 +111,7 @@ package org.wvxvws.gui.containers
 		//--------------------------------------------------------------------------
 		
 		protected var _groups:Vector.<Vector.<IMenuRenderer>>;
-		protected var _iconProducer:SkinProducer;
+		protected var _iconProducer:ISkin;
 		protected var _iconField:String = "@icon";
 		protected var _hotkeysField:String = "@hotkeys";
 		protected var _kindField:String = "@kind";
@@ -343,7 +343,7 @@ package org.wvxvws.gui.containers
 			_childMenu.backgroundColor = _backgroundColor;
 			_childMenu.borderWidth = _borderWidth;
 			_childMenu.borderColor = _borderColor;
-			_childMenu.labelProducer = _labelProducer;
+			_childMenu.labelSkin = _labelSkin;
 			_childMenu.dataProvider = _openedItem.data;
 			_childMenu.x = (_openedItem as DisplayObject).x + 
 							(_openedItem as DisplayObject).width;

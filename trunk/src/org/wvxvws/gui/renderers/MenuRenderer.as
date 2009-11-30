@@ -35,7 +35,7 @@ package org.wvxvws.gui.renderers
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.layout.ILayoutClient;
 	import org.wvxvws.gui.layout.LayoutValidator;
-	import org.wvxvws.gui.skins.SkinProducer;
+	import org.wvxvws.gui.skins.ISkin;
 	import org.wvxvws.utils.KeyUtils;
 	//}
 	
@@ -78,7 +78,7 @@ package org.wvxvws.gui.renderers
 		
 		/* INTERFACE org.wvxvws.gui.renderers.IMenuRenderer */
 		
-		public function set iconProducer(value:SkinProducer):void
+		public function set iconProducer(value:ISkin):void
 		{
 			if (_iconProducer === value) return;
 			_iconProducer = value;
@@ -163,7 +163,7 @@ package org.wvxvws.gui.renderers
 		protected var _clickHandler:Function;
 		protected var _kind:String;
 		protected var _hotKeys:Vector.<int>;
-		protected var _iconProducer:SkinProducer;
+		protected var _iconProducer:ISkin;
 		protected var _arrow:Sprite;
 		protected var _hasChildNodes:Boolean;
 		protected var _disabledFormat:TextFormat = 
@@ -283,7 +283,8 @@ package org.wvxvws.gui.renderers
 			}
 			_field.x = 30;
 			_field.y = Math.max((_height - _field.height) >> 1, 0);
-			if (_labelProducer) _field.text = _labelProducer.produce(_data);
+			if (_labelSkin) 
+				_field.text = _labelSkin.produce(_data) as String;
 			else _field.text = _data.localName().toString();
 			
 			this.renderIcon();
@@ -310,7 +311,7 @@ package org.wvxvws.gui.renderers
 			if (_icon && super.contains(_icon)) super.removeChild(_icon);
 			if (_iconProducer)
 			{
-				_icon = _iconProducer.produce(this);
+				_icon = _iconProducer.produce(this) as DisplayObject;
 				_icon.x = 2;
 				_icon.y = 2;
 				super.addChild(_icon);

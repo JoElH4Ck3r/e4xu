@@ -30,7 +30,7 @@ package org.wvxvws.gui.renderers
 	import org.wvxvws.gui.layout.ILayoutClient;
 	import org.wvxvws.gui.layout.LayoutValidator;
 	import org.wvxvws.gui.renderers.IRenderer;
-	import org.wvxvws.gui.skins.LabelProducer;
+	import org.wvxvws.gui.skins.ISkin;
 	import org.wvxvws.gui.StatefulButton;
 	
 	/**
@@ -68,11 +68,11 @@ package org.wvxvws.gui.renderers
 			return _invalidLayout;
 		}
 		
-		public function set labelProducer(value:LabelProducer):void
+		public function set labelSkin(value:ISkin):void
 		{
-			if (_labelProducer === value) return;
-			_labelProducer = value;
-			this.invalidate("_labelProducer", _data, false);
+			if (_labelSkin === value) return;
+			_labelSkin = value;
+			this.invalidate("_labelSkin", _data, false);
 		}
 		
 		public function get data():XML { return _data; }
@@ -120,7 +120,7 @@ package org.wvxvws.gui.renderers
 		//--------------------------------------------------------------------------
 		
 		protected var _data:XML;
-		protected var _labelProducer:LabelProducer;
+		protected var _labelSkin:ISkin;
 		protected var _validator:LayoutValidator;
 		protected var _layoutParent:ILayoutClient;
 		protected var _invalidProperties:Object = { };
@@ -182,8 +182,8 @@ package org.wvxvws.gui.renderers
 			if (!_data && !("_label" in properties)) properties._label = "";
 			else
 			{
-				if (_labelProducer) 
-					properties._label = _labelProducer.produce(_data);
+				if (_labelSkin) 
+					properties._label = _labelSkin.produce(_data);
 			}
 			_label = properties._label;
 			if (_labelTXT.text !== _label)

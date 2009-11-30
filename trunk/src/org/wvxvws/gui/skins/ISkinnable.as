@@ -27,7 +27,10 @@ package org.wvxvws.gui.skins
 	 */
 	public interface ISkinnable 
 	{
-		function set skin(value:ISkin):void;
-		function get skin():ISkin;
+		function get skin():Vector.<ISkin>;
+		function set skin(value:Vector.<ISkin>):void;
+		
+		function get parts():Object;
+		function set parts(value:Object):void;
 	}
 }

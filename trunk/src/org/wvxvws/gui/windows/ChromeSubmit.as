@@ -7,21 +7,25 @@
 	import flash.text.TextFieldType;
 	import flash.text.TextFormat;
 	import flash.ui.Keyboard;
+	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.Button;
 	import org.wvxvws.gui.DIV;
 	import org.wvxvws.gui.renderers.ILabel;
-	import org.wvxvws.gui.skins.ButtonSkinProducer;
-	import org.wvxvws.gui.skins.DefaultButonProducer;
+	import org.wvxvws.gui.skins.ISkin;
+	import org.wvxvws.gui.skins.ISkinnable;
+	import org.wvxvws.gui.skins.SkinManager;
 	import org.wvxvws.gui.skins.TextFormatDefaults;
 	import org.wvxvws.gui.SPAN;
 	
 	[DefaultProperty("userActionHandler")]
 	
+	[Skin("org.wvxvws.skins.ButtonSkin")]
+	
 	/**
 	 * ChromeSubmit class.
 	 * @author wvxvw
 	 */
-	public class ChromeSubmit extends DIV implements ILabel
+	public class ChromeSubmit extends DIV implements ILabel, ISkinnable
 	{
 		//------------------------------------
 		//  Public property defaultKey
@@ -40,7 +44,8 @@
 		{
 			if (_defaultKey == value) return;
 			_defaultKey = value;
-			super.dispatchEvent(new Event("defaultKeyChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("defaultKey")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		//------------------------------------
 		//  Public property format
@@ -59,28 +64,42 @@
 		{
 			if (_field.defaultTextFormat == value) return;
 			_field.defaultTextFormat = value;
-			super.dispatchEvent(new Event("formatChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("format")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
+		
+		/* INTERFACE org.wvxvws.gui.skins.ISkinnable */
 		
 		//------------------------------------
 		//  Public property producer
 		//------------------------------------
 		
-		[Bindable("producerChanged")]
+		[Bindable("skinChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>producerChanged</code> event.
+		* When this property is modified, it dispatches the <code>skinChanged</code> event.
 		*/
-		public function get producer():ButtonSkinProducer { return _submit.producer; }
+		public function get skin():Vector.<ISkin> { return _submit.skin; }
 		
-		public function set producer(value:ButtonSkinProducer):void 
+		public function set skin(value:Vector.<ISkin>):void
 		{
-			if (_submit.producer == value) return;
-			_submit.producer = value;
-			super.dispatchEvent(new Event("producerChanged"));
+			if (_submit.skin === value) return;
+			_submit.skin = value;
+			if (super.hasEventListener(EventGenerator.getEventType("skin")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
+		
+		public function get parts():Object { return null; }
+		
+		public function set parts(value:Object):void { }
+		
+		/* INTERFACE org.wvxvws.gui.renderers.ILabel */
+		
+		public function get text():String { return _field.text; }
+		
+		public function set text(value:String):void { _field.text = value; }
 		
 		//------------------------------------
 		//  Public property userActionHandler
@@ -99,7 +118,8 @@
 		{
 			if (_userActionHandler == value) return;
 			_userActionHandler = value;
-			super.dispatchEvent(new Event("userActionHandlerChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("userActionHandler")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		public function get field():SPAN { return _field; }
@@ -114,6 +134,7 @@
 		protected var _minSpanWidth:uint = 10;
 		protected var _gutter:int = 4;
 		protected var _defaultKey:uint = Keyboard.ENTER;
+		protected var _skin:ISkin;
 		
 		public function ChromeSubmit(actionHandler:Function = null) 
 		{
@@ -125,7 +146,7 @@
 		public override function initialized(document:Object, id:String):void 
 		{
 			super.initialized(document, id);
-			if (!_submit.producer) this.producer = new DefaultButonProducer();
+			if (!_skin) this.skin = SkinManager.getSkin(this);
 		}
 		
 		public override function validate(properties:Object):void 
@@ -195,12 +216,5 @@
 			if (_userActionHandler !== null)
 				_userActionHandler(_field.text);
 		}
-		
-		/* INTERFACE org.wvxvws.gui.renderers.ILabel */
-		
-		public function get text():String { return _field.text; }
-		
-		public function set text(value:String):void { _field.text = value; }
 	}
-
 }

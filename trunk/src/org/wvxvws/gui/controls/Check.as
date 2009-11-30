@@ -7,20 +7,23 @@
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.DIV;
 	import org.wvxvws.gui.GUIEvent;
-	import org.wvxvws.gui.skins.ButtonSkinProducer;
-	import org.wvxvws.gui.skins.DefaultCheckProducer;
-	import org.wvxvws.gui.skins.LabelProducer;
+	import org.wvxvws.gui.skins.ISkin;
+	import org.wvxvws.gui.skins.ISkinnable;
 	import org.wvxvws.gui.skins.SkinDefaults;
+	import org.wvxvws.gui.skins.SkinManager;
 	import org.wvxvws.gui.StatefulButton;
 	
 	[Event(name="selected", type="org.wvxvws.gui.GUIEvent")]
 	[Event(name="disabled", type="org.wvxvws.gui.GUIEvent")]
 	
+	[Skin(part="label", type="org.wvxvws.skins.LabelSkin")]
+	[Skin("org.wvxvws.skins.CheckSkin")]
+	
 	/**
 	 * Check class.
 	 * @author wvxvw
 	 */
-	public class Check extends DIV
+	public class Check extends DIV implements ISkinnable
 	{
 		public static const UP_STATE:String = "upState";
 		public static const OVER_STATE:String = "overState";
@@ -77,33 +80,35 @@
 		}
 		
 		//------------------------------------
-		//  Public property producer
+		//  Public property skin
 		//------------------------------------
 		
-		[Bindable("producerChanged")]
+		[Bindable("skinChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>producerChanged</code> event.
+		* When this property is modified, it dispatches the <code>skinChanged</code> event.
 		*/
-		public function get producer():ButtonSkinProducer { return _producer; }
+		public function get skin():Vector.<ISkin> { return new <ISkin>[_skin]; }
 		
-		public function set producer(value:ButtonSkinProducer):void 
+		public function set skin(value:Vector.<ISkin>):void 
 		{
-			if (_producer === value) return;
-			_producer = value;
-			if (_producer)
+			if (value && value.length && _skin === value[0]) return;
+			if (_skin === value) return;
+			if (value && value.length) _skin = value[0];
+			else _skin = null;
+			if (_skin)
 			{
-				_button.states[UP_STATE] = _producer.produce(_button, UP_STATE);
-				_button.states[DOWN_STATE] = _producer.produce(_button, DOWN_STATE);
-				_button.states[OVER_STATE] = _producer.produce(_button, OVER_STATE);
+				_button.states[UP_STATE] = _skin.produce(_button, UP_STATE);
+				_button.states[DOWN_STATE] = _skin.produce(_button, DOWN_STATE);
+				_button.states[OVER_STATE] = _skin.produce(_button, OVER_STATE);
 				_button.states[SELECTED_STATE] = 
-					_producer.produce(_button, SELECTED_STATE);
+					_skin.produce(_button, SELECTED_STATE);
 				_button.states[DISABLED_STATE] = 
-					_producer.produce(_button, DISABLED_STATE);
+					_skin.produce(_button, DISABLED_STATE);
 				_button.states[SELECTED_DISABLED_STATE] = 
-					_producer.produce(_button, SELECTED_DISABLED_STATE);
+					_skin.produce(_button, SELECTED_DISABLED_STATE);
 			}
 			else
 			{
@@ -114,10 +119,14 @@
 				delete _button.states[DISABLED_STATE];
 				delete _button.states[SELECTED_DISABLED_STATE];
 			}
-			super.invalidate("_producer", _producer, false);
-			if (super.hasEventListener(EventGenerator.getEventType("producer")))
+			super.invalidate("_skin", _skin, false);
+			if (super.hasEventListener(EventGenerator.getEventType("skin")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
+		
+		public function get parts():Object { return null; }
+		
+		public function set parts(value:Object):void { }
 		
 		//------------------------------------
 		//  Public property label
@@ -130,9 +139,9 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>labelChanged</code> event.
 		*/
-		public function get label():LabelProducer { return _label; }
+		public function get label():ISkin { return _label; }
 		
-		public function set label(value:LabelProducer):void 
+		public function set label(value:ISkin):void 
 		{
 			if (_label === value) return;
 			_label = value;
@@ -170,8 +179,8 @@
 		
 		protected var _selected:Boolean;
 		protected var _disabled:Boolean;
-		protected var _producer:ButtonSkinProducer;
-		protected var _label:LabelProducer;
+		protected var _skin:ISkin;
+		protected var _label:ISkin;
 		protected var _labelField:TextField = new TextField();
 		protected var _button:StatefulButton = new StatefulButton();
 		protected var _labelPlacement:int = 4;
@@ -180,7 +189,8 @@
 		public function Check() 
 		{
 			super();
-			this.producer = new DefaultCheckProducer();
+			if (!_skin) this.skin = SkinManager.getSkin(this);
+			trace("Check!", _skin);
 			super.addEventListener(
 				MouseEvent.CLICK, button_clickHandler, false, int.MAX_VALUE);
 			super.addEventListener(
@@ -230,7 +240,7 @@
 			{
 				if (_label)
 				{
-					_labelField.text = _label.produce(this);
+					_labelField.text = _label.produce(this) as String;
 					if (!super.contains(_labelField)) super.addChild(_labelField);
 				}
 				else
