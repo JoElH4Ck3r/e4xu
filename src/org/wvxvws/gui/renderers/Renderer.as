@@ -26,7 +26,10 @@ package org.wvxvws.gui.renderers
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
-	import org.wvxvws.gui.skins.LabelProducer;
+	import org.wvxvws.gui.skins.ISkin;
+	import org.wvxvws.gui.skins.ISkinnable;
+	
+	[Skin("org.wvxvws.skins.LabelSkin")]
 	
 	/**
 	* Renderer class.
@@ -34,7 +37,7 @@ package org.wvxvws.gui.renderers
 	* @langVersion 3.0
 	* @playerVersion 10.0.12.36
 	*/
-	public class Renderer extends Sprite implements IRenderer
+	public class Renderer extends Sprite implements IRenderer, ISkinnable
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -65,14 +68,29 @@ package org.wvxvws.gui.renderers
 			this.renderText();
 		}
 		
-		public function get labelProducer():LabelProducer { return _labelProducer; }
+		public function get labelSkin():ISkin { return _labelSkin; }
 		
-		public function set labelProducer(value:LabelProducer):void 
+		public function set labelSkin(value:ISkin):void 
 		{
-			if (_labelProducer === value) return;
-			_labelProducer = value;
+			if (_labelSkin === value) return;
+			_labelSkin = value;
 			if (_data) this.renderText();
 		}
+		
+		/* INTERFACE org.wvxvws.gui.skins.ISkinnable */
+		
+		public function get skin():Vector.<ISkin> { return new <ISkin>[_labelSkin]; }
+		
+		public function set skin(value:Vector.<ISkin>):void
+		{
+			if (value && value.length && _labelSkin === value[0]) return;
+			if (value && value.length) _labelSkin = value[0];
+			else _labelSkin = null;
+		}
+		
+		public function get parts():Object { return null; }
+		
+		public function set parts(value:Object):void { }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -88,7 +106,7 @@ package org.wvxvws.gui.renderers
 		protected var _backgroundColor:uint = 0xFFFFFF;
 		protected var _backgroundAlpha:Number = 1;
 		protected var _textFormat:TextFormat = new TextFormat("_sans", 11);
-		protected var _labelProducer:LabelProducer;
+		protected var _labelSkin:ISkin;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -137,7 +155,8 @@ package org.wvxvws.gui.renderers
 		{
 			if (!_data) return;
 			_field.defaultTextFormat = _textFormat;
-			if (_labelProducer) _field.text = _labelProducer.produce(_data);
+			if (_labelSkin) 
+				_field.text = _labelSkin.produce(_data) as String;
 			else _field.text = _data.localName();
 			this.drawBackground();
 		}

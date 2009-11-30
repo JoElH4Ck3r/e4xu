@@ -14,5 +14,9 @@
   <include-classes>
 	<!-- SKINS -->
 	<class>org.wvxvws.skins.ButtonSkin</class>
+	<class>org.wvxvws.skins.LabelSkin</class>
+	<class>org.wvxvws.skins.StepperSkin</class>
+	<class>org.wvxvws.skins.CheckSkin</class>
+	<class>org.wvxvws.skins.OptionSkin</class>
   </include-classes>
 </flex-config>

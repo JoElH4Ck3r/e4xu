@@ -29,7 +29,7 @@ package org.wvxvws.gui.renderers
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import org.wvxvws.gui.GUIEvent;
-	import org.wvxvws.gui.skins.ButtonSkinProducer;
+	import org.wvxvws.gui.skins.ISkin;
 	import org.wvxvws.gui.StatefulButton;
 	
 	// TODO: Need to implement ILayoutClient or add suspendLayout()
@@ -108,9 +108,9 @@ package org.wvxvws.gui.renderers
 			if (_data) this.render();
 		}
 		
-		public function get iconProducer():ButtonSkinProducer { return _iconProducer; }
+		public function get iconProducer():ISkin { return _iconProducer; }
 		
-		public function set iconProducer(value:ButtonSkinProducer):void 
+		public function set iconProducer(value:ISkin):void 
 		{
 			if (_iconProducer === value) return;
 			_iconProducer = value;
@@ -134,7 +134,7 @@ package org.wvxvws.gui.renderers
 		
 		protected var _openClose:StatefulButton = new StatefulButton();
 		protected var _icon:InteractiveObject;
-		protected var _iconProducer:ButtonSkinProducer;
+		protected var _iconProducer:ISkin;
 		
 		protected var _openClass:Class;
 		protected var _closedClass:Class;
@@ -189,7 +189,7 @@ package org.wvxvws.gui.renderers
 				super.removeChild(_icon);
 			if (_iconProducer)
 			{
-				_icon = _iconProducer.produce(this);
+				_icon = _iconProducer.produce(this) as InteractiveObject;
 				if (_icon) super.addChild(_icon);
 			}
 			if (_icon)
@@ -217,7 +217,8 @@ package org.wvxvws.gui.renderers
 				_field.addEventListener(
 							MouseEvent.DOUBLE_CLICK, text_doubleClickHandler);
 			}
-			if (_labelProducer) _field.text = _labelProducer.produce(_data);
+			if (_labelSkin)
+				_field.text = _labelSkin.produce(_data) as String;
 			else _field.text = _data.localName();
 			if (_icon) _field.x = _icon.x + _icon.width + _gutter;
 			else _field.x = _depth * _indent;

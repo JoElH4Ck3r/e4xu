@@ -19,13 +19,9 @@
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.layout.ILayoutClient;
 	import org.wvxvws.gui.layout.LayoutValidator;
-	import org.wvxvws.gui.skins.ButtonSkinProducer;
 	import org.wvxvws.gui.skins.ISkin;
 	import org.wvxvws.gui.skins.ISkinnable;
 	import org.wvxvws.gui.skins.SkinManager;
-	// TODO: have to remove this dependency
-	import org.wvxvws.gui.skins.DefaultButonProducer;
-	import org.wvxvws.gui.skins.SkinProducer;
 	//}
 	
 	[Event(name="initialized", type="org.wvxvws.gui.GUIEvent")]
@@ -51,6 +47,10 @@
 		
 		/* INTERFACE org.wvxvws.gui.skins.ISkinnable */
 		
+		public function get parts():Object { return null; }
+		
+		public function set parts(value:Object):void { }
+		
 		//------------------------------------
 		//  Public property skin
 		//------------------------------------
@@ -62,12 +62,41 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>skinChanged</code> event.
 		*/
-		public function get skin():ISkin { return _skin; }
+		public function get skin():Vector.<ISkin> { return new <ISkin>[_skin]; }
 		
-		public function set skin(value:ISkin):void
+		public function set skin(value:Vector.<ISkin>):void
 		{
+			if (value && value.length && _skin === value[0]) return;
 			if (_skin === value) return;
-			_skin = value;
+			if (value && value.length) _skin = value[0];
+			else _skin = null;
+			if (_skin)
+			{
+				super.upState = _skin.produce(this, "upState") as DisplayObject;
+				super.overState = _skin.produce(this, "overState") as DisplayObject;
+				super.downState = _skin.produce(this, "downState") as DisplayObject;
+				if (super.upState)
+				{
+					super.upState.addEventListener(
+						Event.ADDED, addedHandler, false, 0, true);
+				}
+				if (super.overState)
+				{
+					super.overState.addEventListener(
+						Event.ADDED, addedHandler, false, 0, true);
+				}
+				if (super.downState)
+				{
+					super.downState.addEventListener(
+						Event.ADDED, addedHandler, false, 0, true);
+				}
+			}
+			else
+			{
+				super.upState = null;
+				super.overState = null;
+				super.downState = null;
+			}
 			this.invalidate("_skin", _skin, true);
 			if (super.hasEventListener(EventGenerator.getEventType("skin")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -275,55 +304,6 @@
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
-		//------------------------------------
-		//  Public property producer
-		//------------------------------------
-		
-		[Bindable("producerChanged")]
-		
-		/**
-		* ...
-		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>producerChanged</code> event.
-		*/
-		public function get producer():ButtonSkinProducer { return _producer; }
-		
-		public function set producer(value:ButtonSkinProducer):void 
-		{
-			if (_producer == value) return;
-			_producer = value;
-			if (_producer)
-			{
-				super.upState = _producer.produce(this, "upState");
-				super.overState = _producer.produce(this, "overState");
-				super.downState = _producer.produce(this, "downState");
-				if (super.upState)
-				{
-					super.upState.addEventListener(
-						Event.ADDED, addedHandler, false, 0, true);
-				}
-				if (super.overState)
-				{
-					super.overState.addEventListener(
-						Event.ADDED, addedHandler, false, 0, true);
-				}
-				if (super.downState)
-				{
-					super.downState.addEventListener(
-						Event.ADDED, addedHandler, false, 0, true);
-				}
-			}
-			else
-			{
-				super.upState = null;
-				super.overState = null;
-				super.downState = null;
-			}
-			this.invalidate("_producer", _producer, false);
-			if (super.hasEventListener(EventGenerator.getEventType("producer")))
-				super.dispatchEvent(EventGenerator.getEvent());
-		}
-		
 		/* INTERFACE org.wvxvws.gui.layout.ILayoutClient */
 		
 		public function get validator():LayoutValidator { return _validator; }
@@ -370,7 +350,6 @@
 		protected var _layoutParent:ILayoutClient;
 		protected var _invalidProperties:Object = { };
 		
-		protected var _producer:ButtonSkinProducer;
 		protected var _invalidLayout:Boolean;
 		
 		protected var _hitState:Shape = new Shape();
@@ -400,9 +379,7 @@
 			super();
 			super.hitTestState = this.drawHitState();
 			super.addEventListener(Event.ADDED, addedHandler);
-			var skins:Vector.<ISkin> = SkinManager.getSkin(this);
-			if (skins) this.skin = skins[0];
-			trace("this.skin", this.skin);
+			
 			_nativeTransform = new Transform(this);
 			_label.width = 1;
 			_label.height = 1;
@@ -436,7 +413,7 @@
 				(_document as DisplayObjectContainer).addChild(this);
 			}
 			_id = id;
-			if (!_producer) this.producer = new DefaultButonProducer();
+			if (!_skin) this.skin = SkinManager.getSkin(this);
 		}
 		
 		public function validate(properties:Object):void

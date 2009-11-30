@@ -11,8 +11,7 @@
 	import org.wvxvws.gui.renderers.IRenderer;
 	import org.wvxvws.gui.renderers.NestGridRenderer;
 	import org.wvxvws.gui.renderers.Renderer;
-	import org.wvxvws.gui.skins.ButtonSkinProducer;
-	import org.wvxvws.gui.skins.LabelProducer;
+	import org.wvxvws.gui.skins.ISkin;
 	import org.wvxvws.tools.ToolEvent;
 	
 	[Event(name="opened", type="org.wvxvws.gui.GUIEvent")]
@@ -85,9 +84,9 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>iconProducerChanged</code> event.
 		*/
-		public function get iconProducer():ButtonSkinProducer { return _iconProducer; }
+		public function get iconProducer():ISkin { return _iconProducer; }
 		
-		public function set iconProducer(value:ButtonSkinProducer):void 
+		public function set iconProducer(value:ISkin):void 
 		{
 			if (_iconProducer == value) return;
 			_iconProducer = value;
@@ -107,9 +106,9 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>folderProducerChanged</code> event.
 		*/
-		public function get folderProducer():ButtonSkinProducer { return _folderProducer; }
+		public function get folderProducer():ISkin { return _folderProducer; }
 		
-		public function set folderProducer(value:ButtonSkinProducer):void 
+		public function set folderProducer(value:ISkin):void 
 		{
 			if (_folderProducer === value) return;
 			_folderProducer = value;
@@ -307,8 +306,8 @@
 		protected var _currentList:XMLList;
 		protected var _indent:int = 16;
 		
-		protected var _iconProducer:ButtonSkinProducer;
-		protected var _folderProducer:ButtonSkinProducer;
+		protected var _iconProducer:ISkin;
+		protected var _folderProducer:ISkin;
 		
 		protected var _openClass:Class;
 		protected var _closedClass:Class;
@@ -322,7 +321,7 @@
 		protected var _headers:Vector.<IRenderer> = new <IRenderer>[];
 		protected var _columnsResizable:Boolean = true;
 		protected var _includeText:Boolean;
-		protected var _headerProducer:LabelProducer;
+		protected var _headerProducer:ISkin;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -434,7 +433,7 @@
 				(_headers[i] as DisplayObject).x = col.x;
 				(_headers[i] as DisplayObject).height = _headerHeight;
 				(_headers[i] as HeaderRenderer).resizable = _columnsResizable;
-					_headers[i].labelProducer = _headerProducer;
+					_headers[i].labelSkin = _headerProducer;
 				_headers[i].data = _dataProvider;
 				(_headers[i] as DisplayObject).addEventListener(
 						ToolEvent.RESIZE_END, header_resizeEndHandler);

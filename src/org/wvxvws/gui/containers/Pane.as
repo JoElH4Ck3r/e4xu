@@ -8,7 +8,8 @@
 	import org.wvxvws.gui.DIV;
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.renderers.IRenderer;
-	import org.wvxvws.gui.skins.LabelProducer;
+	import org.wvxvws.gui.skins.ISkin;
+	import org.wvxvws.gui.skins.ISkinnable;
 	//}
 	
 	[Event(name="childrenCreated", type="org.wvxvws.gui.GUIEvent")]
@@ -16,13 +17,15 @@
 	
 	[DefaultProperty("dataProvider")]
 	
+	[Skin("org.wvxvws.skins.LabelSkin")]
+	
 	/**
 	* Pane class.
 	* @author wvxvw
 	* @langVersion 3.0
 	* @playerVersion 10.0.12.36
 	*/
-	public class Pane extends DIV
+	public class Pane extends DIV implements ISkinnable
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -42,23 +45,38 @@
 			super.dispatchEvent(new GUIEvent(GUIEvent.DATA_CHANGED));
 		}
 		
-		[Bindable("labelProducerChanged")]
+		[Bindable("labelSkinChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>labelProducerChanged</code> event.
+		* When this property is modified, it dispatches the <code>labelSkinChanged</code> event.
 		*/
-		public function get labelProducer():LabelProducer { return _labelProducer; }
+		public function get labelSkin():ISkin { return _labelSkin; }
 		
-		public function set labelProducer(value:LabelProducer):void 
+		public function set labelSkin(value:ISkin):void 
 		{
-			if (_labelProducer === value) return;
-			_labelProducer = value;
-			super.invalidate("_labelProducer", _labelProducer, false);
-			if (super.hasEventListener(EventGenerator.getEventType("labelProducer")))
+			if (_labelSkin === value) return;
+			_labelSkin = value;
+			super.invalidate("_labelSkin", _labelSkin, false);
+			if (super.hasEventListener(EventGenerator.getEventType("labelSkin")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
+		
+		/* INTERFACE org.wvxvws.gui.skins.ISkinnable */
+		
+		public function get skin():Vector.<ISkin> { return new <ISkin>[_labelSkin]; }
+		
+		public function set skin(value:Vector.<ISkin>):void
+		{
+			if (value && value.length && _labelSkin === value[0]) return;
+			if (value && value.length) _labelSkin = value[0];
+			else _labelSkin = null;
+		}
+		
+		public function get parts():Object { return null; }
+		
+		public function set parts(value:Object):void { }
 		
 		public function get subContainers():Vector.<Pane> { return _subContainers; }
 		
@@ -75,7 +93,7 @@
 		protected var _rendererFactory:Class;
 		protected var _dispatchCreated:Boolean;
 		protected var _subContainers:Vector.<Pane>;
-		protected var _labelProducer:LabelProducer;
+		protected var _labelSkin:ISkin;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -204,7 +222,7 @@
 			if (!(child is IRenderer)) return null;
 			//if (_useLabelField) (child as IRenderer).labelField = _labelField;
 			//if (_useLabelFunction)
-			(child as IRenderer).labelProducer = _labelProducer;
+			(child as IRenderer).labelSkin = _labelSkin;
 			if (!recycledChild || dirtyChild)
 			{
 				(child as IRenderer).data = xml;

@@ -1,4 +1,4 @@
-﻿package org.wvxvws.gui.skins 
+﻿package org.wvxvws.skins 
 {
 	import flash.display.Graphics;
 	import flash.display.GraphicsPathCommand;
@@ -7,30 +7,29 @@
 	import flash.display.Sprite;
 	import flash.geom.Rectangle;
 	import org.wvxvws.gui.controls.NumStepper;
-	import org.wvxvws.gui.skins.ButtonSkinProducer;
+	import org.wvxvws.gui.skins.SkinDefaults;
 	
 	/**
-	 * DefaultStepperProducer class.
+	 * StepperSkin skin.
 	 * @author wvxvw
 	 */
-	public class DefaultStepperProducer extends ButtonSkinProducer
+	public class StepperSkin extends ButtonSkin
 	{
-		
-		public function DefaultStepperProducer(states:Vector.<String> = null,
+		public function StepperSkin(states:Vector.<String> = null,
 										stateClasses:Vector.<Class> = null, 
-										stateFactories:Vector.<Function> = null)
+										stateFactories:Vector.<Function> = null) 
 		{
 			super(states, stateClasses, stateFactories);
 			if (!states) 
-				super._states = new <String>[NumStepper.UP_STATE, 
-											NumStepper.OVER_STATE, 
-											NumStepper.DOWN_STATE, 
-											NumStepper.DISABLED_STATE];
+				_states = new <String>[NumStepper.UP_STATE, 
+										NumStepper.OVER_STATE, 
+										NumStepper.DOWN_STATE, 
+										NumStepper.DISABLED_STATE];
 			if (!stateFactories) 
-				super._stateFactories = new <Function>[defaultStateFactory, 
-													defaultStateFactory,
-													defaultStateFactory,
-													defaultStateFactory];
+				_stateFactories = new <Function>[defaultStateFactory, 
+												defaultStateFactory,
+												defaultStateFactory,
+												defaultStateFactory];
 		}
 		
 		private function defaultStateFactory(inContext:Object, 
@@ -69,5 +68,4 @@
 			return s;
 		}
 	}
-
 }

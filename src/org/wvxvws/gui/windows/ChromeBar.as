@@ -32,7 +32,7 @@ package org.wvxvws.gui.windows
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import org.wvxvws.gui.DIV;
-	import org.wvxvws.gui.skins.SkinProducer;
+	import org.wvxvws.gui.skins.ISkin;
 	//}
 	
 	/**
@@ -79,9 +79,9 @@ package org.wvxvws.gui.windows
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>iconProducerChanged</code> event.
 		*/
-		public function get iconProducer():SkinProducer { return _iconProducer; }
+		public function get iconProducer():ISkin { return _iconProducer; }
 		
-		public function set iconProducer(value:SkinProducer):void 
+		public function set iconProducer(value:ISkin):void 
 		{
 			if (_iconProducer === value) return;
 			_iconProducer = value;
@@ -138,7 +138,7 @@ package org.wvxvws.gui.windows
 		
 		protected var _label:String;
 		protected var _labelTXT:TextField;
-		protected var _iconProducer:SkinProducer;
+		protected var _iconProducer:ISkin;
 		protected var _icon:DisplayObject;
 		protected var _labelFormat:TextFormat = new TextFormat("_sans", 11, 0, true);
 		protected var _labelPadding:int = 4;
@@ -169,7 +169,7 @@ package org.wvxvws.gui.windows
 			super.validate(properties);
 			if (iconClassChanged)
 			{
-				_icon = _iconProducer.produce(this);
+				_icon = _iconProducer.produce(this) as DisplayObject;
 				this.drawIcon();
 			}
 			if (labelChanged) this.drawLabel();

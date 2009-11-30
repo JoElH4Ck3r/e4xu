@@ -21,7 +21,7 @@
 
 package org.wvxvws.gui.renderers 
 {
-	import org.wvxvws.gui.skins.SkinProducer;
+	import org.wvxvws.gui.skins.ISkin;
 	
 	[Event(name="opened", type="org.wvxvws.gui.GUIEvent")]
 	
@@ -34,7 +34,7 @@ package org.wvxvws.gui.renderers
 	public interface IMenuRenderer extends IRenderer
 	{
 		
-		function set iconProducer(value:SkinProducer):void;
+		function set iconProducer(value:ISkin):void;
 		
 		function set hotKeys(value:Vector.<int>):void;
 		

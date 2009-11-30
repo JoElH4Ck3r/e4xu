@@ -9,19 +9,23 @@
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.Border;
 	import org.wvxvws.gui.DIV;
-	import org.wvxvws.gui.skins.ButtonSkinProducer;
-	import org.wvxvws.gui.skins.SkinProducer;
+	import org.wvxvws.gui.skins.ISkin;
+	import org.wvxvws.gui.skins.ISkinnable;
 	import org.wvxvws.gui.SPAN;
 	import org.wvxvws.gui.windows.ChromeBar;
 	import org.wvxvws.gui.windows.IPane;
 	
 	[DefaultProperty("children")]
 	
+	[Skin(part="close", type="org.wvxvws.skins.CloseSkin")]
+	[Skin(part="dock", type="org.wvxvws.skins.DockSkin")]
+	[Skin(part="expand", type="org.wvxvws.skins.ExpandSkin")]
+	
 	/**
 	 * ChromeWindow class.
 	 * @author wvxvw
 	 */
-	public class ChromeWindow extends DIV implements IPane
+	public class ChromeWindow extends DIV implements IPane, ISkinnable
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -152,9 +156,9 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>closeSkinChanged</code> event.
 		*/
-		public function get closeSkin():ButtonSkinProducer { return _closeSkin; }
+		public function get closeSkin():ISkin { return _closeSkin; }
 		
-		public function set closeSkin(value:ButtonSkinProducer):void 
+		public function set closeSkin(value:ISkin):void 
 		{
 			if (_closeSkin === value) return;
 			_closeSkin = value;
@@ -174,9 +178,9 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>dockSkinChanged</code> event.
 		*/
-		public function get dockSkin():ButtonSkinProducer { return _dockSkin; }
+		public function get dockSkin():ISkin { return _dockSkin; }
 		
-		public function set dockSkin(value:ButtonSkinProducer):void 
+		public function set dockSkin(value:ISkin):void 
 		{
 			if (_dockSkin === value) return;
 			_dockSkin = value;
@@ -196,9 +200,9 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>expandSkinChanged</code> event.
 		*/
-		public function get expandSkin():ButtonSkinProducer { return _expandSkin; }
+		public function get expandSkin():ISkin { return _expandSkin; }
 		
-		public function set expandSkin(value:ButtonSkinProducer):void 
+		public function set expandSkin(value:ISkin):void 
 		{
 			if (_expandSkin === value) return;
 			_expandSkin = value;
@@ -242,6 +246,32 @@
 			super.invalidate("_contentPane", _contentPane, false);
 		}
 		
+		/* INTERFACE org.wvxvws.gui.skins.ISkinnable */
+		
+		public function get skin():Vector.<ISkin> { return null; }
+		
+		public function set skin(value:Vector.<ISkin>):void { }
+		
+		public function get parts():Object
+		{
+			return { close: _closeSkin, dock: _dockSkin, expand: _expandSkin }
+		}
+		
+		public function set parts(value:Object):void
+		{
+			if (value)
+			{
+				_closeSkin = value["close"];
+				_dockSkin = value["dock"];
+				_expandSkin = value["expand"];
+			}
+			else
+			{
+				_closeSkin = null;
+				_dockSkin = null;
+				_expandSkin = null;
+			}
+		}
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
@@ -255,9 +285,9 @@
 		protected var _dockBTN:InteractiveObject;
 		protected var _expandBTN:InteractiveObject;
 		
-		protected var _closeSkin:ButtonSkinProducer;
-		protected var _dockSkin:ButtonSkinProducer;
-		protected var _expandSkin:ButtonSkinProducer;
+		protected var _closeSkin:ISkin;
+		protected var _dockSkin:ISkin;
+		protected var _expandSkin:ISkin;
 		
 		protected var _border:Border;
 		protected var _contentPane:Rack = new Rack();
@@ -379,7 +409,7 @@
 				super.removeChild(_closeBTN);
 			if (_closeBTN)
 			{
-				_closeBTN = _closeSkin.produce(this);
+				_closeBTN = _closeSkin.produce(this) as InteractiveObject;
 				_closeBTN.x = super.width - (_closeBTN.width + _border.right + 2);
 				super.addChild(_closeBTN);
 			}
@@ -416,7 +446,5 @@
 		{
 			
 		}
-		
 	}
-	
 }
