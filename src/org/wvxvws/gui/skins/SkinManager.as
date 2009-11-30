@@ -23,6 +23,7 @@
 			{
 				s = node.@value;
 				trace("SkinManager", node.@value);
+				if (!v) v = new <ISkin>[];
 				if (ApplicationDomain.currentDomain.hasDefinition(s))
 				{
 					c = ApplicationDomain.currentDomain.getDefinition(s) as Class;
