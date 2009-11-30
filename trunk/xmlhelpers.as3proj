@@ -35,7 +35,7 @@
     <option verboseStackTraces="False" />
     <option linkReport="" />
     <option loadExterns="" />
-    <option additional="-compiler.namespaces.namespace http://e4xu.googlecode.com c:\www\projects\xmlhelpers\run\manifest.xml&#xA;-keep&#xA;-link-report C:\www\projects\xmlhelpers\run\dependencies.xml&#xA;-dump-config C:\www\projects\xmlhelpers\run\config.xml&#xA;-defaults-css-url C:\www\projects\xmlhelpers\run\default.css&#xA;-services C:\www\projects\xmlhelpers\run\services.xml" />
+    <option additional="-compiler.namespaces.namespace http://e4xu.googlecode.com c:\www\projects\xmlhelpers\run\manifest.xml&#xA;-keep&#xA;-link-report C:\www\projects\xmlhelpers\run\dependencies.xml&#xA;-dump-config C:\www\projects\xmlhelpers\run\config.xml" />
     <option customSDK="C:\Flex_sdk_Gumbo_beta_2" />
   </build>
   <!-- SWC Include Libraries -->
@@ -66,7 +66,7 @@
   </library>
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>
-    <compile path="src\tests\TestVideoWithSound.as" />
+    <!-- example: <compile path="..." /> -->
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>
