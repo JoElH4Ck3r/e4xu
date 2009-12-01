@@ -39,7 +39,7 @@ package org.wvxvws.gui
 	
 	[Event(name="scrolled", type="org.wvxvws.gui.GUIEvent")]
 	
-	[Skin(part="body", type="org.wvxvws.skins.scroller.ScorllBodySkin")]
+	[Skin(part="body", type="org.wvxvws.skins.scroller.ScrollBodySkin")]
 	[Skin(part="handle", type="org.wvxvws.skins.scroller.ScrollHandleSkin")]
 	[Skin(part="min", type="org.wvxvws.skins.scroller.ScrollMinSkin")]
 	[Skin(part="max", type="org.wvxvws.skins.scroller.ScrollMaxSkin")]
@@ -145,6 +145,7 @@ package org.wvxvws.gui
 				_minHandle.addEventListener(MouseEvent.MOUSE_DOWN, 
 					this.minmax_mouseDownHandler, false, 0, true);
 			}
+			this.orderChildren();
 			super.invalidate("_minHandle", _minHandle, false);
 			if (super.hasEventListener(EventGenerator.getEventType("minHandle")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -183,6 +184,7 @@ package org.wvxvws.gui
 				_maxHandle.addEventListener(MouseEvent.MOUSE_DOWN, 
 					this.minmax_mouseDownHandler, false, 0, true);
 			}
+			this.orderChildren();
 			super.invalidate("_maxHandle", _maxHandle, false);
 			if (super.hasEventListener(EventGenerator.getEventType("maxHandle")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -217,10 +219,11 @@ package org.wvxvws.gui
 						this.skinnables_mouseOverHandler, false, 0, true);
 					(_minHandle as StatefulButton).state = UP_STATE;
 				}
-				super.addChild(_maxHandle);
+				super.addChild(_handle);
 				_handle.addEventListener(MouseEvent.MOUSE_DOWN, 
 					this.handle_mouseDownHandler, false, 0, true);
 			}
+			this.orderChildren();
 			super.invalidate("_handle", _handle, false);
 			if (super.hasEventListener(EventGenerator.getEventType("handle")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -260,6 +263,7 @@ package org.wvxvws.gui
 				//_body.addEventListener(MouseEvent.MOUSE_DOWN, 
 					//this.minmax_mouseDownHandler, false, 0, true);
 			}
+			this.orderChildren();
 			super.invalidate("_body", _body, false);
 			if (super.hasEventListener(EventGenerator.getEventType("body")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -420,6 +424,7 @@ package org.wvxvws.gui
 				for (var p:String in _skinParts)
 				{
 					skin = _skinParts[p] as ISkin;
+					trace("has skin part", p);
 					switch (p)
 					{
 						case BODY:
@@ -445,113 +450,79 @@ package org.wvxvws.gui
 					}
 				}
 			}
-			if (_direction)
+			if (_minHandle && _maxHandle && _handle && _body)
 			{
-				_minHandle.width = width;
-				_minHandle.height = _handleWidth;
-				_maxHandle.width = width;
-				_maxHandle.height = _handleWidth;
-				_handle.width = width;
-				_maxHandle.y = height - _maxHandle.height;
-				_path = height - (_minHandle.height + _maxHandle.height);
-				_handle.height = handleRatio() * _path + _gutter * 2;
-				if (_handle.height > height - (_handleWidth + _gutter) * 2)
+				if (_direction)
 				{
-					_handle.height = height - (_handleWidth + _gutter) * 2
+					_minHandle.width = width;
+					_minHandle.height = _handleWidth;
+					_maxHandle.width = width;
+					_maxHandle.height = _handleWidth;
+					_handle.width = width;
+					_maxHandle.y = height - _maxHandle.height;
+					_path = height - (_minHandle.height + _maxHandle.height);
+					_handle.height = handleRatio() * _path + _gutter * 2;
+					if (_handle.height > height - (_handleWidth + _gutter) * 2)
+					{
+						_handle.height = height - (_handleWidth + _gutter) * 2
+					}
+					_handle.y = _minHandle.height + 
+								(_path - _handle.height) * _position - _gutter;
+					_body.width = width;
+					_body.height = height;
+					//_body.y = _minHandle.height;
 				}
-				_handle.y = _minHandle.height + 
-							(_path - _handle.height) * _position - _gutter;
-				_body.width = width;
-				_body.height = height;
-				//_body.y = _minHandle.height;
+				else
+				{
+					// minHandle
+					_minHandle.rotation = 0;
+					_minHandle.scaleX = 1;
+					_minHandle.scaleY = 1;
+					_minHandle.x = 0;
+					_minHandle.y = 0;
+					m = new Matrix();
+					m.a = this.height / _minHandle.width;
+					m.d = _handleWidth / _minHandle.height;
+					m.rotate(Math.PI / -2);
+					m.translate(0, this.height);
+					_minHandle.transform.matrix = m;
+					
+					// maxHandle
+					_maxHandle.rotation = 0;
+					_maxHandle.scaleX = 1;
+					_maxHandle.scaleY = 1;
+					_maxHandle.x = 0;
+					_maxHandle.y = 0;
+					m = new Matrix();
+					m.a = this.height / _minHandle.width;
+					m.d = _handleWidth / _minHandle.height;
+					m.rotate(Math.PI / -2);
+					m.translate(this.width - _handleWidth, this.height);
+					_maxHandle.transform.matrix = m;
+					
+					_path = this.width - _handleWidth * 2;
+					
+					// handle
+					_handle.width = _minMaxHandleSize;
+					_handle.height = handleRatio() * _path + _gutter * 2;
+					_handle.rotation = -90;
+					_handle.x = _handleWidth + 
+								(_path - _handle.height) * _position - _gutter;
+					_handle.y = height;
+					// body
+					_body.rotation = 0;
+					_body.scaleX = 1;
+					_body.scaleY = 1;
+					_body.x = 0;
+					_body.y = 0;
+					m = new Matrix();
+					m.a = this.height / _body.width;
+					m.d = this.width / _body.height;
+					m.rotate(Math.PI / -2);
+					m.translate(0, this.height);
+					_body.transform.matrix = m;
+				}
 			}
-			else
-			{
-				// minHandle
-				_minHandle.rotation = 0;
-				_minHandle.scaleX = 1;
-				_minHandle.scaleY = 1;
-				_minHandle.x = 0;
-				_minHandle.y = 0;
-				m = new Matrix();
-				m.a = this.height / _minHandle.width;
-				m.d = _handleWidth / _minHandle.height;
-				m.rotate(Math.PI / -2);
-				m.translate(0, this.height);
-				_minHandle.transform.matrix = m;
-				
-				// maxHandle
-				_maxHandle.rotation = 0;
-				_maxHandle.scaleX = 1;
-				_maxHandle.scaleY = 1;
-				_maxHandle.x = 0;
-				_maxHandle.y = 0;
-				m = new Matrix();
-				m.a = this.height / _minHandle.width;
-				m.d = _handleWidth / _minHandle.height;
-				m.rotate(Math.PI / -2);
-				m.translate(this.width - _handleWidth, this.height);
-				_maxHandle.transform.matrix = m;
-				
-				_path = this.width - _handleWidth * 2;
-				
-				// handle
-				_handle.width = _minMaxHandleSize;
-				_handle.height = handleRatio() * _path + _gutter * 2;
-				_handle.rotation = -90;
-				_handle.x = _handleWidth + 
-							(_path - _handle.height) * _position - _gutter;
-				_handle.y = height;
-				// body
-				_body.rotation = 0;
-				_body.scaleX = 1;
-				_body.scaleY = 1;
-				_body.x = 0;
-				_body.y = 0;
-				m = new Matrix();
-				m.a = this.height / _body.width;
-				m.d = this.width / _body.height;
-				m.rotate(Math.PI / -2);
-				m.translate(0, this.height);
-				_body.transform.matrix = m;
-			}
-			//if (!super.contains(_body)) super.addChild(_body);
-			//if (!super.contains(_minHandle)) super.addChild(_minHandle);
-			//if (!super.contains(_maxHandle)) super.addChild(_maxHandle);
-			//if (!super.contains(_handle)) super.addChild(_handle);
-			//if (!_minHandle.hasEventListener(MouseEvent.MOUSE_DOWN))
-			//{
-				//_minHandle.addEventListener(MouseEvent.MOUSE_DOWN, 
-									//minmax_mouseDownHandler, false, 0, true);
-				//_minHandle.addEventListener(MouseEvent.MOUSE_UP, 
-									//minmax_mouseUpHandler, false, 0, true);
-				//_minHandle.addEventListener(MouseEvent.MOUSE_OVER, 
-									//skinnables_mouseOverHandler, false, 0, true);
-				//_minHandle.addEventListener(MouseEvent.MOUSE_OUT, 
-									//skinnables_mouseOutHandler, false, 0, true);
-			//}
-			//if (!_maxHandle.hasEventListener(MouseEvent.MOUSE_DOWN))
-			//{
-				//_maxHandle.addEventListener(MouseEvent.MOUSE_DOWN, 
-									//minmax_mouseDownHandler, false, 0, true);
-				//_maxHandle.addEventListener(MouseEvent.MOUSE_UP, 
-									//minmax_mouseUpHandler, false, 0, true);
-				//_maxHandle.addEventListener(MouseEvent.MOUSE_OVER, 
-									//skinnables_mouseOverHandler, false, 0, true);
-				//_maxHandle.addEventListener(MouseEvent.MOUSE_OUT, 
-									//skinnables_mouseOutHandler, false, 0, true);
-			//}
-			//if (!_handle.hasEventListener(MouseEvent.MOUSE_DOWN))
-			//{
-				//_handle.addEventListener(MouseEvent.MOUSE_DOWN, 
-									//handle_mouseDownHandler, false, 0, true);
-				//_handle.addEventListener(MouseEvent.MOUSE_UP, 
-									//handle_mouseUpHandler, false, 0, true);
-				//_handle.addEventListener(MouseEvent.MOUSE_OVER, 
-									//skinnables_mouseOverHandler, false, 0, true);
-				//_handle.addEventListener(MouseEvent.MOUSE_OUT, 
-									//skinnables_mouseOutHandler, false, 0, true);
-			//}
 			if (_area && _target) _target.scrollRect = _area;
 		}
 		
@@ -633,15 +604,6 @@ package org.wvxvws.gui
 									this.enterFrameHandler, false, 0, true);
 		}
 		
-		//protected function minmax_mouseUpHandler(event:MouseEvent):void
-		//{
-			//if (event.currentTarget is ISkin) 
-				//(event.currentTarget as ISkin).state = event.type;
-			//super.removeEventListener(Event.ENTER_FRAME, this.enterFrameHandler);
-			//super.stage.removeEventListener(
-								//MouseEvent.MOUSE_UP, this.stage_mouseUpHandler);
-		//}
-		
 		protected function handle_mouseDownHandler(event:MouseEvent):void
 		{
 			if (event.currentTarget is StatefulButton) 
@@ -661,15 +623,6 @@ package org.wvxvws.gui
 			super.addEventListener(Event.ENTER_FRAME, 
 										this.enterFrameHandler, false, 0, true);
 		}
-		
-		//protected function handle_mouseUpHandler(event:MouseEvent):void
-		//{
-			//if (event.currentTarget is ISkin) 
-				//(event.currentTarget as ISkin).state = event.type;
-			//super.removeEventListener(Event.ENTER_FRAME, this.enterFrameHandler);
-			//super.stage.removeEventListener(
-				//MouseEvent.MOUSE_UP, this.stage_mouseUpHandler);
-		//}
 		
 		protected function stage_mouseUpHandler(event:MouseEvent):void
 		{
@@ -746,6 +699,26 @@ package org.wvxvws.gui
 			if (!_target) return 1;
 			if (_direction) return _area.height / _target.height;
 			return _area.width / _target.width;
+		}
+		
+		protected function orderChildren():void
+		{
+			if (_body) super.setChildIndex(_body, 0);
+			if (_handle)
+			{
+				super.setChildIndex(_handle, 
+					Math.max(0, Math.min(super.numChildren - 1, 1)));
+			}
+			if (_maxHandle)
+			{
+				super.setChildIndex(_maxHandle, Math.max(0, 
+					Math.min(super.numChildren - 1, 2)));
+			}
+			if (_minHandle)
+			{
+				super.setChildIndex(_minHandle, 
+					Math.max(0, Math.min(super.numChildren - 1, 3)));
+			}
 		}
 		
 		//--------------------------------------------------------------------------
