@@ -25,6 +25,7 @@ package org.wvxvws.gui
 {
 	//{imports
 	import flash.display.DisplayObject;
+	import flash.display.InteractiveObject;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -32,9 +33,16 @@ package org.wvxvws.gui
 	import flash.geom.Rectangle;
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.skins.ISkin;
+	import org.wvxvws.gui.skins.ISkinnable;
+	import org.wvxvws.gui.skins.SkinManager;
 	//}
 	
 	[Event(name="scrolled", type="org.wvxvws.gui.GUIEvent")]
+	
+	[Skin(part="body", type="org.wvxvws.skins.scroller.ScorllBodySkin")]
+	[Skin(part="handle", type="org.wvxvws.skins.scroller.ScrollHandleSkin")]
+	[Skin(part="min", type="org.wvxvws.skins.scroller.ScrollMinSkin")]
+	[Skin(part="max", type="org.wvxvws.skins.scroller.ScrollMaxSkin")]
 	
 	/**
 	* Scroller class.
@@ -42,13 +50,23 @@ package org.wvxvws.gui
 	* @langVersion 3.0
 	* @playerVersion 16.0.12.36
 	*/
-	public class Scroller extends DIV
+	public class Scroller extends DIV implements ISkinnable
 	{
 		//--------------------------------------------------------------------------
 		//
 		//  Public properties
 		//
 		//--------------------------------------------------------------------------
+		
+		public static const BODY:String = "body";
+		public static const HANDLE:String = "handle";
+		public static const MIN:String = "min";
+		public static const MAX:String = "max";
+		
+		public static const UP_STATE:String = "upState";
+		public static const OVER_STATE:String = "overState";
+		public static const DOWN_STATE:String = "downState";
+		public static const DISABLED_STATE:String = "disabledState";
 		
 		//------------------------------------
 		//  Public property target
@@ -98,21 +116,35 @@ package org.wvxvws.gui
 		//  Public property minHandle
 		//------------------------------------
 		
-		[Bindable("minHandleChanged")]
+		[Bindable("minHandleChange")]
 		
 		/**
-		* ...
-		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>minHandleChanged</code> event.
-		*/
-		public function get minHandle():DisplayObject { return _minHandle; }
+		 * ...
+		 * This property can be used as the source for data binding.
+		 * When this property is modified, it dispatches the <code>minHandleChange</code> event.
+		 */
+		public function get minHandle():InteractiveObject { return _minHandle; }
 		
-		public function set minHandle(value:DisplayObject):void 
+		public function set minHandle(value:InteractiveObject):void 
 		{
 			if (_minHandle === value) return;
-			if (_minHandle && super.contains(_minHandle))	_garbage.push(_minHandle);
+			if (_minHandle && super.contains(_minHandle))
+				super.removeChild(_minHandle);
 			_minHandle = value;
-			if (_minHandle is ISkin) (_minHandle as ISkin).state = MouseEvent.MOUSE_UP;
+			if (_minHandle)
+			{
+				if (_minHandle is StatefulButton)
+				{
+					_minHandle.addEventListener(MouseEvent.MOUSE_OUT, 
+						this.skinnables_mouseOutHandler, false, 0, true);
+					_minHandle.addEventListener(MouseEvent.MOUSE_OVER, 
+						this.skinnables_mouseOverHandler, false, 0, true);
+					(_minHandle as StatefulButton).state = UP_STATE;
+				}
+				super.addChild(_minHandle);
+				_minHandle.addEventListener(MouseEvent.MOUSE_DOWN, 
+					this.minmax_mouseDownHandler, false, 0, true);
+			}
 			super.invalidate("_minHandle", _minHandle, false);
 			if (super.hasEventListener(EventGenerator.getEventType("minHandle")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -125,19 +157,32 @@ package org.wvxvws.gui
 		[Bindable("maxHandleChange")]
 		
 		/**
-		* ...
-		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>maxHandleChange</code> event.
-		*/
-		public function get maxHandle():DisplayObject { return _maxHandle; }
+		 * ...
+		 * This property can be used as the source for data binding.
+		 * When this property is modified, it dispatches the <code>maxHandleChange</code> event.
+		 */
+		public function get maxHandle():InteractiveObject { return _maxHandle; }
 		
-		public function set maxHandle(value:DisplayObject):void 
+		public function set maxHandle(value:InteractiveObject):void 
 		{
 			if (_maxHandle === value) return;
-			if (_maxHandle && super.contains(_maxHandle)) _garbage.push(_maxHandle);
+			if (_maxHandle && super.contains(_maxHandle))
+				super.removeChild(_maxHandle);
 			_maxHandle = value;
-			if (_maxHandle is ISkin) 
-				(_maxHandle as ISkin).state = MouseEvent.MOUSE_UP;
+			if (_maxHandle)
+			{
+				if (_maxHandle is StatefulButton)
+				{
+					_maxHandle.addEventListener(MouseEvent.MOUSE_OUT, 
+						this.skinnables_mouseOutHandler, false, 0, true);
+					_maxHandle.addEventListener(MouseEvent.MOUSE_OVER, 
+						this.skinnables_mouseOverHandler, false, 0, true);
+					(_minHandle as StatefulButton).state = UP_STATE;
+				}
+				super.addChild(_maxHandle);
+				_maxHandle.addEventListener(MouseEvent.MOUSE_DOWN, 
+					this.minmax_mouseDownHandler, false, 0, true);
+			}
 			super.invalidate("_maxHandle", _maxHandle, false);
 			if (super.hasEventListener(EventGenerator.getEventType("maxHandle")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -147,21 +192,35 @@ package org.wvxvws.gui
 		//  Public property handle
 		//------------------------------------
 		
-		[Bindable("handleChange")]
-		[Skinable(states="up,over,down,disabled")]
-		/**
-		* ...
-		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>handleChange</code> event.
-		*/
-		public function get handle():DisplayObject { return _handle; }
+		[Bindable("handleChanged")]
 		
-		public function set handle(value:DisplayObject):void 
+		/**
+		 * ...
+		 * This property can be used as the source for data binding.
+		 * When this property is modified, it dispatches the <code>handleChanged</code> event.
+		 */
+		public function get handle():InteractiveObject { return _handle; }
+		
+		public function set handle(value:InteractiveObject):void 
 		{
 			if (_handle === value) return;
-			if (_handle && super.contains(_handle)) _garbage.push(_handle);
+			if (_handle && super.contains(_handle))
+				super.removeChild(_handle);
 			_handle = value;
-			if (_handle is ISkin) (_handle as ISkin).state = MouseEvent.MOUSE_UP;
+			if (_handle)
+			{
+				if (_handle is StatefulButton)
+				{
+					_handle.addEventListener(MouseEvent.MOUSE_OUT, 
+						this.skinnables_mouseOutHandler, false, 0, true);
+					_handle.addEventListener(MouseEvent.MOUSE_OVER, 
+						this.skinnables_mouseOverHandler, false, 0, true);
+					(_minHandle as StatefulButton).state = UP_STATE;
+				}
+				super.addChild(_maxHandle);
+				_handle.addEventListener(MouseEvent.MOUSE_DOWN, 
+					this.handle_mouseDownHandler, false, 0, true);
+			}
 			super.invalidate("_handle", _handle, false);
 			if (super.hasEventListener(EventGenerator.getEventType("handle")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -171,21 +230,36 @@ package org.wvxvws.gui
 		//  Public property body
 		//------------------------------------
 		
-		[Bindable("bodyChange")]
+		[Bindable("bodyChanged")]
 		
 		/**
-		* ...
-		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>handleChange</code> event.
-		*/
-		public function get body():DisplayObject { return _body; }
+		 * ...
+		 * This property can be used as the source for data binding.
+		 * When this property is modified, it dispatches the <code>handleChanged</code> event.
+		 */
+		public function get body():InteractiveObject { return _body; }
 		
-		public function set body(value:DisplayObject):void 
+		public function set body(value:InteractiveObject):void 
 		{
 			if (_body === value) return;
-			if (_body && super.contains(_body)) _garbage.push(_body);
+			if (_body && super.contains(_body))
+				super.removeChild(_body);
 			_body = value;
-			if (_body is ISkin) (_body as ISkin).state = MouseEvent.MOUSE_UP;
+			if (_body)
+			{
+				if (_handle is StatefulButton)
+				{
+					_body.addEventListener(MouseEvent.MOUSE_OUT, 
+						this.skinnables_mouseOutHandler, false, 0, true);
+					_body.addEventListener(MouseEvent.MOUSE_OVER, 
+						this.skinnables_mouseOverHandler, false, 0, true);
+					(_body as StatefulButton).state = UP_STATE;
+				}
+				super.addChild(_body);
+				// TODO: body needs it's own handler
+				//_body.addEventListener(MouseEvent.MOUSE_DOWN, 
+					//this.minmax_mouseDownHandler, false, 0, true);
+			}
 			super.invalidate("_body", _body, false);
 			if (super.hasEventListener(EventGenerator.getEventType("body")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -195,13 +269,13 @@ package org.wvxvws.gui
 		//  Public property direction
 		//------------------------------------
 		
-		[Bindable("directionChange")]
+		[Bindable("directionChanged")]
 		
 		/**
-		* ...
-		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>directionChange</code> event.
-		*/
+		 * ...
+		 * This property can be used as the source for data binding.
+		 * When this property is modified, it dispatches the <code>directionChanged</code> event.
+		 */
 		public function get direction():Boolean { return _direction; }
 		
 		public function set direction(value:Boolean):void 
@@ -213,13 +287,13 @@ package org.wvxvws.gui
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
-		[Bindable("handleWidthChange")]
+		[Bindable("handleWidthChanged")]
 		
 		/**
-		* ...
-		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>handleWidthChange</code> event.
-		*/
+		 * ...
+		 * This property can be used as the source for data binding.
+		 * When this property is modified, it dispatches the <code>handleWidthChanged</code> event.
+		 */
 		public function get handleWidth():int { return _handleWidth; }
 		
 		public function set handleWidth(value:int):void 
@@ -231,13 +305,13 @@ package org.wvxvws.gui
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
-		[Bindable("minMaxHandleSizeChange")]
+		[Bindable("minMaxHandleSizeChanged")]
 		
 		/**
-		* ...
-		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>minMaxHandleSizeChange</code> event.
-		*/
+		 * ...
+		 * This property can be used as the source for data binding.
+		 * When this property is modified, it dispatches the <code>minMaxHandleSizeChanged</code> event.
+		 */
 		public function get minMaxHandleSize():int { return _minMaxHandleSize; }
 		
 		public function set minMaxHandleSize(value:int):void 
@@ -249,13 +323,13 @@ package org.wvxvws.gui
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
-		[Bindable("gutterChange")]
+		[Bindable("gutterChanged")]
 		
 		/**
-		* ...
-		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>gutterChange</code> event.
-		*/
+		 * ...
+		 * This property can be used as the source for data binding.
+		 * When this property is modified, it dispatches the <code>gutterChanged</code> event.
+		 */
 		public function get gutter():int { return _gutter; }
 		
 		public function set gutter(value:int):void 
@@ -267,6 +341,30 @@ package org.wvxvws.gui
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
+		/* INTERFACE org.wvxvws.gui.skins.ISkinnable */
+		
+		public function get skin():Vector.<ISkin> { return null; }
+		
+		public function set skin(value:Vector.<ISkin>):void { }
+		
+		[Bindable("partsChanged")]
+		
+		/**
+		 * ...
+		 * This property can be used as the source for data binding.
+		 * When this property is modified, it dispatches the <code>partsChanged</code> event.
+		 */
+		public function get parts():Object { return _skinParts; }
+		
+		public function set parts(value:Object):void
+		{
+			if (_skinParts === value) return;
+			_skinParts = value;
+			super.invalidate("_parts", _skinParts, false);
+			if (super.hasEventListener(EventGenerator.getEventType("parts")))
+				super.dispatchEvent(EventGenerator.getEvent());
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
@@ -275,11 +373,10 @@ package org.wvxvws.gui
 		
 		protected var _target:DisplayObject;
 		protected var _area:Rectangle = new Rectangle(0, 0, 160, 160);
-		protected var _minHandle:DisplayObject = new Sprite();
-		protected var _maxHandle:DisplayObject = new Sprite();
-		protected var _handle:DisplayObject = new Sprite();
-		protected var _body:DisplayObject = new Sprite();
-		protected var _garbage:Vector.<DisplayObject> = new <DisplayObject>[];
+		protected var _minHandle:InteractiveObject;
+		protected var _maxHandle:InteractiveObject;
+		protected var _handle:InteractiveObject;
+		protected var _body:InteractiveObject;
 		
 		protected var _direction:Boolean;
 		protected var _path:Number = 160;
@@ -291,11 +388,7 @@ package org.wvxvws.gui
 		protected var _handleShift:Number;
 		protected var _position:Number = 0;
 		
-		//--------------------------------------------------------------------------
-		//
-		//  Private properties
-		//
-		//--------------------------------------------------------------------------
+		protected var _skinParts:Object;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -303,11 +396,7 @@ package org.wvxvws.gui
 		//
 		//--------------------------------------------------------------------------
 		
-		public function Scroller()
-		{
-			super();
-			initUI();
-		}
+		public function Scroller() { super(); }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -315,30 +404,46 @@ package org.wvxvws.gui
 		//
 		//--------------------------------------------------------------------------
 		
-		override public function validate(properties:Object):void 
+		public override function validate(properties:Object):void 
 		{
+			var skinChanged:Boolean = ("_parts" in properties);
 			super.validate(properties);
 			var m:Matrix;
-			while (_garbage.length)
+			var skin:ISkin;
+			if (!_skinParts)
 			{
-				if (super.contains(_garbage[0]));
-					super.removeChild(_garbage.shift());
+				_skinParts = SkinManager.getSkinParts(this);
+				skinChanged = true;
 			}
-			if ((_minHandle is ISkin) && !(_minHandle as ISkin).state)
+			if (skinChanged)
 			{
-				(_minHandle as ISkin).state = MouseEvent.MOUSE_UP;
-			}
-			if ((_maxHandle is ISkin) && !(_maxHandle as ISkin).state)
-			{
-				(_maxHandle as ISkin).state = MouseEvent.MOUSE_UP;
-			}
-			if ((_handle is ISkin) && !(_handle as ISkin).state)
-			{
-				(_handle as ISkin).state = MouseEvent.MOUSE_UP;
-			}
-			if ((_body is ISkin) && !(_body as ISkin).state)
-			{
-				(_body as ISkin).state = MouseEvent.MOUSE_UP;
+				for (var p:String in _skinParts)
+				{
+					skin = _skinParts[p] as ISkin;
+					switch (p)
+					{
+						case BODY:
+							this.body = skin.produce(this) as InteractiveObject;
+							if (_body is StatefulButton) 
+								(_body as StatefulButton).state = UP_STATE;
+							break;
+						case HANDLE:
+							this.handle = skin.produce(this) as InteractiveObject;
+							if (_handle is StatefulButton) 
+								(_handle as StatefulButton).state = UP_STATE;
+							break;
+						case MIN:
+							this.minHandle = skin.produce(this) as InteractiveObject;
+							if (_minHandle is StatefulButton) 
+								(_minHandle as StatefulButton).state = UP_STATE;
+							break;
+						case MAX:
+							this.maxHandle = skin.produce(this) as InteractiveObject;
+							if (_maxHandle is StatefulButton) 
+								(_maxHandle as StatefulButton).state = UP_STATE;
+							break;
+					}
+				}
 			}
 			if (_direction)
 			{
@@ -410,56 +515,56 @@ package org.wvxvws.gui
 				m.translate(0, this.height);
 				_body.transform.matrix = m;
 			}
-			if (!super.contains(_body)) super.addChild(_body);
-			if (!super.contains(_minHandle)) super.addChild(_minHandle);
-			if (!super.contains(_maxHandle)) super.addChild(_maxHandle);
-			if (!super.contains(_handle)) super.addChild(_handle);
-			if (!_minHandle.hasEventListener(MouseEvent.MOUSE_DOWN))
-			{
-				_minHandle.addEventListener(MouseEvent.MOUSE_DOWN, 
-									minmax_mouseDownHandler, false, 0, true);
-				_minHandle.addEventListener(MouseEvent.MOUSE_UP, 
-									minmax_mouseUpHandler, false, 0, true);
-				_minHandle.addEventListener(MouseEvent.MOUSE_OVER, 
-									skinnables_mouseOverHandler, false, 0, true);
-				_minHandle.addEventListener(MouseEvent.MOUSE_OUT, 
-									skinnables_mouseOutHandler, false, 0, true);
-			}
-			if (!_maxHandle.hasEventListener(MouseEvent.MOUSE_DOWN))
-			{
-				_maxHandle.addEventListener(MouseEvent.MOUSE_DOWN, 
-									minmax_mouseDownHandler, false, 0, true);
-				_maxHandle.addEventListener(MouseEvent.MOUSE_UP, 
-									minmax_mouseUpHandler, false, 0, true);
-				_maxHandle.addEventListener(MouseEvent.MOUSE_OVER, 
-									skinnables_mouseOverHandler, false, 0, true);
-				_maxHandle.addEventListener(MouseEvent.MOUSE_OUT, 
-									skinnables_mouseOutHandler, false, 0, true);
-			}
-			if (!_handle.hasEventListener(MouseEvent.MOUSE_DOWN))
-			{
-				_handle.addEventListener(MouseEvent.MOUSE_DOWN, 
-									handle_mouseDownHandler, false, 0, true);
-				_handle.addEventListener(MouseEvent.MOUSE_UP, 
-									handle_mouseUpHandler, false, 0, true);
-				_handle.addEventListener(MouseEvent.MOUSE_OVER, 
-									skinnables_mouseOverHandler, false, 0, true);
-				_handle.addEventListener(MouseEvent.MOUSE_OUT, 
-									skinnables_mouseOutHandler, false, 0, true);
-			}
+			//if (!super.contains(_body)) super.addChild(_body);
+			//if (!super.contains(_minHandle)) super.addChild(_minHandle);
+			//if (!super.contains(_maxHandle)) super.addChild(_maxHandle);
+			//if (!super.contains(_handle)) super.addChild(_handle);
+			//if (!_minHandle.hasEventListener(MouseEvent.MOUSE_DOWN))
+			//{
+				//_minHandle.addEventListener(MouseEvent.MOUSE_DOWN, 
+									//minmax_mouseDownHandler, false, 0, true);
+				//_minHandle.addEventListener(MouseEvent.MOUSE_UP, 
+									//minmax_mouseUpHandler, false, 0, true);
+				//_minHandle.addEventListener(MouseEvent.MOUSE_OVER, 
+									//skinnables_mouseOverHandler, false, 0, true);
+				//_minHandle.addEventListener(MouseEvent.MOUSE_OUT, 
+									//skinnables_mouseOutHandler, false, 0, true);
+			//}
+			//if (!_maxHandle.hasEventListener(MouseEvent.MOUSE_DOWN))
+			//{
+				//_maxHandle.addEventListener(MouseEvent.MOUSE_DOWN, 
+									//minmax_mouseDownHandler, false, 0, true);
+				//_maxHandle.addEventListener(MouseEvent.MOUSE_UP, 
+									//minmax_mouseUpHandler, false, 0, true);
+				//_maxHandle.addEventListener(MouseEvent.MOUSE_OVER, 
+									//skinnables_mouseOverHandler, false, 0, true);
+				//_maxHandle.addEventListener(MouseEvent.MOUSE_OUT, 
+									//skinnables_mouseOutHandler, false, 0, true);
+			//}
+			//if (!_handle.hasEventListener(MouseEvent.MOUSE_DOWN))
+			//{
+				//_handle.addEventListener(MouseEvent.MOUSE_DOWN, 
+									//handle_mouseDownHandler, false, 0, true);
+				//_handle.addEventListener(MouseEvent.MOUSE_UP, 
+									//handle_mouseUpHandler, false, 0, true);
+				//_handle.addEventListener(MouseEvent.MOUSE_OVER, 
+									//skinnables_mouseOverHandler, false, 0, true);
+				//_handle.addEventListener(MouseEvent.MOUSE_OUT, 
+									//skinnables_mouseOutHandler, false, 0, true);
+			//}
 			if (_area && _target) _target.scrollRect = _area;
 		}
 		
 		protected function skinnables_mouseOverHandler(event:MouseEvent):void
 		{
-			if (event.currentTarget is ISkin) 
-				(event.currentTarget as ISkin).state = MouseEvent.MOUSE_OVER;
+			if (event.currentTarget is StatefulButton) 
+				(event.currentTarget as StatefulButton).state = OVER_STATE;
 		}
 		
 		protected function skinnables_mouseOutHandler(event:MouseEvent):void
 		{
-			if (event.currentTarget is ISkin) 
-				(event.currentTarget as ISkin).state = MouseEvent.MOUSE_UP;
+			if (event.currentTarget is StatefulButton) 
+				(event.currentTarget as StatefulButton).state = UP_STATE;
 		}
 		
 		public function scrollTo(value:Number):void
@@ -501,7 +606,7 @@ package org.wvxvws.gui
 				_handle.x = (minWidth - _gutter) + 
 							(_path + _gutter * 2 - hWidth) * value;
 			}
-			dispatchEvent(new GUIEvent(GUIEvent.SCROLLED));
+			super.dispatchEvent(new GUIEvent(GUIEvent.SCROLLED));
 		}
 		
 		//--------------------------------------------------------------------------
@@ -512,8 +617,8 @@ package org.wvxvws.gui
 		
 		protected function minmax_mouseDownHandler(event:MouseEvent):void
 		{
-			if (event.currentTarget is ISkin) 
-				(event.currentTarget as ISkin).state = event.type;
+			if (event.currentTarget is StatefulButton) 
+				(event.currentTarget as StatefulButton).state = event.type;
 			if (event.currentTarget === _maxHandle)
 			{
 				_moveFunction = moveAreaUp;
@@ -522,23 +627,25 @@ package org.wvxvws.gui
 			{
 				_moveFunction = moveAreaDown;
 			}
-			stage.addEventListener(MouseEvent.MOUSE_UP, 
-									stage_mouseUpHandler, false, 0, true);
-			addEventListener(Event.ENTER_FRAME, enterFrameHandler, false, 0, true);
+			super.stage.addEventListener(MouseEvent.MOUSE_UP, 
+									this.stage_mouseUpHandler, false, 0, true);
+			super.addEventListener(Event.ENTER_FRAME, 
+									this.enterFrameHandler, false, 0, true);
 		}
 		
-		protected function minmax_mouseUpHandler(event:MouseEvent):void
-		{
-			if (event.currentTarget is ISkin) 
-				(event.currentTarget as ISkin).state = event.type;
-			removeEventListener(Event.ENTER_FRAME, enterFrameHandler);
-			stage.removeEventListener(MouseEvent.MOUSE_UP, stage_mouseUpHandler);
-		}
+		//protected function minmax_mouseUpHandler(event:MouseEvent):void
+		//{
+			//if (event.currentTarget is ISkin) 
+				//(event.currentTarget as ISkin).state = event.type;
+			//super.removeEventListener(Event.ENTER_FRAME, this.enterFrameHandler);
+			//super.stage.removeEventListener(
+								//MouseEvent.MOUSE_UP, this.stage_mouseUpHandler);
+		//}
 		
 		protected function handle_mouseDownHandler(event:MouseEvent):void
 		{
-			if (event.currentTarget is ISkin) 
-				(event.currentTarget as ISkin).state = event.type;
+			if (event.currentTarget is StatefulButton) 
+				(event.currentTarget as StatefulButton).state = DOWN_STATE;
 			var handleBounds:Rectangle = _handle.getBounds(this);
 			if (_direction)
 			{
@@ -549,31 +656,34 @@ package org.wvxvws.gui
 				_handleShift = mouseX - handleBounds.x;
 			}
 			_moveFunction = moveAreaUpDown;
-			stage.addEventListener(MouseEvent.MOUSE_UP, 
-											stage_mouseUpHandler, false, 0, true);
-			addEventListener(Event.ENTER_FRAME, enterFrameHandler, false, 0, true);
+			super.stage.addEventListener(MouseEvent.MOUSE_UP, 
+										this.stage_mouseUpHandler, false, 0, true);
+			super.addEventListener(Event.ENTER_FRAME, 
+										this.enterFrameHandler, false, 0, true);
 		}
 		
-		protected function handle_mouseUpHandler(event:MouseEvent):void
-		{
-			if (event.currentTarget is ISkin) 
-				(event.currentTarget as ISkin).state = event.type;
-			removeEventListener(Event.ENTER_FRAME, enterFrameHandler);
-			stage.removeEventListener(MouseEvent.MOUSE_UP, stage_mouseUpHandler);
-		}
-		
-		protected function stage_mouseMoveHandler(event:MouseEvent):void
-		{
-			
-		}
+		//protected function handle_mouseUpHandler(event:MouseEvent):void
+		//{
+			//if (event.currentTarget is ISkin) 
+				//(event.currentTarget as ISkin).state = event.type;
+			//super.removeEventListener(Event.ENTER_FRAME, this.enterFrameHandler);
+			//super.stage.removeEventListener(
+				//MouseEvent.MOUSE_UP, this.stage_mouseUpHandler);
+		//}
 		
 		protected function stage_mouseUpHandler(event:MouseEvent):void
 		{
-			if (_handle is ISkin) (_handle as ISkin).state = event.type;
-			if (_minHandle is ISkin) (_minHandle as ISkin).state = event.type;
-			if (_maxHandle is ISkin) (_maxHandle as ISkin).state = event.type;
-			removeEventListener(Event.ENTER_FRAME, enterFrameHandler);
-			stage.removeEventListener(MouseEvent.MOUSE_UP, stage_mouseUpHandler);
+			if (_handle is StatefulButton)
+				(_handle as StatefulButton).state = UP_STATE;
+			if (_body is StatefulButton)
+				(_body as StatefulButton).state = UP_STATE;
+			if (_minHandle is StatefulButton)
+				(_minHandle as StatefulButton).state = UP_STATE;
+			if (_maxHandle is StatefulButton)
+				(_maxHandle as StatefulButton).state = UP_STATE;
+			super.removeEventListener(Event.ENTER_FRAME, this.enterFrameHandler);
+			super.stage.removeEventListener(
+								MouseEvent.MOUSE_UP, this.stage_mouseUpHandler);
 		}
 		
 		protected function enterFrameHandler(event:Event):void
@@ -584,13 +694,13 @@ package org.wvxvws.gui
 		protected function moveAreaUp():void
 		{
 			var cs:Number = _position - .01;
-			scrollTo(cs);
+			this.scrollTo(cs);
 		}
 		
 		protected function moveAreaDown():void
 		{
 			var cs:Number = _position + .01;
-			scrollTo(cs);
+			this.scrollTo(cs);
 		}
 		
 		protected function moveAreaUpDown():void
@@ -611,7 +721,7 @@ package org.wvxvws.gui
 				{
 					toBeY = maxBounds.y - hBounds.height;
 				}
-				scrollTo((toBeY - maxBounds.height) / 
+				this.scrollTo((toBeY - maxBounds.height) / 
 						(distAvailable - hBounds.height));
 			}
 			else
@@ -626,7 +736,8 @@ package org.wvxvws.gui
 				{
 					toBeX = maxBounds.x - hBounds.width;
 				}
-				scrollTo((toBeX - maxBounds.width) / (distAvailable - hBounds.width));
+				this.scrollTo((toBeX - maxBounds.width) / 
+						(distAvailable - hBounds.width));
 			}
 		}
 		
@@ -637,47 +748,10 @@ package org.wvxvws.gui
 			return _area.width / _target.width;
 		}
 		
-		protected function initUI():void
-		{
-			if (_minHandle is Sprite)
-			{
-				(_minHandle as Sprite).graphics.beginFill(0);
-				(_minHandle as Sprite).graphics.drawRect(0, 0, 
-									_minMaxHandleSize, _handleWidth);
-				(_minHandle as Sprite).graphics.endFill();
-			}
-			if (_maxHandle is Sprite)
-			{
-				(_maxHandle as Sprite).graphics.beginFill(0);
-				(_maxHandle as Sprite).graphics.drawRect(0, 0, 
-									_minMaxHandleSize, _handleWidth);
-				(_maxHandle as Sprite).graphics.endFill();
-			}
-			if (_handle is Sprite)
-			{
-				(_handle as Sprite).graphics.beginFill(0xFF);
-				(_handle as Sprite).graphics.drawRect(0, 0, 
-									_minMaxHandleSize, _minMaxHandleSize);
-				(_handle as Sprite).graphics.endFill();
-			}
-			if (_body is Sprite)
-			{
-				(_body as Sprite).graphics.beginFill(0xFF00);
-				(_body as Sprite).graphics.drawRect(0, 0, 
-									_minMaxHandleSize, _minMaxHandleSize);
-				(_body as Sprite).graphics.endFill();
-			}
-			if (_minHandle is ISkin) (_minHandle as ISkin).state = MouseEvent.MOUSE_UP;
-			if (_maxHandle is ISkin) (_maxHandle as ISkin).state = MouseEvent.MOUSE_UP;
-			if (_handle is ISkin) (_handle as ISkin).state = MouseEvent.MOUSE_UP;
-			if (_body is ISkin) (_body as ISkin).state = MouseEvent.MOUSE_UP;
-		}
-		
 		//--------------------------------------------------------------------------
 		//
 		//  Private methods
 		//
 		//--------------------------------------------------------------------------
 	}
-	
 }

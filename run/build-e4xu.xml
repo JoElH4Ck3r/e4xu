@@ -40,9 +40,7 @@
 	<class>org.wvxvws.gui.IMG</class>
 	<class>org.wvxvws.gui.Preloader</class>
 	<class>org.wvxvws.gui.SPAN</class>
-	<!-- FIXME
-		<class>org.wvxvws.gui.Scroller</class>
-	-->
+	<class>org.wvxvws.gui.Scroller</class>
 	<class>org.wvxvws.gui.StatefulButton</class>
 	<!-- UI CHROME -->
 	<class>org.wvxvws.gui.windows.ChromeBar</class>
