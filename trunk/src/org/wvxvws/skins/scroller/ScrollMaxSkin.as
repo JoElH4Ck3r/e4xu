@@ -63,7 +63,7 @@
 								GraphicsPathCommand.LINE_TO,
 								GraphicsPathCommand.LINE_TO,
 								GraphicsPathCommand.LINE_TO],
-						new <Number>[8, 4, 12, 12, 4, 12, 8, 4], 
+						new <Number>[8, 12, 12, 4, 4, 4, 8, 12], 
 						GraphicsPathWinding.NON_ZERO);
 			s.scale9Grid = new Rectangle(1, 1, 14, 14);
 			return s;

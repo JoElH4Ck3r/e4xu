@@ -45,36 +45,27 @@
 		public static function getSkinParts(forClient:ISkinnable):Object
 		{
 			var meta:XMLList = 
-				describeType(forClient).metadata.(valueOf().@name == "Skin").arg;
+				describeType(forClient).metadata.(valueOf().@name == "Skin");
 			var o:Object;
 			var c:Class;
 			var s:String;
 			var ic:ISkin;
-			var k:String;
+			var part:String;
 			for each (var node:XML in meta)
 			{
-				k = node.@key.toString();
-				switch (k)
+				part = node.arg.(valueOf().@key.toString() === "part")[0].@value;
+				s = node.arg.(valueOf().@key.toString() === "type")[0].@value;
+				trace(s, ApplicationDomain.currentDomain.hasDefinition(s));
+				if (ApplicationDomain.currentDomain.hasDefinition(s))
 				{
-					case "part":
-						s = node.@value;
-						break;
-					case "type":
+					c = ApplicationDomain.currentDomain.getDefinition(s) as Class;
+					ic = new c() as ISkin;
+					if (ic) 
+					{
 						if (!o) o = { };
-						if (ApplicationDomain.currentDomain.hasDefinition(
-							node.@value.toString()))
-						{
-							c = ApplicationDomain.currentDomain.getDefinition(
-								node.@value.toString()) as Class;
-							ic = new c() as ISkin;
-							if (ic) 
-							{
-								ic.host = forClient;
-								o[s] = ic;
-							}
-						}
-						s = node.@value;
-						break;
+						ic.host = forClient;
+						o[part] = ic;
+					}
 				}
 			}
 			return o;
