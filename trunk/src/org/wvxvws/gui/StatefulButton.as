@@ -3,6 +3,7 @@
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Sprite;
+	import flash.geom.Point;
 	import mx.core.IMXMLObject;
 	
 	[DefaultProperty("states")]
@@ -13,6 +14,18 @@
 	 */
 	public class StatefulButton extends Sprite implements IMXMLObject
 	{
+		public override function set width(value:Number):void 
+		{
+			if (_currentState) _currentState.width = value;
+			_stateDimensions.x = value;
+		}
+		
+		public override function set height(value:Number):void 
+		{
+			if (_currentState) _currentState.height = value;
+			_stateDimensions.y = value;
+		}
+		
 		public function get state():String
 		{
 			for (var p:String in _cachedStates)
@@ -42,6 +55,8 @@
 			else newState = _cachedStates[value];
 			if (_currentState && super.contains(_currentState))
 				super.removeChild(_currentState);
+			if (_stateDimensions.x) newState.width = _stateDimensions.x;
+			if (_stateDimensions.y) newState.height = _stateDimensions.y;
 			_currentState = super.addChildAt(newState, 0);
 		}
 		
@@ -54,6 +69,7 @@
 		protected var _states:Object = { };
 		protected var _cachedStates:Object = { };
 		protected var _currentState:DisplayObject;
+		protected var _stateDimensions:Point = new Point();
 		
 		public function StatefulButton() { super(); }
 		

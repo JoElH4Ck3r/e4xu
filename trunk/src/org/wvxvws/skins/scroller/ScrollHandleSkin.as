@@ -6,6 +6,7 @@
 	import flash.geom.Rectangle;
 	import org.wvxvws.gui.Scroller;
 	import org.wvxvws.gui.skins.SkinDefaults;
+	import org.wvxvws.gui.StatefulButton;
 	import org.wvxvws.skins.ButtonSkin;
 	
 	/**
@@ -25,14 +26,25 @@
 										Scroller.DOWN_STATE, 
 										Scroller.DISABLED_STATE];
 			if (!stateFactories) 
-				_stateFactories = new <Function>[defaultStateFactory, 
-												defaultStateFactory,
-												defaultStateFactory,
-												defaultStateFactory];
+				_stateFactories = new <Function>[buttonFactory, 
+												buttonFactory,
+												buttonFactory,
+												buttonFactory];
 		}
 		
-		private function defaultStateFactory(inContext:Object, 
-										state:String = null):InteractiveObject
+		private function buttonFactory(inContext:Object, ...rest):StatefulButton
+		{
+			var b:StatefulButton = new StatefulButton();
+			var o:Object = { };
+			o[Scroller.UP_STATE] = defaultStateFactory(Scroller.UP_STATE);
+			o[Scroller.OVER_STATE] = defaultStateFactory(Scroller.OVER_STATE);
+			o[Scroller.DOWN_STATE] = defaultStateFactory(Scroller.DOWN_STATE);
+			o[Scroller.DISABLED_STATE] = defaultStateFactory(Scroller.DISABLED_STATE);
+			b.states = o;
+			return b;
+		}
+		
+		private function defaultStateFactory(state:String):InteractiveObject
 		{
 			var s:Sprite = new Sprite();
 			var g:Graphics = s.graphics;

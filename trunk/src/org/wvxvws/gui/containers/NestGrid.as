@@ -1,6 +1,7 @@
 ﻿package org.wvxvws.gui.containers 
 {
 	import flash.display.DisplayObject;
+	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
@@ -11,6 +12,7 @@
 	import org.wvxvws.gui.renderers.IRenderer;
 	import org.wvxvws.gui.renderers.NestGridRenderer;
 	import org.wvxvws.gui.renderers.Renderer;
+	import org.wvxvws.gui.ScrollPane;
 	import org.wvxvws.gui.skins.ISkin;
 	import org.wvxvws.tools.ToolEvent;
 	
@@ -286,6 +288,12 @@
 		
 		public function get nestColumn():Column { return _nestColumn; }
 		
+		//------------------------------------
+		//  Public property scrollPane
+		//------------------------------------
+		
+		public function get scrollPane():DisplayObjectContainer { return _scrollPane; }
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Public properties
@@ -322,6 +330,7 @@
 		protected var _columnsResizable:Boolean = true;
 		protected var _includeText:Boolean;
 		protected var _headerProducer:ISkin;
+		protected var _scrollPane:ScrollPane = new ScrollPane();
 		
 		//--------------------------------------------------------------------------
 		//
@@ -335,10 +344,12 @@
 			super._rendererFactory = Renderer;
 			_headerRenderer = HeaderRenderer;
 			super.addEventListener(GUIEvent.OPENED, 
-									openedHandler, false, int.MAX_VALUE);
+									this.openedHandler, false, int.MAX_VALUE);
 			super.addEventListener(GUIEvent.SELECTED, 
-									selectedHandler, false, int.MAX_VALUE);
-			super.addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
+									this.selectedHandler, false, int.MAX_VALUE);
+			super.addEventListener(Event.ADDED_TO_STAGE, 
+									this.addedToStageHandler, false, 0, true);
+			super.addChild(_scrollPane);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -390,8 +401,8 @@
 			_currentItem = 0;
 			_removedChildren = new <DisplayObject>[];
 			var i:int;
-			while (super.numChildren > i)
-				_removedChildren.push(super.removeChildAt(0));
+			while (_scrollPane.numChildren > i)
+				_removedChildren.push(_scrollPane.removeChildAt(0));
 			_dispatchCreated = false;
 			if (_columns.indexOf(_nestColumn) < 0)
 			{
@@ -425,7 +436,7 @@
 					if (col === _nestColumn)
 						_nestColumn.rendererFactory = NestGridRenderer;
 					else col.rendererFactory = Renderer;
-					super.addChild(col);
+					_scrollPane.addChild(col);
 					col.initialized(this, "column" + _columns.indexOf(col));
 					cumulativeX += col.width + _gutterH;
 				}
@@ -443,7 +454,7 @@
 						ToolEvent.RESIZE_START, header_resizeStartHandler);
 				(_headers[i] as DisplayObject).addEventListener(
 						ToolEvent.RESIZED, header_resizedHandler);
-				addChild(_headers[i] as DisplayObject);
+				super.addChild(_headers[i] as DisplayObject);
 				col.dataProvider = _dataProvider;
 				i++;
 			}
@@ -514,16 +525,19 @@
 										(_padding.top + _padding.bottom));
 			}
 			var sRect:Rectangle;
-			if (!super.scrollRect)
+			_scrollPane.realHeight = child.y + child.height;
+			_scrollPane.realWidth = super.width;
+			if (!_scrollPane.scrollRect)
 			{
-				super.scrollRect = new Rectangle(0, 0, super.width, super.height);
+				_scrollPane.scrollRect = 
+					new Rectangle(0, 0, super.width, super.height);// - _headerHeight);
 			}
 			else
 			{
-				sRect = super.scrollRect.clone();
+				sRect = _scrollPane.scrollRect.clone();
 				sRect.width = super.width;
-				sRect.height = super.height;
-				super.scrollRect = sRect;
+				sRect.height = super.height;// - _headerHeight;
+				_scrollPane.scrollRect = sRect;
 			}
 			if (_dispatchCreated)
 			{

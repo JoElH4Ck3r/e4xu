@@ -83,7 +83,7 @@ package org.wvxvws.gui
 		
 		public function set target(value:DisplayObject):void 
 		{
-			if (_target == value) return;
+			if (_target === value) return;
 			_target = value;
 			super.invalidate("_target", _target, false);
 			if (super.hasEventListener(EventGenerator.getEventType("target")))
@@ -217,7 +217,7 @@ package org.wvxvws.gui
 						this.skinnables_mouseOutHandler, false, 0, true);
 					_handle.addEventListener(MouseEvent.MOUSE_OVER, 
 						this.skinnables_mouseOverHandler, false, 0, true);
-					(_minHandle as StatefulButton).state = UP_STATE;
+					(_handle as StatefulButton).state = UP_STATE;
 				}
 				super.addChild(_handle);
 				_handle.addEventListener(MouseEvent.MOUSE_DOWN, 
@@ -250,7 +250,7 @@ package org.wvxvws.gui
 			_body = value;
 			if (_body)
 			{
-				if (_handle is StatefulButton)
+				if (_body is StatefulButton)
 				{
 					_body.addEventListener(MouseEvent.MOUSE_OUT, 
 						this.skinnables_mouseOutHandler, false, 0, true);
@@ -376,7 +376,7 @@ package org.wvxvws.gui
 		//--------------------------------------------------------------------------
 		
 		protected var _target:DisplayObject;
-		protected var _area:Rectangle = new Rectangle(0, 0, 160, 160);
+		protected var _area:Rectangle;// = new Rectangle(0, 0, 160, 160);
 		protected var _minHandle:InteractiveObject;
 		protected var _maxHandle:InteractiveObject;
 		protected var _handle:InteractiveObject;
@@ -449,6 +449,18 @@ package org.wvxvws.gui
 							break;
 					}
 				}
+			}
+			if (_target)
+			{
+				if (_target.scrollRect && !_area)
+				{
+					_area = _target.scrollRect;
+				}
+				else if (!_target.scrollRect && !_area)
+				{
+					_area = new Rectangle(0, 0, _target.width, _target.height);
+				}
+				_target.scrollRect = _area;
 			}
 			if (_minHandle && _maxHandle && _handle && _body)
 			{
@@ -523,7 +535,6 @@ package org.wvxvws.gui
 					_body.transform.matrix = m;
 				}
 			}
-			if (_area && _target) _target.scrollRect = _area;
 		}
 		
 		protected function skinnables_mouseOverHandler(event:MouseEvent):void
@@ -540,10 +551,9 @@ package org.wvxvws.gui
 		
 		public function scrollTo(value:Number):void
 		{
-			if (!_target) return;
+			if (!_target || !_area) return;
 			if (value < 0) value = 0;
 			if (value > 1) value = 1;
-			//trace(value);
 			var limit:Number;
 			var shift:Number;
 			var hBounds:Rectangle = _handle.getBounds(this);
@@ -558,6 +568,7 @@ package org.wvxvws.gui
 			if (_direction)
 			{
 				limit = _target.height - _area.height;
+				if (limit < 0) return;
 				shift = value * limit;
 				_area.y = shift;
 				_target.scrollRect = _area;
@@ -567,8 +578,9 @@ package org.wvxvws.gui
 			}
 			else
 			{
-				_path = width - (minWidth + maxWidth);
 				limit = _target.width - _area.width;
+				if (limit < 0) return;
+				_path = width - (minWidth + maxWidth);
 				shift = value * limit;
 				_area.x = shift;
 				_target.scrollRect = _area;
