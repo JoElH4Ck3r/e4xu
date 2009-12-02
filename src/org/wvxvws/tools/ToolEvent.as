@@ -46,10 +46,7 @@ package org.wvxvws.tools
 			_toolTarget = toolTarget;
 		} 
 		
-		public override function clone():Event 
-		{ 
-			return new ToolEvent(type, bubbles, cancelable, toolTarget);
-		} 
+		public override function clone():Event { return this; } 
 		
 		public override function toString():String 
 		{ 
