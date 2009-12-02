@@ -47,10 +47,7 @@ package org.wvxvws.gui
 			
 		} 
 		
-		public override function clone():Event 
-		{ 
-			return new GUIEvent(type, bubbles, cancelable);
-		} 
+		public override function clone():Event { return this; } 
 		
 		public override function toString():String 
 		{ 
