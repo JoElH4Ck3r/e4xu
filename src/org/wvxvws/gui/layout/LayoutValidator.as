@@ -77,6 +77,8 @@
 		{
 			delete this[client];
 			for (var obj:Object in this) return;
+			// TODO: this shouldn't happen normally. Need to investigate.
+			if (!_initializer) return;
 			_initializer.removeEventListener(Event.ENTER_FRAME, validationLoop)
 			_initializer = null;
 		}

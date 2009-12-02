@@ -31,11 +31,13 @@
 			super();
 			if (!states) 
 				_states = new <String>[UP_STATE, OVER_STATE, DOWN_STATE];
+			else _states = states;
 			_stateClasses = stateClasses;
 			if (!stateFactories) 
 				_stateFactories = new <Function>[defaultStateFactory, 
 													defaultStateFactory,
 													defaultStateFactory];
+			else _stateFactories = stateFactories;
 		}
 		
 		private function defaultStateFactory(inContext:Object, 
