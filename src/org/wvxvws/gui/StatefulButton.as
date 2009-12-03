@@ -24,6 +24,7 @@
 		{
 			if (_currentState) _currentState.height = value;
 			_stateDimensions.y = value;
+			trace(this, "_stateDimensions.y", _stateDimensions.y);
 		}
 		
 		public function get state():String

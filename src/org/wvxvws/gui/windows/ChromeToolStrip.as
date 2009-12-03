@@ -29,6 +29,7 @@ package org.wvxvws.gui.windows
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.containers.Menu;
 	import org.wvxvws.gui.containers.Pane;
 	import org.wvxvws.gui.layout.ILayoutClient;
@@ -38,6 +39,8 @@ package org.wvxvws.gui.windows
 	import org.wvxvws.managers.DragManager;
 	import org.wvxvws.utils.KeyUtils;
 	//}
+	
+	[Skin("org.wvxvws.skins.ToolStripSkin")]
 	
 	/**
 	 * ToolStripChrome class.
@@ -106,7 +109,8 @@ package org.wvxvws.gui.windows
 			}
 			super.invalidate("_dragHandle", _dragHandle, false);
 			super.invalidate("_dataProvider", _dataProvider, false);
-			super.dispatchEvent(new Event("dragHandleChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("dataProvider")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -128,7 +132,8 @@ package org.wvxvws.gui.windows
 			_rendererProducer = value;
 			super.invalidate("_rendererProducer", _rendererProducer, false);
 			super.invalidate("_dataProvider", _dataProvider, false);
-			super.dispatchEvent(new Event("rendererProducerChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("rendererProducer")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		public function get currentNode():XML { return _currentNode; }
@@ -191,6 +196,8 @@ package org.wvxvws.gui.windows
 		{
 			if (_menu && ("_labelSkin" in properties))
 				_menu.labelSkin = _labelSkin;
+			else if ("_labelSkin" in properties)
+				properties._dataProvider = _dataProvider;
 			super.validate(properties);
 		}
 		
@@ -275,6 +282,9 @@ package org.wvxvws.gui.windows
 			}
 			_currentRenderer.x = _cumulativeWidth;
 			_cumulativeWidth += _currentRenderer.width + _gutter;
+			//[object ChromeToolStrip] 2 createChild 4 30 10 0
+			trace(this, "2 createChild", _currentRenderer.width, 
+				_currentRenderer.height, _currentRenderer.x, _currentRenderer.y);
 			return _currentRenderer;
 		}
 		
