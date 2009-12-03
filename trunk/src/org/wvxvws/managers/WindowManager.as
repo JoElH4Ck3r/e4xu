@@ -220,7 +220,7 @@ package org.wvxvws.managers
 				(window as DisplayObject).parent.removeChild(
 									window as DisplayObject);
 			}
-			trace("Removing window", _modalWindows.length, _modalWindows.join("-"));
+			//trace("Removing window", _modalWindows.length, _modalWindows.join("-"));
 			if (!_modalWindows.length) removeModalBG();
 			else
 			{
@@ -313,7 +313,7 @@ package org.wvxvws.managers
 				_stage.setChildIndex(_modalSprite, _stage.numChildren - 1);
 				return;
 			}
-			trace("drawModalBG");
+			//trace("drawModalBG");
 			var g:Graphics = _modalSprite.graphics;
 			g.clear();
 			g.beginFill(0xFFFFFF, 0.3);
@@ -374,7 +374,7 @@ package org.wvxvws.managers
 		
 		private static function removeModalBG():void
 		{
-			trace("removeModalBG");
+			//trace("removeModalBG");
 			_stage.focus = null;
 			if (_stage.contains(_modalSprite)) _stage.removeChild(_modalSprite);
 			var i:int = _stage.numChildren;
@@ -384,7 +384,7 @@ package org.wvxvws.managers
 				dos = _stage.getChildAt(i);
 				if (!(_moused[dos] is Boolean))
 				{
-					trace("unregisterd object found", dos);
+					//trace("unregisterd object found", dos);
 					continue;
 				}
 				if (dos is InteractiveObject)

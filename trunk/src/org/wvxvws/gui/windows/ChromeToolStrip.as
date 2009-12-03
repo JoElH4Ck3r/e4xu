@@ -282,8 +282,6 @@ package org.wvxvws.gui.windows
 			}
 			_currentRenderer.x = _cumulativeWidth;
 			_cumulativeWidth += _currentRenderer.width + _gutter;
-			//[object ChromeToolStrip] 2 createChild 4 30 10 0
-			trace(this, "2 createChild", _currentRenderer.width, 
 				_currentRenderer.height, _currentRenderer.x, _currentRenderer.y);
 			return _currentRenderer;
 		}

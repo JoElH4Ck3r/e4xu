@@ -99,7 +99,7 @@ package org.wvxvws.net
 		
 		public function toArgumentString():String
 		{
-			trace(_parameters.length);
+			//trace(_parameters.length);
 			var temp:String = "";
 			for (var p:String in _parameters)
 			{

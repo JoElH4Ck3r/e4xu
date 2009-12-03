@@ -312,7 +312,6 @@ package org.wvxvws.net
 		
 		protected function netStatusHandler(event:NetStatusEvent):void 
 		{
-			trace("netStatusHandler", event.info.level, event.info.code);
 			switch (event.info.level)
 			{
 				case "status":

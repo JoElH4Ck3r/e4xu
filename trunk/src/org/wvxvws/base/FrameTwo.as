@@ -92,7 +92,7 @@ package org.wvxvws.base
 		//[Mixin]
 		public static function init(obj:Object):void
 		{
-			trace("mixin", obj);
+			//trace("mixin", obj);
 		}
 		
 		/* INTERFACE mx.core.IFlexModuleFactory */

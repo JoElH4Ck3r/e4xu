@@ -424,7 +424,6 @@ package org.wvxvws.gui
 				for (var p:String in _skinParts)
 				{
 					skin = _skinParts[p] as ISkin;
-					trace("has skin part", p);
 					switch (p)
 					{
 						case BODY:

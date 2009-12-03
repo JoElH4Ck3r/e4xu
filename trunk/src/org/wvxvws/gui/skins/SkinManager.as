@@ -24,7 +24,6 @@
 			var ic:ISkin;
 			for each (var node:XML in meta)
 			{
-				trace(node.@key, node.@value);
 				if (node.@key.toString() !== "") continue;
 				s = node.@value;
 				if (ApplicationDomain.currentDomain.hasDefinition(s))
@@ -55,7 +54,6 @@
 			{
 				part = node.arg.(valueOf().@key.toString() === "part")[0].@value;
 				s = node.arg.(valueOf().@key.toString() === "type")[0].@value;
-				trace(s, ApplicationDomain.currentDomain.hasDefinition(s));
 				if (ApplicationDomain.currentDomain.hasDefinition(s))
 				{
 					c = ApplicationDomain.currentDomain.getDefinition(s) as Class;

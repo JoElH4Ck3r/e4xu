@@ -144,12 +144,12 @@ package org.wvxvws.gui.renderers
 		
 		protected function securityErrorHandler(event:SecurityErrorEvent):void 
 		{
-			trace(event);
+			//trace(event);
 		}
 		
 		protected function ioErrorHandler(event:IOErrorEvent):void 
 		{
-			trace(event);
+			//trace(event);
 		}
 		
 		protected function completeHandler(event:Event):void 
