@@ -179,6 +179,8 @@ package org.wvxvws.gui.renderers
 		
 		public function validate(properties:Object):void 
 		{
+			var explicitHeight:int = _height;
+			var explicitWidth:int = _width;
 			if (!_data && !("_label" in properties)) properties._label = "";
 			else
 			{
@@ -189,15 +191,22 @@ package org.wvxvws.gui.renderers
 			if (_labelTXT.text !== _label)
 			{
 				_labelTXT.text = _label || "";
-				_labelTXT.x = (Math.max(super.width, _width) - _labelTXT.width) >> 1;
-				_labelTXT.y = (Math.max(super.height, _height) - _labelTXT.height) >> 1;
+				_height = Math.max(super.height, _height);
+				_labelTXT.y = (_height - _labelTXT.height) >> 1;
+				_width = Math.max(super.width, _width);
+				_labelTXT.x = (_width - _labelTXT.width) >> 1;
+				
+				_height = explicitHeight;
+				_width = explicitWidth;
+				
 				if (_labelTXT.x < 0)
 				{
 					_labelTXT.x = 0;
 					if (super.numChildren > 1)
 					{
-						_labelTXT.scrollRect = 
-							new Rectangle(0, 0, super.width - 2, super.height - 2);
+						_width = super.width - 2;
+						_height = super.height - 2;
+						_labelTXT.scrollRect = new Rectangle(0, 0, _width, _height);
 					}
 				}
 				if (_labelTXT.y < 0) _labelTXT.y = 0;
@@ -215,15 +224,20 @@ package org.wvxvws.gui.renderers
 		
 		protected function drawBackground():void
 		{
-			if (_width < 0) _width = super.width;
-			if (_height < 0) _height = super.height;
+			var explicitHeight:int = _height;
+			var explicitWidth:int = _width;
+			_width = Math.max(_width, super.width);
+			_height = Math.max(super.height, _height);
 			_backgroundAlpha = 1;
 			_backgroundColor = 0xFF8000;
 			var g:Graphics = super.graphics;
 			g.clear();
 			g.beginFill(_backgroundColor, _backgroundAlpha);
+			trace("drawBackground", _width, _height);
 			g.drawRect(0, 0, _width, _height);
 			g.endFill();
+			_height = explicitHeight;
+			_width = explicitWidth;
 		}
 	}
 
