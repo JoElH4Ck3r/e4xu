@@ -233,7 +233,6 @@ package org.wvxvws.gui.renderers
 			var g:Graphics = super.graphics;
 			g.clear();
 			g.beginFill(_backgroundColor, _backgroundAlpha);
-			trace("drawBackground", _width, _height);
 			g.drawRect(0, 0, _width, _height);
 			g.endFill();
 			_height = explicitHeight;

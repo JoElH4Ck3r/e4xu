@@ -274,7 +274,7 @@ package org.wvxvws.tools
 					break;
 				case _handles[4]: // rotate
 					var point:Point = _registrationPoint.clone();
-					trace("point", point);
+					//trace("point", point);
 					//point = _activeMatrix.transformPoint(point);
 					_activeMatrix.tx -= point.x;
 					_activeMatrix.ty -= point.y;
