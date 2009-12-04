@@ -70,6 +70,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="COMPCOptions.cs" />
+    <Compile Include="Embeds\Embeds.cs" />
+    <Compile Include="Enums\Utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PluginMain.cs" />
     <Compile Include="PluginUI.cs">

@@ -14,6 +14,7 @@ using PluginCore;
 using System.Text.RegularExpressions;
 using ProjectManager;
 using ProjectManager.Helpers;
+using ResourcePRJ.Enums;
 
 namespace ResourcePRJ
 {
@@ -295,6 +296,32 @@ namespace ResourcePRJ
                     //ProjectManager.Projects.AS3.AS3Project
                 }
             }
+        }
+
+        public void AddFiles(string[] files)
+        {
+            FileInfo fi;
+            foreach (string n in files)
+            {
+                try
+                {
+                    fi = new FileInfo(n);
+                    Console.WriteLine("fi " + fi);
+                    TemplateGenerator.AddFile(new FileInfo(n),
+                        AssetTypes.Img, this.project.GetAssetPath(AssetTypes.Img));
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.StackTrace);
+                }
+            }
+        }
+
+        public void EnableProjectView(RSXProject pr)
+        {
+            if (this.pluginUI == null) CreatePluginPanel();
+            this.project = pr;
+            this.pluginUI.Project = pr;
         }
 
         public void CreatePluginPanel()

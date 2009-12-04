@@ -10,7 +10,7 @@ using System.Drawing.Design;
 
 namespace ResourcePRJ
 {
-    class RSXOptions : CompilerOptions
+    public class RSXOptions : CompilerOptions
     {
 
         string[] externalLibraryPaths = new string[] { };

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
+using ResourcePRJ.Enums;
 
 namespace ResourcePRJ
 {
@@ -103,70 +104,57 @@ namespace ResourcePRJ
         private static List<FileInfo> txtFiles = new List<FileInfo>();
         private static List<FileInfo> binFiles = new List<FileInfo>();
 
-        private static String[] packageNames = new String[8];
-        private static DirectoryInfo root;
         private static Regex resToClass = new Regex("\\W", RegexOptions.Compiled);
 
-        public static void AddFile(FileInfo info)
+        public static string AddFile(FileInfo info, AssetTypes type, string copyTo)
         {
             List<FileInfo> fis = null;
             String template = "";
-            int selection = -1;
             FileInfo mxmlFile;
-            switch (info.Extension)
+            String mxmlFileName = null;
+            switch (type)
             {
-                case "jpg":
-                case "jpeg":
-                case "png":
-                case "gif":
+                case AssetTypes.Img:
                     fis = imgFiles;
                     template = (String)ImgTemplate.Clone();
-                    selection = 0;
                     break;
-                case "mp3":
+                case AssetTypes.Snd:
                     fis = sndFiles;
                     template = (String)SndTemplate.Clone();
-                    selection = 1;
                     break;
-                case "ttf":
+                case AssetTypes.Fnt:
                     fis = fntFiles;
                     template = (String)FntTemplate.Clone();
-                    selection = 2;
                     break;
-                case "swf":
+                case AssetTypes.Swf:
                     fis = swfFiles;
                     template = (String)SwfTemplate.Clone();
-                    selection = 3;
                     break;
-                case "fxg":
+                case AssetTypes.Fxg:
                     fis = fxgFiles;
                     template = (String)FxgTemplate.Clone();
-                    selection = 4;
                     break;
-                case "svg":
+                case AssetTypes.Svg:
                     fis = svgFiles;
                     template = (String)SvgTemplate.Clone();
-                    selection = 5;
                     break;
-                case "txt":
+                case AssetTypes.Txt:
                     fis = txtFiles;
                     template = (String)TxtTemplate.Clone();
-                    selection = 6;
                     break;
                 default:
                     fis = binFiles;
                     template = (String)BinTemplate.Clone();
-                    selection = 7;
                     break;
             }
             if (fis != null)
             {
                 fis.Add(info);
-                template = template.Replace("%PN%", packageNames[selection]);
-                template = template.Replace("%FN%", info.Name);
+                template = template.Replace("%PN%", copyTo);
                 template = template.Replace("%embed%", info.FullName);
-                DirectoryInfo di = ResolvePackage(packageNames[selection]);
-                String mxmlFileName = NormalizeClassName(info.Name);
+                DirectoryInfo di = CreateRecursive(copyTo);
+                mxmlFileName = NormalizeClassName(info.Name);
+                template = template.Replace("%FN%", mxmlFileName);
                 if (di != null && !di.Exists)
                 {
                     try
@@ -175,7 +163,7 @@ namespace ResourcePRJ
                     }
                     catch
                     {
-                        Console.WriteLine("Failed to create folder: " + di.FullName);
+                        Console.WriteLine("Failed to create directory: " + di.FullName);
                         // need to display a message here
                     }
                 }
@@ -183,14 +171,23 @@ namespace ResourcePRJ
                 {
                     mxmlFile = new FileInfo(di.FullName +
                         Path.DirectorySeparatorChar + mxmlFileName + ".mxml");
-                    mxmlFile.Create();
-                    FileStream fs = mxmlFile.OpenWrite();
+                    FileStream fs;
+                    try
+                    {
+                        fs = mxmlFile.Create();
+                    }
+                    catch
+                    {
+                        // Need to handle duplicating file names
+                        return null;
+                    }
                     UTF8Encoding encoding = new UTF8Encoding();
                     byte[] templateBytes = encoding.GetBytes(template);
                     fs.Write(templateBytes, 0, templateBytes.Length);
                     fs.Close();
                 }
             }
+            return mxmlFileName;
         }
 
         private static String NormalizeClassName(String resourceName)
@@ -205,14 +202,65 @@ namespace ResourcePRJ
                 ts = s[0].ToString().ToUpper() + s.Substring(1);
                 ret += ts;
             }
+            Regex re = new Regex("^\\d", RegexOptions.Compiled);
+            if (re.IsMatch(ret)) ret = "X" + ret;
             return ret;
         }
 
-        private static DirectoryInfo ResolvePackage(String path)
+        private static DirectoryInfo CreateRecursive(string path)
+        {
+            char[] separators = { Path.DirectorySeparatorChar };
+            string[] parts = path.Split(separators);
+            DirectoryInfo current = null;
+            DirectoryInfo[] existing = null;
+            
+            foreach (string s in parts)
+            {
+                if (current == null)
+                {
+                    current = new DirectoryInfo(s + Path.DirectorySeparatorChar);
+                    if (!current.Exists)
+                    {
+                        try
+                        {
+                            current.Create();
+                        }
+                        catch
+                        {
+                            Console.WriteLine("Cannot create directory " + s);
+                            return null;
+                        }
+                    }
+                }
+                else
+                {
+                    existing = current.GetDirectories(s, SearchOption.TopDirectoryOnly);
+                    if (existing != null && existing.Length > 0)
+                    {
+                        current = existing[0];
+                    }
+                    else
+                    {
+                        try
+                        {
+                            current = current.CreateSubdirectory(s + Path.DirectorySeparatorChar);
+                        }
+                        catch
+                        {
+                            Console.WriteLine("Cannot create directory " + s);
+                            return null;
+                        }
+                    }
+                }
+            }
+            return current;
+        }
+
+        private static DirectoryInfo ResolvePackage(String path, String relativeTo)
         {
             char[] separators = { '.' };
             String[] folders = path.Split(separators);
-            DirectoryInfo current = root;
+            DirectoryInfo current = new DirectoryInfo(relativeTo);
             DirectoryInfo[] existing = null;
             bool errorCreating = false;
             foreach (String di in folders)
