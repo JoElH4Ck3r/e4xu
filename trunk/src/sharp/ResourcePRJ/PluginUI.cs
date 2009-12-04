@@ -3,9 +3,16 @@ using System.Collections;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI;
 using PluginCore;
+using ResourcePRJ.Embeds;
+using ResourcePRJ.Enums;
+using System.IO;
 
 namespace ResourcePRJ
 {
+    public enum Mode
+    {
+        Img, Snd, Fnt, Swf, Svg, Fxg, Bin, Txt
+    }
 	public class PluginUI : UserControl
     {
         private TabControl navigator;
@@ -30,9 +37,6 @@ namespace ResourcePRJ
         private DataGridView fxgDG;
         private DataGridView stringsDG;
         private DataGridView binaryDG;
-        private DataGridViewTextBoxColumn fileIMG;
-        private DataGridViewTextBoxColumn packageIMG;
-        private DataGridViewTextBoxColumn assetIMG;
         private DataGridViewTextBoxColumn fileNameSND;
         private DataGridViewTextBoxColumn packageSND;
         private DataGridViewTextBoxColumn assetSND;
@@ -61,12 +65,38 @@ namespace ResourcePRJ
         private DataGridViewTextBoxColumn packageFXG;
         private DataGridViewTextBoxColumn assetFXG;
 		private PluginMain pluginMain;
-        
+        private DataGridViewTextBoxColumn fileIMG;
+        private DataGridViewTextBoxColumn packageIMG;
+        private DataGridViewTextBoxColumn assetIMG;
+
+        private BindingSource imgSource = new BindingSource();
+        private static string[] filters = new string[8]
+        { "Image files (*.jpg,*.jpeg,*.gif,*.png)|*.jpg;*.jpeg;*.gif;*.png",
+            "", "", "", "", "", "", "" };
+
+        private Mode mode = Mode.Img;
+
+        private ResourcePRJ.RSXProject project;
+
+        public RSXProject Project
+        {
+            set
+            {
+                project = value;
+                enabled = project != null;
+            }
+            get { return project; }
+        }
+
+        private bool enabled = false;
+
 		public PluginUI(PluginMain pluginMain)
 		{
 			this.InitializeComponent();
 			this.pluginMain = pluginMain;
             this.Show();
+            this.SetInitialValues();
+            this.SetupHandlers();
             //this.Resize += new EventHandler(PluginUI_Resize);
 		}
 
@@ -75,6 +105,67 @@ namespace ResourcePRJ
             this.navigator.Width = this.Width - 5;
         }
 
+        private void SetupHandlers()
+        {
+            this.addFile.Click += new EventHandler(addFile_Click);
+        }
+
+        void addFile_Click(object sender, EventArgs e)
+        {
+            if (!enabled) return;
+            string filter;
+            switch (mode)
+            {
+                case Mode.Img:
+                    filter = filters[0];
+                    break;
+                case Mode.Snd:
+                    filter = filters[0];
+                    break;
+                case Mode.Fnt:
+                    filter = filters[0];
+                    break;
+                case Mode.Swf:
+                    filter = filters[0];
+                    break;
+                case Mode.Svg:
+                    filter = filters[0];
+                    break;
+                case Mode.Fxg:
+                    filter = filters[0];
+                    break;
+                case Mode.Bin:
+                    filter = filters[0];
+                    break;
+                case Mode.Txt:
+                    filter = filters[0];
+                    break;
+                default:
+                    filter = filters[0];
+                    break;
+            }
+            OpenFileDialog fd = new OpenFileDialog();
+            fd.Multiselect = true;
+            fd.Filter = filter;
+            fd.InitialDirectory = project.Directory;
+            if (fd.ShowDialog() == DialogResult.OK)
+            {
+                if (fd.FileNames.Length > 0)
+                {
+                    foreach (string n in fd.FileNames)
+                    {
+                        this.imgSource.Add(new EmbedImg(n, "Image1", "com.example.assets.img"));
+                    }
+                    this.pluginMain.AddFiles(fd.FileNames);
+                }
+            }
+        }
+
+        private void SetInitialValues()
+        {
+            this.imgSource.Add(new EmbedImg("C:\\Temp\\Image004.jpg", "Image1", "com.example.assets.img"));
+            this.imagesDG.DataSource = this.imgSource;
+        }
 
 		#region Windows Forms Designer Generated Code
 
@@ -90,29 +181,11 @@ namespace ResourcePRJ
             this.imagesDG = new System.Windows.Forms.DataGridView();
             this.sounds = new System.Windows.Forms.TabPage();
             this.soundsDG = new System.Windows.Forms.DataGridView();
-            this.fonts = new System.Windows.Forms.TabPage();
-            this.swf = new System.Windows.Forms.TabPage();
-            this.svg = new System.Windows.Forms.TabPage();
-            this.fxg = new System.Windows.Forms.TabPage();
-            this.txt = new System.Windows.Forms.TabPage();
-            this.bin = new System.Windows.Forms.TabPage();
-            this.addFile = new System.Windows.Forms.Button();
-            this.addFolder = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.fileMask = new System.Windows.Forms.TextBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.fontsDG = new System.Windows.Forms.DataGridView();
-            this.swfDG = new System.Windows.Forms.DataGridView();
-            this.svgDG = new System.Windows.Forms.DataGridView();
-            this.fxgDG = new System.Windows.Forms.DataGridView();
-            this.stringsDG = new System.Windows.Forms.DataGridView();
-            this.binaryDG = new System.Windows.Forms.DataGridView();
             this.fileNameSND = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.packageSND = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.assetSND = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.fileIMG = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.packageIMG = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.assetIMG = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.fonts = new System.Windows.Forms.TabPage();
+            this.fontsDG = new System.Windows.Forms.DataGridView();
             this.fileFNT = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.packageFNT = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.assetFNT = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -127,32 +200,50 @@ namespace ResourcePRJ
             this.fontThickness = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.unicodeRange = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cff = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.swf = new System.Windows.Forms.TabPage();
+            this.swfDG = new System.Windows.Forms.DataGridView();
             this.fileSWF = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.symbol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.packageSWF = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.assetSWF = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.svg = new System.Windows.Forms.TabPage();
+            this.svgDG = new System.Windows.Forms.DataGridView();
             this.fileSVG = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.packageSVG = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.assetSVG = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.fxg = new System.Windows.Forms.TabPage();
+            this.fxgDG = new System.Windows.Forms.DataGridView();
             this.fileFXG = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.packageFXG = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.assetFXG = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.txt = new System.Windows.Forms.TabPage();
+            this.stringsDG = new System.Windows.Forms.DataGridView();
+            this.bin = new System.Windows.Forms.TabPage();
+            this.binaryDG = new System.Windows.Forms.DataGridView();
+            this.addFile = new System.Windows.Forms.Button();
+            this.addFolder = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.fileMask = new System.Windows.Forms.TextBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.fileIMG = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.packageIMG = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.assetIMG = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.navigator.SuspendLayout();
             this.images.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.imagesDG)).BeginInit();
             this.sounds.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.soundsDG)).BeginInit();
             this.fonts.SuspendLayout();
-            this.swf.SuspendLayout();
-            this.svg.SuspendLayout();
-            this.fxg.SuspendLayout();
-            this.txt.SuspendLayout();
-            this.bin.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fontsDG)).BeginInit();
+            this.swf.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.swfDG)).BeginInit();
+            this.svg.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.svgDG)).BeginInit();
+            this.fxg.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fxgDG)).BeginInit();
+            this.txt.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.stringsDG)).BeginInit();
+            this.bin.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.binaryDG)).BeginInit();
             this.SuspendLayout();
             // 
@@ -222,6 +313,27 @@ namespace ResourcePRJ
             this.soundsDG.Size = new System.Drawing.Size(786, 323);
             this.soundsDG.TabIndex = 0;
             // 
+            // fileNameSND
+            // 
+            this.fileNameSND.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.fileNameSND.DataPropertyName = "fileData";
+            this.fileNameSND.HeaderText = "File";
+            this.fileNameSND.Name = "fileNameSND";
+            // 
+            // packageSND
+            // 
+            this.packageSND.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.packageSND.DataPropertyName = "packageData";
+            this.packageSND.HeaderText = "Package";
+            this.packageSND.Name = "packageSND";
+            // 
+            // assetSND
+            // 
+            this.assetSND.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.assetSND.DataPropertyName = "assetData";
+            this.assetSND.HeaderText = "Asset Class";
+            this.assetSND.Name = "assetSND";
+            // 
             // fonts
             // 
             this.fonts.Controls.Add(this.fontsDG);
@@ -231,100 +343,6 @@ namespace ResourcePRJ
             this.fonts.TabIndex = 2;
             this.fonts.Text = "Fonts";
             this.fonts.UseVisualStyleBackColor = true;
-            // 
-            // swf
-            // 
-            this.swf.Controls.Add(this.swfDG);
-            this.swf.Location = new System.Drawing.Point(4, 23);
-            this.swf.Name = "swf";
-            this.swf.Size = new System.Drawing.Size(792, 323);
-            this.swf.TabIndex = 3;
-            this.swf.Text = "SWF";
-            this.swf.UseVisualStyleBackColor = true;
-            // 
-            // svg
-            // 
-            this.svg.Controls.Add(this.svgDG);
-            this.svg.Location = new System.Drawing.Point(4, 23);
-            this.svg.Name = "svg";
-            this.svg.Size = new System.Drawing.Size(792, 323);
-            this.svg.TabIndex = 4;
-            this.svg.Text = "SVG";
-            this.svg.UseVisualStyleBackColor = true;
-            // 
-            // fxg
-            // 
-            this.fxg.Controls.Add(this.fxgDG);
-            this.fxg.Location = new System.Drawing.Point(4, 23);
-            this.fxg.Name = "fxg";
-            this.fxg.Size = new System.Drawing.Size(792, 323);
-            this.fxg.TabIndex = 5;
-            this.fxg.Text = "FXG";
-            this.fxg.UseVisualStyleBackColor = true;
-            // 
-            // txt
-            // 
-            this.txt.Controls.Add(this.stringsDG);
-            this.txt.Location = new System.Drawing.Point(4, 23);
-            this.txt.Name = "txt";
-            this.txt.Size = new System.Drawing.Size(792, 323);
-            this.txt.TabIndex = 6;
-            this.txt.Text = "Strings";
-            this.txt.UseVisualStyleBackColor = true;
-            // 
-            // bin
-            // 
-            this.bin.Controls.Add(this.binaryDG);
-            this.bin.Location = new System.Drawing.Point(4, 23);
-            this.bin.Name = "bin";
-            this.bin.Size = new System.Drawing.Size(792, 323);
-            this.bin.TabIndex = 7;
-            this.bin.Text = "Binary";
-            this.bin.UseVisualStyleBackColor = true;
-            // 
-            // addFile
-            // 
-            this.addFile.Location = new System.Drawing.Point(13, 355);
-            this.addFile.Name = "addFile";
-            this.addFile.Size = new System.Drawing.Size(75, 23);
-            this.addFile.TabIndex = 2;
-            this.addFile.Text = "Add File";
-            this.addFile.UseVisualStyleBackColor = true;
-            // 
-            // addFolder
-            // 
-            this.addFolder.Location = new System.Drawing.Point(13, 381);
-            this.addFolder.Name = "addFolder";
-            this.addFolder.Size = new System.Drawing.Size(75, 23);
-            this.addFolder.TabIndex = 3;
-            this.addFolder.Text = "Add Folder";
-            this.addFolder.UseVisualStyleBackColor = true;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(360, 386);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(52, 13);
-            this.label1.TabIndex = 4;
-            this.label1.Text = "File Mask";
-            // 
-            // fileMask
-            // 
-            this.fileMask.Location = new System.Drawing.Point(94, 383);
-            this.fileMask.Name = "fileMask";
-            this.fileMask.Size = new System.Drawing.Size(260, 20);
-            this.fileMask.TabIndex = 5;
-            // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(419, 386);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(75, 17);
-            this.checkBox1.TabIndex = 6;
-            this.checkBox1.Text = "Recursive";
-            this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // fontsDG
             // 
@@ -349,106 +367,6 @@ namespace ResourcePRJ
             this.fontsDG.Name = "fontsDG";
             this.fontsDG.Size = new System.Drawing.Size(792, 320);
             this.fontsDG.TabIndex = 1;
-            // 
-            // swfDG
-            // 
-            this.swfDG.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.swfDG.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.fileSWF,
-            this.symbol,
-            this.packageSWF,
-            this.assetSWF});
-            this.swfDG.Dock = System.Windows.Forms.DockStyle.Top;
-            this.swfDG.Location = new System.Drawing.Point(0, 0);
-            this.swfDG.Name = "swfDG";
-            this.swfDG.Size = new System.Drawing.Size(792, 323);
-            this.swfDG.TabIndex = 0;
-            // 
-            // svgDG
-            // 
-            this.svgDG.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.svgDG.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.fileSVG,
-            this.packageSVG,
-            this.assetSVG});
-            this.svgDG.Dock = System.Windows.Forms.DockStyle.Top;
-            this.svgDG.Location = new System.Drawing.Point(0, 0);
-            this.svgDG.Name = "svgDG";
-            this.svgDG.Size = new System.Drawing.Size(792, 320);
-            this.svgDG.TabIndex = 0;
-            // 
-            // fxgDG
-            // 
-            this.fxgDG.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.fxgDG.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.fileFXG,
-            this.packageFXG,
-            this.assetFXG});
-            this.fxgDG.Dock = System.Windows.Forms.DockStyle.Top;
-            this.fxgDG.Location = new System.Drawing.Point(0, 0);
-            this.fxgDG.Name = "fxgDG";
-            this.fxgDG.Size = new System.Drawing.Size(792, 323);
-            this.fxgDG.TabIndex = 0;
-            // 
-            // stringsDG
-            // 
-            this.stringsDG.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.stringsDG.Dock = System.Windows.Forms.DockStyle.Top;
-            this.stringsDG.Location = new System.Drawing.Point(0, 0);
-            this.stringsDG.Name = "stringsDG";
-            this.stringsDG.Size = new System.Drawing.Size(792, 323);
-            this.stringsDG.TabIndex = 0;
-            // 
-            // binaryDG
-            // 
-            this.binaryDG.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.binaryDG.Dock = System.Windows.Forms.DockStyle.Top;
-            this.binaryDG.Location = new System.Drawing.Point(0, 0);
-            this.binaryDG.Name = "binaryDG";
-            this.binaryDG.Size = new System.Drawing.Size(792, 323);
-            this.binaryDG.TabIndex = 0;
-            // 
-            // fileNameSND
-            // 
-            this.fileNameSND.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.fileNameSND.DataPropertyName = "fileData";
-            this.fileNameSND.HeaderText = "File";
-            this.fileNameSND.Name = "fileNameSND";
-            // 
-            // packageSND
-            // 
-            this.packageSND.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.packageSND.DataPropertyName = "packageData";
-            this.packageSND.HeaderText = "Package";
-            this.packageSND.Name = "packageSND";
-            // 
-            // assetSND
-            // 
-            this.assetSND.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.assetSND.DataPropertyName = "assetData";
-            this.assetSND.HeaderText = "Asset Class";
-            this.assetSND.Name = "assetSND";
-            // 
-            // fileIMG
-            // 
-            this.fileIMG.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.fileIMG.DataPropertyName = "fileData";
-            this.fileIMG.HeaderText = "File";
-            this.fileIMG.Name = "fileIMG";
-            // 
-            // packageIMG
-            // 
-            this.packageIMG.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.packageIMG.DataPropertyName = "packageData";
-            this.packageIMG.HeaderText = "Package";
-            this.packageIMG.Name = "packageIMG";
-            // 
-            // assetIMG
-            // 
-            this.assetIMG.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.assetIMG.DataPropertyName = "assetData";
-            this.assetIMG.HeaderText = "Asset Class";
-            this.assetIMG.Name = "assetIMG";
             // 
             // fileFNT
             // 
@@ -548,6 +466,30 @@ namespace ResourcePRJ
             this.cff.HeaderText = "CFF";
             this.cff.Name = "cff";
             // 
+            // swf
+            // 
+            this.swf.Controls.Add(this.swfDG);
+            this.swf.Location = new System.Drawing.Point(4, 23);
+            this.swf.Name = "swf";
+            this.swf.Size = new System.Drawing.Size(792, 323);
+            this.swf.TabIndex = 3;
+            this.swf.Text = "SWF";
+            this.swf.UseVisualStyleBackColor = true;
+            // 
+            // swfDG
+            // 
+            this.swfDG.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.swfDG.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.fileSWF,
+            this.symbol,
+            this.packageSWF,
+            this.assetSWF});
+            this.swfDG.Dock = System.Windows.Forms.DockStyle.Top;
+            this.swfDG.Location = new System.Drawing.Point(0, 0);
+            this.swfDG.Name = "swfDG";
+            this.swfDG.Size = new System.Drawing.Size(792, 323);
+            this.swfDG.TabIndex = 0;
+            // 
             // fileSWF
             // 
             this.fileSWF.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
@@ -576,6 +518,29 @@ namespace ResourcePRJ
             this.assetSWF.HeaderText = "Asset Class";
             this.assetSWF.Name = "assetSWF";
             // 
+            // svg
+            // 
+            this.svg.Controls.Add(this.svgDG);
+            this.svg.Location = new System.Drawing.Point(4, 23);
+            this.svg.Name = "svg";
+            this.svg.Size = new System.Drawing.Size(792, 323);
+            this.svg.TabIndex = 4;
+            this.svg.Text = "SVG";
+            this.svg.UseVisualStyleBackColor = true;
+            // 
+            // svgDG
+            // 
+            this.svgDG.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.svgDG.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.fileSVG,
+            this.packageSVG,
+            this.assetSVG});
+            this.svgDG.Dock = System.Windows.Forms.DockStyle.Top;
+            this.svgDG.Location = new System.Drawing.Point(0, 0);
+            this.svgDG.Name = "svgDG";
+            this.svgDG.Size = new System.Drawing.Size(792, 320);
+            this.svgDG.TabIndex = 0;
+            // 
             // fileSVG
             // 
             this.fileSVG.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
@@ -593,6 +558,29 @@ namespace ResourcePRJ
             this.assetSVG.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.assetSVG.HeaderText = "Asset Class";
             this.assetSVG.Name = "assetSVG";
+            // 
+            // fxg
+            // 
+            this.fxg.Controls.Add(this.fxgDG);
+            this.fxg.Location = new System.Drawing.Point(4, 23);
+            this.fxg.Name = "fxg";
+            this.fxg.Size = new System.Drawing.Size(792, 323);
+            this.fxg.TabIndex = 5;
+            this.fxg.Text = "FXG";
+            this.fxg.UseVisualStyleBackColor = true;
+            // 
+            // fxgDG
+            // 
+            this.fxgDG.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.fxgDG.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.fileFXG,
+            this.packageFXG,
+            this.assetFXG});
+            this.fxgDG.Dock = System.Windows.Forms.DockStyle.Top;
+            this.fxgDG.Location = new System.Drawing.Point(0, 0);
+            this.fxgDG.Name = "fxgDG";
+            this.fxgDG.Size = new System.Drawing.Size(792, 323);
+            this.fxgDG.TabIndex = 0;
             // 
             // fileFXG
             // 
@@ -615,6 +603,109 @@ namespace ResourcePRJ
             this.assetFXG.HeaderText = "Asset Class";
             this.assetFXG.Name = "assetFXG";
             // 
+            // txt
+            // 
+            this.txt.Controls.Add(this.stringsDG);
+            this.txt.Location = new System.Drawing.Point(4, 23);
+            this.txt.Name = "txt";
+            this.txt.Size = new System.Drawing.Size(792, 323);
+            this.txt.TabIndex = 6;
+            this.txt.Text = "Strings";
+            this.txt.UseVisualStyleBackColor = true;
+            // 
+            // stringsDG
+            // 
+            this.stringsDG.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.stringsDG.Dock = System.Windows.Forms.DockStyle.Top;
+            this.stringsDG.Location = new System.Drawing.Point(0, 0);
+            this.stringsDG.Name = "stringsDG";
+            this.stringsDG.Size = new System.Drawing.Size(792, 323);
+            this.stringsDG.TabIndex = 0;
+            // 
+            // bin
+            // 
+            this.bin.Controls.Add(this.binaryDG);
+            this.bin.Location = new System.Drawing.Point(4, 23);
+            this.bin.Name = "bin";
+            this.bin.Size = new System.Drawing.Size(792, 323);
+            this.bin.TabIndex = 7;
+            this.bin.Text = "Binary";
+            this.bin.UseVisualStyleBackColor = true;
+            // 
+            // binaryDG
+            // 
+            this.binaryDG.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.binaryDG.Dock = System.Windows.Forms.DockStyle.Top;
+            this.binaryDG.Location = new System.Drawing.Point(0, 0);
+            this.binaryDG.Name = "binaryDG";
+            this.binaryDG.Size = new System.Drawing.Size(792, 323);
+            this.binaryDG.TabIndex = 0;
+            // 
+            // addFile
+            // 
+            this.addFile.Location = new System.Drawing.Point(13, 355);
+            this.addFile.Name = "addFile";
+            this.addFile.Size = new System.Drawing.Size(75, 23);
+            this.addFile.TabIndex = 2;
+            this.addFile.Text = "Add File";
+            this.addFile.UseVisualStyleBackColor = true;
+            // 
+            // addFolder
+            // 
+            this.addFolder.Location = new System.Drawing.Point(13, 381);
+            this.addFolder.Name = "addFolder";
+            this.addFolder.Size = new System.Drawing.Size(75, 23);
+            this.addFolder.TabIndex = 3;
+            this.addFolder.Text = "Add Folder";
+            this.addFolder.UseVisualStyleBackColor = true;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(360, 386);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(52, 13);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "File Mask";
+            // 
+            // fileMask
+            // 
+            this.fileMask.Location = new System.Drawing.Point(94, 383);
+            this.fileMask.Name = "fileMask";
+            this.fileMask.Size = new System.Drawing.Size(260, 20);
+            this.fileMask.TabIndex = 5;
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(419, 386);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(75, 17);
+            this.checkBox1.TabIndex = 6;
+            this.checkBox1.Text = "Recursive";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
+            // fileIMG
+            // 
+            this.fileIMG.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.fileIMG.DataPropertyName = "FileName";
+            this.fileIMG.HeaderText = "File";
+            this.fileIMG.Name = "fileIMG";
+            // 
+            // packageIMG
+            // 
+            this.packageIMG.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.packageIMG.DataPropertyName = "PackageName";
+            this.packageIMG.HeaderText = "Package";
+            this.packageIMG.Name = "packageIMG";
+            // 
+            // assetIMG
+            // 
+            this.assetIMG.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.assetIMG.DataPropertyName = "ClassName";
+            this.assetIMG.HeaderText = "Asset Class";
+            this.assetIMG.Name = "assetIMG";
+            // 
             // PluginUI
             // 
             this.Controls.Add(this.checkBox1);
@@ -631,16 +722,16 @@ namespace ResourcePRJ
             this.sounds.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.soundsDG)).EndInit();
             this.fonts.ResumeLayout(false);
-            this.swf.ResumeLayout(false);
-            this.svg.ResumeLayout(false);
-            this.fxg.ResumeLayout(false);
-            this.txt.ResumeLayout(false);
-            this.bin.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.fontsDG)).EndInit();
+            this.swf.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.swfDG)).EndInit();
+            this.svg.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.svgDG)).EndInit();
+            this.fxg.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.fxgDG)).EndInit();
+            this.txt.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.stringsDG)).EndInit();
+            this.bin.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.binaryDG)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -8,10 +8,11 @@ using ProjectManager.Projects;
 using System.IO;
 using System.Windows;
 using System.Windows.Forms;
+using ResourcePRJ.Enums;
 
 namespace ResourcePRJ
 {
-    class RSXProject : Project
+    public class RSXProject : Project
     {
         public RSXProject(string path)
             : base(path, new RSXOptions())
@@ -27,7 +28,7 @@ namespace ResourcePRJ
                     return Path.GetFileName(Path.GetDirectoryName(ProjectPath));
                 else
                     return Path.GetFileNameWithoutExtension(ProjectPath); 
-            } 
+            }
         }
 
         public override string Language { get { return "as3"; } }
@@ -47,6 +48,48 @@ namespace ResourcePRJ
                 error = "Description.MissingEntryPoint";
             else
                 error = null;
+        }
+
+        private string assetsPackage = "assets";
+
+        private string[] assetDirectories = new string[8]
+        {
+         "bin", "fnt", "fxg", "img", "snd", "svg", "swf", "txt"
+        };
+
+        public string GetAssetPath(AssetTypes type)
+        {
+            string asset;
+            switch (type)
+            {
+                default:
+                case AssetTypes.Bin:
+                    asset = Path.Combine(assetsPackage, assetDirectories[0]);
+                    break;
+                case AssetTypes.Fnt:
+                    asset = Path.Combine(assetsPackage, assetDirectories[1]);
+                    break;
+                case AssetTypes.Fxg:
+                    asset = Path.Combine(assetsPackage, assetDirectories[2]);
+                    break;
+                case AssetTypes.Img:
+                    asset = Path.Combine(assetsPackage, assetDirectories[3]);
+                    break;
+                case AssetTypes.Snd:
+                    asset = Path.Combine(assetsPackage, assetDirectories[4]);
+                    break;
+                case AssetTypes.Svg:
+                    asset = Path.Combine(assetsPackage, assetDirectories[5]);
+                    break;
+                case AssetTypes.Swf:
+                    asset = Path.Combine(assetsPackage, assetDirectories[6]);
+                    break;
+                case AssetTypes.Txt:
+                    asset = Path.Combine(assetsPackage, assetDirectories[7]);
+                    break;
+            }
+            Console.WriteLine("this.ProjectPath " + this.ProjectPath);
+            return Path.Combine(this.Directory, asset);
         }
 
         public override string GetInsertFileText(string inFile, string path, string export, string nodeType)
@@ -146,9 +189,14 @@ namespace ResourcePRJ
             Console.WriteLine("So far so good...");
             ProjectReader reader;
             reader = new RSXProjectReader(path);
+            RSXProject pr;
             try
             {
-                return reader.ReadProject() as RSXProject;
+                pr = reader.ReadProject() as RSXProject;
+                ResourcePRJ.PluginMain pl = 
+                    (ResourcePRJ.PluginMain)PluginBase.MainForm.FindPlugin("8e2e47fb-eb2f-4544-9aa2-efee0fb13393");
+                pl.EnableProjectView(pr);
+                return pr;
             }
             catch (System.Xml.XmlException exception)
             {
