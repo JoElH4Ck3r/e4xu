@@ -30,6 +30,11 @@ namespace ResourcePRJ.Resources
             //TraceManager.Add("ExportHTML GetString " + identifier);
             return resources.GetString(identifier);
         }
+
+        public static object GetResource(String identifier)
+        {
+            return resources.GetObject(identifier);
+        }
     }
 
 }

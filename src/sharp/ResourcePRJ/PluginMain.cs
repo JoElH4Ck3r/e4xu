@@ -15,6 +15,7 @@ using System.Text.RegularExpressions;
 using ProjectManager;
 using ProjectManager.Helpers;
 using ResourcePRJ.Enums;
+using Associations;
 
 namespace ResourcePRJ
 {
@@ -199,6 +200,27 @@ namespace ResourcePRJ
             sw.Close();
         }
 
+        public void CreateAssociation()
+        {
+            AF_FileAssociator assoc = new AF_FileAssociator(".as3rsx");
+
+            FileInfo icon = new FileInfo(Path.Combine(PathHelper.AppDir, "rsx.ico"));
+            Console.WriteLine("CreateAssociation " + icon.FullName);
+            if (!icon.Exists)
+            {
+                object ico = LocaleHelper.GetResource("RSXPluginIcon");
+                Console.WriteLine("Trying to find an icon " + ico);
+                Icon pluginIcon = (Icon)LocaleHelper.GetResource("RSXPluginIcon");
+                Console.WriteLine("Icon file found " + pluginIcon);
+                pluginIcon.Save(File.Open(icon.FullName, FileMode.Create));
+            }
+            assoc.Create("FlashDevelop",
+                "Resource Project for AS3",
+                new ProgramIcon(icon.FullName),
+                new ExecApplication(Path.Combine(PathHelper.AppDir, "FlashDevelop.exe")),
+                new OpenWithList(new string[] { "FlashDevelop" }));
+        }
+
         /// <summary>
         /// Adds the required event handlers
         /// </summary> 
@@ -231,6 +253,15 @@ namespace ResourcePRJ
                     break;
             }
             this.pluginDesc = LocaleHelper.GetString("Info.Description");
+            // TODO: test
+            try
+            {
+                this.CreateAssociation();
+            }
+            catch (Exception e)
+            {
+                Console.Write(e.Message);
+            }
         }
 
         /// <summary>
