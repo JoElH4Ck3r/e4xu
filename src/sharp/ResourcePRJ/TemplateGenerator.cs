@@ -4,6 +4,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
 using ResourcePRJ.Enums;
+using System.Xml;
+using System.Collections;
 
 namespace ResourcePRJ
 {
@@ -19,7 +21,7 @@ namespace ResourcePRJ
 
         public static String ProjectTemplate =
 @"<?xml version=""1.0"" encoding=""utf-8""?>
-<!-- %PN%.%FN%.mxml -->
+<!-- %PN%\\%FN%.mxml -->
 <fl:Sprite 
 	xmlns:mx=""http://www.adobe.com/2006/mxml""
 	xmlns:img=""%PN%.*""
@@ -32,12 +34,12 @@ namespace ResourcePRJ
 	xmlns:bin=""%PN%.*""
 	xmlns:fl=""flash.display.*""
 	>
-	<%NS%:%CN%/>
+	<!-- Entry point -->
 </fl:Sprite>";
 
         public static String ImgTemplate =
 @"<?xml version=""1.0"" encoding=""utf-8""?>
-<!-- %PN%.%FN%.mxml -->
+<!-- %PN%\\%FN%.mxml -->
 <fl:Bitmap xmlns:fl=""flash.display.*"" xmlns:mx=""http://www.adobe.com/2006/mxml"">
 	<mx:Metadata>
 		[Embed(source=""%embed%"")]
@@ -46,7 +48,7 @@ namespace ResourcePRJ
 
         public static String SndTemplate =
 @"<?xml version=""1.0"" encoding=""utf-8""?>
-<!-- %PN%.%FN%.mxml -->
+<!-- %PN%\\%FN%.mxml -->
 <fl:Sound xmlns:fl=""flash.media.*"" xmlns:mx=""http://www.adobe.com/2006/mxml"">
 	<mx:Metadata>
 		[Embed(source=""%embed%"")]
@@ -55,7 +57,7 @@ namespace ResourcePRJ
 
         public static String FntTemplate =
 @"<?xml version=""1.0"" encoding=""utf-8""?>
-<!-- %PN%.%FN%.mxml -->
+<!-- %PN%\\%FN%.mxml -->
 <fl:Font xmlns:fl=""flash.media.*"" xmlns:mx=""http://www.adobe.com/2006/mxml"">
 	<mx:Metadata>
 		[Embed(source=""%embed%"")]
@@ -64,7 +66,7 @@ namespace ResourcePRJ
 
         public static String SwfTemplate =
 @"<?xml version=""1.0"" encoding=""utf-8""?>
-<!-- %PN%.%FN%.mxml -->
+<!-- %PN%\\%FN%.mxml -->
 <fl:Sprite xmlns:fl=""flash.display.*"" xmlns:mx=""http://www.adobe.com/2006/mxml"">
 	<mx:Metadata>
 		[Embed(source=""%embed%"")]
@@ -79,7 +81,7 @@ namespace ResourcePRJ
 ";
         public static String TxtTemplate =
 @"<?xml version=""1.0"" encoding=""utf-8""?>
-<!-- %PN%.%FN%.mxml -->
+<!-- %PN%\\%FN%.mxml -->
 <fl:ByteArray xmlns:fl=""flash.utils.*"" xmlns:mx=""http://www.adobe.com/2006/mxml"">
 	<mx:Metadata>
 		[Embed(source=""%embed%"")]
@@ -88,12 +90,14 @@ namespace ResourcePRJ
 
         public static String BinTemplate =
 @"<?xml version=""1.0"" encoding=""utf-8""?>
-<!-- %PN%.%FN%.mxml -->
+<!-- %PN%\\%FN%.mxml -->
 <fl:ByteArray xmlns:fl=""flash.utils.*"" xmlns:mx=""http://www.adobe.com/2006/mxml"">
 	<mx:Metadata>
 		[Embed(source=""%embed%"")]
 	</mx:Metadata>
 </fl:ByteArray>";
+
+        public static String entry = "<%NS%:%CN%/>";
 
         private static List<FileInfo> imgFiles = new List<FileInfo>();
         private static List<FileInfo> sndFiles = new List<FileInfo>();
@@ -104,7 +108,96 @@ namespace ResourcePRJ
         private static List<FileInfo> txtFiles = new List<FileInfo>();
         private static List<FileInfo> binFiles = new List<FileInfo>();
 
+        private static NameTable namespaces = new NameTable();
+        private static Hashtable knownPackages;
+
+        private static XmlNamespaceManager nsManager;
+
         private static Regex resToClass = new Regex("\\W", RegexOptions.Compiled);
+
+        private static string[] defaultPrefices = new string[8]
+        {
+            "img", "snd", "fnt", "swf", "fxg", "svg", "txt", "bin"
+        };
+
+        private static string[] defaultURIs = new string[8]
+        {
+            "assets.img.*",
+            "assets.snd.*",
+            "assets.fnt.*",
+            "assets.swf.*",
+            "assets.fxg.*",
+            "assets.svg.*",
+            "assets.txt.*",
+            "assets.bin.*"
+        };
+
+        public static void AddNamespace(string prefix, string uri)
+        {
+            if (nsManager == null) nsManager = new XmlNamespaceManager(namespaces);
+            nsManager.AddNamespace(prefix, uri);
+        }
+
+        public static void PopulateKnownPackages(string[] prefices, string[] uris)
+        {
+            knownPackages = new Hashtable();
+            int i = prefices.Length;
+            while (i-- > 0)
+            {
+                knownPackages[prefices[i]] = uris[i];
+            }
+        }
+
+        public static string GetDefaultURI(AssetTypes type)
+        {
+            if (knownPackages == null)
+                PopulateKnownPackages(defaultPrefices, defaultURIs);
+            switch (type)
+            {
+                default:
+                case AssetTypes.Img: return defaultURIs[0];
+                case AssetTypes.Snd: return defaultURIs[1];
+                case AssetTypes.Fnt: return defaultURIs[2];
+                case AssetTypes.Swf: return defaultURIs[3];
+                case AssetTypes.Fxg: return defaultURIs[4];
+                case AssetTypes.Svg: return defaultURIs[5];
+                case AssetTypes.Txt: return defaultURIs[6];
+                case AssetTypes.Bin: return defaultURIs[7];
+            }
+        }
+
+        public static string GetDefaultPrefix(AssetTypes type)
+        {
+            if (knownPackages == null)
+                PopulateKnownPackages(defaultPrefices, defaultURIs);
+            switch (type)
+            {
+                default:
+                case AssetTypes.Img: return defaultPrefices[0];
+                case AssetTypes.Snd: return defaultPrefices[1];
+                case AssetTypes.Fnt: return defaultPrefices[2];
+                case AssetTypes.Swf: return defaultPrefices[3];
+                case AssetTypes.Fxg: return defaultPrefices[4];
+                case AssetTypes.Svg: return defaultPrefices[5];
+                case AssetTypes.Txt: return defaultPrefices[6];
+                case AssetTypes.Bin: return defaultPrefices[7];
+            }
+        }
+
+        public static void AddEntry(string entryName, string package, string uri,
+                                    FileInfo toFile, int position)
+        {
+            XmlTextReader reader = new XmlTextReader(toFile.OpenRead());
+            reader.Namespaces = true;
+            XmlDocument doc = new XmlDocument();
+            doc.Load(reader);
+            reader.Close();
+            XmlElement el = doc.CreateElement(package, entryName, uri);
+            doc.LastChild.AppendChild(el);
+            FileStream fs = toFile.OpenWrite();
+            doc.Save(fs);
+            fs.Close();
+        }
 
         public static string AddFile(FileInfo info, AssetTypes type, string copyTo)
         {

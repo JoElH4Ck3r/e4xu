@@ -10,6 +10,7 @@ using System.Drawing.Design;
 
 namespace ResourcePRJ
 {
+    [Serializable]
     public class RSXOptions : CompilerOptions
     {
 
@@ -50,8 +51,7 @@ namespace ResourcePRJ
         [LocalizedCategory("ProjectManager.Category.Advanced")]
         [DisplayName("Custom Path to Flex SDK")]
         [LocalizedDescription("ProjectManager.Description.CustomSDK")]
-        // TODO: Why can't I import this?
-        //[Editor(typeof(FolderNameEditor), typeof(UITypeEditor))]
+        [Editor(typeof(FolderNameEditor), typeof(UITypeEditor))]
         [DefaultValue("")]
         public string CustomSDK { get { return customSDK; } set { customSDK = value; } }
 

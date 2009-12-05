@@ -88,8 +88,19 @@ namespace ResourcePRJ
                     asset = Path.Combine(assetsPackage, assetDirectories[7]);
                     break;
             }
-            Console.WriteLine("this.ProjectPath " + this.ProjectPath);
-            return Path.Combine(this.Directory, asset);
+            return Path.Combine(this.GetCompileTargetRoot(), asset);
+        }
+
+        public string GetCompileTargetRoot()
+        {
+            foreach (string s in this.SourcePaths)
+            {
+                if (this.CompileTargets[0].IndexOf(s) > -1)
+                {
+                    return this.Directory + Path.DirectorySeparatorChar + s;
+                }
+            }
+            return this.Directory + Path.DirectorySeparatorChar + "rsx";
         }
 
         public override string GetInsertFileText(string inFile, string path, string export, string nodeType)

@@ -298,17 +298,24 @@ namespace ResourcePRJ
             }
         }
 
-        public void AddFiles(string[] files)
+        public void AddFiles(string[] files, AssetTypes ofType)
         {
             FileInfo fi;
+            string generatedName;
             foreach (string n in files)
             {
                 try
                 {
                     fi = new FileInfo(n);
                     Console.WriteLine("fi " + fi);
-                    TemplateGenerator.AddFile(new FileInfo(n),
-                        AssetTypes.Img, this.project.GetAssetPath(AssetTypes.Img));
+                    generatedName = TemplateGenerator.AddFile(new FileInfo(n),
+                        AssetTypes.Img, this.project.GetAssetPath(ofType));
+                    TemplateGenerator.AddEntry(generatedName,
+                        TemplateGenerator.GetDefaultPrefix(ofType),
+                        TemplateGenerator.GetDefaultURI(ofType),
+                        new FileInfo(this.project.Directory + 
+                            Path.DirectorySeparatorChar + 
+                            this.project.CompileTargets[0]), 0);
                 }
                 catch (Exception e)
                 {
