@@ -9,10 +9,6 @@ using System.IO;
 
 namespace ResourcePRJ
 {
-    public enum Mode
-    {
-        Img, Snd, Fnt, Swf, Svg, Fxg, Bin, Txt
-    }
 	public class PluginUI : UserControl
     {
         private TabControl navigator;
@@ -74,7 +70,7 @@ namespace ResourcePRJ
         { "Image files (*.jpg,*.jpeg,*.gif,*.png)|*.jpg;*.jpeg;*.gif;*.png",
             "", "", "", "", "", "", "" };
 
-        private Mode mode = Mode.Img;
+        private AssetTypes mode = AssetTypes.Img;
 
         private ResourcePRJ.RSXProject project;
 
@@ -116,28 +112,28 @@ namespace ResourcePRJ
             string filter;
             switch (mode)
             {
-                case Mode.Img:
+                case AssetTypes.Img:
                     filter = filters[0];
                     break;
-                case Mode.Snd:
+                case AssetTypes.Snd:
                     filter = filters[0];
                     break;
-                case Mode.Fnt:
+                case AssetTypes.Fnt:
                     filter = filters[0];
                     break;
-                case Mode.Swf:
+                case AssetTypes.Swf:
                     filter = filters[0];
                     break;
-                case Mode.Svg:
+                case AssetTypes.Svg:
                     filter = filters[0];
                     break;
-                case Mode.Fxg:
+                case AssetTypes.Fxg:
                     filter = filters[0];
                     break;
-                case Mode.Bin:
+                case AssetTypes.Bin:
                     filter = filters[0];
                     break;
-                case Mode.Txt:
+                case AssetTypes.Txt:
                     filter = filters[0];
                     break;
                 default:
@@ -156,7 +152,7 @@ namespace ResourcePRJ
                     {
                         this.imgSource.Add(new EmbedImg(n, "Image1", "com.example.assets.img"));
                     }
-                    this.pluginMain.AddFiles(fd.FileNames);
+                    this.pluginMain.AddFiles(fd.FileNames, mode);
                 }
             }
         }
