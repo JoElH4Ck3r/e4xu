@@ -18,9 +18,13 @@
 	<class>org.wvxvws.skins.StepperSkin</class>
 	<class>org.wvxvws.skins.CheckSkin</class>
 	<class>org.wvxvws.skins.OptionSkin</class>
+	<!-- Scroller -->
 	<class>org.wvxvws.skins.scroller.ScrollBodySkin</class>
 	<class>org.wvxvws.skins.scroller.ScrollHandleSkin</class>
 	<class>org.wvxvws.skins.scroller.ScrollMinSkin</class>
 	<class>org.wvxvws.skins.scroller.ScrollMaxSkin</class>
+	<!-- Bar -->
+	<class>org.wvxvws.skins.bar.BarBodySkin</class>
+	<class>org.wvxvws.skins.bar.BarHandleSkin</class>
   </include-classes>
 </flex-config>
