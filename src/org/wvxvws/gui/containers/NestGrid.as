@@ -14,6 +14,7 @@
 	import org.wvxvws.gui.renderers.Renderer;
 	import org.wvxvws.gui.ScrollPane;
 	import org.wvxvws.gui.skins.ISkin;
+	import org.wvxvws.skins.Skin;
 	import org.wvxvws.tools.ToolEvent;
 	
 	[Event(name="opened", type="org.wvxvws.gui.GUIEvent")]
@@ -331,6 +332,8 @@
 		protected var _includeText:Boolean;
 		protected var _headerProducer:ISkin;
 		protected var _scrollPane:ScrollPane = new ScrollPane();
+		// TODO: remove this dependency.
+		protected var _defaultRenderer:ISkin = new Skin(NestGridRenderer);
 		
 		//--------------------------------------------------------------------------
 		//
@@ -341,7 +344,7 @@
 		public function NestGrid() 
 		{
 			super();
-			super._rendererFactory = Renderer;
+			super._rendererSkin = new Skin(Renderer);
 			_headerRenderer = HeaderRenderer;
 			super.addEventListener(GUIEvent.OPENED, 
 									this.openedHandler, false, int.MAX_VALUE);
@@ -397,7 +400,7 @@
 				_dataProvider.*.(nodeKind() !== "text" || _includeText);
 			var dataLenght:int = dataList.length();
 			if (!dataLenght) return;
-			if (!_rendererFactory) return;
+			if (!_rendererSkin) return;
 			_currentItem = 0;
 			_removedChildren = new <DisplayObject>[];
 			var i:int;
@@ -434,8 +437,8 @@
 					col.y = _headerHeight + _padding.top;
 					col.gutter = _gutterV;
 					if (col === _nestColumn)
-						_nestColumn.rendererFactory = NestGridRenderer;
-					else col.rendererFactory = Renderer;
+						_nestColumn.rendererFactory = _defaultRenderer;
+					else col.rendererFactory = super._rendererSkin;
 					_scrollPane.addChild(col);
 					col.initialized(this, "column" + _columns.indexOf(col));
 					cumulativeX += col.width + _gutterH;

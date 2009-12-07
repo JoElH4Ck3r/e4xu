@@ -30,6 +30,8 @@ package org.wvxvws.gui.containers
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.renderers.Renderer;
+	import org.wvxvws.gui.skins.ISkin;
+	import org.wvxvws.skins.Skin;
 	
 	/**
 	* Table class.
@@ -56,14 +58,14 @@ package org.wvxvws.gui.containers
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
-		public function get rendererFactory():Class { return _rendererFactory; }
+		public function get rendererSkin():ISkin { return _rendererSkin; }
 		
-		public function set rendererFactory(value:Class):void 
+		public function set rendererSkin(value:ISkin):void 
 		{
-			if (_rendererFactory === value) return;
-			_rendererFactory = value;
-			super.invalidate("_rendererFactory", _rendererFactory, false);
-			if (super.hasEventListener(EventGenerator.getEventType("rendererFactory")))
+			if (_rendererSkin === value) return;
+			_rendererSkin = value;
+			super.invalidate("_rendererSkin", _rendererSkin, false);
+			if (super.hasEventListener(EventGenerator.getEventType("rendererSkin")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
@@ -124,6 +126,8 @@ package org.wvxvws.gui.containers
 		protected var _gutterH:int;
 		protected var _gutterV:int;
 		protected var _padding:Rectangle = new Rectangle();
+		// TODO: remove this dependancy
+		protected var _defaultRenderer:ISkin = new Skin(Renderer);
 		
 		//--------------------------------------------------------------------------
 		//
@@ -188,7 +192,7 @@ package org.wvxvws.gui.containers
 					col.x = cumulativeX;
 					col.y = _padding.top;
 					col.gutter = _gutterV;
-					col.rendererFactory = Renderer;
+					col.rendererFactory = _defaultRenderer;
 					super.addChild(col);
 					col.initialized(this, "column" + _columns.indexOf(col));
 					cumulativeX += col.width + _gutterH;

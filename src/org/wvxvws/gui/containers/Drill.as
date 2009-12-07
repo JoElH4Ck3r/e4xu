@@ -8,6 +8,8 @@
 	import org.wvxvws.gui.renderers.DrillRenderer;
 	import org.wvxvws.gui.renderers.IDrillRenderer;
 	import org.wvxvws.gui.renderers.IRenderer;
+	import org.wvxvws.gui.skins.ISkin;
+	import org.wvxvws.skins.Skin;
 	
 	[DefaultProperty("dataProvider")]
 	
@@ -17,9 +19,9 @@
 	 */
 	public class Drill extends Pane
 	{
-		public function get renderClasses():Vector.<Class> { return _renderClasses; }
+		public function get renderClasses():Vector.<ISkin> { return _renderClasses; }
 		
-		public function set renderClasses(value:Vector.<Class>):void 
+		public function set renderClasses(value:Vector.<ISkin>):void 
 		{
 			if (_renderClasses === value) return;
 			_renderClasses = value;
@@ -39,8 +41,8 @@
 		
 		public function get selectedChild():IDrillRenderer { return _selectedChild; }
 		
-		protected var _renderClasses:Vector.<Class> = 
-							new <Class>[DrillRenderer];
+		protected var _renderClasses:Vector.<ISkin> = 
+				new <ISkin>[new Skin(DrillRenderer)];
 		protected var _closedNodes:Vector.<XML> = new <XML>[];
 		protected var _closedChildren:Vector.<DisplayObject> = new <DisplayObject>[];
 		protected var _nextY:int;
@@ -146,7 +148,7 @@
 			{
 				node = allNodes[i];
 				depth = Math.min(this.getNodeDepth(node) - 1, _renderClasses.length - 1);
-				super._rendererFactory = _renderClasses[depth];
+				super._rendererSkin = _renderClasses[depth];
 				this.createChild(node);
 				i++;
 			}

@@ -90,7 +90,7 @@
 		protected var _dataProviderCopy:XML;
 		protected var _currentItem:int;
 		protected var _removedChildren:Vector.<DisplayObject>;
-		protected var _rendererFactory:Class;
+		protected var _rendererSkin:ISkin;
 		protected var _dispatchCreated:Boolean;
 		protected var _subContainers:Vector.<Pane>;
 		protected var _labelSkin:ISkin;
@@ -187,7 +187,7 @@
 		{
 			if (_dataProvider === null) return;
 			if (!_dataProvider.*.length()) return;
-			if (!_rendererFactory) return;
+			if (!_rendererSkin) return;
 			_currentItem = 0;
 			_removedChildren = new <DisplayObject>[];
 			var i:int;
@@ -216,7 +216,7 @@
 			else
 			{
 				_dispatchCreated = true;
-				child = new _rendererFactory() as DisplayObject;
+				child = _rendererSkin.produce(this, xml) as DisplayObject;
 			}
 			if (!child) return null;
 			if (!(child is IRenderer)) return null;
@@ -307,7 +307,7 @@
 									return;
 								}
 							}
-							invalidate("_dataProvider", _dataProvider, false);
+							super.invalidate("_dataProvider", _dataProvider, false);
 						}
 						break;
 					case "textSet":
@@ -327,7 +327,7 @@
 						break;
 			}
 			_dataProviderCopy = _dataProvider.copy();
-			dispatchEvent(new GUIEvent(GUIEvent.DATA_CHANGED));
+			super.dispatchEvent(new GUIEvent(GUIEvent.DATA_CHANGED));
 		}
 		
 		//--------------------------------------------------------------------------

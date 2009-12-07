@@ -29,6 +29,7 @@ package org.wvxvws.gui.containers
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.renderers.IRenderer;
+	import org.wvxvws.gui.skins.ISkin;
 	//}
 	
 	/**
@@ -67,13 +68,13 @@ package org.wvxvws.gui.containers
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>rendererFactoryChanged</code> event.
 		*/
-		public function get rendererFactory():Class { return _rendererFactory; }
+		public function get rendererFactory():ISkin { return _rendererSkin; }
 		
-		public function set rendererFactory(value:Class):void 
+		public function set rendererFactory(value:ISkin):void 
 		{
-			if (_rendererFactory === value) return;
-			_rendererFactory = value;
-			super.invalidate("_rendererFactory", _rendererFactory, false);
+			if (_rendererSkin === value) return;
+			_rendererSkin = value;
+			super.invalidate("_rendererSkin", _rendererSkin, false);
 			if (super.hasEventListener(EventGenerator.getEventType("rendererFactory")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -280,7 +281,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_dataProvider === null) return;
 			if (!_dataProvider.*.length()) return;
-			if (!_rendererFactory) return;
+			if (!_rendererSkin) return;
 			_currentItem = 0;
 			_removedChildren = new <DisplayObject>[];
 			var i:int;
