@@ -41,10 +41,13 @@ package org.wvxvws.gui.renderers
 		function set kind(value:String):void;
 		function get kind():String;
 		
-		function set clickHandler(value:Function):void;
-		
 		function set enabled(value:Boolean):void;
 		function get enabled():Boolean;
+		
+		function get clickHandler():Function;
+		function set clickHandler(value:Function):void;
+		
+		function get desiredWidth():int;
+		function set desiredWidth(value:int):void;
 	}
-	
 }

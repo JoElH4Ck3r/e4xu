@@ -6,15 +6,13 @@
 	import flash.geom.Rectangle;
 	import org.wvxvws.gui.skins.AbstractProducer;
 	import org.wvxvws.gui.skins.Drawings;
-	import org.wvxvws.gui.skins.ISkin;
-	import org.wvxvws.gui.skins.ISkinnable;
 	import org.wvxvws.gui.skins.SkinDefaults;
 	
 	/**
 	 * ButtonSkin skin.
 	 * @author wvxvw
 	 */
-	public class ButtonSkin extends AbstractProducer implements ISkin
+	public class ButtonSkin extends AbstractProducer
 	{
 		public static const UP_STATE:String = "upState";
 		public static const OVER_STATE:String = "overState";

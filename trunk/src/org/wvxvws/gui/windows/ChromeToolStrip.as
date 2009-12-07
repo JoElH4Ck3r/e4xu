@@ -37,6 +37,7 @@ package org.wvxvws.gui.windows
 	import org.wvxvws.gui.renderers.ToolStripRenderer;
 	import org.wvxvws.gui.skins.ISkin;
 	import org.wvxvws.managers.DragManager;
+	import org.wvxvws.skins.Skin;
 	import org.wvxvws.utils.KeyUtils;
 	//}
 	
@@ -183,7 +184,8 @@ package org.wvxvws.gui.windows
 		public function ChromeToolStrip()
 		{
 			super();
-			super._rendererFactory = ToolStripRenderer;
+			// TODO: remove this dependency
+			super._rendererSkin = new Skin(ToolStripRenderer);
 		}
 		
 		//--------------------------------------------------------------------------

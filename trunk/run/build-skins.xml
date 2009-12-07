@@ -14,10 +14,11 @@
   <include-classes>
 	<!-- SKINS -->
 	<class>org.wvxvws.skins.ButtonSkin</class>
-	<class>org.wvxvws.skins.LabelSkin</class>
-	<class>org.wvxvws.skins.StepperSkin</class>
 	<class>org.wvxvws.skins.CheckSkin</class>
+	<class>org.wvxvws.skins.LabelSkin</class>
+	<class>org.wvxvws.skins.MenuSkin</class>
 	<class>org.wvxvws.skins.OptionSkin</class>
+	<class>org.wvxvws.skins.StepperSkin</class>
 	<!-- Scroller -->
 	<class>org.wvxvws.skins.scroller.ScrollBodySkin</class>
 	<class>org.wvxvws.skins.scroller.ScrollHandleSkin</class>

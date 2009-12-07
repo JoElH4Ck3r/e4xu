@@ -396,6 +396,13 @@ package org.wvxvws.gui.renderers
 			if (_kind !== Menu.SEPARATOR) this.drawSelection(false);
 		}
 		
+		/* INTERFACE org.wvxvws.gui.renderers.IMenuRenderer */
+		
+		public function get clickHandler():Function { return _clickHandler; }
+		
+		public function set desiredWidth(value:int):void
+		{
+			// TODO: do we need this?
+		}
 	}
-	
 }

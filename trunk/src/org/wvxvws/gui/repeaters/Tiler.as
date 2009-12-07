@@ -228,11 +228,7 @@ package org.wvxvws.gui.repeaters
 		public function Tiler(host:IRepeaterHost = null)
 		{
 			super();
-			if (host)
-			{
-				_creationCallback = host.repeatCallback;
-				_host
-			}
+			if (host) _creationCallback = host.repeatCallback;
 			_timer.addEventListener(TimerEvent.TIMER, timerHandler);
 		}
 		

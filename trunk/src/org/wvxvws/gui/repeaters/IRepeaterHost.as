@@ -21,6 +21,8 @@
 
 package org.wvxvws.gui.repeaters 
 {
+	import org.wvxvws.gui.skins.ISkin;
+	
 	/**
 	 * IRepeaterHost interface.
 	 * @author wvxvw
@@ -28,6 +30,6 @@ package org.wvxvws.gui.repeaters
 	public interface IRepeaterHost 
 	{
 		function repeatCallback(currentItem:Object, index:int):Boolean;
+		function get factory():ISkin;
 	}
-	
 }

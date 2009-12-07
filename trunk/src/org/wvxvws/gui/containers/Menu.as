@@ -34,12 +34,16 @@ package org.wvxvws.gui.containers
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.layout.ILayoutClient;
 	import org.wvxvws.gui.renderers.IMenuRenderer;
-	import org.wvxvws.gui.renderers.MenuRenderer;
+	//import org.wvxvws.gui.renderers.MenuRenderer;
 	import org.wvxvws.gui.skins.ISkin;
+	import org.wvxvws.gui.skins.SkinManager;
+	import org.wvxvws.skins.Skin;
 	import org.wvxvws.utils.KeyUtils;
 	//}
 	
 	[DefaultProperty("dataProvider")]
+	
+	[Skin("org.wvxvws.skins.MenuSkin")]
 	
 	/**
 	* Menu class.
@@ -145,8 +149,10 @@ package org.wvxvws.gui.containers
 		
 		public function Menu()
 		{
+			var skins:Vector.<ISkin>;
 			super();
-			super._rendererFactory = MenuRenderer;
+			skins = SkinManager.getSkin(this);
+			if (skins && skins.length) super._rendererSkin = skins[0];
 			super.addEventListener(GUIEvent.OPENED, openedHandler);
 			super.addEventListener(MouseEvent.ROLL_OUT, rollOutHandler);
 			super.addEventListener(Event.ADDED_TO_STAGE, atsHandler);
@@ -277,10 +283,10 @@ package org.wvxvws.gui.containers
 				(child as ILayoutClient).validate(
 					(child as ILayoutClient).invalidProperties);
 			}
-			if (child is MenuRenderer)
+			if (child is IMenuRenderer)
 			{
-				(child as MenuRenderer).clickHandler = _itemClickHandler;
-				childWidth = (child as MenuRenderer).desiredWidth;
+				(child as IMenuRenderer).clickHandler = _itemClickHandler;
+				childWidth = (child as IMenuRenderer).desiredWidth;
 			}
 			else
 			{
