@@ -4,7 +4,7 @@
 	import flash.geom.Matrix;
 	import flash.utils.ByteArray;
 	import flash.utils.Endian;
-	import org.wvxvws.encoding.sound.MP3SoundData;
+	import org.wvxvws.encoding.sound.MP3StreamSoundData;
 	import org.wvxvws.encoding.tags.DefineSceneAndFrameLabelData;
 	import org.wvxvws.encoding.tags.DefineSound;
 	import org.wvxvws.encoding.tags.DefineVideoStream;
@@ -145,10 +145,8 @@
 			
 			var soundBlock:SoundStreamBlock = new SoundStreamBlock();
 			var soundHead:SoundStreamHead = FLVTranscoder.soundStreamHead;
-			var mp3Data:MP3SoundData = new MP3SoundData();
-			var soundFrames:Vector.<ByteArray> = FLVTranscoder.soundFrames;
+			var mp3Data:MP3StreamSoundData = new MP3StreamSoundData();
 			var hasSound:Boolean = soundHead !== null;
-			var seekSamples:Vector.<int> = FLVTranscoder.seekSamples;
 			
 			if (hasSound) swf.writeBytes(soundHead.compile());
 			
@@ -173,10 +171,10 @@
 				
 				if (hasSound)
 				{
-					mp3Data.data = soundFrames[i];
-					mp3Data.seekSamples = seekSamples[i];
+					mp3Data.data = FLVTranscoder.soundFrames[i];
+					mp3Data.seekSamples = FLVTranscoder.seekSamples[i];
+					mp3Data.sampleCount = FLVTranscoder.sampleCounter[i];
 					soundBlock.streamSoundData = mp3Data.write();
-					soundBlock.arcane = FLVTranscoder.sampleCounter[i];
 					swf.writeBytes(soundBlock.compile());
 				}
 				
@@ -292,6 +290,7 @@
 			input.writeByte(version);
 			input.writeUnsignedInt(fileLength);
 			writeFromString(frameRect, input);
+			trace("frameRate", frameRate, "frameCount", frameCount);
 			input.writeShort(frameRate);
 			input.writeShort(frameCount);
 			

@@ -3,6 +3,8 @@
 	import org.wvxvws.gui.renderers.MenuRenderer;
 	import org.wvxvws.gui.skins.AbstractProducer;
 	
+	// TODO: Remake MenuRenderer so we use only it instead of this skin.
+	
 	/**
 	 * MenuSkin skin.
 	 * @author wvxvw
