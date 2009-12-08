@@ -21,8 +21,6 @@
 		
 		public var streamSoundData:ByteArray;
 		
-		public var arcane:int;
-		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
@@ -80,7 +78,6 @@
 		{
 			this.streamSoundData.position = 0;
 			// TODO: This is needed, but no idea what this is...
-			super._data.writeShort(arcane);
 			super._data.writeBytes(this.streamSoundData);
 		}
 		
