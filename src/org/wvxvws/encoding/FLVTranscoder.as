@@ -474,7 +474,7 @@
 		private static function readScript(input:ByteArray, 
 												from:uint, lenght:uint):void
 		{
-			//trace("reading script", from, lenght);
+			trace("reading script", from, lenght);
 		}
 	}
 	
