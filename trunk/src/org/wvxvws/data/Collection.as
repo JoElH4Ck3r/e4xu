@@ -13,9 +13,6 @@
 	*/
 	public class Collection extends EventDispatcher implements IMXMLObject
 	{
-		protected var _document:Object;
-		protected var _id:String;
-		protected var _source:Array = [];
 		//--------------------------------------------------------------------------
 		//
 		//  Public properties
@@ -27,6 +24,10 @@
 		//  Protected properties
 		//
 		//--------------------------------------------------------------------------
+		
+		protected var _document:Object;
+		protected var _id:String;
+		protected var _source:Array = [];
 		
 		//--------------------------------------------------------------------------
 		//
@@ -69,7 +70,7 @@
 		public function push(...rest):int
 		{
 			var ret:int = _source.unshift.apply(_source, rest);
-			dispatchEvent(new DataChangeEvent(DataChangeEvent.DATA_CHANGE, 
+			super.dispatchEvent(new DataChangeEvent(DataChangeEvent.DATA_CHANGE, 
 										DataChangeEvent.PUSH, rest));
 			return ret;
 		}
@@ -77,7 +78,7 @@
 		public function unshift(...rest):int
 		{
 			var ret:int = _source.unshift.apply(_source, rest);
-			dispatchEvent(new DataChangeEvent(DataChangeEvent.DATA_CHANGE, 
+			super.dispatchEvent(new DataChangeEvent(DataChangeEvent.DATA_CHANGE, 
 										DataChangeEvent.UNSHIFT, rest));
 			return ret;
 		}
@@ -86,7 +87,7 @@
 		{
 			var ret:Array = 
 				_source.splice.apply(_source, [index, quantity].concat(rest));
-			dispatchEvent(new DataChangeEvent(DataChangeEvent.DATA_CHANGE, 
+			super.dispatchEvent(new DataChangeEvent(DataChangeEvent.DATA_CHANGE, 
 					DataChangeEvent.SPLICE, [index, quantity].concat(rest)));
 			return ret;
 		}
@@ -94,7 +95,7 @@
 		public function pop():*
 		{
 			var ret:* = _source.pop();
-			dispatchEvent(new DataChangeEvent(DataChangeEvent.DATA_CHANGE, 
+			super.dispatchEvent(new DataChangeEvent(DataChangeEvent.DATA_CHANGE, 
 										DataChangeEvent.POP, ret));
 			return ret;
 		}
@@ -102,7 +103,7 @@
 		public function shift():*
 		{
 			var ret:* = _source.shift();
-			dispatchEvent(new DataChangeEvent(DataChangeEvent.DATA_CHANGE, 
+			super.dispatchEvent(new DataChangeEvent(DataChangeEvent.DATA_CHANGE, 
 										DataChangeEvent.SHIFT, ret));
 			return ret;
 		}
@@ -112,20 +113,20 @@
 		public function setItemAt(index:int, item:*):void
 		{
 			_source[index] = item;
-			dispatchEvent(new DataChangeEvent(DataChangeEvent.DATA_CHANGE, 
+			super.dispatchEvent(new DataChangeEvent(DataChangeEvent.DATA_CHANGE, 
 								DataChangeEvent.REFRESH, _source[index]));
 		}
 		
 		public function refresh():void
 		{
-			dispatchEvent(new DataChangeEvent(DataChangeEvent.DATA_CHANGE, 
+			super.dispatchEvent(new DataChangeEvent(DataChangeEvent.DATA_CHANGE, 
 										DataChangeEvent.REFRESH, null));
 		}
 		
 		public function sort(helper:Function = null):Array
 		{
 			var ret:Array = _source.sort(helper);
-			dispatchEvent(new DataChangeEvent(DataChangeEvent.DATA_CHANGE, 
+			super.dispatchEvent(new DataChangeEvent(DataChangeEvent.DATA_CHANGE, 
 										DataChangeEvent.SORT, ret));
 			return ret;
 		}
