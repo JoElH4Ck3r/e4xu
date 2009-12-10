@@ -573,7 +573,7 @@
 			if (!(event.target is IRenderer)) return;
 			_selectedChild = event.target as IRenderer;
 			event.stopImmediatePropagation();
-			_selectedItem = _selectedChild.data;
+			_selectedItem = _selectedChild.data as XML;
 			if (lastSelected && lastSelected !== _selectedChild && 
 				(lastSelected as Object).hasOwnProperty("selected"))
 			{

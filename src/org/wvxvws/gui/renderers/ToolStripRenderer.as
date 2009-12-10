@@ -75,9 +75,9 @@ package org.wvxvws.gui.renderers
 			this.invalidate("_labelSkin", _data, false);
 		}
 		
-		public function get data():XML { return _data; }
+		public function get data():Object { return _data; }
 		
-		public function set data(value:XML):void
+		public function set data(value:Object):void
 		{
 			if (isValid && _data === value) return;
 			_data = value;
@@ -119,7 +119,7 @@ package org.wvxvws.gui.renderers
 		//
 		//--------------------------------------------------------------------------
 		
-		protected var _data:XML;
+		protected var _data:Object;
 		protected var _labelSkin:ISkin;
 		protected var _validator:LayoutValidator;
 		protected var _layoutParent:ILayoutClient;

@@ -55,12 +55,12 @@ package org.wvxvws.gui.renderers
 		public function get isValid():Boolean
 		{
 			if (!_data) return false;
-			return _field.text == _data.toXMLString();
+			return _field.text == _data.toString();
 		}
 		
-		public function get data():XML { return _data; }
+		public function get data():Object { return _data; }
 		
-		public function set data(value:XML):void 
+		public function set data(value:Object):void 
 		{
 			if (isValid && _data === value) return;
 			_data = value;
@@ -98,7 +98,7 @@ package org.wvxvws.gui.renderers
 		//
 		//--------------------------------------------------------------------------
 		
-		protected var _data:XML;
+		protected var _data:Object;
 		protected var _field:TextField = new TextField();
 		protected var _document:Object;
 		protected var _id:String;
@@ -157,12 +157,13 @@ package org.wvxvws.gui.renderers
 			_field.defaultTextFormat = _textFormat;
 			if (_labelSkin) 
 				_field.text = _labelSkin.produce(_data) as String;
-			else _field.text = _data.localName();
+			else _field.text = _data.toString();
 			this.drawBackground();
 		}
 		
 		protected function drawBackground():void
 		{
+			trace("drawBackground", _field.height, _field.text);
 			var g:Graphics = super.graphics;
 			g.clear();
 			g.beginFill(_backgroundColor, _backgroundAlpha);

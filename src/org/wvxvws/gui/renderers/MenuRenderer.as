@@ -118,9 +118,9 @@ package org.wvxvws.gui.renderers
 			this.invalidate("_enabled", _enabled, false);
 		}
 		
-		public override function get data():XML { return _data; }
+		public override function get data():Object { return _data; }
 		
-		public override function set data(value:XML):void
+		public override function set data(value:Object):void
 		{
 			_hasChildNodes = false;
 			if (value) _hasChildNodes = value.hasComplexContent();
@@ -285,7 +285,7 @@ package org.wvxvws.gui.renderers
 			_field.y = Math.max((_height - _field.height) >> 1, 0);
 			if (_labelSkin) 
 				_field.text = _labelSkin.produce(_data) as String;
-			else _field.text = _data.localName().toString();
+			else _field.text = _data.toString();
 			
 			this.renderIcon();
 			this.renderHotKeys();

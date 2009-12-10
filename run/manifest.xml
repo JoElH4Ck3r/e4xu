@@ -46,6 +46,7 @@
 	<!-- CONTAINERS -->
 	<component id="Column" class="org.wvxvws.gui.containers.Column"/>
 	<component id="Drill" class="org.wvxvws.gui.containers.Drill"/>
+	<component id="List" class="org.wvxvws.gui.containers.List"/>
 	<component id="Nest" class="org.wvxvws.gui.containers.Nest"/>
 	<component id="Table" class="org.wvxvws.gui.containers.Table"/>
 	<component id="TiledPanel" class="org.wvxvws.gui.containers.TiledPanel"/>
@@ -70,5 +71,5 @@
 	<!-- SKINS -->
 	<component id="TextFormatMXML" class="org.wvxvws.gui.skins.TextFormatMXML"/>
 	<!-- DATA -->
-	<component id="Collection" class="org.wvxvws.data.Collection"/>
+	<component id="Collection" class="org.wvxvws.data.DataSet"/>
 </componentPackage>

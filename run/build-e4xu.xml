@@ -56,6 +56,7 @@
 	<!-- CONTAINERS -->
 	<class>org.wvxvws.gui.containers.Column</class>
 	<class>org.wvxvws.gui.containers.Drill</class>
+	<class>org.wvxvws.gui.containers.List</class>
 	<!-- FIXME
 		<class>org.wvxvws.gui.containers.Nest</class>
 	-->
@@ -92,6 +93,6 @@
 	<!-- SKINS -->
 	<class>org.wvxvws.gui.skins.TextFormatMXML</class>
 	<!-- DATA -->
-	<class>org.wvxvws.data.Collection</class>
+	<class>org.wvxvws.data.DataSet</class>
   </include-classes>
 </flex-config>

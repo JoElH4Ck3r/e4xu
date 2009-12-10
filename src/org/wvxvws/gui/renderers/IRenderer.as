@@ -36,8 +36,8 @@ package org.wvxvws.gui.renderers
 		
 		function set labelSkin(value:ISkin):void;
 		
-		function get data():XML;
-		function set data(value:XML):void;
+		function get data():Object;
+		function set data(value:Object):void;
 		
 	}
 	

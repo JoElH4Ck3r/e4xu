@@ -32,7 +32,6 @@
 			{
 				_ihost = host;
 				_creationCallback = host.repeatCallback;
-				_factory = host.factory;
 			}
 			_event = new RepeaterEvent(RepeaterEvent.REPEAT, this);
 		}
@@ -42,18 +41,14 @@
 		public function initialized(document:Object, id:String):void
 		{
 			_ihost = document as IRepeaterHost;
-			if (_ihost)
-			{
-				_ihost = host;
-				_creationCallback = host.repeatCallback;
-				_factory = _ihost.factory;
-			}
+			if (_ihost) _creationCallback = _ihost.repeatCallback;
 			_id = id;
 		}
 		
-		public function begin():void
+		public function begin(at:int):void
 		{
-			this._index = -1;
+			this._index = at - 1;
+			_factory = _ihost.factory;
 			var dispatch:Boolean = super.hasEventListener(RepeaterEvent.REPEAT);
 			do
 			{
@@ -61,7 +56,7 @@
 				this._currentItem = _factory.produce(_ihost, this._index);
 				if (dispatch) super.dispatchEvent(_event);
 			}
-			while (_creationCallback(obj, this._index));
+			while (_creationCallback(this._currentItem, this._index));
 		}
 	}
 }

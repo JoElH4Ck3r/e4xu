@@ -203,7 +203,7 @@
 			if (!(event.target is IDrillRenderer)) return;
 			_selectedChild = event.target as IDrillRenderer;
 			event.stopImmediatePropagation();
-			_selectedItem = _selectedChild.data;
+			_selectedItem = _selectedChild.data as XML;
 			if (lastSelected && lastSelected !== _selectedChild && 
 				(lastSelected as Object).hasOwnProperty("selected"))
 			{
