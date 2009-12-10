@@ -31,11 +31,11 @@ package org.wvxvws.gui.skins
 }}}
 When implementing skin you should write the `produce()` function in a way, it will return the type of the object, you are going to use in the hosting component. 
 The `host` property is populated when `SkinManager` creates the skin. In common case scenario you don't call `new MySkinClass()`, however, if you do so, keep in mind that some skins may require the `host` property to be non-null or even typed to the class of the component skinned by this skin.
-In common case scenario `produce` function will either return the reference to this skin, or create a clone of this skin, however, these are not the only options.
+In common case scenario `produce()` function will either return the reference to this skin, or create a clone of this skin, however, these are not the only options.
 
 == ISkinnable interface ==
 {{{
-ackage org.wvxvws.gui.skins 
+package org.wvxvws.gui.skins 
 {
 	public interface ISkinnable 
 	{
