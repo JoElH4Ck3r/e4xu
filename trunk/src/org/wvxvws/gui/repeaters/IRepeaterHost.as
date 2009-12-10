@@ -31,5 +31,6 @@ package org.wvxvws.gui.repeaters
 	{
 		function repeatCallback(currentItem:Object, index:int):Boolean;
 		function get factory():ISkin;
+		function get pool():Vector.<Object>;
 	}
 }

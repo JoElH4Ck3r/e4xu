@@ -36,28 +36,28 @@
 			_source = new c();
 		}
 		
-		public static function dataSetFromXML(from:XML):DataSet
+		public static function fromXML(from:XML):DataSet
 		{
 			var ds:DataSet = new DataSet(XML);
 			from.*.(ds.add(valueOf()));
 			return ds;
 		}
 		
-		public static function dataSetFromXMLList(from:XMLList):DataSet
+		public static function fromXMLList(from:XMLList):DataSet
 		{
 			var ds:DataSet = new DataSet(XML);
 			from.(ds.add(valueOf()));
 			return ds;
 		}
 		
-		public static function dataSetFromArray(from:Array):DataSet
+		public static function fromArray(from:Array):DataSet
 		{
 			var ds:DataSet = new DataSet(Object);
 			for each (var o:Object in from) ds.add(o);
 			return ds;
 		}
 		
-		public static function dataSetFromVector(from:Object):DataSet
+		public static function fromVector(from:Object):DataSet
 		{
 			var type:Class;
 			var ts:String = describeType(from).@name;
@@ -74,20 +74,18 @@
 		{
 			if (index < 0) _source.push(item);
 			else _source.splice(index, 0, item);
-			if (super.hasEventListener(DataChangeEvent.ADD))
+			if (super.hasEventListener(SetEvent.ADD))
 			{
-				super.dispatchEvent(
-					new DataChangeEvent(DataChangeEvent.ADD, item, index));
+				super.dispatchEvent(new SetEvent(SetEvent.ADD, item, index));
 			}
 		}
 		
 		public function put(item:Object, index:int):void
 		{
 			_source[index] = item;
-			if (super.hasEventListener(DataChangeEvent.CHANGE))
+			if (super.hasEventListener(SetEvent.CHANGE))
 			{
-				super.dispatchEvent(
-					new DataChangeEvent(DataChangeEvent.CHANGE, item, index));
+				super.dispatchEvent(new SetEvent(SetEvent.CHANGE, item, index));
 			}
 		}
 		
@@ -95,10 +93,9 @@
 		{
 			var i:int = _source.indexOf(item);
 			_source.splice(i, 1);
-			if (super.hasEventListener(DataChangeEvent.REMOVE))
+			if (super.hasEventListener(SetEvent.REMOVE))
 			{
-				super.dispatchEvent(
-					new DataChangeEvent(DataChangeEvent.REMOVE, item, i));
+				super.dispatchEvent(new SetEvent(SetEvent.REMOVE, item, i));
 			}
 		}
 		
@@ -114,10 +111,9 @@
 		public function sort(on:Function):void
 		{
 			_source.sort(on);
-			if (super.hasEventListener(DataChangeEvent.SORT))
+			if (super.hasEventListener(SetEvent.SORT))
 			{
-				super.dispatchEvent(
-					new DataChangeEvent(DataChangeEvent.SORT, null));
+				super.dispatchEvent(new SetEvent(SetEvent.SORT, null));
 			}
 		}
 	}

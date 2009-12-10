@@ -10,15 +10,16 @@
 	{
 		public static const REPEAT:String = "repeat";
 		
-		public function get index():IRepeater { return _repeater.index; }
+		public function get index():int { return _repeater.index; }
 		
-		public function get currentItem():IRepeater { return _repeater.currentItem; }
+		public function get currentItem():Object { return _repeater.currentItem; }
 		
 		private var _repeater:IRepeater;
 		
 		public function RepeaterEvent(type:String, repeater:IRepeater) 
 		{ 
 			super(type);
+			_repeater = repeater;
 		} 
 		
 		public override function clone():Event { return this; } 

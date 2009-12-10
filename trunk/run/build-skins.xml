@@ -16,6 +16,7 @@
 	<class>org.wvxvws.skins.ButtonSkin</class>
 	<class>org.wvxvws.skins.CheckSkin</class>
 	<class>org.wvxvws.skins.LabelSkin</class>
+	<class>org.wvxvws.skins.ListSkin</class>
 	<class>org.wvxvws.skins.MenuSkin</class>
 	<class>org.wvxvws.skins.OptionSkin</class>
 	<class>org.wvxvws.skins.StepperSkin</class>
@@ -27,5 +28,7 @@
 	<!-- Bar -->
 	<class>org.wvxvws.skins.bar.BarBodySkin</class>
 	<class>org.wvxvws.skins.bar.BarHandleSkin</class>
+	<!-- Renderers -->
+	<class>org.wvxvws.skins.renderers.ListRendererSkin</class>
   </include-classes>
 </flex-config>

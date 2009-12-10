@@ -34,7 +34,6 @@ package org.wvxvws.gui.containers
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.layout.ILayoutClient;
 	import org.wvxvws.gui.renderers.IMenuRenderer;
-	//import org.wvxvws.gui.renderers.MenuRenderer;
 	import org.wvxvws.gui.skins.ISkin;
 	import org.wvxvws.gui.skins.SkinManager;
 	import org.wvxvws.skins.Skin;
@@ -350,7 +349,7 @@ package org.wvxvws.gui.containers
 			_childMenu.borderWidth = _borderWidth;
 			_childMenu.borderColor = _borderColor;
 			_childMenu.labelSkin = _labelSkin;
-			_childMenu.dataProvider = _openedItem.data;
+			_childMenu.dataProvider = _openedItem.data as XML;
 			_childMenu.x = (_openedItem as DisplayObject).x + 
 							(_openedItem as DisplayObject).width;
 			_childMenu.y = (_openedItem as DisplayObject).y;

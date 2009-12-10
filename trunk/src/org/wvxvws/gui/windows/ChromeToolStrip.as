@@ -305,7 +305,8 @@ package org.wvxvws.gui.windows
 			var list:XMLList;
 			var i:int;
 			var j:int;
-			if (_activeRenderer && _activeRenderer.data) node = _activeRenderer.data;
+			if (_activeRenderer && _activeRenderer.data)
+				node = _activeRenderer.data as XML;
 			if (_dataProvider)
 			{
 				list = _dataProvider.*;
@@ -337,7 +338,8 @@ package org.wvxvws.gui.windows
 			var list:XMLList;
 			var i:int;
 			var j:int;
-			if (_activeRenderer && _activeRenderer.data) node = _activeRenderer.data;
+			if (_activeRenderer && _activeRenderer.data)
+				node = _activeRenderer.data as XML;
 			if (_dataProvider)
 			{
 				list = _dataProvider.*;

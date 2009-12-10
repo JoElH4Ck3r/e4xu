@@ -8,6 +8,6 @@
 	{
 		function get index():int;
 		function get currentItem():Object;
-		function begin():void;
+		function begin(at:int):void;
 	}
 }

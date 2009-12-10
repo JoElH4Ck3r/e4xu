@@ -21,7 +21,8 @@
 		public override function produce(inContext:Object, ...args):Object
 		{
 			if (_classFactory) return new _classFactory();
-			else if (_functionFactory !== null) return _classFactory(inContext, args);
+			else if (_functionFactory !== null)
+				return _functionFactory(inContext, args);
 			return null;
 		}
 	}
