@@ -23,6 +23,7 @@
 	  </exec>
 	  <property file="${basedir}/revision.properties" />
 	</target>
+	
 	<!-- delete and recreate the DEPLOY dir -->
 	<target name="init" depends="rev">
 		<delete dir="${DEPLOY_DIR}" />
@@ -55,7 +56,7 @@
 	</target>
 	
 	<!-- Build e4xu.swc -->
-		<target name="e4xuSWC" depends="frameworkSWC">
+	<target name="e4xuSWC" depends="frameworkSWC">
 		<compc output="${LIBS_DIR}/e4xu${TODAY}-${RV}.swc" 
 			debug="${DEBUGGING}">
 	        <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
@@ -67,7 +68,7 @@
 	</target>
 	
 	<!-- Build skins.swc -->
-		<target name="skinsSWC" depends="e4xuSWC">
+	<target name="skinsSWC" depends="e4xuSWC">
 		<compc output="${LIBS_DIR}/skins/skins${TODAY}-${RV}.swc" 
 			debug="${DEBUGGING}">
 	        <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>

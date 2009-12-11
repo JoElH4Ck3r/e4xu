@@ -6,6 +6,7 @@
 	import mx.core.IMXMLObject;
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
+	import org.wvxvws.binding.EventGenerator;
 	//}
 	
 	[DefaultProperty("handlers")]
@@ -39,7 +40,7 @@
 		
 		public function set link(value:String):void 
 		{
-			if (_link && _link.id == value) return;
+			if (_link && _link.id === value) return;
 			var vm:Vector.<Map> = Map.getMaps(_domain);
 			for each (var m:Map in vm)
 			{
@@ -47,8 +48,9 @@
 				if (_link) break;
 			}
 			if (!_link) throw new Error("Cannot resolve the link for: " + value);
-			_link.addEventListener(value, linkHandler);
-			super.dispatchEvent(new Event("linkChanged"));
+			this.addHandlers();
+			if (super.hasEventListener(EventGenerator.getEventType("link")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -62,25 +64,15 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>handlersChanged</code> event.
 		*/
-		public function get handlers():Vector.<Handler> { return _handlers.concat(); }
+		public function get handlers():Vector.<Handler> { return _handlers; }
 		
 		public function set handlers(value:Vector.<Handler>):void 
 		{
-			if (_handlers == value) return;
-			var v:Vector.<Function>;
-			var vh:Vector.<Function>;
-			for each (var f:Handler in value)
-			{
-				if (!_handlers.hasOwnProperty(f.type))
-					_handlers[f.type] = new <Function>[];
-				v = _handlers[f.type];
-				vh = f.handlers;
-				for each (var h:Function in vh)
-				{
-					if (v.indexOf(h) < 0) v.push(h);
-				}
-			}
-			super.dispatchEvent(new Event("handlersChanged"));
+			if (_handlers === value) return;
+			_handlers = value;
+			if (_link) this.addHandlers();
+			if (super.hasEventListener(EventGenerator.getEventType("handlers")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		public function get dispatcher():IEventDispatcher
@@ -100,7 +92,7 @@
 		protected var _link:Link;
 		protected var _document:Object;
 		protected var _id:String;
-		protected var _handlers:Object = { };
+		protected var _handlers:Vector.<Handler>;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -138,11 +130,17 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		protected function linkHandler(event:MappingEvent):void 
+		protected function addHandlers():void
 		{
-			var type:String = event.originalEvent.type;
-			var v:Vector.<Function> = _handlers[type];
-			for each (var f:Function in v) f(event.originalEvent);
+			var s:String;
+			var v:Vector.<Function>;
+			var f:Function;
+			for each (var h:Handler in _handlers)
+			{
+				v = h.handlers;
+				s = h.type;
+				for each (f in v) _link.addEventListener(s, f);
+			}
 		}
 		
 		//--------------------------------------------------------------------------

@@ -5,6 +5,7 @@
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
 	import mx.core.IMXMLObject;
+	import org.wvxvws.binding.EventGenerator;
 	//}
 	
 	[DefaultProperty("eventTypes")]
@@ -22,6 +23,9 @@
 		//  Public properties
 		//
 		//--------------------------------------------------------------------------
+		
+		public static const DISPATCHER:String = "dispatcher";
+		public static const EVENT_TYPES:String = "eventTypes";
 		
 		public function get id():String { return _id; }
 		
@@ -42,11 +46,9 @@
 		{
 			if (_dispatcher == value) return;
 			_dispatcher = value;
-			for each (var s:String in _eventTypes)
-			{
-				_dispatcher.addEventListener(s, omniListener);
-			}
-			super.dispatchEvent(new Event("dispatcherChanged"));
+			if (_dispatcher) this.addUnamangedHandlers();
+			if (super.hasEventListener(EventGenerator.getEventType(DISPATCHER)))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -70,12 +72,13 @@
 			{
 				for each (s in _eventTypes)
 				{
-					_dispatcher.removeEventListener(s, omniListener);
+					_dispatcher.removeEventListener(s, super.dispatchEvent);
 				}
 			}
 			_eventTypes.length = 0;
 			for each (s in value) _eventTypes.push(s);
-			super.dispatchEvent(new Event("eventTypesChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType(EVENT_TYPES)))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//--------------------------------------------------------------------------
@@ -88,6 +91,7 @@
 		protected var _id:String;
 		protected var _dispatcher:IEventDispatcher;
 		protected var _eventTypes:Vector.<String> = new <String>[];
+		protected var _unmanagedHandlers:Vector.<Array>;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -117,15 +121,42 @@
 		//
 		//--------------------------------------------------------------------------
 		
+		public override function addEventListener(type:String, listener:Function, 
+								useCapture:Boolean = false, priority:int = 0, 
+								useWeakReference:Boolean = false):void 
+		{
+			switch (type)
+			{
+				case EVENT_TYPES:
+				case DISPATCHER:
+					super.addEventListener(type, listener, 
+						useCapture, priority, useWeakReference);
+					break;
+				default:
+					if (_dispatcher)
+					{
+						_dispatcher.addEventListener(type, listener, 
+							useCapture, priority, useWeakReference);
+					}
+					else
+					{
+						if (!_unmanagedHandlers) _unmanagedHandlers = new <Array>[];
+						_unmanagedHandlers.push(arguments);
+					}
+			}
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
 		
-		protected function omniListener(event:Event):void 
+		protected function addUnamangedHandlers():void
 		{
-			super.dispatchEvent(_document.generateEvent(_id, _dispatcher, event));
+			for each (var a:Array in _unmanagedHandlers)
+				this.addEventListener.apply(this, a);
+			_unmanagedHandlers.length = 0;
 		}
 		
 		//--------------------------------------------------------------------------
