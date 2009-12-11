@@ -9,7 +9,6 @@
 	<mx:Script>
 		<![CDATA[
 		import flash.events.Event;
-		import org.wvxvws.mapping.MappingEvent;
 		import org.wvxvws.net.AMFService;
 		import org.wvxvws.net.ServiceEvent;
 		

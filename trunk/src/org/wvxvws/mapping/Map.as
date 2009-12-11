@@ -133,10 +133,7 @@ package org.wvxvws.mapping
 			if (i > -1) instances.splice(i, 1);
 		}
 		
-		public function getLink(eventType:String):Link
-		{
-			return _links[eventType];
-		}
+		public function getLink(eventType:String):Link { return _links[eventType]; }
 		
 		public function initialized(document:Object, id:String):void
 		{
@@ -168,12 +165,5 @@ package org.wvxvws.mapping
 			}
 			return v;
 		}
-		
-		internal function generateEvent(type:String, target:Object, 
-										originalEvent:Event = null):MappingEvent
-		{
-			return new MappingEvent(type, target, originalEvent);
-		}
-		
 	}
 }

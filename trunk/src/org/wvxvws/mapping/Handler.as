@@ -4,6 +4,7 @@
 	import flash.events.Event;
 	import mx.core.IMXMLObject;
 	import flash.events.EventDispatcher;
+	import org.wvxvws.binding.EventGenerator;
 	//}
 	
 	[DefaultProperty("handlers")]
@@ -37,9 +38,10 @@
 		
 		public function set type(value:String):void 
 		{
-			if (_type == value) return;
+			if (_type === value) return;
 			_type = value;
-			super.dispatchEvent(new Event("typeChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("type")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -57,14 +59,15 @@
 		
 		public function set handlers(value:Vector.<Function>):void 
 		{
-			if (_handlers == value) return;
+			if (_handlers === value) return;
 			_handlers.length = 0;
 			for each (var f:Function in value)
 			{
 				if (_handlers.indexOf(f) < 0) _handlers.push(f);
 			}
 			_handlers = value;
-			super.dispatchEvent(new Event("handlersChanged"));
+			if (super.hasEventListener(EventGenerator.getEventType("handlers")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//--------------------------------------------------------------------------
