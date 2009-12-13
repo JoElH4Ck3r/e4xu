@@ -163,7 +163,6 @@ package org.wvxvws.gui.renderers
 		
 		protected function drawBackground():void
 		{
-			trace("drawBackground", _field.height, _field.text);
 			var g:Graphics = super.graphics;
 			g.clear();
 			g.beginFill(_backgroundColor, _backgroundAlpha);

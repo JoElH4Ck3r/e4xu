@@ -10,6 +10,7 @@
 	import org.wvxvws.gui.renderers.IRenderer;
 	import org.wvxvws.gui.skins.ISkin;
 	import org.wvxvws.gui.skins.ISkinnable;
+	import org.wvxvws.gui.skins.SkinManager;
 	//}
 	
 	[Event(name="childrenCreated", type="org.wvxvws.gui.GUIEvent")]
@@ -18,6 +19,7 @@
 	[DefaultProperty("dataProvider")]
 	
 	[Skin("org.wvxvws.skins.LabelSkin")]
+	[Skin("org.wvxvws.skins.renderers.ListRendererSkin")]
 	
 	/**
 	* Pane class.
@@ -58,20 +60,49 @@
 		{
 			if (_labelSkin === value) return;
 			_labelSkin = value;
+			if (!_skin) _skin = new <ISkin>[];
+			while (_skin.length < 2)_skin.push(null);
+			_skin[0] = _labelSkin;
 			super.invalidate("_labelSkin", _labelSkin, false);
 			if (super.hasEventListener(EventGenerator.getEventType("labelSkin")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
+		[Bindable("rendererSkinChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>rendererSkinChanged</code> event.
+		*/
+		public function get rendererSkin():ISkin { return _rendererSkin; }
+		
+		public function set rendererSkin(value:ISkin):void 
+		{
+			if (_rendererSkin === value) return;
+			_rendererSkin = value;
+			if (!_skin) _skin = new <ISkin>[];
+			while (_skin.length < 2)_skin.push(null);
+			_skin[1] = _rendererSkin;
+			super.invalidate("_rendererSkin", _rendererSkin, false);
+			if (super.hasEventListener(EventGenerator.getEventType("rendererSkin")))
+				super.dispatchEvent(EventGenerator.getEvent());
+		}
+		
 		/* INTERFACE org.wvxvws.gui.skins.ISkinnable */
 		
-		public function get skin():Vector.<ISkin> { return new <ISkin>[_labelSkin]; }
+		public function get skin():Vector.<ISkin> { return _skin; }
 		
 		public function set skin(value:Vector.<ISkin>):void
 		{
-			if (value && value.length && _labelSkin === value[0]) return;
-			if (value && value.length) _labelSkin = value[0];
-			else _labelSkin = null;
+			if (_skin === value) return;
+			_skin = value;
+			if (_skin)
+			{
+				if (_skin.length) _labelSkin = _skin[0];
+				if (_skin.length > 1) _rendererSkin = _skin[1];
+			}
+			super.invalidate("_labelSkin", _labelSkin, false);
 		}
 		
 		public function get parts():Object { return null; }
@@ -94,6 +125,7 @@
 		protected var _dispatchCreated:Boolean;
 		protected var _subContainers:Vector.<Pane>;
 		protected var _labelSkin:ISkin;
+		protected var _skin:Vector.<ISkin>;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -173,6 +205,13 @@
 		
 		public override function validate(properties:Object):void 
 		{
+			if (!this.skin)
+			{
+				this.skin = SkinManager.getSkin(this);
+				if (!_skin) _skin = new <ISkin>[];
+				this.validate(properties);
+				return;
+			}
 			if ("_dataProvider" in properties) this.layOutChildren();
 			super.validate(properties);
 		}

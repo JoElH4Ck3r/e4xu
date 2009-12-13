@@ -23,10 +23,8 @@
 		{
 			super.scrollRect = value;
 			if (super.hasEventListener(GUIEvent.SCROLLED))
-				super.dispatchEvent(_scrolledEvent);
+				super.dispatchEvent(new GUIEvent(GUIEvent.SCROLLED));
 		}
-		
-		protected var _scrolledEvent:GUIEvent = new GUIEvent(GUIEvent.SCROLLED);
 		
 		protected var _realWidth:int;
 		protected var _realHeight:int;
