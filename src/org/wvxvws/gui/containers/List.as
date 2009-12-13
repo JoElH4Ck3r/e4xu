@@ -2,6 +2,7 @@
 {
 	import flash.display.DisplayObject;
 	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	import flash.utils.describeType;
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.data.DataSet;
@@ -106,6 +107,9 @@
 		
 		public function get pool():Vector.<Object> { return _pool; }
 		
+		[Bindable("scrollPaneChanged")]
+		public function get scrollPane():ScrollPane { return _scrollPane; }
+		
 		protected var _skins:Vector.<ISkin>;
 		protected var _skin:ISkin;
 		protected var _dataProvider:DataSet;
@@ -152,6 +156,7 @@
 			var renderer:IRenderer = currentItem as IRenderer;
 			var dobj:DisplayObject = currentItem as DisplayObject;
 			var ret:Boolean = true;
+			if (index >= _dataProvider.length) return false;
 			if (_direction)
 			{
 				dobj.x = _position + _cumulativeSize;
@@ -164,6 +169,21 @@
 					renderer.data = _dataProvider.at(index);
 				}
 				_cumulativeSize += dobj.width;
+				if (!ret)
+				{
+					_scrollPane.realHeight = _bounds.y;
+					_scrollPane.realWidth = _dataProvider.length * dobj.width;
+					if (_scrollPane.scrollRect)
+					{
+						_scrollPane.scrollRect.width = _bounds.x;
+						_scrollPane.scrollRect.height = _bounds.y;
+					}
+					else
+					{
+						_scrollPane.scrollRect = 
+							new Rectangle(0, 0, _bounds.x, _bounds.y);
+					}
+				}
 			}
 			else
 			{
@@ -177,13 +197,29 @@
 					renderer.data = _dataProvider.at(index);
 				}
 				_cumulativeSize += dobj.height;
+				if (!ret)
+				{
+					_scrollPane.realWidth = _bounds.x;
+					_scrollPane.realHeight = _dataProvider.length * dobj.height;
+					if (_scrollPane.scrollRect)
+					{
+						_scrollPane.scrollRect.width = _bounds.x;
+						_scrollPane.scrollRect.height = _bounds.y;
+					}
+					else
+					{
+						_scrollPane.scrollRect = 
+							new Rectangle(0, 0, _bounds.x, _bounds.y);
+					}
+				}
 			}
-			return ret && _dataProvider.length > _scrollPane.numChildren;
+			return ret;
 		}
 		
 		protected function layoutChildren():void
 		{
-			var d:Object;
+			var d:Object = { };
+			var size:int;
 			if (_direction) _rendererSize.y = _bounds.y;
 			else _rendererSize.x = _bounds.x;
 			while (_scrollPane.numChildren)
@@ -192,12 +228,15 @@
 				if (_pool.indexOf(d) < 0 && _pool.length < _poolSize) _pool.push(d);
 			}
 			_cumulativeSize = 0;
-			// TODO: calculate starting position
-			if (_factory) _repeater.begin(0);
+			if (_direction) size = d.width;
+			else size = d.height;
+			if (_factory) _repeater.begin(_position / size);
 		}
 		
 		protected function scrollPane_scrolledHandler(event:GUIEvent):void 
 		{
+			if (_direction) _position = _scrollPane.scrollRect.x;
+			else _position = _scrollPane.scrollRect.y;
 			this.layoutChildren();
 		}
 		

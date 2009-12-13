@@ -31,6 +31,7 @@ package org.wvxvws.gui.containers
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.renderers.Renderer;
 	import org.wvxvws.gui.skins.ISkin;
+	import org.wvxvws.gui.skins.SkinManager;
 	import org.wvxvws.skins.Skin;
 	
 	/**
@@ -55,17 +56,6 @@ package org.wvxvws.gui.containers
 			_columns = value;
 			super.invalidate("_columns", _columns, false);
 			if (super.hasEventListener(EventGenerator.getEventType("columns")))
-				super.dispatchEvent(EventGenerator.getEvent());
-		}
-		
-		public function get rendererSkin():ISkin { return _rendererSkin; }
-		
-		public function set rendererSkin(value:ISkin):void 
-		{
-			if (_rendererSkin === value) return;
-			_rendererSkin = value;
-			super.invalidate("_rendererSkin", _rendererSkin, false);
-			if (super.hasEventListener(EventGenerator.getEventType("rendererSkin")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
@@ -126,8 +116,6 @@ package org.wvxvws.gui.containers
 		protected var _gutterH:int;
 		protected var _gutterV:int;
 		protected var _padding:Rectangle = new Rectangle();
-		// TODO: remove this dependancy
-		protected var _defaultRenderer:ISkin = new Skin(Renderer);
 		
 		//--------------------------------------------------------------------------
 		//
@@ -140,11 +128,7 @@ package org.wvxvws.gui.containers
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
-		public function Table() 
-		{
-			super();
-			
-		}
+		public function Table() { super(); }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -152,10 +136,11 @@ package org.wvxvws.gui.containers
 		//
 		//--------------------------------------------------------------------------
 		
-		public override function validate(properties:Object):void 
-		{
-			super.validate(properties);
-		}
+		//public override function validate(properties:Object):void 
+		//{
+			//
+			//super.validate(properties);
+		//}
 		
 		//--------------------------------------------------------------------------
 		//
@@ -192,7 +177,7 @@ package org.wvxvws.gui.containers
 					col.x = cumulativeX;
 					col.y = _padding.top;
 					col.gutter = _gutterV;
-					col.rendererFactory = _defaultRenderer;
+					col.rendererFactory = _rendererSkin;
 					super.addChild(col);
 					col.initialized(this, "column" + _columns.indexOf(col));
 					cumulativeX += col.width + _gutterH;

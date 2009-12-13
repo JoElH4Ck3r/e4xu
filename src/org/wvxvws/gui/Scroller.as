@@ -19,8 +19,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-// TODO: Need to ged rif of ISkin. Maybe use StatefulButton instead.
-
 package org.wvxvws.gui 
 {
 	//{imports
@@ -32,6 +30,7 @@ package org.wvxvws.gui
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
 	import org.wvxvws.binding.EventGenerator;
+	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.skins.ISkin;
 	import org.wvxvws.gui.skins.ISkinnable;
 	import org.wvxvws.gui.skins.SkinManager;
@@ -588,7 +587,8 @@ package org.wvxvws.gui
 				_handle.x = (minWidth - _gutter) + 
 							(_path + _gutter * 2 - hWidth) * value;
 			}
-			super.dispatchEvent(new GUIEvent(GUIEvent.SCROLLED));
+			if (super.hasEventListener(GUIEvent.SCROLLED))
+				super.dispatchEvent(new GUIEvent(GUIEvent.SCROLLED));
 		}
 		
 		//--------------------------------------------------------------------------
