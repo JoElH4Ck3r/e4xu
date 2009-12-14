@@ -62,19 +62,17 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>skinChanged</code> event.
 		*/
-		public function get skin():Vector.<ISkin> { return new <ISkin>[_skin]; }
+		public function get skin():Vector.<ISkin> { return _skin; }
 		
 		public function set skin(value:Vector.<ISkin>):void
 		{
-			if (value && value.length && _skin === value[0]) return;
 			if (_skin === value) return;
-			if (value && value.length) _skin = value[0];
-			else _skin = null;
-			if (_skin)
+			_skin = value;
+			if (_skin && _skin.length && _skin[0])
 			{
-				super.upState = _skin.produce(this, "upState") as DisplayObject;
-				super.overState = _skin.produce(this, "overState") as DisplayObject;
-				super.downState = _skin.produce(this, "downState") as DisplayObject;
+				super.upState = _skin[0].produce(this, "upState") as DisplayObject;
+				super.overState = _skin[0].produce(this, "overState") as DisplayObject;
+				super.downState = _skin[0].produce(this, "downState") as DisplayObject;
 				if (super.upState)
 				{
 					super.upState.addEventListener(
@@ -360,7 +358,7 @@
 		protected var _nativeTransform:Transform;
 		protected var _lastState:DisplayObject;
 		protected var _labelFormat:TextFormat = new TextFormat("_sans", 11, 0, true);
-		protected var _skin:ISkin;
+		protected var _skin:Vector.<ISkin>;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -401,11 +399,13 @@
 		
 		public function initialized(document:Object, id:String):void
 		{
+			var validatorChanged:Boolean;
 			_document = document;
 			if (_document is ILayoutClient)
 			{
 				_validator = (_document as ILayoutClient).validator;
-				if (_validator)
+				validatorChanged = Boolean(_validator);
+				if (validatorChanged)
 					_validator.append(this, _document as ILayoutClient);
 			}
 			if (_document is DisplayObjectContainer && !super.parent)
@@ -414,10 +414,12 @@
 			}
 			_id = id;
 			if (!_skin) this.skin = SkinManager.getSkin(this);
+			if (validatorChanged) this.invalidate("", null, false);
 		}
 		
 		public function validate(properties:Object):void
 		{
+			trace(this, "validate", _skin, super.upState);
 			if (!_validator)
 			{
 				if (_document is ILayoutClient)

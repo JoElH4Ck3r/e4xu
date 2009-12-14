@@ -47,6 +47,7 @@
 		{
 			var ds:DataSet = new DataSet(XML);
 			from.(ds.add(valueOf()));
+			trace(ds.at(0).toXMLString());
 			return ds;
 		}
 		
