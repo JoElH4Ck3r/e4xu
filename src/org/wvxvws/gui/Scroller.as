@@ -83,7 +83,17 @@ package org.wvxvws.gui
 		public function set target(value:DisplayObject):void 
 		{
 			if (_target === value) return;
+			if (_target)
+			{
+				_target.removeEventListener("widthChanged", this.target_changeHandler);
+				_target.removeEventListener("heightChanged", this.target_changeHandler);
+			}
 			_target = value;
+			if (_target)
+			{
+				_target.addEventListener("widthChanged", this.target_changeHandler);
+				_target.addEventListener("heightChanged", this.target_changeHandler);
+			}
 			super.invalidate("_target", _target, false);
 			if (super.hasEventListener(EventGenerator.getEventType("target")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -375,7 +385,7 @@ package org.wvxvws.gui
 		//--------------------------------------------------------------------------
 		
 		protected var _target:DisplayObject;
-		protected var _area:Rectangle;// = new Rectangle(0, 0, 160, 160);
+		protected var _area:Rectangle;
 		protected var _minHandle:InteractiveObject;
 		protected var _maxHandle:InteractiveObject;
 		protected var _handle:InteractiveObject;
@@ -622,11 +632,11 @@ package org.wvxvws.gui
 			var handleBounds:Rectangle = _handle.getBounds(this);
 			if (_direction)
 			{
-				_handleShift = mouseY - handleBounds.y;
+				_handleShift = super.mouseY - handleBounds.y;
 			}
 			else
 			{
-				_handleShift = mouseX - handleBounds.x;
+				_handleShift = super.mouseX - handleBounds.x;
 			}
 			_moveFunction = moveAreaUpDown;
 			super.stage.addEventListener(MouseEvent.MOUSE_UP, 
@@ -653,6 +663,12 @@ package org.wvxvws.gui
 		protected function enterFrameHandler(event:Event):void
 		{
 			_moveFunction();
+		}
+		
+		protected function target_changeHandler(event:Event):void 
+		{
+			_invalidProperties._target = _target;
+			this.validate(_invalidProperties);
 		}
 		
 		protected function moveAreaUp():void

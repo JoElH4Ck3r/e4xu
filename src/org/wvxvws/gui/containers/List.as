@@ -23,6 +23,10 @@
 	
 	[DefaultProperty("dataProvider")]
 	
+	// TODO: Requires some profiling, it seems like we have an 
+	// insignificant, although persistent leak here.
+	// However, it might been the test example that's leaking.
+	
 	/**
 	 * List class.
 	 * @author wvxvw
@@ -142,10 +146,28 @@
 		
 		public override function validate(properties:Object):void 
 		{
+			var sizeChanged:Boolean = ("_bounds" in properties);
 			var needLayoutChildren:Boolean = ("_dataProvider" in properties) || 
-						("_factory" in properties) || ("_bounds" in properties) || 
+						("_factory" in properties) || sizeChanged ||
 						("_labelSkin" in properties);
 			super.validate(properties);
+			if (sizeChanged)
+			{
+				if (_scrollPane.scrollRect)
+				{
+					_scrollPane.scrollRect.width = _bounds.x;
+					_scrollPane.scrollRect.height = _bounds.y;
+				}
+				else
+				{
+					_scrollPane.removeEventListener(
+						GUIEvent.SCROLLED, this.scrollPane_scrolledHandler);
+					_scrollPane.scrollRect = 
+						new Rectangle(0, 0, _bounds.x, _bounds.y);
+					_scrollPane.addEventListener(
+						GUIEvent.SCROLLED, this.scrollPane_scrolledHandler);
+				}
+			}
 			if (needLayoutChildren) this.layoutChildren();
 		}
 		
@@ -156,13 +178,14 @@
 			var renderer:IRenderer = currentItem as IRenderer;
 			var dobj:DisplayObject = currentItem as DisplayObject;
 			var ret:Boolean = true;
+			if (!_dataProvider) return false;
 			if (index >= _dataProvider.length) return false;
 			if (_direction)
 			{
 				dobj.x = _position + _cumulativeSize;
 				dobj.height = _rendererSize.y;
 				_scrollPane.addChild(dobj);
-				if (_cumulativeSize + dobj.height > _bounds.y) ret = false;
+				if (_cumulativeSize > _bounds.y) ret = false; // + dobj.height
 				if (renderer)
 				{
 					if (_labelSkin) renderer.labelSkin = _labelSkin;
@@ -180,8 +203,12 @@
 					}
 					else
 					{
+						_scrollPane.removeEventListener(
+							GUIEvent.SCROLLED, this.scrollPane_scrolledHandler);
 						_scrollPane.scrollRect = 
 							new Rectangle(0, 0, _bounds.x, _bounds.y);
+						_scrollPane.addEventListener(
+							GUIEvent.SCROLLED, this.scrollPane_scrolledHandler);
 					}
 				}
 			}
@@ -190,7 +217,7 @@
 				dobj.y = _position + _cumulativeSize;
 				dobj.width = _rendererSize.x;
 				_scrollPane.addChild(dobj);
-				if (_cumulativeSize + dobj.height > _bounds.y) ret = false;
+				if (_cumulativeSize > _bounds.y) ret = false; // + dobj.height
 				if (renderer)
 				{
 					if (_labelSkin) renderer.labelSkin = _labelSkin;
@@ -208,8 +235,12 @@
 					}
 					else
 					{
+						_scrollPane.removeEventListener(
+							GUIEvent.SCROLLED, this.scrollPane_scrolledHandler);
 						_scrollPane.scrollRect = 
 							new Rectangle(0, 0, _bounds.x, _bounds.y);
+						_scrollPane.addEventListener(
+							GUIEvent.SCROLLED, this.scrollPane_scrolledHandler);
 					}
 				}
 			}
@@ -230,6 +261,7 @@
 			_cumulativeSize = 0;
 			if (_direction) size = d.width;
 			else size = d.height;
+			_position = ((_position / size) >> 0) * size;
 			if (_factory) _repeater.begin(_position / size);
 		}
 		
