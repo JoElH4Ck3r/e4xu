@@ -378,6 +378,8 @@ package org.wvxvws.gui
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
+		public function get position():Number { return _position; }
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties

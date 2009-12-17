@@ -53,8 +53,8 @@
 		public function Port()
 		{
 			super();
-			super.addEventListener(Event.RENDER, renderListener);
-			super.addEventListener(Event.ADDED_TO_STAGE, addedHandler);
+			super.addEventListener(Event.RENDER, this.renderListener);
+			super.addEventListener(Event.ADDED_TO_STAGE, this.addedHandler);
 			super.dispatchEvent(_updater);
 		}
 		
