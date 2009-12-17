@@ -28,6 +28,8 @@ package org.wvxvws.tools
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Matrix;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	import mx.core.IMXMLObject;
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.rendering.Port;
@@ -157,6 +159,24 @@ package org.wvxvws.tools
 			super.invalidLayout = true;
 		}
 		
+		public function get offsetY():Number { return _offset.y; }
+		
+		public function set offsetY(value:Number):void 
+		{
+			if (_offset.y === value) return;
+			_offset.y = value;
+			super.invalidLayout = true;
+		}
+		
+		public function get offsetX():Number { return _offset.x; }
+		
+		public function set offsetX(value:Number):void 
+		{
+			if (_offset.x === value) return;
+			_offset.x = value;
+			super.invalidLayout = true;
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
@@ -179,6 +199,7 @@ package org.wvxvws.tools
 		protected var _useText:Boolean;
 		protected var _slideIsSlave:Function;
 		protected var _bgData:BitmapData;
+		protected var _offset:Point = new Point();
 		
 		//--------------------------------------------------------------------------
 		//
@@ -208,13 +229,14 @@ package org.wvxvws.tools
 			if (_slideEditor)
 			{
 				_slideEditor.removeEventListener(
-					ToolEvent.RESIZED, tool_resizedHandler);
+					ToolEvent.RESIZED, this.tool_resizedHandler);
 			}
 			_slideEditor = from || _slideEditor;
 			if (!_slideEditor || !_selectedSlide) return null;
 			_slideEditor.x = _selectedSlide.x;
 			_slideEditor.y = _selectedSlide.y;
-			_slideEditor.addEventListener(ToolEvent.RESIZED, tool_resizedHandler);
+			_slideEditor.addEventListener(
+				ToolEvent.RESIZED, this.tool_resizedHandler);
 			return _slideEditor;
 		}
 		
@@ -247,15 +269,18 @@ package org.wvxvws.tools
 			var i:int = super.numChildren;
 			if (!_bgData)
 			{
-				_bgData = new BitmapData(1, Math.max(1, _slideHeight + _gutter), false, 0xD0D0D0);
+				_bgData = new BitmapData(1, 
+					Math.max(1, _slideHeight + _gutter), false, 0xD0D0D0);
 				_bgData.setPixel(0, 0, 0x909090);
 				_bgData.setPixel(0, _slideHeight + _gutter, 0x909090);
 			}
 			var m:Matrix = new Matrix();
-			m.ty = (_bounds.y % (_slideHeight + _gutter)) - (_gutter >> 1);
+			m.ty = ((_bounds.y + _offset.y) % (_slideHeight + _gutter)) - (_gutter >> 1);
 			graphics.clear();
 			graphics.beginBitmapFill(_bgData, m);
-			graphics.drawRect(_bounds.x, _bounds.y, _bounds.width, _bounds.height);
+			graphics.drawRect(_bounds.x,
+							_bounds.y,
+							_bounds.width, _bounds.height);
 			graphics.endFill();
 			while (i--) super.getChildAt(i).dispatchEvent(_updater);
 			super.invalidLayout = false;
@@ -300,7 +325,7 @@ package org.wvxvws.tools
 					slide.width = _slideWidthFactory(currentNode);
 				if (_slidePositionFactory !== null)
 					slide.x = _slidePositionFactory(currentNode);
-				slide.y = cumulativeHeight;
+				slide.y = cumulativeHeight + _offset.y;
 				slide.height = _slideHeight;
 				slidesCopy.push(slide);
 				if (_slideVisible !== null)
@@ -430,8 +455,10 @@ package org.wvxvws.tools
 		private function slide_mouseDownHandler(event:MouseEvent):void 
 		{
 			_selectedSlide = event.target as Slide;
-			stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMoveHandler, false, 0, true);
-			stage.addEventListener(MouseEvent.MOUSE_UP, mouseUpHandler, false, 0, true);
+			super.stage.addEventListener(
+				MouseEvent.MOUSE_MOVE, this.mouseMoveHandler, false, 0, true);
+			super.stage.addEventListener(
+				MouseEvent.MOUSE_UP, this.mouseUpHandler, false, 0, true);
 			if (_slideEditor)
 			{
 				(_slideEditor as IEditor).target = _selectedSlide;
@@ -441,7 +468,7 @@ package org.wvxvws.tools
 		
 		private function mouseUpHandler(event:MouseEvent):void 
 		{
-			stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+			super.stage.removeEventListener(MouseEvent.MOUSE_MOVE, this.mouseMoveHandler);
 			super.dispatchEvent(new ToolEvent(ToolEvent.MOVED, false, false, _selectedSlide));
 			_selectedSlide = null;
 			//if (_slideEditor)

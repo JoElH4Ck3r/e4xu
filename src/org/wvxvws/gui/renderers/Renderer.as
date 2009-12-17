@@ -28,6 +28,7 @@ package org.wvxvws.gui.renderers
 	import flash.text.TextFormat;
 	import org.wvxvws.gui.skins.ISkin;
 	import org.wvxvws.gui.skins.ISkinnable;
+	import org.wvxvws.gui.skins.SkinManager;
 	
 	[Skin("org.wvxvws.skins.LabelSkin")]
 	
@@ -107,6 +108,7 @@ package org.wvxvws.gui.renderers
 		protected var _backgroundAlpha:Number = 1;
 		protected var _textFormat:TextFormat = new TextFormat("_sans", 11);
 		protected var _labelSkin:ISkin;
+		protected var _skins:Vector.<ISkin>;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -124,6 +126,8 @@ package org.wvxvws.gui.renderers
 		{
 			super();
 			super.addChild(_field);
+			_skins = SkinManager.getSkin(this);
+			if (_skins && _skins.length) _labelSkin = _skins[0];
 			_field.selectable = false;
 			_field.autoSize = TextFieldAutoSize.LEFT;
 			_field.width = 1;

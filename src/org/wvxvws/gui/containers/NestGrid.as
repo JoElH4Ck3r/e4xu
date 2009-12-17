@@ -14,6 +14,7 @@
 	import org.wvxvws.gui.renderers.Renderer;
 	import org.wvxvws.gui.ScrollPane;
 	import org.wvxvws.gui.skins.ISkin;
+	import org.wvxvws.gui.skins.SkinManager;
 	import org.wvxvws.skins.Skin;
 	import org.wvxvws.tools.ToolEvent;
 	
@@ -345,7 +346,10 @@
 		{
 			super();
 			super._rendererSkin = new Skin(Renderer);
+			// TODO: remove this dependency.
 			_headerRenderer = HeaderRenderer;
+			var headSkin:Vector.<ISkin> = SkinManager.getSkin(new Renderer());
+			if (headSkin && headSkin.length) _headerProducer = headSkin[0];
 			super.addEventListener(GUIEvent.OPENED, 
 									this.openedHandler, false, int.MAX_VALUE);
 			super.addEventListener(GUIEvent.SELECTED, 
@@ -447,16 +451,17 @@
 				(_headers[i] as DisplayObject).x = col.x;
 				(_headers[i] as DisplayObject).height = _headerHeight;
 				(_headers[i] as HeaderRenderer).resizable = _columnsResizable;
-					_headers[i].labelSkin = _headerProducer;
+				trace(this, "_headerProducer", _headerProducer);
+				_headers[i].labelSkin = _headerProducer;
 				_headers[i].data = _dataProvider;
 				(_headers[i] as DisplayObject).addEventListener(
-						ToolEvent.RESIZE_END, header_resizeEndHandler);
+						ToolEvent.RESIZE_END, this.header_resizeEndHandler);
 				(_headers[i] as DisplayObject).addEventListener(
-						ToolEvent.RESIZE_REQUEST, header_resizeRequestHandler);
+						ToolEvent.RESIZE_REQUEST, this.header_resizeRequestHandler);
 				(_headers[i] as DisplayObject).addEventListener(
-						ToolEvent.RESIZE_START, header_resizeStartHandler);
+						ToolEvent.RESIZE_START, this.header_resizeStartHandler);
 				(_headers[i] as DisplayObject).addEventListener(
-						ToolEvent.RESIZED, header_resizedHandler);
+						ToolEvent.RESIZED, this.header_resizedHandler);
 				super.addChild(_headers[i] as DisplayObject);
 				col.dataProvider = _dataProvider;
 				i++;
