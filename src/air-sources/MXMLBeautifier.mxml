@@ -8,7 +8,7 @@
 	paddingLeft="5"
 	paddingBottom="5"
 	paddingRight="5"
-	invoke="invokeHandler(event)"
+	invoke="this.invokeHandler(event)"
 	verticalScrollPolicy="off"
 	horizontalScrollPolicy="off">
 	<mx:Script>
@@ -54,7 +54,7 @@
 				try 
 				{
 					file.browseForOpen("Open", [asFilter]);
-					file.addEventListener(Event.SELECT, fileSelected);
+					file.addEventListener(Event.SELECT, this.fileSelected);
 				}
 				catch (error:Error)
 				{
@@ -206,7 +206,7 @@
 						}
 					}
 					if (!_in.length) return;
-					_timer.addEventListener(TimerEvent.TIMER, timerHandler);
+					_timer.addEventListener(TimerEvent.TIMER, this.timerHandler);
 					_timer.start();
 				}
 			} 
@@ -219,7 +219,7 @@
 				}
 				else
 				{
-					_timer.removeEventListener(TimerEvent.TIMER, timerHandler);
+					_timer.removeEventListener(TimerEvent.TIMER, this.timerHandler);
 					_timer.stop();
 				}
 			}
