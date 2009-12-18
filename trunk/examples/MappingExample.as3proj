@@ -35,7 +35,7 @@
     <option verboseStackTraces="False" />
     <option linkReport="" />
     <option loadExterns="" />
-    <option additional="-namespace http://e4xu.googlecode.com ../run/manifest.xml" />
+    <option additional="-namespace http://e4xu.googlecode.com ../run/manifest.xml&#xA;-keep" />
     <option customSDK="C:\off-trunk" />
   </build>
   <!-- SWC Include Libraries -->
