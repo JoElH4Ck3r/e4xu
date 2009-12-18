@@ -35,7 +35,6 @@
 			import flash.utils.Timer;
 			import org.wvxvws.xmlutils.Converter;
 			
-			
 			private var _mxmlFile:String;
 			private var _htmlFile:ByteArray;
 			private var _processedFileName:String;
@@ -68,15 +67,15 @@
 				var stream:FileStream = new FileStream();
 				stream.open(event.target as File, FileMode.READ);
 				_mxmlFile = stream.readUTFBytes(stream.bytesAvailable);
-				fileSPAN.text = (event.target as File).nativePath;
+				this.fileInput.text = (event.target as File).nativePath;
 				_processedFileName = (event.target as File).name;
 			}
 			
 			private function save_clickHandler():void
 			{
-				if (!fileSPAN.text.length)
+				if (!fileInput.text.length)
 				{
-					nativeAlert("Select the SPAN File first!");
+					nativeAlert("Select the Input File first!");
 					return;
 				}
 				var data:String;
@@ -127,18 +126,18 @@
 				XML.ignoreComments = false;
 				var now:String = new Date().toTimeString();
 				logEvent("Invoke event received: " + now);
-					 
+				
 				if (event.currentDirectory != null)
 				{
-					logEvent("Current directory=" + event.currentDirectory.nativePath);
+					this.logEvent("Current directory=" + event.currentDirectory.nativePath);
 				}
 				else
 				{
-					logEvent("--no directory information available--"); 
+					this.logEvent("--no directory information available--"); 
 				} 
 				if (event.arguments.length > 0)
 				{
-					logEvent("Arguments: " + event.arguments.toString());
+					this.logEvent("Arguments: " + event.arguments.toString());
 					_isCMD = true;
 					var appArgs:Array = event.arguments;
 					var isIn:Boolean;
@@ -170,7 +169,7 @@
 				}
 				else
 				{
-					logEvent("--no arguments--");
+					this.logEvent("--no arguments--");
 				}
 				if (_isCMD)
 				{
@@ -256,10 +255,10 @@
 				}
 				stream.open(inFile, FileMode.READ);
 				_mxmlFile = stream.readUTFBytes(stream.bytesAvailable);
-				fileSPAN.text = inFile.nativePath;
+				this.fileInput.text = inFile.nativePath;
 				_processedFileName = inFile.nativePath;
 				var fileTosave:String = _processedFileName.replace(/\.mxml$/i, ".mxml-generated");
-				fileOutput.text = fileTosave;
+				this.fileOutput.text = fileTosave;
 				try
 				{
 					var outFile:File = new File(fileTosave);
@@ -313,18 +312,18 @@
 	</mx:Script>
 	<mx:Canvas>
 		<mx:Label 
-			text="Select SPAN ActionScript file:"/>
+			text="Select Input ActionScript file:"/>
 			
-		<mx:TextSPAN 
+		<mx:TextInput 
 			width="400" 
-			id="fileSPAN" 
+			id="fileInput" 
 			y="20"/>
 			
 		<mx:Label 
 			text="Specify Output HTML file:" 
 			y="50"/>
 			
-		<mx:TextSPAN 
+		<mx:TextInput 
 			width="400" 
 			id="fileOutput" 
 			y="70"/>

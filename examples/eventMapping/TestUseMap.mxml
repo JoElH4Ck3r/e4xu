@@ -2,7 +2,7 @@
 <o:DIV 
 	xmlns:mx="http://www.adobe.com/2006/mxml"
 	xmlns:o="http://e4xu.googlecode.com"
-	xmlns:t="tests.*"
+	xmlns:t="*"
 	width="800" height="600"
 	initialized="init()"
 	>
