@@ -215,7 +215,7 @@
 			{
 				if (_in.length)
 				{
-					processNextFile();
+					this.processNextFile();
 				}
 				else
 				{
@@ -246,7 +246,7 @@
 				{
 					if (_in.length)
 					{
-						processNextFile();
+						this.processNextFile();
 					}
 					else
 					{
