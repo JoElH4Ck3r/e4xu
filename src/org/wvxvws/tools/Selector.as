@@ -107,7 +107,7 @@ package org.wvxvws.tools
 			_downLocation = _target.localToGlobal(point);
 			if (parent !== r)
 			{
-				if (parent) parent.removeChild(this);
+				if (super.parent) super.parent.removeChild(this);
 				r.addChild(this);
 			}
 			super.graphics.clear();
@@ -120,11 +120,11 @@ package org.wvxvws.tools
 			_visibleBounds.top = topLeft.y;
 			_visibleBounds.right = bottomRight.x;
 			_visibleBounds.bottom = bottomRight.y;
-			s.addEventListener(MouseEvent.MOUSE_MOVE, moveHandler, false, 0, true);
-			s.addEventListener(MouseEvent.MOUSE_UP, upHandler, false, 0, true);
-			s.addEventListener(Event.MOUSE_LEAVE, leaveHandler, false, 0, true);
-			s.addEventListener(KeyboardEvent.KEY_DOWN, keyDownHandler, false, 0, true);
-			s.addEventListener(KeyboardEvent.KEY_UP, keyUpHandler, false, 0, true);
+			s.addEventListener(MouseEvent.MOUSE_MOVE, this.moveHandler, false, 0, true);
+			s.addEventListener(MouseEvent.MOUSE_UP, this.upHandler, false, 0, true);
+			s.addEventListener(Event.MOUSE_LEAVE, this.leaveHandler, false, 0, true);
+			s.addEventListener(KeyboardEvent.KEY_DOWN, this.keyDownHandler, false, 0, true);
+			s.addEventListener(KeyboardEvent.KEY_UP, this.keyUpHandler, false, 0, true);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -153,12 +153,12 @@ package org.wvxvws.tools
 			var s:Stage = event.currentTarget as Stage;
 			if (s)
 			{
-				s.removeEventListener(MouseEvent.MOUSE_MOVE, moveHandler);
-				s.removeEventListener(Event.MOUSE_LEAVE, leaveHandler);
-				s.removeEventListener(KeyboardEvent.KEY_DOWN, keyDownHandler);
-				s.removeEventListener(KeyboardEvent.KEY_UP, keyUpHandler);
-				s.removeEventListener(MouseEvent.MOUSE_UP, upHandler);
-				if (parent) parent.removeChild(this);
+				s.removeEventListener(MouseEvent.MOUSE_MOVE, this.moveHandler);
+				s.removeEventListener(Event.MOUSE_LEAVE, this.leaveHandler);
+				s.removeEventListener(KeyboardEvent.KEY_DOWN, this.keyDownHandler);
+				s.removeEventListener(KeyboardEvent.KEY_UP, this.keyUpHandler);
+				s.removeEventListener(MouseEvent.MOUSE_UP, this.upHandler);
+				if (super.parent) super.parent.removeChild(this);
 			}
 		}
 		
@@ -170,7 +170,7 @@ package org.wvxvws.tools
 				_lineMatrixH = new Matrix();
 				_lineMatrixH.createGradientBox(10, 10, 0, 0, 0);
 				_lineMatrixV = new Matrix();
-				_lineMatrixV.createGradientBox(10, 10, Math.PI / 4, 0, 0);
+				_lineMatrixV.createGradientBox(10, 10, Math.PI * 0.25, 0, 0);
 			}
 			var realX:Number;
 			var realY:Number;
@@ -250,7 +250,7 @@ package org.wvxvws.tools
 					v.push(d);
 					if (d is DisplayObjectContainer)
 					{
-						getSelectedRecursive(d as DisplayObjectContainer, b, v);
+						this.getSelectedRecursive(d as DisplayObjectContainer, b, v);
 					}
 				}
 			}
@@ -276,7 +276,7 @@ package org.wvxvws.tools
 					to.push(c);
 					if (c is DisplayObjectContainer)
 					{
-						getSelectedRecursive(c as DisplayObjectContainer, bounds, to);
+						this.getSelectedRecursive(c as DisplayObjectContainer, bounds, to);
 					}
 				}
 			}

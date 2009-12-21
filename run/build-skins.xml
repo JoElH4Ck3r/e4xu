@@ -13,6 +13,7 @@
   </compiler>
   <include-classes>
 	<!-- SKINS -->
+	<class>org.wvxvws.skins.BorderSkin</class>
 	<class>org.wvxvws.skins.ButtonSkin</class>
 	<class>org.wvxvws.skins.CheckSkin</class>
 	<class>org.wvxvws.skins.LabelSkin</class>

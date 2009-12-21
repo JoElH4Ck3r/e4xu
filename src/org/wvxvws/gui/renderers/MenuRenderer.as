@@ -284,7 +284,7 @@ package org.wvxvws.gui.renderers
 			_field.x = 30;
 			_field.y = Math.max((_height - _field.height) >> 1, 0);
 			if (_labelSkin) 
-				_field.text = _labelSkin.produce(_data) as String;
+				_field.text = String(_labelSkin.produce(_data));
 			else _field.text = _data.toString();
 			
 			this.renderIcon();
