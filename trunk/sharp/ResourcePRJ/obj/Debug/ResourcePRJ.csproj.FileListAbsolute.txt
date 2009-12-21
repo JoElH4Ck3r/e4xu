@@ -1,0 +1,8 @@
+C:\www\sharp\fd\FD3\External\Plugins\ResourcePRJ\obj\Debug\ResolveAssemblyReference.cache
+C:\www\sharp\fd\FD3\External\Plugins\ResourcePRJ\obj\Debug\ResourcePRJ.PluginUI.resources
+C:\www\sharp\fd\FD3\External\Plugins\ResourcePRJ\obj\Debug\ResourcePRJ.csproj.GenerateResource.Cache
+C:\www\sharp\fd\FD3\FlashDevelop\Bin\Debug\Plugins\ResourcePRJ.dll
+C:\www\sharp\fd\FD3\FlashDevelop\Bin\Debug\Plugins\ResourcePRJ.pdb
+C:\www\sharp\fd\FD3\External\Plugins\ResourcePRJ\obj\Debug\ResourcePRJ.Resources.en_US.resources
+C:\www\sharp\fd\FD3\External\Plugins\ResourcePRJ\obj\Debug\ResourcePRJ.dll
+C:\www\sharp\fd\FD3\External\Plugins\ResourcePRJ\obj\Debug\ResourcePRJ.pdb

@@ -77,7 +77,6 @@
 		protected override function compileTagParams():void 
 		{
 			this.streamSoundData.position = 0;
-			// TODO: This is needed, but no idea what this is...
 			super._data.writeBytes(this.streamSoundData);
 		}
 		
