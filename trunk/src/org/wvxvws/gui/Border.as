@@ -6,13 +6,22 @@
 	import flash.geom.Rectangle;
 	import mx.core.IMXMLObject;
 	import org.wvxvws.binding.EventGenerator;
+	import org.wvxvws.gui.skins.ISkin;
+	import org.wvxvws.gui.skins.ISkinnable;
+	import org.wvxvws.gui.skins.SkinManager;
+	
+	[Skin("org.wvxvws.skins.BorderSkin")]
 	
 	/**
 	 * Border class.
 	 * @author wvxvw
 	 */
-	public class Border extends DIV
+	public class Border extends DIV implements ISkinnable
 	{
+		public static const PATTERN:String = "pattern";
+		public static const CORNER_PATTERN:String = "cornerPattern";
+		public static const SIDES:String = "sides";
+		public static const CORNERS:String = "corners";
 		
 		//------------------------------------
 		//  Public property top
@@ -192,6 +201,42 @@
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
+		/* INTERFACE org.wvxvws.gui.skins.ISkinnable */
+		
+		public function get skin():Vector.<ISkin> { return _skin; }
+		
+		public function set skin(value:Vector.<ISkin>):void
+		{
+			var bd:BitmapData;
+			if (_skin === value) return;
+			_skin = value;
+			if (_skin)
+			{
+				_pattern = _skin[0].produce(this, PATTERN) as BitmapData;
+				_cornerPattern = _skin[0].produce(this, CORNER_PATTERN) as BitmapData;
+				_corners = _skin[0].produce(this, CORNERS) as Vector.<BitmapData>;
+				_sides = _skin[0].produce(this, SIDES) as Vector.<BitmapData>;
+				trace(this, _pattern, "skin set");
+			}
+			else
+			{
+				for each (bd in _sides) bd.dispose();
+				for each (bd in _corners) bd.dispose();
+				_sides.length = 0;
+				_corners.length = 0;
+				if (_pattern) _pattern.dispose();
+				if (_cornerPattern) _cornerPattern.dispose();
+				_pattern = null;
+				_cornerPattern = null;
+			}
+			super.invalidate("_pattern", _pattern, true);
+			super.invalidate("_cornerPattern", _cornerPattern, true);
+		}
+		
+		public function get parts():Object { return null; }
+		
+		public function set parts(value:Object):void { }
+		
 		protected var _thikness:Rectangle = new Rectangle(1, 1, 0, 0);
 		protected var _pattern:BitmapData;
 		protected var _cornerPattern:BitmapData;
@@ -200,8 +245,13 @@
 		protected var _drawBack:Boolean;
 		protected var _sides:Vector.<BitmapData>;
 		protected var _corners:Vector.<BitmapData>;
+		protected var _skin:Vector.<ISkin>;
 		
-		public function Border() { super(); }
+		public function Border()
+		{
+			super();
+			this.skin = SkinManager.getSkin(this);
+		}
 		
 		public override function validate(properties:Object):void 
 		{
@@ -326,5 +376,4 @@
 			_drawBack = false;
 		}
 	}
-	
 }

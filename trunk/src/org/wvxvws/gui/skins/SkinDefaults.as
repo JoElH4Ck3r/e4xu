@@ -14,6 +14,10 @@
 		public static const SELECTED_COLOR:uint = 0x6080F0;
 		public static const DISABLED_SELECTED_COLOR:uint = 0x607090;
 		
+		public static const BORDER_OUT_COLOR:uint = 0x6080F0;
+		public static const BORDER_MID_COLOR:uint = 0x808080;
+		public static const BORDER_IN_COLOR:uint = 0xB0B0B0;
+		
 		public static function get DARK_FORMAT():TextFormat
 		{
 			return new TextFormat("_sans", 11, 0x101010);

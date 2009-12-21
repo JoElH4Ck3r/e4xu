@@ -47,7 +47,7 @@
 					{
 						_options.push(opt);
 						opt.addEventListener(GUIEvent.SELECTED, 
-							option_selectedHandler, false, 0, true);
+							this.option_selectedHandler, false, 0, true);
 					}
 					i++;
 				}
@@ -87,17 +87,15 @@
 		{
 			for each (var opt:Option in _options)
 			{
-				if (opt.parent && opt.parent !== _document)
-				{
-					opt.parent.removeChild(opt);
-				}
+				//if (opt.parent && opt.parent !== _document)
+				//{
+					//opt.parent.removeChild(opt);
+				//}
 				if (!opt.parent)
 				{
 					opt.initialized(_document, "option" + _options.indexOf(opt));
 				}
 			}
 		}
-		
 	}
-
 }
