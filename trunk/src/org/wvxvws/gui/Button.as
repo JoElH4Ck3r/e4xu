@@ -419,7 +419,6 @@
 		
 		public function validate(properties:Object):void
 		{
-			trace(this, "validate", _skin, super.upState);
 			if (!_validator)
 			{
 				if (_document is ILayoutClient)

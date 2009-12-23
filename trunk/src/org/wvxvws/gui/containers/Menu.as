@@ -43,6 +43,7 @@ package org.wvxvws.gui.containers
 	[DefaultProperty("dataProvider")]
 	
 	[Skin("org.wvxvws.skins.MenuSkin")]
+	[Skin("org.wvxvws.skins.LabelSkin")]
 	
 	/**
 	* Menu class.
@@ -152,9 +153,9 @@ package org.wvxvws.gui.containers
 			super();
 			skins = SkinManager.getSkin(this);
 			if (skins && skins.length) super._rendererSkin = skins[0];
-			super.addEventListener(GUIEvent.OPENED, openedHandler);
-			super.addEventListener(MouseEvent.ROLL_OUT, rollOutHandler);
-			super.addEventListener(Event.ADDED_TO_STAGE, atsHandler);
+			super.addEventListener(GUIEvent.OPENED, this.openedHandler);
+			super.addEventListener(MouseEvent.ROLL_OUT, this.rollOutHandler);
+			super.addEventListener(Event.ADDED_TO_STAGE, this.atsHandler);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -339,7 +340,7 @@ package org.wvxvws.gui.containers
 			_openedItem = event.target as IMenuRenderer;
 			if (_childMenu && super.contains(_childMenu))
 			{
-				if (!_childMenu.hasMouse) collapseChildMenu();
+				if (!_childMenu.hasMouse) this.collapseChildMenu();
 			}
 			if (!_openedItem) return;
 			if (_openedItem.kind !== CONTAINER || !_openedItem.enabled) return;
@@ -348,7 +349,7 @@ package org.wvxvws.gui.containers
 			_childMenu.backgroundColor = _backgroundColor;
 			_childMenu.borderWidth = _borderWidth;
 			_childMenu.borderColor = _borderColor;
-			_childMenu.labelSkin = _labelSkin;
+			_childMenu.skin = _skin;
 			_childMenu.dataProvider = _openedItem.data as XML;
 			_childMenu.x = (_openedItem as DisplayObject).x + 
 							(_openedItem as DisplayObject).width;

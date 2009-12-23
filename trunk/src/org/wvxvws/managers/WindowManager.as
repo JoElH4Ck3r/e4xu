@@ -235,8 +235,12 @@ package org.wvxvws.managers
 			var v:Vector.<Function>;
 			var e:PaneEvent;
 			var f:Function;
+			var doc:DisplayObjectContainer;
 			if (i > -1)
 			{
+				_windows.push(_windows.splice(i, 1)[0]);
+				doc = (window as DisplayObject).parent;
+				doc.setChildIndex(window as DisplayObject, doc.numChildren - 1);
 				v = _events[PaneEvent.CHOOSEN];
 				if (v)
 				{
