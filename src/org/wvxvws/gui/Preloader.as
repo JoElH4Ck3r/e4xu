@@ -21,7 +21,6 @@
 
 package org.wvxvws.gui 
 {
-	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
 	import flash.display.LoaderInfo;
 	import flash.display.Shape;
@@ -29,12 +28,6 @@ package org.wvxvws.gui
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
 	import flash.events.ProgressEvent;
-	import flash.filters.DropShadowFilter;
-	import flash.filters.GlowFilter;
-	import flash.geom.Matrix;
-	import flash.geom.Point;
-	import flash.geom.Rectangle;
-	import flash.geom.Transform;
 	import mx.core.IMXMLObject;
 	import org.wvxvws.gui.skins.ISkin;
 	import org.wvxvws.gui.skins.ISkinnable;

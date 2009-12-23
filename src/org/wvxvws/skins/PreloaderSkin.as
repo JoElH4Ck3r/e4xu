@@ -10,7 +10,6 @@
 	import mx.core.IMXMLObject;
 	import org.wvxvws.gui.IPreloader;
 	import org.wvxvws.gui.IProgress;
-	import org.wvxvws.gui.skins.AbstractProducer;
 	import org.wvxvws.gui.skins.ISkin;
 	import org.wvxvws.gui.skins.ISkinnable;
 	
