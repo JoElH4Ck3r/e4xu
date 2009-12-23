@@ -192,9 +192,9 @@ package org.wvxvws.gui.renderers
 		public function MenuRenderer()
 		{
 			super();
-			super.addEventListener(MouseEvent.MOUSE_OVER, mouseOverHandler);
-			super.addEventListener(MouseEvent.MOUSE_OUT, mouseOutHandler);
-			super.addEventListener(MouseEvent.CLICK, mclickHandler);
+			super.addEventListener(MouseEvent.MOUSE_OVER, this.mouseOverHandler);
+			super.addEventListener(MouseEvent.MOUSE_OUT, this.mouseOutHandler);
+			super.addEventListener(MouseEvent.CLICK, this.mclickHandler);
 			super.mouseChildren = false;
 			super.tabChildren = false;
 			super._backgroundAlpha = 0;

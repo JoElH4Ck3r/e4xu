@@ -28,6 +28,7 @@ package org.wvxvws.base
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
+	import flash.system.ApplicationDomain;
 	import flash.utils.getDefinitionByName;
 	import flash.utils.getTimer;
 	import mx.core.IMXMLObject;
@@ -75,15 +76,15 @@ package org.wvxvws.base
 		{
 			super();
 			stop();
-			if (stage) stageConfig();
-			else addEventListener(Event.ADDED_TO_STAGE, stageConfig);
+			if (stage) this.stageConfig();
+			else super.addEventListener(Event.ADDED_TO_STAGE, this.stageConfig);
 		}
 		
 		protected function stageConfig(event:Event = null):void 
 		{
-			removeEventListener(Event.ADDED_TO_STAGE, stageConfig);
-			stage.align = StageAlign.TOP_LEFT;
-			stage.scaleMode = StageScaleMode.NO_SCALE;
+			super.removeEventListener(Event.ADDED_TO_STAGE, this.stageConfig);
+			super.stage.align = StageAlign.TOP_LEFT;
+			super.stage.scaleMode = StageScaleMode.NO_SCALE;
 		}
 		
 		public function get preloader():IPreloader { return _ipreloader; }
@@ -91,26 +92,34 @@ package org.wvxvws.base
 		public function set preloader(value:IPreloader):void 
 		{
 			_ipreloader = value;
-			_ipreloader.target = loaderInfo;
+			_ipreloader.target = super.loaderInfo;
 			if (_frameTwoAlias) _ipreloader.classAlias = _frameTwoAlias;
-			(_ipreloader as IEventDispatcher).addEventListener(Event.COMPLETE, completeHandler);
-			addChild(_ipreloader as DisplayObject);
+			(_ipreloader as IEventDispatcher).addEventListener(
+				Event.COMPLETE, this.completeHandler);
+			super.addChild(_ipreloader as DisplayObject);
 		}
 		
 		protected function completeHandler(event:Event):void 
 		{
 			if (framesLoaded < 2) return;
 			(_ipreloader as IEventDispatcher).removeEventListener(
-									Event.COMPLETE, completeHandler);
-			gotoAndStop(2);
+									Event.COMPLETE, this.completeHandler);
+			super.gotoAndStop(2);
 			_frameTwoClass = getDefinitionByName(_frameTwoAlias) as Class;
-			_flexInit = getDefinitionByName("FlexInit") as Class;
-			removeChild(_ipreloader as DisplayObject);
+			if (ApplicationDomain.currentDomain.hasDefinition("FlexInit"))
+			{
+				_flexInit = 
+					ApplicationDomain.currentDomain.getDefinition(
+					"FlexInit") as Class;
+			}
+			super.removeChild(_ipreloader as DisplayObject);
 			_ipreloader = null;
-			var app:DisplayObject = new _frameTwoClass() as DisplayObject;
-			if (_flexInit) Object(_flexInit).init(app);
-			addChild(app);
-			(app as IMXMLObject).initialized(this, "frameTwo");
+			var obj:Object = new _frameTwoClass();
+			var app:DisplayObject = obj as DisplayObject;
+			if (_flexInit) (_flexInit as Object).init(app);
+			if (app) super.addChild(app);
+			if (obj is IMXMLObject)
+				(obj as IMXMLObject).initialized(this, "frameTwo");
 		}
 		
 		public function get frameTwoClass():Class { return _frameTwoClass; }

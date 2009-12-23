@@ -61,7 +61,7 @@
 			if (_labelSkin === value) return;
 			_labelSkin = value;
 			if (!_skin) _skin = new <ISkin>[];
-			while (_skin.length < 2)_skin.push(null);
+			while (_skin.length < 2) _skin.push(null);
 			_skin[0] = _labelSkin;
 			super.invalidate("_labelSkin", _labelSkin, false);
 			if (super.hasEventListener(EventGenerator.getEventType("labelSkin")))
@@ -205,7 +205,7 @@
 		
 		public override function validate(properties:Object):void 
 		{
-			if (!this.skin)
+			if (!_skin)
 			{
 				this.skin = SkinManager.getSkin(this);
 				if (!_skin) _skin = new <ISkin>[];
@@ -259,8 +259,6 @@
 			}
 			if (!child) return null;
 			if (!(child is IRenderer)) return null;
-			//if (_useLabelField) (child as IRenderer).labelField = _labelField;
-			//if (_useLabelFunction)
 			(child as IRenderer).labelSkin = _labelSkin;
 			if (!recycledChild || dirtyChild)
 			{

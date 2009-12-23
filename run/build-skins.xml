@@ -20,6 +20,7 @@
 	<class>org.wvxvws.skins.ListSkin</class>
 	<class>org.wvxvws.skins.MenuSkin</class>
 	<class>org.wvxvws.skins.OptionSkin</class>
+	<class>org.wvxvws.skins.PreloaderSkin</class>
 	<class>org.wvxvws.skins.StepperSkin</class>
 	<!-- Scroller -->
 	<class>org.wvxvws.skins.scroller.ScrollBodySkin</class>

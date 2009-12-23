@@ -22,18 +22,27 @@
 package org.wvxvws.gui 
 {
 	import flash.display.BitmapData;
+	import flash.display.DisplayObject;
+	import flash.display.LoaderInfo;
 	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
+	import flash.events.ProgressEvent;
 	import flash.filters.DropShadowFilter;
 	import flash.filters.GlowFilter;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.geom.Transform;
+	import mx.core.IMXMLObject;
+	import org.wvxvws.gui.skins.ISkin;
+	import org.wvxvws.gui.skins.ISkinnable;
+	import org.wvxvws.gui.skins.SkinManager;
 	
 	[Event(name="complete", type="flash.events.Event")]
+	
+	[Skin("org.wvxvws.skins.PreloaderSkin")]
 	
 	/**
 	* Preloader class.
@@ -41,7 +50,7 @@ package org.wvxvws.gui
 	* @langVersion 3.0
 	* @playerVersion 10.0.12.36
 	*/
-	public class Preloader extends DIV implements IPreloader
+	public class Preloader extends DIV implements IPreloader, ISkinnable
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -62,9 +71,20 @@ package org.wvxvws.gui
 		
 		public function set target(value:IEventDispatcher):void
 		{
-			if (_target == value) return;
+			if (_target === value) return;
+			if (_target)
+			{
+				_target.removeEventListener(
+					ProgressEvent.PROGRESS, this.progressHandler);
+				_target.removeEventListener(Event.COMPLETE, super.dispatchEvent);
+			}
 			_target = value;
-			_target.addEventListener(Event.COMPLETE, completeHandler);
+			if (_target)
+			{
+				_target.addEventListener(
+					ProgressEvent.PROGRESS, this.progressHandler);
+				_target.addEventListener(Event.COMPLETE, super.dispatchEvent);
+			}
 			super.invalidate("_target", _target, false);
 		}
 		
@@ -79,32 +99,24 @@ package org.wvxvws.gui
 		
 		public function get percent():int { return _percent; }
 		
-		public function get radius():int { return _radius; }
+		/* INTERFACE org.wvxvws.gui.skins.ISkinnable */
 		
-		public function set radius(value:int):void 
+		public function get skin():Vector.<ISkin> { return _skin; }
+		
+		public function set skin(value:Vector.<ISkin>):void
 		{
-			if (_radius == value) return;
-			_radius = value;
-			super.invalidate("_radius", _radius, true);
+			if (_skin === value) return;
+			_skin = value;
+			trace("Preloader skin set", _skin);
+			if (_skin && _skin.length)
+				_progressSkin = _skin[0].produce(this) as IProgress;
+			trace("Preloader got it's skin", _progressSkin);
+			super.invalidate("_progressSkin", _progressSkin, false);
 		}
 		
-		public function get circleRadius():int { return _circleRadius; }
+		public function get parts():Object { return null; }
 		
-		public function set circleRadius(value:int):void 
-		{
-			if (_circleRadius == value) return;
-			_circleRadius = value;
-			super.invalidate("_circleRadius", _circleRadius, false);
-		}
-		
-		public function get circleColor():uint { return _circleColor; }
-		
-		public function set circleColor(value:uint):void 
-		{
-			if (_circleColor == value) return;
-			_circleColor = value;
-			super.invalidate("_circleColor", _circleColor, false);
-		}
+		public function set parts(value:Object):void { }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -112,10 +124,12 @@ package org.wvxvws.gui
 		//
 		//--------------------------------------------------------------------------
 		
-		protected var _radius:int = 32;
-		protected var _circleRadius:int = 6;
-		protected var _circleColor:uint = 0xA8874E;
-		protected var _highlightColor:uint = 0xFFB833;
+		protected var _target:IEventDispatcher;
+		protected var _classAlias:String;
+		protected var _skin:Vector.<ISkin>;
+		protected var _isPlaying:Boolean;
+		protected var _progressSkin:IProgress;
+		protected var _percent:int;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -123,24 +137,17 @@ package org.wvxvws.gui
 		//
 		//--------------------------------------------------------------------------
 		
-		private var _cRotation:Number = 0;
-		private var _cTransform:Transform;
-		private var _cMatrix:Matrix;
-		private var _container:Sprite;
-		private var _isPlaying:Boolean;
-		private var _preTX:int;
-		private var _preTY:int;
-		private var _target:IEventDispatcher;
-		private var _percent:int;
-		private var _classAlias:String;
-		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
 		
-		public function Preloader() { super(); }
+		public function Preloader()
+		{
+			super();
+			this.skin = SkinManager.getSkin(this);
+		}
 		
 		//--------------------------------------------------------------------------
 		//
@@ -151,29 +158,39 @@ package org.wvxvws.gui
 		public function start():void
 		{
 			_isPlaying = true;
-			super.addEventListener(Event.ENTER_FRAME, renderFrame, false, 0, true);
+			super.addEventListener(
+				Event.ENTER_FRAME, this.progressHandler, false, 0, true);
 		}
 		
 		public function stop():void
 		{
 			_isPlaying = false;
-			super.removeEventListener(Event.ENTER_FRAME, renderFrame);
+			super.removeEventListener(Event.ENTER_FRAME, this.progressHandler);
 		}
 		
-		override public function initialized(document:Object, id:String):void 
+		public override function initialized(document:Object, id:String):void 
 		{
 			super.initialized(document, id);
-			_backgroundColor = 0x3E2F1B;
-			_backgroundAlpha = 1;
-			init();
-			start();
+			this.start();
 		}
 		
-		override public function validate(properties:Object):void 
+		public override function validate(properties:Object):void 
 		{
+			var skinChanged:Boolean = ("_progressSkin" in properties);
 			super.validate(properties);
-			this.init();
-			if (_isPlaying) start();
+			if (skinChanged)
+			{
+				if (_progressSkin)
+				{
+					if (_progressSkin is DisplayObject)
+					{
+						(_progressSkin as DisplayObject).width = super.width;
+						(_progressSkin as DisplayObject).height = super.height;
+					}
+					(_progressSkin as IMXMLObject).initialized(this, "_progressSkin");
+				}
+			}
+			if (_isPlaying) this.start();
 		}
 		
 		//--------------------------------------------------------------------------
@@ -182,80 +199,36 @@ package org.wvxvws.gui
 		//
 		//--------------------------------------------------------------------------
 		
-		protected function init(numCircles:int = 12):void
+		protected function progressHandler(event:Event):void 
 		{
-			this.drawPatternedBacground();
-			var step:int = numCircles / 2;
-			if (_container && contains(_container))
+			if (event is ProgressEvent)
 			{
-				removeChild(_container);
+				if (_progressSkin)
+				{
+					_progressSkin.percent = 
+						(event as ProgressEvent).bytesLoaded * 100 / 
+						(event as ProgressEvent).bytesTotal;
+						return;
+				}
 			}
-			_container = new Sprite();
-			while (numCircles--)
+			if (_target && _progressSkin)
 			{
-				_container.addChild(drawCircle(
-					new Point(Math.cos(Math.PI * numCircles / step) * _radius,
-					Math.sin(Math.PI * numCircles / step) * _radius)));
+				if (_target is DisplayObject)
+				{
+					_progressSkin.percent = 
+						(_target as DisplayObject).loaderInfo.bytesLoaded * 100 / 
+						(_target as DisplayObject).loaderInfo.bytesTotal;
+						return;
+				}
+				else if (_target is LoaderInfo)
+				{
+					_progressSkin.percent = 
+						(_target as LoaderInfo).bytesLoaded * 100 / 
+						(_target as LoaderInfo).bytesTotal;
+						return;
+				}
+				_progressSkin.percent = 0;
 			}
-			_container.x = _preTX = width >> 1;
-			_container.y = _preTY = height >> 1;
-			_container.filters = [new DropShadowFilter(_radius >> 1, 90, 0, .2, 8, 8, 1.8),
-									new GlowFilter(0, .6, 4, 4, 2, 1, true)];
-			super.addChild(_container);
-			_cTransform = new Transform(_container);
-		}
-		
-		protected function renderFrame(event:Event):void 
-		{
-			_cRotation++;
-			_cRotation = _cRotation % 360;
-			_cMatrix = new Matrix();
-			_cMatrix.rotate(_cRotation * Math.PI / 180);
-			_cMatrix.translate(_preTX, _preTY);
-			_cTransform.matrix = _cMatrix;
-		}
-		
-		protected function drawCircle(where:Point):Shape
-		{
-			var s:Shape = new Shape();
-			var m:Matrix = new Matrix();
-			m.createGradientBox(_circleRadius * 2, _circleRadius * 2);
-			m.tx = where.x;
-			m.ty = where.y;
-			s.graphics.beginGradientFill("radial", 
-										[_highlightColor, _circleColor, _circleColor, _highlightColor],
-										[1, 1, .6, 1], [50, 100, 200, 255], m, "pad", "rgb", .5);
-			s.graphics.drawCircle(where.x, where.y, _circleRadius);
-			s.graphics.endFill();
-			return _container.addChild(s) as Shape;
-		}
-		
-		protected function completeHandler(event:Event):void 
-		{
-			super.dispatchEvent(event);
-		}
-		
-		protected function drawPatternedBacground():void
-		{
-			var cl:uint = _backgroundColor;
-			var pattern:BitmapData = new BitmapData(50, 50, false, _backgroundColor);
-			pattern.fillRect(new Rectangle(0, 0, pattern.width * 0.5, pattern.height), 0x47361F);
-			var i:int = pattern.height;
-			var line:Rectangle = new Rectangle(0, 0, pattern.width * 0.5, 1);
-			while (i >= 0)
-			{
-				pattern.fillRect(line, _backgroundColor);// 0x47361F);
-				line.y = i;
-				i -= 5;
-			}
-			var pWidth:int = width;
-			var pHeight:int = height;
-			var mtx:Matrix = new Matrix();
-			mtx.rotate(Math.PI * 0.25);
-			graphics.clear();
-			graphics.beginBitmapFill(pattern, mtx, true, true);
-			graphics.drawRect(0, 0, pWidth, pHeight);
-			graphics.endFill();
 		}
 		
 		//--------------------------------------------------------------------------
@@ -264,5 +237,4 @@ package org.wvxvws.gui
 		//
 		//--------------------------------------------------------------------------
 	}
-	
 }
