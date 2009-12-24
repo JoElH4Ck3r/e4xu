@@ -100,10 +100,8 @@ package org.wvxvws.gui
 		{
 			if (_skin === value) return;
 			_skin = value;
-			trace("Preloader skin set", _skin);
 			if (_skin && _skin.length)
 				_progressSkin = _skin[0].produce(this) as IProgress;
-			trace("Preloader got it's skin", _progressSkin);
 			super.invalidate("_progressSkin", _progressSkin, false);
 		}
 		
