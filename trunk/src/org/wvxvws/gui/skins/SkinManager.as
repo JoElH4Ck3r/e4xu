@@ -62,7 +62,15 @@
 					{
 						if (!o) o = { };
 						ic.host = forClient;
-						o[part] = ic;
+						if (o[part] && o[part] is ISkin)
+						{
+							o[part] = new <ISkin>[o[part], ic];
+						}
+						else if (o[part] && o[part] is Vector.<ISkin>)
+						{
+							(o[part] as Vector.<ISkin>).push(ic);
+						}
+						else o[part] = ic;
 					}
 				}
 			}

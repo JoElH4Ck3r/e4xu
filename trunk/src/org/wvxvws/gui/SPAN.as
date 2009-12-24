@@ -29,6 +29,7 @@ package org.wvxvws.gui
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Transform;
+	import flash.system.ApplicationDomain;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
@@ -76,7 +77,7 @@ package org.wvxvws.gui
 		
 		public override function set x(value:Number):void 
 		{
-			if (_transformMatrix.tx == value) return;
+			if (_transformMatrix.tx === value) return;
 			_transformMatrix.tx = value;
 			this.invalidate("_transformMatrix", _transformMatrix, true);
 			if (super.hasEventListener(EventGenerator.getEventType("x")))
@@ -98,7 +99,7 @@ package org.wvxvws.gui
 		
 		public override function set y(value:Number):void 
 		{
-			if (_transformMatrix.ty == value) return;
+			if (_transformMatrix.ty === value) return;
 			_transformMatrix.ty = value;
 			this.invalidate("_transformMatrix", _transformMatrix, true);
 			if (super.hasEventListener(EventGenerator.getEventType("y")))
@@ -120,7 +121,7 @@ package org.wvxvws.gui
 		
 		public override function set width(value:Number):void 
 		{
-			if (_bounds.x == value) return;
+			if (_bounds.x === value) return;
 			_bounds.x = value;
 			_autoSize = TextFieldAutoSize.NONE;
 			this.invalidate("_bounds", _bounds, true);
@@ -144,7 +145,7 @@ package org.wvxvws.gui
 		
 		public override function set height(value:Number):void 
 		{
-			if (_bounds.y == value) return;
+			if (_bounds.y === value) return;
 			_bounds.y = value;
 			_autoSize = TextFieldAutoSize.NONE;
 			this.invalidate("_bounds", _bounds, true);
@@ -168,7 +169,7 @@ package org.wvxvws.gui
 		
 		public override function set scaleX(value:Number):void 
 		{
-			if (_transformMatrix.a == value) return;
+			if (_transformMatrix.a === value) return;
 			_transformMatrix.a = value;
 			this.invalidate("_transformMatrix", _transformMatrix, true);
 			if (super.hasEventListener(EventGenerator.getEventType("scaleX")))
@@ -190,7 +191,7 @@ package org.wvxvws.gui
 		
 		public override function set scaleY(value:Number):void 
 		{
-			if (_transformMatrix.d == value) return;
+			if (_transformMatrix.d === value) return;
 			_transformMatrix.d = value;
 			this.invalidate("_transformMatrix", _transformMatrix, true);
 			if (super.hasEventListener(EventGenerator.getEventType("scaleY")))
@@ -233,7 +234,7 @@ package org.wvxvws.gui
 		
 		public override function set backgroundColor(value:uint):void 
 		{
-			if (value == _backgroundColor) return;
+			if (value === _backgroundColor) return;
 			_backgroundColor = value;
 			this.invalidate("_backgroundColor", _backgroundColor, true);
 			if (super.hasEventListener(EventGenerator.getEventType("backgroundColor")))
@@ -255,7 +256,7 @@ package org.wvxvws.gui
 		
 		public override function set background(value:Boolean):void 
 		{
-			if (value == _background) return;
+			if (value === _background) return;
 			_background = value;
 			this.invalidate("_background", _background, true);
 			if (super.hasEventListener(EventGenerator.getEventType("background")))
@@ -277,7 +278,7 @@ package org.wvxvws.gui
 		
 		public override function set text(value:String):void 
 		{
-			if (value == _text) return;
+			if (value === _text) return;
 			_text = value;
 			this.invalidate("_text", _text, true);
 			if (super.hasEventListener(EventGenerator.getEventType("text")))
@@ -299,7 +300,7 @@ package org.wvxvws.gui
 		
 		public override function set autoSize(value:String):void 
 		{
-			if (value == _autoSize) return;
+			if (value === _autoSize) return;
 			_autoSize = value;
 			this.invalidate("_autoSize", _autoSize, true);
 			if (super.hasEventListener(EventGenerator.getEventType("autoSize")))
@@ -358,7 +359,7 @@ package org.wvxvws.gui
 		protected var _className:String;
 		protected var _style:IEventDispatcher;
 		protected var _invalidProperties:Object = { };
-		protected var _childLayouts:Vector.<ILayoutClient> = new Vector.<ILayoutClient>(0, false);
+		protected var _childLayouts:Vector.<ILayoutClient> = new <ILayoutClient>[];
 		protected var _layoutParent:ILayoutClient;
 		protected var _validator:LayoutValidator;
 		protected var _hasPendingValidation:Boolean;
@@ -395,12 +396,14 @@ package org.wvxvws.gui
 		
 		protected function initStyles():void
 		{
+			var parserDef:String = "org.wvxvws.gui.styles.CSSParser";
 			var styleParser:Object;
-			try
+			if (ApplicationDomain.currentDomain.hasDefinition(parserDef))
 			{
-				styleParser = getDefinitionByName("org.wvxvws.gui.styles.CSSParser");
+				styleParser = 
+					ApplicationDomain.currentDomain.getDefinition(parserDef);
 			}
-			catch (error:Error) { return; };
+			else return;
 			if (styleParser.parsed) styleParser.processClient(this);
 			else styleParser.addPendingClient(this);
 		}
@@ -424,9 +427,9 @@ package org.wvxvws.gui
 			{
 				_validator = (super.parent as ILayoutClient).validator;
 				_layoutParent = super.parent as ILayoutClient;
-				if ((parent as ILayoutClient).childLayouts.indexOf(this) < 0)
+				if ((super.parent as ILayoutClient).childLayouts.indexOf(this) < 0)
 				{
-					(parent as ILayoutClient).childLayouts.push(this);
+					(super.parent as ILayoutClient).childLayouts.push(this);
 				}
 			}
 			if (!_validator) _validator = new LayoutValidator();
@@ -464,14 +467,16 @@ package org.wvxvws.gui
 			super.dispatchEvent(new GUIEvent(GUIEvent.VALIDATED));
 		}
 		
-		public function invalidate(property:String, cleanValue:*, validateParent:Boolean):void
+		public function invalidate(property:String, 
+						cleanValue:*, validateParent:Boolean):void
 		{
 			_invalidProperties[property] = cleanValue;
 			if (_validator) _validator.requestValidation(this, validateParent);
 			else
 			{
 				_hasPendingValidation = true;
-				_hasPendingParentValidation = _hasPendingParentValidation || validateParent;
+				_hasPendingParentValidation = 
+					_hasPendingParentValidation || validateParent;
 			}
 		}
 	}
