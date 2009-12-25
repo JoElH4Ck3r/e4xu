@@ -14,7 +14,7 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public function get current():ListCell { return _current; }
+		public function get position():int { return _position; }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -23,14 +23,16 @@
 		//--------------------------------------------------------------------------
 		
 		protected var _list:DataList;
-		protected var _position:int;
+		protected var _position:int = -1;
 		protected var _current:ListCell;
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Private properties
+		//  Internal properties
 		//
 		//--------------------------------------------------------------------------
+		
+		internal function get current():ListCell { return _current; }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -42,7 +44,7 @@
 		{
 			super();
 			this._list = list;
-			this._current = list.seek(0);
+			this._current = list.first;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -53,17 +55,21 @@
 		
 		public function next():Object
 		{
+			var ret:Object;
 			if (!this._current.next) return null;
+			ret = this._current.target;
 			this._position++;
 			this._current = this._current.next;
-			return this._current.target;
+			return ret;
 		}
 		
 		public function reset():void
 		{
-			this._current = list.seek(0);
-			this._position = 0;
+			this._current = this._list.first;
+			this._position = -1;
 		}
+		
+		public function getCurrent():Object { return _current.target; }
 		
 		public function hasNext():Boolean { return this._current.next !== null; }
 		
