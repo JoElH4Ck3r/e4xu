@@ -36,7 +36,7 @@
     <option linkReport="" />
     <option loadExterns="" />
     <option additional="-compiler.namespaces.namespace http://e4xu.googlecode.com c:\www\projects\xmlhelpers\run\manifest.xml&#xA;-keep&#xA;-link-report C:\www\projects\xmlhelpers\run\dependencies.xml&#xA;-dump-config C:\www\projects\xmlhelpers\run\config.xml" />
-    <option customSDK="C:\flex_sdk_3_3" />
+    <option customSDK="C:\off-trunk" />
   </build>
   <!-- SWC Include Libraries -->
   <includeLibraries>

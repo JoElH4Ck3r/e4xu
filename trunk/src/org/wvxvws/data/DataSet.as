@@ -16,6 +16,12 @@
 	 */
 	public class DataSet extends EventDispatcher
 	{
+		//--------------------------------------------------------------------------
+		//
+		//  Public properties
+		//
+		//--------------------------------------------------------------------------
+		
 		public function get length():int
 		{
 			if (_source) return _source.length;
@@ -24,8 +30,26 @@
 		
 		public function get type():Class { return _type; }
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected properties
+		//
+		//--------------------------------------------------------------------------
+		
 		protected var _source:Object;
 		protected var _type:Class;
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Private properties
+		//
+		//--------------------------------------------------------------------------
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
 		
 		public function DataSet(type:Class) 
 		{
@@ -35,6 +59,12 @@
 				getQualifiedClassName(type) + ">") as Class;
 			_source = new c();
 		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Public static methods
+		//
+		//--------------------------------------------------------------------------
 		
 		public static function fromXML(from:XML):DataSet
 		{
@@ -63,13 +93,19 @@
 			var type:Class;
 			var ts:String = describeType(from).@name;
 			if (ts.indexOf("::Vector") < 0)
-				throw new ArgumentError("Value must be Vector.");
+				throw new ArgumentError(from + " must be Vector.");
 			ts = ts.replace(/.*<(.*)>.*/g, "$1");
 			type = getDefinitionByName(ts) as Class;
 			var ds:DataSet = new DataSet(type);
 			for each (var o:Object in from) ds.add(o);
 			return ds;
 		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
 		
 		public function add(item:Object, index:int = -1):void
 		{
@@ -117,5 +153,17 @@
 				super.dispatchEvent(new SetEvent(SetEvent.SORT, null));
 			}
 		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Private methods
+		//
+		//--------------------------------------------------------------------------
 	}
 }
