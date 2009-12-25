@@ -39,6 +39,7 @@
 		protected var _type:Class;
 		protected var _last:ListCell;
 		protected var _length:uint;
+		protected var _iterator:ListIterator;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -115,6 +116,10 @@
 					break;
 				}
 			}
+			if (this._iterator && o && this._iterator.current === o)
+			{
+				this._iterator.reset();
+			}
 			super.dispatchEvent(new SetEvent(SetEvent.REMOVE, i));
 			return ret;
 		}
@@ -142,6 +147,13 @@
 				if (o.target === item) return i;
 			}
 			return -1;
+		}
+		
+		public function getIterator(reset:Boolean = true):ListIterator
+		{
+			if (!this._iterator) this._iterator = new ListIterator(this);
+			if (reset) this._iterator.reset();
+			return this._iterator;
 		}
 		
 		public override function toString():String
