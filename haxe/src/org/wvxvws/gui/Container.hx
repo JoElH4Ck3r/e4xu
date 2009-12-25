@@ -7,8 +7,9 @@ package org.wvxvws.gui;
 
 import flash.display.DisplayObject;
 import flash.display.DisplayObjectContainer;
+import flash.display.Sprite;
+import flash.geom.Transform;
 import flash.Lib;
-import haxe.FastList;
 import org.wvxvws.gui.layouts.Invalides;
 import org.wvxvws.gui.layouts.Layout;
 
@@ -25,29 +26,27 @@ class Container extends Div
 	// Getters | Setters
 	//------------------------------------------------------------------------------
 	
-	private override function getWhere():DisplayObject { return _where; }
-	
 	private override function setWhere(value:DisplayObject):DisplayObject 
 	{
-		_where = cast(value, DisplayObjectContainer);
-		return _where;
+		this._where = cast(value, DisplayObjectContainer);
+		this._transform = new Transform(this._where);
+		return this._where;
 	}
 	
-	private function getLayout():Layout { return _layout; }
+	private function getLayout():Layout { return this._layout; }
 	
 	private function setLayout(value:Layout):Layout 
 	{
-		return _layout = value;
+		return this._layout = value;
 	}
 	
 	//------------------------------------------------------------------------------
 	// Private properties
 	//------------------------------------------------------------------------------
 	
-	private var _elements:FastList<Div>;
+	private var _elements:List<Div>;
 	private var _layout:Layout;
 	private var _layoutSuspended:Bool;
-	private var _numElements:Int;
 	
 	//------------------------------------------------------------------------------
 	// Constructor
@@ -55,8 +54,9 @@ class Container extends Div
 	
 	public function new(where:DisplayObjectContainer = null) 
 	{
-		super(where);
-		this._elements = new FastList<Div>();
+		super(where != null ? where : new Sprite());
+		this._elements = new List<Div>();
+		trace(this._where);
 	}
 	
 	//------------------------------------------------------------------------------
@@ -68,7 +68,7 @@ class Container extends Div
 	public function performLayout():Void
 	{
 		var e:Invalides;
-		_layoutSuspended = false;
+		this._layoutSuspended = false;
 		var iter:Iterator<Invalides>;
 		if (this._layout.invalidProperties != null)
 		{
@@ -84,12 +84,10 @@ class Container extends Div
 						super.setBackground(this._color, this._alpha);
 					case Invalides.CHILDREN:
 						this.setChildren();
-					case Invalides.POSITION:
-						super.setPosition(this._position);
+					case Invalides.MATRIX:
+						super.setMatrix(this._size, this._position, this._rotation);
 					case Invalides.SCROLL:
-						super.setScroll(this._scroll);
-					case Invalides.SIZE:
-						super.setSize(this._size);
+						super.setScroll(this._scrollX, this._scrollY);
 					case Invalides.STATE:
 						super.setState(this._state);
 					case Invalides.TEXT:
@@ -101,19 +99,23 @@ class Container extends Div
 	
 	public function addElement(element:Div):Div
 	{
+		if (Lambda.has(this._elements, element)) return null;
 		this._elements.add(element);
-		this._numElements++;
-		if (this._where != null && !_layoutSuspended)
+		if (this._where != null && !this._layoutSuspended)
 		{
 			cast(this._where, DisplayObjectContainer).addChild(element.where);
 		}
 		return element;
 	}
 	
+	private function hasElement(element:Div):Bool
+	{
+		return Lambda.has(this._elements, element);
+	}
+	
 	public function removeElement(element:Div):Div
 	{
 		var b:Bool = this._elements.remove(element);
-		if (b) this._numElements--;
 		if (this._where != null && 
 			cast(this._where, DisplayObjectContainer).contains(element.where))
 		{

@@ -9,9 +9,8 @@ enum Invalides
 {
 	BACKGROUND;
 	CHILDREN;
-	POSITION;
+	MATRIX;
 	SCROLL;
-	SIZE;
 	STATE;
 	TEXT;
 }
