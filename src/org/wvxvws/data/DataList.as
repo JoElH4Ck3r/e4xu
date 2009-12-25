@@ -27,19 +27,21 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		//--------------------------------------------------------------------------
-		//
-		//  Private properties
-		//
-		//--------------------------------------------------------------------------
-		
 		protected static const pool:DataList = new DataList(ListCell);
 		
-		protected var _source:ListCell;
+		protected var _first:ListCell;
 		protected var _type:Class;
 		protected var _last:ListCell;
 		protected var _length:uint;
 		protected var _iterator:ListIterator;
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Internal properties
+		//
+		//--------------------------------------------------------------------------
+		
+		internal function get first():ListCell { return _first; }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -51,7 +53,7 @@
 		{
 			super();
 			this._type = type;
-			this._source = new ListCell(null, null);
+			this._first = new ListCell(null, null);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -67,15 +69,15 @@
 			var freeCell:ListCell;
 			var seekCell:ListCell;
 			var i:int;
-			var nextCell:ListCell = _source;
+			var nextCell:ListCell = _first;
 			var prevCell:ListCell;
 			
 			if (pool.length) freeCell = pool.pop();
 			else freeCell = new ListCell(item, null);
 			if (position < 0)
 			{
-				seekCell = this._source;
-				this._source = freeCell;
+				seekCell = this._first;
+				this._first = freeCell;
 			}
 			else
 			{
@@ -100,7 +102,7 @@
 		{
 			if (!(item is _type)) return null;
 			var i:int;
-			var o:ListCell = _source;
+			var o:ListCell = _first;
 			var prev:ListCell;
 			var ret:Object;
 			while (o.next)
@@ -127,7 +129,7 @@
 		public function seek(position:int):Object
 		{
 			var i:int;
-			var o:ListCell = _source;
+			var o:ListCell = _first;
 			while (o.next)
 			{
 				o = o.next;
@@ -139,7 +141,7 @@
 		public function find(item:Object):int
 		{
 			var i:int;
-			var o:ListCell = _source;
+			var o:ListCell = _first;
 			while (o.next)
 			{
 				o = o.next;
@@ -160,7 +162,7 @@
 		{
 			var ret:String = "DataList<" + getQualifiedClassName(_type) + ">{";
 			var i:int;
-			var o:ListCell = _source;
+			var o:ListCell = _first;
 			while (o.next)
 			{
 				ret += i + ": " + o.target + ", ";
@@ -181,8 +183,8 @@
 		protected function pop():ListCell
 		{
 			if (!this._length) return null;
-			var ret:ListCell = this._source;
-			this._source = this._source.next;
+			var ret:ListCell = this._first;
+			this._first = this._first.next;
 			this._length--;
 			return ret;
 		}
