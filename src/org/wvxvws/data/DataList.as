@@ -24,6 +24,7 @@ package org.wvxvws.data
 	//{ imports
 	import flash.events.EventDispatcher;
 	import flash.utils.describeType;
+	import flash.utils.Dictionary;
 	import flash.utils.getDefinitionByName;
 	import flash.utils.getQualifiedClassName;
 	//}
@@ -47,7 +48,7 @@ package org.wvxvws.data
 		//
 		//--------------------------------------------------------------------------
 		
-		public function get length():uint { return _length; }
+		public function get length():uint { return this._length; }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -55,7 +56,7 @@ package org.wvxvws.data
 		//
 		//--------------------------------------------------------------------------
 		
-		protected static const pool:DataList = new DataList(ListCell);
+		protected static const pool:Dictionary = new Dictionary(true);
 		
 		protected var _first:ListCell;
 		protected var _type:Class;
@@ -85,6 +86,18 @@ package org.wvxvws.data
 		
 		//--------------------------------------------------------------------------
 		//
+		//  Protected static methods
+		//
+		//--------------------------------------------------------------------------
+		
+		protected static function cellFromPool():ListCell
+		{
+			for (var o:Object in pool) return o as ListCell;
+			return null;
+		}
+		
+		//--------------------------------------------------------------------------
+		//
 		//  Public static methods
 		//
 		//--------------------------------------------------------------------------
@@ -97,8 +110,8 @@ package org.wvxvws.data
 			for each (var o:Object in input)
 			{
 				if (!(o is type)) continue;
-				if (pool.length) newCell = pool.pop();
-				else newCell = new ListCell(null, null);
+				newCell = cellFromPool();
+				if (!newCell) newCell = new ListCell(null, null);
 				cell.target = o;
 				cell.next = newCell;
 				cell = newCell;
@@ -119,8 +132,8 @@ package org.wvxvws.data
 			var newCell:ListCell;
 			for each (var o:Object in input)
 			{
-				if (pool.length) newCell = pool.pop();
-				else newCell = new ListCell(null, null);
+				newCell = cellFromPool();
+				if (!newCell) newCell = new ListCell(null, null);
 				cell.target = o;
 				cell.next = newCell;
 				cell = newCell;
@@ -144,8 +157,8 @@ package org.wvxvws.data
 			var nextCell:ListCell = _first;
 			var prevCell:ListCell;
 			
-			if (pool.length) freeCell = pool.pop();
-			else freeCell = new ListCell(item, null);
+			newCell = cellFromPool();
+			if (!newCell) newCell = new ListCell(null, null);
 			if (position < 0)
 			{
 				seekCell = this._first;
@@ -240,7 +253,7 @@ package org.wvxvws.data
 				nextCell = cell.next;
 				cell.next = null;
 				cell.target = null;
-				if (usePool) pool.add(cell);
+				if (usePool) pool[cell] = true;
 				cell = nextCell;
 			}
 		}
@@ -300,18 +313,5 @@ package org.wvxvws.data
 		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
-		
-		protected function pop():ListCell
-		{
-			if (!this._length) return null;
-			var ret:ListCell = this._first;
-			this._first = this._first.next;
-			this._length--;
-			if (this._iterator && this._iterator.current === ret)
-			{
-				this._iterator.reset();
-			}
-			return ret;
-		}
 	}
 }

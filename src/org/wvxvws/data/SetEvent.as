@@ -36,9 +36,9 @@ package org.wvxvws.data
 		public static const CHANGE:String = "change";
 		public static const SORT:String = "sort";
 		
-		public function get data():Object { return _data; }
+		public function get data():Object { return this._data; }
 		
-		public function get index():int { return _index; }
+		public function get index():int { return this._index; }
 		
 		protected var _data:Object;
 		protected var _index:int;
