@@ -1,4 +1,25 @@
-﻿package org.wvxvws.data
+﻿////////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (C) Oleg Sivokon email: olegsivokon@gmail.com
+//  
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or any later version.
+//  
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//  GNU General Public License for more details.
+//  
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, write to the Free Software
+//  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+//  Or visit http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+//
+////////////////////////////////////////////////////////////////////////////////
+
+package org.wvxvws.data
 {
 	import flash.events.EventDispatcher;
 	import flash.utils.describeType;
@@ -24,11 +45,11 @@
 		
 		public function get length():int
 		{
-			if (_source) return _source.length;
+			if (this._source) return this._source.length;
 			return 0;
 		}
 		
-		public function get type():Class { return _type; }
+		public function get type():Class { return this._type; }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -41,12 +62,6 @@
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Private properties
-		//
-		//--------------------------------------------------------------------------
-		
-		//--------------------------------------------------------------------------
-		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
@@ -54,10 +69,10 @@
 		public function DataSet(type:Class) 
 		{
 			super();
-			_type = type;
+			this._type = type;
 			var c:Class = getDefinitionByName("__AS3__.vec::Vector.<" + 
 				getQualifiedClassName(type) + ">") as Class;
-			_source = new c();
+			this._source = new c();
 		}
 		
 		//--------------------------------------------------------------------------
@@ -77,14 +92,13 @@
 		{
 			var ds:DataSet = new DataSet(XML);
 			from.(ds.add(valueOf()));
-			trace(ds.at(0).toXMLString());
 			return ds;
 		}
 		
 		public static function fromArray(from:Array):DataSet
 		{
 			var ds:DataSet = new DataSet(Object);
-			for each (var o:Object in from) ds.add(o);
+			ds._source.push.apply(ds._source, from);
 			return ds;
 		}
 		
@@ -109,8 +123,8 @@
 		
 		public function add(item:Object, index:int = -1):void
 		{
-			if (index < 0) _source.push(item);
-			else _source.splice(index, 0, item);
+			if (index < 0) this._source.push(item);
+			else this._source.splice(index, 0, item);
 			if (super.hasEventListener(SetEvent.ADD))
 			{
 				super.dispatchEvent(new SetEvent(SetEvent.ADD, item, index));
@@ -128,41 +142,42 @@
 		
 		public function remove(item:Object):void
 		{
-			var i:int = _source.indexOf(item);
-			_source.splice(i, 1);
+			var i:int = this._source.indexOf(item);
+			this._source.splice(i, 1);
 			if (super.hasEventListener(SetEvent.REMOVE))
 			{
 				super.dispatchEvent(new SetEvent(SetEvent.REMOVE, item, i));
 			}
 		}
 		
-		public function at(index:int):Object { return _source[index]; }
+		public function at(index:int):Object { return this._source[index]; }
 		
 		public function clone():DataSet
 		{
-			var ds:DataSet = new DataSet(_type);
-			for each (var o:Object in _source) ds.add(o);
+			var ds:DataSet = new DataSet(this._type);
+			for each (var o:Object in this._source) ds.add(o);
 			return ds;
 		}
 		
 		public function sort(on:Function):void
 		{
-			_source.sort(on);
+			this._source.sort(on);
 			if (super.hasEventListener(SetEvent.SORT))
 			{
 				super.dispatchEvent(new SetEvent(SetEvent.SORT, null));
 			}
 		}
 		
-		//--------------------------------------------------------------------------
-		//
-		//  Protected methods
-		//
-		//--------------------------------------------------------------------------
+		public override function toString():String
+		{
+			return ("DataSet<" + 
+				getQualifiedClassName(this._type) + 
+				">[" + this._source.join(",") + "]");
+		}
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Private methods
+		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
 	}
