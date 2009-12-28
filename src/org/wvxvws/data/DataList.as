@@ -453,6 +453,32 @@ package org.wvxvws.data
 			this._first = cellB;
 		}
 		
+		public function toVector():Object
+		{
+			var cell:ListCell = this._first;
+			var c:Class = getDefinitionByName("__AS3__.vec::Vector.<" + 
+				getQualifiedClassName(this._type) + ">") as Class;
+			var v:Object = new c();
+			while (cell)
+			{
+				v.push(cell.target);
+				cell = cell.next;
+			}
+			return v;
+		}
+		
+		public function toArray():Array
+		{
+			var cell:ListCell = this._first;
+			var v:Array = [];
+			while (cell)
+			{
+				v.push(cell.target);
+				cell = cell.next;
+			}
+			return v;
+		}
+		
 		public override function toString():String
 		{
 			var ret:String = "DataList<" + getQualifiedClassName(this._type) + ">{";
