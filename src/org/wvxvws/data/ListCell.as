@@ -37,6 +37,7 @@ package org.wvxvws.data
 		
 		public var target:Object;
 		public var next:ListCell;
+		public var prev:ListCell;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -44,11 +45,16 @@ package org.wvxvws.data
 		//
 		//--------------------------------------------------------------------------
 		
-		public function ListCell(target:Object, next:ListCell)
+		public function ListCell(target:Object, next:ListCell, prev:ListCell)
 		{
 			super();
 			this.target = target;
 			this.next = next;
+			this.prev = prev;
 		}
+		
+		public function valueOf():Object { return this.target; }
+		
+		public function toString():Object { return String(this.target); }
 	}
 }
