@@ -156,7 +156,6 @@ package org.wvxvws.data
 				cell = newCell;
 				i++;
 			}
-			cell.next = null;
 			if (prevCell) prevCell.next = null;
 			dl._length = i;
 			return dl;
@@ -201,7 +200,7 @@ package org.wvxvws.data
 			if (prevCell) prevCell.next = freeCell;
 			freeCell.prev = prevCell;
 			this._length++;
-			super.dispatchEvent(new SetEvent(SetEvent.ADD, position));
+			super.dispatchEvent(new SetEvent(SetEvent.ADD, freeCell.target, position));
 		}
 		
 		public function remove(item:Object):Object
@@ -229,7 +228,7 @@ package org.wvxvws.data
 			{
 				this._iterator.reset();
 			}
-			super.dispatchEvent(new SetEvent(SetEvent.REMOVE, i));
+			super.dispatchEvent(new SetEvent(SetEvent.REMOVE, ret, i));
 			return ret;
 		}
 		
@@ -398,6 +397,7 @@ package org.wvxvws.data
 				this._first = oldHead.prev;
 				oldHead = oldHead.prev;
 			}
+			super.dispatchEvent(new SetEvent(SetEvent.SORT, null, -1));
 		}
 		
 		public function bubbleSort(callback:Function):void
@@ -451,6 +451,7 @@ package org.wvxvws.data
 				cellA = cellA.prev;
 			}
 			this._first = cellB;
+			super.dispatchEvent(new SetEvent(SetEvent.SORT, null, -1));
 		}
 		
 		public function toVector():Object
