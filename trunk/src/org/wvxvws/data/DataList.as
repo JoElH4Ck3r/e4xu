@@ -81,7 +81,7 @@ package org.wvxvws.data
 		{
 			super();
 			this._type = type;
-			this._first = new ListCell(null, null);
+			this._first = new ListCell(null, null, null);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -92,8 +92,14 @@ package org.wvxvws.data
 		
 		protected static function cellFromPool():ListCell
 		{
-			for (var o:Object in pool) return o as ListCell;
-			return null;
+			var ret:ListCell;
+			for (var o:Object in pool)
+			{
+				ret = o as ListCell;
+				break;
+			}
+			delete pool[ret];
+			return ret;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -107,15 +113,22 @@ package org.wvxvws.data
 			var dl:DataList = new DataList(type);
 			var cell:ListCell = dl._first;
 			var newCell:ListCell;
+			var prevCell:ListCell;
+			var i:int;
 			for each (var o:Object in input)
 			{
 				if (!(o is type)) continue;
 				newCell = cellFromPool();
-				if (!newCell) newCell = new ListCell(null, null);
+				if (!newCell) newCell = new ListCell(null, null, null);
 				cell.target = o;
 				cell.next = newCell;
+				cell.prev = prevCell;
+				prevCell = cell;
 				cell = newCell;
+				i++;
 			}
+			if (prevCell) prevCell.next = null;
+			dl._length = i;
 			return dl;
 		}
 		
@@ -130,14 +143,22 @@ package org.wvxvws.data
 			var dl:DataList = new DataList(type);
 			var cell:ListCell = dl._first;
 			var newCell:ListCell;
+			var prevCell:ListCell;
+			var i:int;
 			for each (var o:Object in input)
 			{
 				newCell = cellFromPool();
-				if (!newCell) newCell = new ListCell(null, null);
+				if (!newCell) newCell = new ListCell(null, null, null);
 				cell.target = o;
 				cell.next = newCell;
+				cell.prev = prevCell;
+				prevCell = cell;
 				cell = newCell;
+				i++;
 			}
+			cell.next = null;
+			if (prevCell) prevCell.next = null;
+			dl._length = i;
 			return dl;
 		}
 		
@@ -151,14 +172,13 @@ package org.wvxvws.data
 		{
 			if (!(item is _type)) return;
 			position = Math.min(Math.max(-1, position), this._length);
-			var freeCell:ListCell;
 			var seekCell:ListCell;
 			var i:int;
 			var nextCell:ListCell = _first;
 			var prevCell:ListCell;
+			var freeCell:ListCell = cellFromPool();
+			if (!freeCell) freeCell = new ListCell(null, null, null);
 			
-			newCell = cellFromPool();
-			if (!newCell) newCell = new ListCell(null, null);
 			if (position < 0)
 			{
 				seekCell = this._first;
@@ -179,6 +199,7 @@ package org.wvxvws.data
 			}
 			freeCell.next = seekCell;
 			if (prevCell) prevCell.next = freeCell;
+			freeCell.prev = prevCell;
 			this._length++;
 			super.dispatchEvent(new SetEvent(SetEvent.ADD, position));
 		}
@@ -199,6 +220,7 @@ package org.wvxvws.data
 				{
 					ret = cell.target;
 					prev.next = cell.next;
+					if (cell.next) cell.next.prev = prev;
 					this._length--;
 					break;
 				}
@@ -291,18 +313,158 @@ package org.wvxvws.data
 			return dl;
 		}
 		
+		public function clone():DataList
+		{
+			var ret:DataList = new DataList(this._type);
+			var cell:ListCell = this._first;
+			var clonedCell:ListCell = ret._first;
+			var freeCell:ListCell;
+			var i:int;
+			while (cell.next)
+			{
+				freeCell = cellFromPool();
+				if (!freeCell) freeCell = new ListCell(null, null, null);
+				clonedCell.next = freeCell;
+				clonedCell.target = cell.target;
+				clonedCell.prev = cell.prev;
+				clonedCell = freeCell;
+				cell = cell.next;
+				i++;
+			}
+			if (i)
+			{
+				clonedCell.target = cell.target;
+				ret._length = ++i;
+			}
+			return ret;
+		}
+		
+		public function sort(callback:Function = null):void
+		{
+			var list:ListCell = this._first;
+			var list2:ListCell;
+			var l1next:ListCell;
+			var l1prev:ListCell;
+
+			var l2next:ListCell;
+			var l2prev:ListCell;
+			var oldHead:ListCell = this._first;
+			var useCallback:Boolean = callback is Function;
+			
+			while (list)
+			{
+				list2 = list.next;
+				
+				while (list2)
+				{
+					if ((useCallback && callback(list.target, list2.target)) || 
+						(!useCallback && list < list2))
+					{
+						l1next = list.next;
+						l1prev = list.prev;
+						
+						l2next = list2.next;
+						l2prev = list2.prev;
+						
+						if (l1next) l1next.prev = list2;
+						if (l1prev) l1prev.next = list2;
+						
+						if (list2 !== l1next) list2.next = l1next;
+						else list2.next = list;
+						
+						if (list2 !== l1prev) list2.prev = l1prev;
+						else list2.prev = list;
+						
+						if (l2next) l2next.prev = list;
+						if (l2prev) l2prev.next = list;
+						
+						if (list !== l2next) list.next = l2next;
+						else list.next = list2;
+						
+						if (list !== l2prev) list.prev = l2prev;
+						else list.prev = list2;
+						
+						l1next = list;
+						list = list2;
+						list2 = l1next; 
+					}
+					list2 = list2.next;
+				}
+				list = list.next;
+			}
+			
+			while (oldHead.prev)
+			{
+				this._first = oldHead.prev;
+				oldHead = oldHead.prev;
+			}
+		}
+		
+		public function bubbleSort(callback:Function):void
+		{
+			var oldHead:ListCell = this._first;
+			var oldTail:ListCell;
+			var cellA:ListCell = this._first;
+			var cellB:ListCell;
+			var useCallback:Boolean = callback is Function;
+			
+			while (cellA)
+			{
+				cellB = cellA;
+				cellA = cellA.next;
+			}
+			oldTail = cellB;
+			cellA = oldHead;
+			cellB = cellA.next;
+			while (cellB)
+			{
+				if ((useCallback && callback(cellA.target, cellB.target)) || 
+					(!useCallback && cellA < cellB))
+				{
+					cellA = cellA.next;
+					cellB = cellA.next;
+				}
+				else
+				{
+					cellB.prev = cellA.prev;
+					oldHead = oldTail;
+					oldTail.next = cellA;
+					oldTail = oldTail.next;
+					oldTail.prev = oldHead;
+					oldTail.next = null;
+					if (cellB.prev)
+					{
+						cellA = cellB.prev;
+						cellA.next = cellB;
+					}
+					else
+					{
+						cellB = cellB.next;
+						cellA = cellB.prev;
+						cellA.prev = null;
+					}
+				}
+			}
+			while (cellA)
+			{
+				cellB = cellA;
+				cellA = cellA.prev;
+			}
+			this._first = cellB;
+		}
+		
 		public override function toString():String
 		{
 			var ret:String = "DataList<" + getQualifiedClassName(this._type) + ">{";
 			var i:int;
-			var cell:ListCell = _first;
-			while (cell.next)
+			var cell:ListCell = this._first;
+			while (cell.next && this._length > i)
 			{
 				ret += i + ": " + cell.target + ", ";
 				cell = cell.next;
 				i++;
 			}
-			if (cell.target) ret += i + ": " + cell.target;
+			if (i) ret += i + ": " + cell.target;
 			else if (ret.charAt(ret.length - 1) === " ")
 				ret = ret.substr(0, ret.length - 2);
 			return ret + "}";
