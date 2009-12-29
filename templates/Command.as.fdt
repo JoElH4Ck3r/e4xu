@@ -1,0 +1,61 @@
+package $(Package) $(CSLB){
+	//{ imports
+	import com.adobe.cairngorm.business.ServiceLocator;
+	import com.adobe.cairngorm.commands.ICommand;
+	import com.adobe.cairngorm.control.CairngormEvent;
+	import flash.events.Event;
+	
+	import mx.controls.Alert;
+	import mx.rpc.AsyncToken;
+	import mx.rpc.IResponder;
+	import mx.rpc.events.FaultEvent;
+	import mx.rpc.remoting.RemoteObject;
+	//}
+	
+	/**
+	$(CBI)* $(FileName) command.
+	$(CBI)* @author $(DefaultUser)
+	$(CBI)* @langVersion $(langVersion)
+	$(CBI)* @playerVersion $(playerVersion)
+	$(CBI)*/
+	public class $(FileName) implements ICommand, IResponder $(CSLB){
+		//--------------------------------------------------------------------------
+		//
+		//  Private properties
+		//
+		//--------------------------------------------------------------------------
+		
+		private	var _service:RemoteObject = 
+				ServiceLocator.getInstance().getRemoteObject("ro");
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+		
+	  	public function $(FileName)() { super(); }
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
+		
+		public function execute(event:CairngormEvent):void $(CSLB){
+			var token:AsyncToken = service.$(EntryPoint)();
+			
+			token.addResponder(this);
+			token.originator = event;
+		}
+		
+		public function result(event:Object):void $(CSLB){
+			
+		}
+		
+		public function fault(event:Object):void $(CSLB){
+			var faultEvent:FaultEvent = event as FaultEvent;
+			Alert.show("Data could not be retrieved " + faultEvent.fault.faultString);
+		}
+	}
+}

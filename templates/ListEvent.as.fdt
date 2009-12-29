@@ -1,0 +1,53 @@
+package $(Package) $(CSLB){
+	//{ imports
+	import flash.events.Event;
+	//}
+	
+	/**
+	$(CBI)* $(FileName) event.
+	$(CBI)* @author $(DefaultUser)
+	$(CBI)* @langVersion $(langVersion)
+	$(CBI)* @playerVersion $(playerVersion)
+	$(CBI)*/
+	public class List_$$(Type)Event extends Event $(CSLB){
+		public static const ADD:String = "add$$(Type)";
+		public static const REMOVE:String = "remove$$(Type)";
+		public static const CHANGE:String = "change$$(Type)";
+		public static const SORT:String = "sort$$(Type)";
+		
+		public function get data():$$(Type) { return this._data; }
+		
+		public function get index():int { return this._index; }
+		
+		protected var _data:$$(Type);
+		protected var _index:int;
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+		
+		public function List_$$(Type)Event(type:String, data:$$(Type), index:int = -1) $(CSLB){ 
+			super(type);
+			this._data = data;
+			$(EntryPoint)
+		} 
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		$(CBI)* Note this method does not create a new event instance. 
+		$(CBI)* It returns the reference to this event.
+		$(CBI)*/
+		public override function clone():Event { return this; } 
+		
+		public override function toString():String $(CSLB){ 
+			return super.formatToString("List_$$(Type)Event", "type");
+		}
+	}
+}

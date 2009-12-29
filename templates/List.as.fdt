@@ -1,0 +1,425 @@
+﻿package $(Package) $(CSLB){
+	//{ imports
+	import flash.events.EventDispatcher;
+	import flash.utils.describeType;
+	import flash.utils.Dictionary;
+	import flash.utils.getDefinitionByName;
+	//}
+	
+	[Event(name="add$$(Type)", type="$(Package).List_$$(Type)Event")]
+	[Event(name="change$$(Type)", type="$(Package).List_$$(Type)Event")]
+	[Event(name="remove$$(Type)", type="$(Package).List_$$(Type)Event")]
+	[Event(name="sort$$(Type)", type="$(Package).List_$$(Type)Event")]
+	
+	/**
+	$(CBI)* $(FileName) event.
+	$(CBI)* @author $(DefaultUser)
+	$(CBI)* @langVersion $(langVersion)
+	$(CBI)* @playerVersion $(playerVersion)
+	$(CBI)*/
+	public class List_$$(Type) extends EventDispatcher $(CSLB){
+		//--------------------------------------------------------------------------
+		//
+		//  Public properties
+		//
+		//--------------------------------------------------------------------------
+		
+		public function get length():uint { return this._length; }
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected properties
+		//
+		//--------------------------------------------------------------------------
+		
+		protected static const pool:Dictionary = new Dictionary(true);
+		
+		protected var _first:List_$$(Type)Cell;
+		protected var _type:Class;
+		protected var _length:uint;
+		protected var _iterator:List_$$(Type)Iterator;
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Internal properties
+		//
+		//--------------------------------------------------------------------------
+		
+		internal function get first():List_$$(Type)Cell { return _first; }
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+		
+		public function List_$$(Type)() $(CSLB){
+			super();
+			this._type = $$(Type);
+			this._first = new List_$$(Type)Cell(null, null, null);
+			$(EntryPoint)
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected static methods
+		//
+		//--------------------------------------------------------------------------
+		
+		protected static function cellFromPool():List_$$(Type)Cell
+		{
+			var ret:List_$$(Type)Cell;
+			for (var o:Object in pool)
+			{
+				ret = o as List_$$(Type)Cell;
+				break;
+			}
+			delete pool[ret];
+			return ret;
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Public static methods
+		//
+		//--------------------------------------------------------------------------
+		
+		public static function fromArray(input:Array):List_$$(Type) $(CSLB){
+			var dl:List_$$(Type) = new List_$$(Type)();
+			var cell:List_$$(Type)Cell = dl._first;
+			var newCell:List_$$(Type)Cell;
+			var prevCell:List_$$(Type)Cell;
+			var prevCell:List_$$(Type)Cell;
+			var i:int;
+			for each (var o:$$(Type) in input)
+			{
+				newCell = cellFromPool();
+				if (!newCell) newCell = new List_$$(Type)Cell(null, null, null);
+				cell.target = o;
+				cell.next = newCell;
+				cell.prev = prevCell;
+				prevCell = cell;
+				cell = newCell;
+				i++;
+			}
+			if (prevCell) prevCell.next = null;
+			dl._length = i;
+			return dl;
+		}
+		
+		public static function fromVector(input:Object):List_$$(Type) $(CSLB){
+			var type:Class;
+			var ts:String = describeType(input).@name;
+			if (ts.indexOf("::Vector") < 0)
+				throw new ArgumentError(input + " must be Vector.");
+			ts = ts.replace(/.*<(.*)>.*/g, "$1");
+			type = getDefinitionByName(ts) as Class;
+			var dl:List_$$(Type) = new List_$$(Type)();
+			dl._type = $$(Type);
+			var cell:List_$$(Type)Cell = dl._first;
+			var newCell:List_$$(Type)Cell;
+			var prevCell:List_$$(Type)Cell;
+			var i:int;
+			for each (var o:$$(Type) in input) $(CSLB){
+				newCell = cellFromPool();
+				if (!newCell) newCell = new List_$$(Type)Cell(null, null, null);
+				cell.target = o;
+				cell.next = newCell;
+				cell.prev = prevCell;
+				prevCell = cell;
+				cell = newCell;
+				i++;
+			}
+			if (prevCell) prevCell.next = null;
+			dl._length = i;
+			return dl;
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
+		
+		public function add(item:$$(Type), position:int = -1):void $(CSLB){
+			if (!(item is _type)) return;
+			position = Math.min(Math.max(-1, position), this._length);
+			var seekCell:List_$$(Type)Cell;
+			var i:int;
+			var nextCell:List_$$(Type)Cell = _first;
+			var prevCell:List_$$(Type)Cell;
+			
+			var freeCell:List_$$(Type)Cell = cellFromPool();
+			if (!freeCell) freeCell = new List_$$(Type)Cell(null, null, null);
+			if (position < 0) $(CSLB){
+				seekCell = this._first;
+				this._first = freeCell;
+			}$(CSLB) else $(CSLB){
+				while (nextCell.next) $(CSLB){
+					prevCell = nextCell;
+					nextCell = nextCell.next;
+					if (++i == position) $(CSLB){
+						seekCell = nextCell;
+						break;
+					}
+				}
+			}
+			freeCell.next = seekCell;
+			if (prevCell) prevCell.next = freeCell;
+			this._length++;
+			super.dispatchEvent(new List_$$(Type)Event(List_$$(Type)Event.ADD, item, position));
+		}
+		
+		public function remove(item:$$(Type)):$$(Type) $(CSLB){
+			if (!(item is _type)) return null;
+			var i:int;
+			var cell:List_$$(Type)Cell = _first;
+			var prev:List_$$(Type)Cell;
+			var ret:$$(Type);
+			while (cell.next) $(CSLB){
+				prev = cell;
+				cell = cell.next;
+				i++;
+				if (cell.target === item) $(CSLB){
+					ret = cell.target;
+					prev.next = cell.next;
+					this._length--;
+					break;
+				}
+			}
+			if (this._iterator && cell && this._iterator.current === cell) $(CSLB){
+				this._iterator.reset();
+			}
+			super.dispatchEvent(new List_$$(Type)Event(List_$$(Type)Event.REMOVE, item, i));
+			return ret;
+		}
+		
+		public function seek(position:int):$$(Type) $(CSLB){
+			var i:int;
+			var cell:List_$$(Type)Cell = _first;
+			while (cell.next) $(CSLB){
+				cell = cell.next;
+				if (++i == position) return cell.target;
+			}
+			return null;
+		}
+		
+		public function find(item:$$(Type)):int $(CSLB){
+			var i:int;
+			var cell:List_$$(Type)Cell = _first;
+			while (cell.next) $(CSLB){
+				cell = cell.next;
+				i++;
+				if (cell.target === item) return i;
+			}
+			return -1;
+		}
+		
+		public function getIterator(reset:Boolean = true):List_$$(Type)Iterator $(CSLB){
+			if (!this._iterator) this._iterator = new List_$$(Type)Iterator(this);
+			if (reset) this._iterator.reset();
+			return this._iterator;
+		}
+		
+		public function clean(usePool:Boolean = true):void $(CSLB){
+			this._length = 0;
+			var cell:List_$$(Type)Cell = this._first;
+			var nextCell:List_$$(Type)Cell;
+			while (cell.next) $(CSLB){
+				nextCell = cell.next;
+				cell.next = null;
+				cell.target = null;
+				if (usePool) pool[cell] = true;
+				cell = nextCell;
+			}
+		}
+		
+		public function map(callback:Function):void $(CSLB){
+			var cell:List_$$(Type)Cell = this._first;
+			var i:int;
+			while (cell.next) $(CSLB){
+				callback(cell.target, i);
+				i++;
+				cell = cell.next;
+			}
+		}
+		
+		public function filter(callback:Function):List_$$(Type) $(CSLB){
+			var cell:List_$$(Type)Cell = this._first;
+			var i:int;
+			var dl:List_$$(Type) = new List_$$(Type)();
+			dl._type = $$(Type);
+			var copyLast:List_$$(Type)Cell;
+			while (cell.next) $(CSLB){
+				if (callback(cell.target, i)) $(CSLB){
+					if (copyLast) copyLast.next = cell;
+					else dl._first = cell;
+					copyLast = cell;
+				}
+				i++;
+				cell = cell.next;
+			}
+			if (copyLast) copyLast.next = null;
+			return dl;
+		}
+		
+		public function clone():List_$$(Type) $(CSLB){
+			var ret:List_$$(Type) = new List_$$(Type)();
+			var cell:List_$$(Type)Cell = this._first;
+			var clonedCell:List_$$(Type)Cell = ret._first;
+			var freeCell:List_$$(Type)Cell;
+			var i:int;
+			while (cell.next) $(CSLB){
+				freeCell = cellFromPool();
+				if (!freeCell) freeCell = new List_$$(Type)Cell(null, null, null);
+				clonedCell.next = freeCell;
+				clonedCell.target = cell.target;
+				clonedCell = freeCell;
+				cell = cell.next;
+				i++;
+			}
+			if (i)
+			{
+				clonedCell.target = cell.target;
+				ret._length = ++i;
+			}
+			return ret;
+		}
+		
+		public function sort(callback:Function = null):void $(CSLB){
+			var list:List_$$(Type)Cell = this._first;
+			var list2:List_$$(Type)Cell;
+			var l1next:List_$$(Type)Cell;
+			var l1prev:List_$$(Type)Cell;
+			
+			var l2next:List_$$(Type)Cell;
+			var l2prev:List_$$(Type)Cell;
+			var oldHead:List_$$(Type)Cell = this._first;
+			var useCallback:Boolean = callback is Function;
+			
+			while (list) $(CSLB){
+				list2 = list.next;
+				
+				while (list2) $(CSLB){
+					if ((useCallback && callback(list.target, list2.target)) || 
+						(!useCallback && list < list2)) $(CSLB){
+						l1next = list.next;
+						l1prev = list.prev;
+						
+						l2next = list2.next;
+						l2prev = list2.prev;
+						
+						if (l1next) l1next.prev = list2;
+						if (l1prev) l1prev.next = list2;
+						
+						if (list2 !== l1next) list2.next = l1next;
+						else list2.next = list;
+						
+						if (list2 !== l1prev) list2.prev = l1prev;
+						else list2.prev = list;
+						
+						if (l2next) l2next.prev = list;
+						if (l2prev) l2prev.next = list;
+						
+						if (list !== l2next) list.next = l2next;
+						else list.next = list2;
+						
+						if (list !== l2prev) list.prev = l2prev;
+						else list.prev = list2;
+						
+						l1next = list;
+						list = list2;
+						list2 = l1next; 
+					}
+					list2 = list2.next;
+				}
+				list = list.next;
+			}
+			
+			while (oldHead.prev) $(CSLB){
+				this._first = oldHead.prev;
+				oldHead = oldHead.prev;
+			}
+		}
+		
+		public function bubbleSort(callback:Function):void $(CSLB){
+			var oldHead:List_$$(Type)Cell = this._first;
+			var oldTail:List_$$(Type)Cell;
+			var cellA:List_$$(Type)Cell = this._first;
+			var cellB:List_$$(Type)Cell;
+			var useCallback:Boolean = callback is Function;
+			
+			while (cellA) $(CSLB){
+				cellB = cellA;
+				cellA = cellA.next;
+			}
+			oldTail = cellB;
+			cellA = oldHead;
+			cellB = cellA.next;
+			while (cellB) $(CSLB){
+				if ((useCallback && callback(cellA.target, cellB.target)) || 
+					(!useCallback && cellA < cellB)) $(CSLB){
+					cellA = cellA.next;
+					cellB = cellA.next;
+				}
+				else $(CSLB){
+					cellB.prev = cellA.prev;
+					oldHead = oldTail;
+					oldTail.next = cellA;
+					oldTail = oldTail.next;
+					oldTail.prev = oldHead;
+					oldTail.next = null;
+					if (cellB.prev) $(CSLB){
+						cellA = cellB.prev;
+						cellA.next = cellB;
+					}
+					else $(CSLB){
+						cellB = cellB.next;
+						cellA = cellB.prev;
+						cellA.prev = null;
+					}
+				}
+			}
+			while (cellA) $(CSLB){
+				cellB = cellA;
+				cellA = cellA.prev;
+			}
+			this._first = cellB;
+		}
+		
+		public function toVector():Vector.<$$(Type)> $(CSLB){
+			var cell:List_$$(Type)Cell = this._first;
+			var v:Vector.<$$(Type)> = new Vector.<$$(Type)>(0, false);
+			while (cell) $(CSLB){
+				v.push(cell.target);
+				cell = cell.next;
+			}
+			return v;
+		}
+		
+		public function toArray():Array $(CSLB){
+			var cell:List_$$(Type)Cell = this._first;
+			var v:Array = [];
+			while (cell) $(CSLB){
+				v.push(cell.target);
+				cell = cell.next;
+			}
+			return v;
+		}
+		
+		public override function toString():String $(CSLB){
+			var ret:String = "List<$$(Type)>{";
+			var i:int;
+			var cell:List_$$(Type)Cell = this._first;
+			while (cell.next && this._length > i) $(CSLB){
+				ret += i + ": " + cell.target + ", ";
+				cell = cell.next;
+				i++;
+			}
+			if (cell.target) ret += i + ": " + cell.target;
+			else if (ret.charAt(ret.length - 1) === " ")
+				ret = ret.substr(0, ret.length - 2);
+			return ret + "}";
+		}
+	}
+}

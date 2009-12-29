@@ -1,0 +1,73 @@
+package $(Package) $(CSLB){
+	//{ imports
+	import exemplars.util.EnumError;
+	//}
+	
+	/**
+	$(CBI)* $(FileName) class.
+	$(CBI)* @author $(DefaultUser)
+	$(CBI)* @langVersion $(langVersion)
+	$(CBI)* @playerVersion $(playerVersion)
+	$(CBI)*/
+	public class $(FileName) $(CSLB){
+		//--------------------------------------------------------------------------
+		//
+		//  Public properties
+		//
+		//--------------------------------------------------------------------------
+		
+		public static const FOO:$(FileName) = new $(FileName)("foo");
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Private properties
+		//
+		//--------------------------------------------------------------------------
+		
+		private var _num:String;
+		private static var _lockUp:Boolean;
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		$(CBI)* All instance of this enum are created at the application initialization time.
+		$(CBI)* Users should not create additional instances.
+		$(CBI)*  
+		$(CBI)* @param	num		The string key to represent this instance.
+		$(CBI)*/
+		public function $(FileName)(num:String)$(CSLB){
+			super();
+			if (_lockUp) throw new EnumError();
+			_num = num;
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
+		
+		public static function lockUp():void { _lockUp = true; }
+		
+		/**
+		$(CBI)* Decorates this enumerator with the name assigned to it.
+		$(CBI)* 
+		$(CBI)* @return the name assigned to this enumerator.
+		$(CBI)*/
+		public function toString():String { return this._num; }
+		
+		/**
+		$(CBI)* We may need to compare enums to their string represenation using non-strict equality.
+		$(CBI)* This will allow non-strict comparison to succeed.
+		$(CBI)* 
+		$(CBI)* @return the string value wrapped by this enum instance.
+		$(CBI)*/
+		public function valueOf():Object { return this._num; }
+	}
+}
+import $(Package).$(FileName);
+$(FileName).lockUp();
