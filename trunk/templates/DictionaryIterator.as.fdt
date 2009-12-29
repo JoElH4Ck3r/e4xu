@@ -1,0 +1,82 @@
+﻿package $(Package) $(CSLB){
+	import flash.utils.Dictionary;
+	
+	/**
+	$(CBI)* Dictionary_$$(KeyType)_$$(ValueType)Iterator class.
+	$(CBI)* @author $(DefaultUser)
+	$(CBI)* @langVersion $(langVersion)
+	$(CBI)* @playerVersion $(playerVersion)
+	$(CBI)*/
+	public class Dictionary_$$(KeyType)_$$(ValueType)Iterator $(CSLB){
+		//--------------------------------------------------------------------------
+		//
+		//  Public properties
+		//
+		//--------------------------------------------------------------------------
+		
+		public function get position():int { return this._position; }
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected properties
+		//
+		//--------------------------------------------------------------------------
+		
+		protected var _where:Dictionary;
+		protected var _position:int = -1;
+		protected var _currentObj:*;
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+		
+		public function Dictionary_$$(KeyType)_$$(ValueType)Iterator(where:Dictionary) $(CSLB){
+			super();
+			this._where = where;
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
+		
+		public function next():$$(KeyType) $(CSLB){
+			var isNext:Boolean;
+			for (var o:Object in this._where) $(CSLB){
+				if (isNext) $(CSLB){
+					this._currentObj = o as $$(KeyType);
+					this._position++;
+					return o as $$(KeyType);
+				}
+				if (!this._currentObj) $(CSLB){
+					this._currentObj = o as $$(KeyType);
+					return o as $$(KeyType);
+				}
+				else if (this._currentObj === o) isNext = true;
+			}
+			if (isNext) this._currentObj = undefined;
+			this._position = -1;
+			return undefined;
+		}
+		
+		public function current():$$(KeyType) { return this._currentObj as $$(KeyType); }
+		
+		public function reset():void $(CSLB){
+			this._currentObj = undefined;
+			this._position = -1;
+		}
+		
+		public function hasNext():Boolean $(CSLB){
+			var isNext:Boolean;
+			for (var o:Object in _where) $(CSLB){
+				if (isNext) return true;
+				if (this._currentObj === undefined) return true;
+				if (this._currentObj === o) isNext = true;
+			}
+			return false;
+		}
+	}
+}

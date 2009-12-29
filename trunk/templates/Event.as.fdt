@@ -1,0 +1,40 @@
+package $(Package) $(CSLB){
+	//{ imports
+	import flash.events.Event;
+	//}
+	
+	/**
+	$(CBI)* $(FileName) event.
+	$(CBI)* @author $(DefaultUser)
+	$(CBI)* @langVersion $(langVersion)
+	$(CBI)* @playerVersion $(playerVersion)
+	$(CBI)*/
+	public class $(FileName) extends Event $(CSLB){
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+		
+		public function $(FileName)(type:String) $(CSLB){ 
+			super(type);
+			$(EntryPoint)
+		} 
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		$(CBI)* Note this method does not create a new event instance. 
+		$(CBI)* It returns the reference to this event.
+		$(CBI)*/
+		public override function clone():Event { return this; } 
+		
+		public override function toString():String $(CSLB){ 
+			return formatToString("$(FileName)", "type");
+		}
+	}
+}

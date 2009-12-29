@@ -25,6 +25,7 @@ package org.wvxvws.data
 	import flash.utils.describeType;
 	import flash.utils.getDefinitionByName;
 	import flash.utils.getQualifiedClassName;
+	import org.wvxvws.data.IIterator;
 	
 	[Event(name="add", type="org.wvxvws.data.SetEvent")]
 	[Event(name="change", type="org.wvxvws.data.SetEvent")]
@@ -35,7 +36,7 @@ package org.wvxvws.data
 	 * DataSet class.
 	 * @author wvxvw
 	 */
-	public class DataSet extends EventDispatcher
+	public class DataSet extends EventDispatcher implements Iterable
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -59,6 +60,7 @@ package org.wvxvws.data
 		
 		protected var _source:Object;
 		protected var _type:Class;
+		protected var _iterator:IIterator;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -155,13 +157,36 @@ package org.wvxvws.data
 		public function clone():DataSet
 		{
 			var ds:DataSet = new DataSet(this._type);
-			for each (var o:Object in this._source) ds.add(o);
+			ds._source = this._source.concat();
 			return ds;
 		}
 		
-		public function sort(on:Function):void
+		public function sort(callback:Function = null):void
 		{
-			this._source.sort(on);
+			var n:int = this._source.length;
+			var inc:int = n * 0.5 + 0.5;
+			var temp:Object;
+			var i:int
+			var j:int;
+			
+			while (inc)
+			{
+				for (i = inc; i < n; i++)
+				{
+					temp = this._source[i];
+					j = i;
+					while (j >= inc && 
+						((callback && callback(this._source[(j - inc) >>> 0], temp)) || 
+						(!callback && this._source[(j - inc) >>> 0] > temp)))
+					{
+						this._source[j] = this._source[int(j - inc)];
+						j = j - inc;
+					}
+					this._source[j] = temp
+				}
+				inc = inc * 0.45454545454545453 + 0.5;
+			}
+			
 			if (super.hasEventListener(SetEvent.SORT))
 			{
 				super.dispatchEvent(new SetEvent(SetEvent.SORT, null));
@@ -173,6 +198,14 @@ package org.wvxvws.data
 			return ("DataSet<" + 
 				getQualifiedClassName(this._type) + 
 				">[" + this._source.join(",") + "]");
+		}
+		
+		/* INTERFACE org.wvxvws.data.Iterable */
+		
+		public function getIterator():IIterator
+		{
+			if (!_iterator) _iterator = new SetIterator(this);
+			return _iterator;
 		}
 		
 		//--------------------------------------------------------------------------

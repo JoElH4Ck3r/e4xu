@@ -1,0 +1,53 @@
+package $(Package) $(CSLB){
+	//{ imports
+	import flash.events.Event;
+	//}
+	
+	/**
+	$(CBI)* Dictionary_$$(KeyType)_$$(ValueType)Event event.
+	$(CBI)* @author $(DefaultUser)
+	$(CBI)* @langVersion $(langVersion)
+	$(CBI)* @playerVersion $(playerVersion)
+	$(CBI)*/
+	public class Dictionary_$$(KeyType)_$$(ValueType)Event extends Event $(CSLB){
+		public static const ADD:String = "add$$(ValueType)$$(KeyType)";
+		public static const REMOVE:String = "remove$$(ValueType)$$(KeyType)";
+		public static const CHANGE:String = "change$$(ValueType)$$(KeyType)";
+		public static const SORT:String = "sort$$(ValueType)$$(KeyType)";
+		
+		public function get data():$$(ValueType) { return this._data; }
+		
+		public function get index():int { return this._index; }
+		
+		protected var _data:$$(ValueType);
+		protected var _index:int;
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+		
+		public function Dictionary_$$(KeyType)_$$(ValueType)Event(type:String, data:$$(ValueType), index:int = -1) $(CSLB){ 
+			super(type);
+			this._data = data;
+			$(EntryPoint)
+		} 
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
+		
+		/**
+		$(CBI)* Note this method does not create a new event instance. 
+		$(CBI)* It returns the reference to this event.
+		$(CBI)*/
+		public override function clone():Event { return this; } 
+		
+		public override function toString():String $(CSLB){ 
+			return super.formatToString("Dictionary_$$(KeyType)_$$(ValueType)Event", "type");
+		}
+	}
+}

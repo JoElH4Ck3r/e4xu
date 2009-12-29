@@ -1,0 +1,73 @@
+﻿package $(Package) $(CSLB){
+	/**
+	$(CBI)* $(FileName) event.
+	$(CBI)* @author $(DefaultUser)
+	$(CBI)* @langVersion $(langVersion)
+	$(CBI)* @playerVersion $(playerVersion)
+	$(CBI)*/
+	public class List_$$(Type)Iterator
+	{
+		//--------------------------------------------------------------------------
+		//
+		//  Public properties
+		//
+		//--------------------------------------------------------------------------
+		
+		public function get position():int { return _position; }
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected properties
+		//
+		//--------------------------------------------------------------------------
+		
+		protected var _list:List_$$(Type);
+		protected var _position:int = -1;
+		protected var _current:List_$$(Type)Cell;
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Internal properties
+		//
+		//--------------------------------------------------------------------------
+		
+		internal function get current():List_$$(Type)Cell { return _current; }
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+		
+		public function List_$$(Type)Iterator(list:List_$$(Type)) $(CSLB){
+			super();
+			this._list = list;
+			this._current = list.first;
+			$(EntryPoint)
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
+		
+		public function next():$$(Type) $(CSLB){
+			var ret:$$(Type);
+			if (!this._current.next) return null;
+			ret = this._current.target;
+			this._position++;
+			this._current = this._current.next;
+			return ret;
+		}
+		
+		public function reset():void $(CSLB){
+			this._current = this._list.first;
+			this._position = -1;
+		}
+		
+		public function getCurrent():$$(Type) { return this._current.target; }
+		
+		public function hasNext():Boolean { return this._current.next !== null; }
+	}
+}

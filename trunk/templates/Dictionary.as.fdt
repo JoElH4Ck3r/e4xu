@@ -1,0 +1,107 @@
+﻿package $(Package) $(CSLB){
+	//{ imports
+	import flash.events.EventDispatcher;
+	import flash.utils.Dictionary;
+	//}
+	
+	[Event(name="add$$(ValueType)$$(KeyType)", 
+		type="org.wvxvws.data.Dictionary_$$(KeyType)_$$(ValueType)Event")]
+	[Event(name="change$$(ValueType)$$(KeyType)", 
+		type="org.wvxvws.data.Dictionary_$$(KeyType)_$$(ValueType)Event")]
+	[Event(name="remove$$(ValueType)$$(KeyType)", 
+		type="org.wvxvws.data.Dictionary_$$(KeyType)_$$(ValueType)Event")]
+	
+	/**
+	$(CBI)* Dictionary_$$(KeyType)_$$(ValueType) class.
+	$(CBI)* @author $(DefaultUser)
+	$(CBI)* @langVersion $(langVersion)
+	$(CBI)* @playerVersion $(playerVersion)
+	$(CBI)*/
+	public class Dictionary_$$(KeyType)_$$(ValueType) extends EventDispatcher $(CSLB){
+		//--------------------------------------------------------------------------
+		//
+		//  Protected properties
+		//
+		//--------------------------------------------------------------------------
+		
+		protected var _source:Dictionary;
+		protected var _keyType:Class = $$(KeyType);
+		protected var _valueType:Class = $$(ValueType);
+		protected var _iterator:Dictionary_$$(KeyType)_$$(ValueType)Iterator;
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+		
+		public function Dictionary_$$(KeyType)_$$(ValueType)(weakKeys:Boolean = false) $(CSLB){
+			super();
+			this._source = new Dictionary(weakKeys);
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
+		
+		public function getValue(key:$$(KeyType)):$$(ValueType) { return this._source[key]; }
+		
+		public function getKey(value:$$(ValueType)):$$(KeyType) $(CSLB){
+			var ret:$$(KeyType);
+			for (var o:Object in this._source) $(CSLB){
+				if (this._source[o] === value) return o as $$(KeyType);
+			}
+			return ret;
+		}
+		
+		public function add(key:$$(KeyType), value:$$(ValueType)):void $(CSLB){
+			this._source[key] = value;
+			super.dispatchEvent(
+				new Dictionary_$$(KeyType)_$$(ValueType)Event(
+				Dictionary_$$(KeyType)_$$(ValueType)Event.ADD, value, -1));
+		}
+		
+		public function removeValue(value:$$(ValueType)):void $(CSLB){
+			var key:$$(KeyType);
+			for (var o:Object in _source) $(CSLB){
+				if (this._source[o] === value) $(CSLB){
+					key = o as $$(KeyType);
+					break;
+				}
+			}
+			delete this._source[key];
+			super.dispatchEvent(
+				new Dictionary_$$(KeyType)_$$(ValueType)Event(
+				Dictionary_$$(KeyType)_$$(ValueType)Event.REMOVE, value, -1));
+		}
+		
+		public function removeKey(key:$$(KeyType)):void { delete this._source[key]; }
+		
+		public function hasKey(key:$$(KeyType)):Boolean { return key in this._source; }
+		
+		public function hasValue(value:$$(ValueType)):Boolean $(CSLB){
+			for (var o:Object in this._source) $(CSLB){
+				if (this._source[o] === value) return true;
+			}
+			return false;
+		}
+		
+		public function getIterator():Dictionary_$$(KeyType)_$$(ValueType)Iterator $(CSLB){
+			if (!_iterator)
+				_iterator = new Dictionary_$$(KeyType)_$$(ValueType)Iterator(_source);
+			return _iterator;
+		}
+		
+		public override function toString():String $(CSLB){
+			var ret:String = "Dictionary<$$(KeyType), $$(ValueType)>{";
+			for (var o:Object in this._source) $(CSLB){
+				ret += o + ": " + this._source[o] + ", ";
+			}
+			if (ret.charAt(ret.length - 1) === " ")
+				ret = ret.substr(0, ret.length - 2);
+			return ret + "}";
+		}
+	}
+}
