@@ -1,5 +1,6 @@
 ﻿package org.wvxvws.gui.layout 
 {
+	import flash.utils.Dictionary;
 	
 	/**
 	* ILayoutClient interface.
@@ -11,15 +12,15 @@
 	{
 		
 		function get validator():LayoutValidator;
-		function get invalidProperties():Object;
+		function get invalidProperties():Dictionary;
 		
 		function get layoutParent():ILayoutClient;
 		function set layoutParent(value:ILayoutClient):void;
 		
 		function get childLayouts():Vector.<ILayoutClient>;
 		
-		function validate(properties:Object):void;
-		function invalidate(property:String, cleanValue:*, validateParent:Boolean):void;
+		function validate(properties:Dictionary):void;
+		function invalidate(property:Invalides, validateParent:Boolean):void;
 		
 	}
 	

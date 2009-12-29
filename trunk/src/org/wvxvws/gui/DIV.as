@@ -31,12 +31,14 @@ package org.wvxvws.gui
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Transform;
+	import flash.system.ApplicationDomain;
 	import flash.utils.Dictionary;
 	import flash.utils.getDefinitionByName;
 	import flash.utils.getQualifiedClassName;
 	import mx.core.IMXMLObject;
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.layout.ILayoutClient;
+	import org.wvxvws.gui.layout.Invalides;
 	import org.wvxvws.gui.layout.LayoutValidator;
 	import org.wvxvws.gui.styles.ICSSClient;
 	//}
@@ -75,7 +77,7 @@ package org.wvxvws.gui
 		{
 			if (_transformMatrix.tx == value) return;
 			_transformMatrix.tx = value;
-			this.invalidate("_transformMatrix", _transformMatrix, true);
+			this.invalidate(Invalides.TRANSFORM, true);
 			if (super.hasEventListener(EventGenerator.getEventType("x")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -97,7 +99,7 @@ package org.wvxvws.gui
 		{
 			if (_transformMatrix.ty == value) return;
 			_transformMatrix.ty = value;
-			this.invalidate("_transformMatrix", _transformMatrix, true);
+			this.invalidate(Invalides.TRANSFORM, true);
 			if (super.hasEventListener(EventGenerator.getEventType("y")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -119,7 +121,7 @@ package org.wvxvws.gui
 		{
 			if (_bounds.x == value) return;
 			_bounds.x = value;
-			this.invalidate("_bounds", _bounds, true);
+			this.invalidate(Invalides.BOUNDS, true);
 			if (super.hasEventListener(EventGenerator.getEventType("width")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -141,7 +143,7 @@ package org.wvxvws.gui
 		{
 			if (_bounds.y == value) return;
 			_bounds.y = value;
-			this.invalidate("_bounds", _bounds, true);
+			this.invalidate(Invalides.BOUNDS, true);
 			if (super.hasEventListener(EventGenerator.getEventType("height")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -163,7 +165,7 @@ package org.wvxvws.gui
 		{
 			if (_transformMatrix.a == value) return;
 			_transformMatrix.a = value;
-			this.invalidate("_transformMatrix", _transformMatrix, true);
+			this.invalidate(Invalides.TRANSFORM, true);
 			if (super.hasEventListener(EventGenerator.getEventType("scaleX")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -185,7 +187,7 @@ package org.wvxvws.gui
 		{
 			if (_transformMatrix.d == value) return;
 			_transformMatrix.d = value;
-			this.invalidate("_transformMatrix", _transformMatrix, true);
+			this.invalidate(Invalides.TRANSFORM, true);
 			if (super.hasEventListener(EventGenerator.getEventType("scaleY")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -208,7 +210,7 @@ package org.wvxvws.gui
 		
 		public override function set transform(value:Transform):void 
 		{
-			this.invalidate("_userTransform", _userTransform, true);
+			this.invalidate(Invalides.TRANSFORM, true);
 			_userTransform = value;
 			if (super.hasEventListener(EventGenerator.getEventType("transform")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -229,8 +231,8 @@ package org.wvxvws.gui
 		
 		public function set style(value:IEventDispatcher):void 
 		{
-			if (_style == value) return;
-			this.invalidate("_invalidProperties", _invalidProperties, true);
+			if (_style === value) return;
+			this.invalidate(Invalides.NULL, true);
 			_style = value;
 			if (super.hasEventListener(EventGenerator.getEventType("style")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -252,7 +254,7 @@ package org.wvxvws.gui
 		public function set backgroundColor(value:uint):void 
 		{
 			if (value == _backgroundColor) return;
-			this.invalidate("_backgroundColor", _backgroundColor, false);
+			this.invalidate(Invalides.COLOR, false);
 			_backgroundColor = value;
 			if (super.hasEventListener(EventGenerator.getEventType("backgroundColor")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -274,7 +276,7 @@ package org.wvxvws.gui
 		public function set backgroundAlpha(value:Number):void 
 		{
 			if (value == _backgroundAlpha) return;
-			this.invalidate("_backgroundAlpha", _backgroundAlpha, false);
+			this.invalidate(Invalides.COLOR, false);
 			_backgroundAlpha = value;
 			if (super.hasEventListener(EventGenerator.getEventType("backgroundAlpha")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -339,7 +341,7 @@ package org.wvxvws.gui
 		protected var _backgroundAlpha:Number = 0;
 		protected var _style:IEventDispatcher;
 		protected var _className:String;
-		protected var _invalidProperties:Object = { };
+		protected var _invalidProperties:Dictionary = new Dictionary();
 		protected var _childLayouts:Vector.<ILayoutClient> = new <ILayoutClient>[];
 		protected var _layoutParent:ILayoutClient;
 		protected var _validator:LayoutValidator;
@@ -364,48 +366,48 @@ package org.wvxvws.gui
 		{
 			super();
 			var nm:Array = getQualifiedClassName(this).split("::");
-			_className = String(nm.pop());
-			_nativeTransform = new Transform(this);
-			this.invalidate("", undefined, true);
-			if (stage) super.addEventListener(Event.ENTER_FRAME, deferredInitialize);
-			super.addEventListener(Event.REMOVED_FROM_STAGE, removedHandler);
-			super.addEventListener(Event.ADDED_TO_STAGE, adtsHandler);
+			this._className = String(nm.pop());
+			this._nativeTransform = new Transform(this);
+			this.invalidate(Invalides.NULL, true);
+			if (stage) super.addEventListener(Event.ENTER_FRAME, this.deferredInitialize);
+			super.addEventListener(Event.REMOVED_FROM_STAGE, this.removedHandler);
+			super.addEventListener(Event.ADDED_TO_STAGE, this.adtsHandler);
 		}
 		
 		protected function adtsHandler(event:Event):void 
 		{
 			var dispatchInit:Boolean;
-			if (!_validator)
+			if (!this._validator)
 			{
 				if (super.parent is ILayoutClient)
 				{
-					_validator = (super.parent as ILayoutClient).validator;
+					this._validator = (super.parent as ILayoutClient).validator;
 				}
 			}
 			if (super.parent && !_document)
 			{
-				_document = super.parent;
+				this._document = super.parent;
 				dispatchInit = true;
 			}
-			if (_hasPendingValidation) this.validate(_invalidProperties);
+			if (this._hasPendingValidation) this.validate(this._invalidProperties);
 			if (dispatchInit) 
 			{
-				_initialized = true;
+				this._initialized = true;
 				super.dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
 			}
 		}
 		
 		protected function removedHandler(event:Event):void 
 		{
-			if (_validator) _validator.exclude(this);
+			if (this._validator) this._validator.exclude(this);
 		}
 		
 		private function deferredInitialize(event:Event):void 
 		{
-			super.removeEventListener(Event.ENTER_FRAME, deferredInitialize);
-			if (!_initialized)
+			super.removeEventListener(Event.ENTER_FRAME, this.deferredInitialize);
+			if (!this._initialized)
 			{
-				_initialized = true;
+				this._initialized = true;
 				super.dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
 			}
 		}
@@ -415,15 +417,15 @@ package org.wvxvws.gui
 		public function initialized(document:Object, id:String):void
 		{
 			var dispatchInit:Boolean;
-			if (super.parent && super.parent === _document)
+			if (super.parent && super.parent === this._document)
 			{
-				_document = super.parent;
+				this._document = super.parent;
 				return;
 			}
 			else
 			{
 				dispatchInit = true;
-				_document = document;
+				this._document = document;
 				if (document is DisplayObjectContainer && !super.parent)
 				{
 					this.initStyles();
@@ -431,10 +433,10 @@ package org.wvxvws.gui
 				}
 			}
 			_id = id;
-			if (_hasPendingValidation) this.validate(_invalidProperties);
-			if (dispatchInit && !_initialized)
+			if (this._hasPendingValidation) this.validate(this._invalidProperties);
+			if (dispatchInit && !this._initialized)
 			{
-				_initialized = true;
+				this._initialized = true;
 				super.dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
 			}
 		}
@@ -447,59 +449,63 @@ package org.wvxvws.gui
 		
 		public function validate(properties:Object):void
 		{
-			if (!_document) _validator = new LayoutValidator();
-			else if (parent is ILayoutClient && !_validator)
+			if (!this._document) this._validator = new LayoutValidator();
+			else if (parent is ILayoutClient && !this._validator)
 			{
-				_validator = (parent as ILayoutClient).validator;
-				_layoutParent = parent as ILayoutClient;
+				this._validator = (parent as ILayoutClient).validator;
+				this._layoutParent = parent as ILayoutClient;
 				if ((parent as ILayoutClient).childLayouts.indexOf(this) < 0)
 				{
 					(parent as ILayoutClient).childLayouts.push(this);
 				}
 			}
-			if (!_validator) _validator = new LayoutValidator();
-			_validator.append(this, _layoutParent);
-			if (!_background) _background = graphics;
-			if (properties._backgroundColor !== undefined ||
-				properties._backgroundAlpha !== undefined ||
-				properties._bounds !== undefined) this.drawBackground();
-			if (properties._userTransform) super.transform = _userTransform;
-			else if (properties._transformMatrix)
+			if (!this._validator) this._validator = new LayoutValidator();
+			this._validator.append(this, this._layoutParent);
+			if (!this._background) this._background = graphics;
+			if (Invalides.COLOR in properties || Invalides.BOUNDS in properties)
+				this.drawBackground();
+			if (Invalides.TRANSFORM in properties && this._userTransform)
 			{
-				_nativeTransform.matrix = _transformMatrix;
+				super.transform = this._userTransform;
+				this._userTransform = null;
+			}
+			else if (Invalides.TRANSFORM in properties)
+			{
+				this._nativeTransform.matrix = this._transformMatrix;
 			}
 			if (!_document && !_initialized) 
 			{
-				_initialized = true;
-				_document = this;
+				this._initialized = true;
+				this._document = this;
 				this.initStyles();
 				super.dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
 			}
-			_invalidProperties = { };
-			_invalidLayout = false;
+			this._invalidProperties = new Dictionary();
+			this._invalidLayout = false;
 			super.dispatchEvent(new GUIEvent(GUIEvent.VALIDATED));
 		}
 		
 		protected function drawBackground():void
 		{
-			_background.clear();
-			_background.beginFill(_backgroundColor, _backgroundAlpha);
-			_background.drawRect(0, 0, _bounds.x, _bounds.y);
-			_background.endFill();
+			this._background.clear();
+			this._background.beginFill(this._backgroundColor, this._backgroundAlpha);
+			this._background.drawRect(0, 0, this._bounds.x, this._bounds.y);
+			this._background.endFill();
 		}
 		
-		public function invalidate(property:String, cleanValue:*, 
+		public function invalidate(property:Invalides, 
 									validateParent:Boolean):void
 		{
-			_invalidProperties[property] = cleanValue;
-			if (_validator) _validator.requestValidation(this, validateParent);
+			this._invalidProperties[property] = true;
+			if (this._validator)
+				this._validator.requestValidation(this, validateParent);
 			else
 			{
-				_hasPendingValidation = true;
-				_hasPendingParentValidation = 
-							_hasPendingParentValidation || validateParent;
+				this._hasPendingValidation = true;
+				this._hasPendingParentValidation = 
+							this._hasPendingParentValidation || validateParent;
 			}
-			_invalidLayout = true;
+			this._invalidLayout = true;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -511,11 +517,12 @@ package org.wvxvws.gui
 		protected function initStyles():void
 		{
 			var styleParser:Object;
-			try
+			var s:String = "org.wvxvws.gui.styles.CSSParser";
+			if (ApplicationDomain.currentDomain.hasDefinition(s))
 			{
-				styleParser = getDefinitionByName("org.wvxvws.gui.styles.CSSParser");
+				styleParser = ApplicationDomain.currentDomain.getDefinition(s);
 			}
-			catch (refError:Error) { return; };
+			else return;
 			if (styleParser.parsed) styleParser.processClient(this);
 			else styleParser.addPendingClient(this);
 		}
