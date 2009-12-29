@@ -71,12 +71,12 @@ package org.wvxvws.gui
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>xChange</code> event.
 		*/
-		public override function get x():Number { return _transformMatrix.tx; }
+		public override function get x():Number { return this._transformMatrix.tx; }
 		
 		public override function set x(value:Number):void 
 		{
-			if (_transformMatrix.tx == value) return;
-			_transformMatrix.tx = value;
+			if (this._transformMatrix.tx === value) return;
+			this._transformMatrix.tx = value;
 			this.invalidate(Invalides.TRANSFORM, true);
 			if (super.hasEventListener(EventGenerator.getEventType("x")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -93,12 +93,12 @@ package org.wvxvws.gui
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>yChange</code> event.
 		*/
-		public override function get y():Number { return _transformMatrix.ty; }
+		public override function get y():Number { return this._transformMatrix.ty; }
 		
 		public override function set y(value:Number):void 
 		{
-			if (_transformMatrix.ty == value) return;
-			_transformMatrix.ty = value;
+			if (this._transformMatrix.ty === value) return;
+			this._transformMatrix.ty = value;
 			this.invalidate(Invalides.TRANSFORM, true);
 			if (super.hasEventListener(EventGenerator.getEventType("y")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -115,12 +115,12 @@ package org.wvxvws.gui
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>widthChanged</code> event.
 		*/
-		public override function get width():Number { return _bounds.x; }
+		public override function get width():Number { return this._bounds.x; }
 		
 		public override function set width(value:Number):void 
 		{
-			if (_bounds.x == value) return;
-			_bounds.x = value;
+			if (this._bounds.x === value) return;
+			this._bounds.x = value;
 			this.invalidate(Invalides.BOUNDS, true);
 			if (super.hasEventListener(EventGenerator.getEventType("width")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -137,12 +137,12 @@ package org.wvxvws.gui
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>heightChanged</code> event.
 		*/
-		public override function get height():Number { return _bounds.y; }
+		public override function get height():Number { return this._bounds.y; }
 		
 		public override function set height(value:Number):void 
 		{
-			if (_bounds.y == value) return;
-			_bounds.y = value;
+			if (this._bounds.y === value) return;
+			this._bounds.y = value;
 			this.invalidate(Invalides.BOUNDS, true);
 			if (super.hasEventListener(EventGenerator.getEventType("height")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -159,12 +159,12 @@ package org.wvxvws.gui
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>scaleXChanged</code> event.
 		*/
-		public override function get scaleX():Number { return _transformMatrix.a; }
+		public override function get scaleX():Number { return this._transformMatrix.a; }
 		
 		public override function set scaleX(value:Number):void 
 		{
-			if (_transformMatrix.a == value) return;
-			_transformMatrix.a = value;
+			if (_transformMatrix.a === value) return;
+			this._transformMatrix.a = value;
 			this.invalidate(Invalides.TRANSFORM, true);
 			if (super.hasEventListener(EventGenerator.getEventType("scaleX")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -181,12 +181,12 @@ package org.wvxvws.gui
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>scaleYChanged</code> event.
 		*/
-		public override function get scaleY():Number { return _transformMatrix.d; }
+		public override function get scaleY():Number { return this._transformMatrix.d; }
 		
 		public override function set scaleY(value:Number):void 
 		{
-			if (_transformMatrix.d == value) return;
-			_transformMatrix.d = value;
+			if (this._transformMatrix.d === value) return;
+			this._transformMatrix.d = value;
 			this.invalidate(Invalides.TRANSFORM, true);
 			if (super.hasEventListener(EventGenerator.getEventType("scaleY")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -205,13 +205,13 @@ package org.wvxvws.gui
 		*/
 		public override function get transform():Transform
 		{
-			return _userTransform ? _userTransform : super.transform;
+			return this._userTransform ? this._userTransform : super.transform;
 		}
 		
 		public override function set transform(value:Transform):void 
 		{
 			this.invalidate(Invalides.TRANSFORM, true);
-			_userTransform = value;
+			this._userTransform = value;
 			if (super.hasEventListener(EventGenerator.getEventType("transform")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -227,13 +227,13 @@ package org.wvxvws.gui
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>styleChanged</code> event.
 		*/
-		public function get style():IEventDispatcher { return _style; }
+		public function get style():IEventDispatcher { return this._style; }
 		
 		public function set style(value:IEventDispatcher):void 
 		{
-			if (_style === value) return;
-			this.invalidate(Invalides.NULL, true);
-			_style = value;
+			if (this._style === value) return;
+			this.invalidate(Invalides.STYLE, true);
+			this._style = value;
 			if (super.hasEventListener(EventGenerator.getEventType("style")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -253,9 +253,9 @@ package org.wvxvws.gui
 		
 		public function set backgroundColor(value:uint):void 
 		{
-			if (value == _backgroundColor) return;
+			if (value === this._backgroundColor) return;
 			this.invalidate(Invalides.COLOR, false);
-			_backgroundColor = value;
+			this._backgroundColor = value;
 			if (super.hasEventListener(EventGenerator.getEventType("backgroundColor")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -275,20 +275,20 @@ package org.wvxvws.gui
 		
 		public function set backgroundAlpha(value:Number):void 
 		{
-			if (value == _backgroundAlpha) return;
+			if (value === this._backgroundAlpha) return;
 			this.invalidate(Invalides.COLOR, false);
-			_backgroundAlpha = value;
+			this._backgroundAlpha = value;
 			if (super.hasEventListener(EventGenerator.getEventType("backgroundAlpha")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		/* INTERFACE org.wvxvws.gui.styles.ICSSClient */
 		
-		public function get className():String { return _className; }
+		public function get className():String { return this._className; }
 		
 		public function set className(value:String):void
 		{
-			_className = value;
+			this._className = value;
 			this.initStyles();
 		}
 		
@@ -296,30 +296,30 @@ package org.wvxvws.gui
 		
 		public function get validator():LayoutValidator
 		{
-			if (!_validator)
+			if (!this._validator)
 			{
 				if (parent is ILayoutClient) 
-					_validator = (parent as ILayoutClient).validator;
+					this._validator = (parent as ILayoutClient).validator;
 				if (parent is Stage)
 				{
-					_validator = new LayoutValidator();
-					_validator.append(this);
+					this._validator = new LayoutValidator();
+					this._validator.append(this);
 				}
 			}
-			return _validator;
+			return this._validator;
 		}
 		
-		public function get invalidProperties():Object { return _invalidProperties; }
+		public function get invalidProperties():Dictionary { return this._invalidProperties; }
 		
-		public function get layoutParent():ILayoutClient { return _layoutParent; }
+		public function get layoutParent():ILayoutClient { return this._layoutParent; }
 		
 		public function set layoutParent(value:ILayoutClient):void
 		{
-			if (_layoutParent === value) return;
-			_layoutParent = value;
+			if (this._layoutParent === value) return;
+			this._layoutParent = value;
 		}
 		
-		public function get childLayouts():Vector.<ILayoutClient> { return _childLayouts; }
+		public function get childLayouts():Vector.<ILayoutClient> { return this._childLayouts; }
 		
 		public function get id():String { return _id; }
 		
@@ -393,7 +393,7 @@ package org.wvxvws.gui
 			if (dispatchInit) 
 			{
 				this._initialized = true;
-				super.dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
+				super.dispatchEvent(GUIEvent.INITIALIZED);
 			}
 		}
 		
@@ -408,7 +408,7 @@ package org.wvxvws.gui
 			if (!this._initialized)
 			{
 				this._initialized = true;
-				super.dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
+				super.dispatchEvent(GUIEvent.INITIALIZED);
 			}
 		}
 		
@@ -437,7 +437,7 @@ package org.wvxvws.gui
 			if (dispatchInit && !this._initialized)
 			{
 				this._initialized = true;
-				super.dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
+				super.dispatchEvent(GUIEvent.INITIALIZED);
 			}
 		}
 		
@@ -447,7 +447,7 @@ package org.wvxvws.gui
 		//
 		//--------------------------------------------------------------------------
 		
-		public function validate(properties:Object):void
+		public function validate(properties:Dictionary):void
 		{
 			if (!this._document) this._validator = new LayoutValidator();
 			else if (parent is ILayoutClient && !this._validator)
@@ -478,11 +478,11 @@ package org.wvxvws.gui
 				this._initialized = true;
 				this._document = this;
 				this.initStyles();
-				super.dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
+				super.dispatchEvent(GUIEvent.INITIALIZED);
 			}
 			this._invalidProperties = new Dictionary();
 			this._invalidLayout = false;
-			super.dispatchEvent(new GUIEvent(GUIEvent.VALIDATED));
+			super.dispatchEvent(GUIEvent.VALIDATED);
 		}
 		
 		protected function drawBackground():void
