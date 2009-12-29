@@ -13,11 +13,13 @@
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
+	import flash.utils.Dictionary;
 	import mx.core.IMXMLObject;
 	import flash.display.SimpleButton;
 	import flash.display.DisplayObject;
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.layout.ILayoutClient;
+	import org.wvxvws.gui.layout.Invalides;
 	import org.wvxvws.gui.layout.LayoutValidator;
 	import org.wvxvws.gui.skins.ISkin;
 	import org.wvxvws.gui.skins.ISkinnable;
@@ -37,7 +39,8 @@
 	 * @langVersion 3.0
 	 * @playerVersion 10.0.28
 	 */
-	public class Button extends SimpleButton implements IMXMLObject, ILayoutClient, ISkinnable
+	public class Button extends SimpleButton 
+						implements IMXMLObject, ILayoutClient, ISkinnable
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -62,31 +65,31 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>skinChanged</code> event.
 		*/
-		public function get skin():Vector.<ISkin> { return _skin; }
+		public function get skin():Vector.<ISkin> { return this._skin; }
 		
 		public function set skin(value:Vector.<ISkin>):void
 		{
-			if (_skin === value) return;
-			_skin = value;
-			if (_skin && _skin.length && _skin[0])
+			if (this._skin === value) return;
+			this._skin = value;
+			if (this._skin && this._skin.length && this._skin[0])
 			{
-				super.upState = _skin[0].produce(this, "upState") as DisplayObject;
-				super.overState = _skin[0].produce(this, "overState") as DisplayObject;
-				super.downState = _skin[0].produce(this, "downState") as DisplayObject;
+				super.upState = this._skin[0].produce(this, "upState") as DisplayObject;
+				super.overState = this._skin[0].produce(this, "overState") as DisplayObject;
+				super.downState = this._skin[0].produce(this, "downState") as DisplayObject;
 				if (super.upState)
 				{
 					super.upState.addEventListener(
-						Event.ADDED, addedHandler, false, 0, true);
+						Event.ADDED, this.addedHandler, false, 0, true);
 				}
 				if (super.overState)
 				{
 					super.overState.addEventListener(
-						Event.ADDED, addedHandler, false, 0, true);
+						Event.ADDED, this.addedHandler, false, 0, true);
 				}
 				if (super.downState)
 				{
 					super.downState.addEventListener(
-						Event.ADDED, addedHandler, false, 0, true);
+						Event.ADDED, this.addedHandler, false, 0, true);
 				}
 			}
 			else
@@ -95,7 +98,7 @@
 				super.overState = null;
 				super.downState = null;
 			}
-			this.invalidate("_skin", _skin, true);
+			this.invalidate(Invalides.SKIN, true);
 			if (super.hasEventListener(EventGenerator.getEventType("skin")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -106,19 +109,25 @@
 		
 		public override function set upState(value:DisplayObject):void
 		{
-			if (value) value.addEventListener(Event.ADDED, addedHandler, false, 0, true);
+			if (value)
+				value.addEventListener(
+					Event.ADDED, this.addedHandler, false, 0, true);
 			super.upState = value;
 		}
 		
 		public override function set downState(value:DisplayObject):void
 		{
-			if (value) value.addEventListener(Event.ADDED, addedHandler, false, 0, true);
+			if (value)
+				value.addEventListener(
+					Event.ADDED, this.addedHandler, false, 0, true);
 			super.downState = value;
 		}
 		
 		public override function set overState(value:DisplayObject):void
 		{
-			if (value) value.addEventListener(Event.ADDED, addedHandler, false, 0, true);
+			if (value)
+				value.addEventListener(
+					Event.ADDED, this.addedHandler, false, 0, true);
 			super.overState = value;
 		}
 		
@@ -133,13 +142,13 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>xChanged</code> event.
 		*/
-		public override function get x():Number { return _transformMatrix.tx; }
+		public override function get x():Number { return this._transformMatrix.tx; }
 		
 		public override function set x(value:Number):void 
 		{
-			if (_transformMatrix.tx == value) return;
-			_transformMatrix.tx = value;
-			this.invalidate("_transformMatrix", _transformMatrix, true);
+			if (this._transformMatrix.tx === value) return;
+			this._transformMatrix.tx = value;
+			this.invalidate(Invalides.TRANSFORM, true);
 			if (super.hasEventListener(EventGenerator.getEventType("x")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -155,13 +164,13 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>yChanged</code> event.
 		*/
-		public override function get y():Number { return _transformMatrix.ty; }
+		public override function get y():Number { return this._transformMatrix.ty; }
 		
 		public override function set y(value:Number):void 
 		{
-			if (_transformMatrix.ty == value) return;
-			_transformMatrix.ty = value;
-			this.invalidate("_transformMatrix", _transformMatrix, true);
+			if (this._transformMatrix.ty === value) return;
+			this._transformMatrix.ty = value;
+			this.invalidate(Invalides.TRANSFORM, true);
 			if (super.hasEventListener(EventGenerator.getEventType("y")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -177,13 +186,13 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>widthChanged</code> event.
 		*/
-		public override function get width():Number { return _bounds.x; }
+		public override function get width():Number { return this._bounds.x; }
 		
 		public override function set width(value:Number):void 
 		{
-			if (_bounds.x == value) return;
-			_bounds.x = value;
-			this.invalidate("_bounds", _bounds, true);
+			if (this._bounds.x === value) return;
+			this._bounds.x = value;
+			this.invalidate(Invalides.BOUNDS, true);
 			if (super.hasEventListener(EventGenerator.getEventType("width")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -199,13 +208,13 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>heightChanged</code> event.
 		*/
-		public override function get height():Number { return _bounds.y; }
+		public override function get height():Number { return this._bounds.y; }
 		
 		public override function set height(value:Number):void 
 		{
-			if (_bounds.y == value) return;
-			_bounds.y = value;
-			this.invalidate("_bounds", _bounds, true);
+			if (this._bounds.y === value) return;
+			this._bounds.y = value;
+			this.invalidate(Invalides.BOUNDS, true);
 			if (super.hasEventListener(EventGenerator.getEventType("height")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -221,13 +230,13 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>scaleXChanged</code> event.
 		*/
-		public override function get scaleX():Number { return _transformMatrix.a; }
+		public override function get scaleX():Number { return this._transformMatrix.a; }
 		
 		public override function set scaleX(value:Number):void 
 		{
-			if (_transformMatrix.a == value) return;
-			_transformMatrix.a = value;
-			this.invalidate("_transformMatrix", _transformMatrix, true);
+			if (this._transformMatrix.a === value) return;
+			this._transformMatrix.a = value;
+			this.invalidate(Invalides.TRANSFORM, true);
 			if (super.hasEventListener(EventGenerator.getEventType("scaleX")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -243,13 +252,13 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>scaleYChanged</code> event.
 		*/
-		public override function get scaleY():Number { return _transformMatrix.d; }
+		public override function get scaleY():Number { return this._transformMatrix.d; }
 		
 		public override function set scaleY(value:Number):void 
 		{
-			if (_transformMatrix.d == value) return;
-			_transformMatrix.d = value;
-			this.invalidate("_transformMatrix", _transformMatrix, true);
+			if (this._transformMatrix.d === value) return;
+			this._transformMatrix.d = value;
+			this.invalidate(Invalides.TRANSFORM, true);
 			if (super.hasEventListener(EventGenerator.getEventType("scaleY")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -267,13 +276,13 @@
 		*/
 		public override function get transform():Transform
 		{
-			return _userTransform ? _userTransform : super.transform;
+			return this._userTransform ? this._userTransform : super.transform;
 		}
 		
 		public override function set transform(value:Transform):void 
 		{
-			this.invalidate("_userTransform", _userTransform, true);
-			_userTransform = value;
+			this._userTransform = value;
+			this.invalidate(Invalides.TRANSFORM, true);
 			if (super.hasEventListener(EventGenerator.getEventType("transform")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -293,31 +302,34 @@
 		
 		public function set label(value:String):void 
 		{
-			if (_label.text == value) return;
-			_label.text = value;
-			_label.x = -0.5 * _label.width;
-			_label.y = -0.5 * _label.height;
-			this.invalidate("_label", _label.text, false);
+			if (this._label.text === value) return;
+			this._label.text = value;
+			this._label.x = -0.5 * this._label.width;
+			this._label.y = -0.5 * this._label.height;
+			this.invalidate(Invalides.TEXT, false);
 			if (super.hasEventListener(EventGenerator.getEventType("label")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		/* INTERFACE org.wvxvws.gui.layout.ILayoutClient */
 		
-		public function get validator():LayoutValidator { return _validator; }
+		public function get validator():LayoutValidator { return this._validator; }
 		
-		public function get invalidProperties():Object { return _invalidProperties; }
+		public function get invalidProperties():Dictionary
+		{
+			return this._invalidProperties;
+		}
 		
-		public function get layoutParent():ILayoutClient { return _layoutParent; }
+		public function get layoutParent():ILayoutClient { return this._layoutParent; }
 		
 		public function set layoutParent(value:ILayoutClient):void
 		{
-			if (_layoutParent === value) return;
-			_layoutParent = value;
-			if (_layoutParent)
+			if (this._layoutParent === value) return;
+			this._layoutParent = value;
+			if (this._layoutParent)
 			{
-				_validator = _layoutParent.validator;
-				if (_validator) _validator.append(this, _layoutParent);
+				this._validator = this._layoutParent.validator;
+				if (this._validator) this._validator.append(this, this._layoutParent);
 			}
 		}
 		
@@ -346,7 +358,7 @@
 		protected var _labelSprite:Sprite = new Sprite();
 		protected var _validator:LayoutValidator;
 		protected var _layoutParent:ILayoutClient;
-		protected var _invalidProperties:Object = { };
+		protected var _invalidProperties:Dictionary = new Dictionary();
 		
 		protected var _invalidLayout:Boolean;
 		
@@ -376,16 +388,16 @@
 		{
 			super();
 			super.hitTestState = this.drawHitState();
-			super.addEventListener(Event.ADDED, addedHandler);
+			super.addEventListener(Event.ADDED, this.addedHandler);
 			
-			_nativeTransform = new Transform(this);
-			_label.width = 1;
-			_label.height = 1;
-			_label.autoSize = TextFieldAutoSize.LEFT;
-			_label.defaultTextFormat = _labelFormat;
-			_label.selectable = false;
-			_label.tabEnabled = false;
-			_labelSprite.addChild(_label);
+			this._nativeTransform = new Transform(this);
+			this._label.width = 1;
+			this._label.height = 1;
+			this._label.autoSize = TextFieldAutoSize.LEFT;
+			this._label.defaultTextFormat = this._labelFormat;
+			this._label.selectable = false;
+			this._label.tabEnabled = false;
+			this._labelSprite.addChild(_label);
 			if (label) this.label = label;
 		}
 		
@@ -400,71 +412,75 @@
 		public function initialized(document:Object, id:String):void
 		{
 			var validatorChanged:Boolean;
-			_document = document;
-			if (_document is ILayoutClient)
+			this._document = document;
+			if (this._document is ILayoutClient)
 			{
-				_validator = (_document as ILayoutClient).validator;
-				validatorChanged = Boolean(_validator);
+				this._validator = (_document as ILayoutClient).validator;
+				validatorChanged = Boolean(this._validator);
 				if (validatorChanged)
-					_validator.append(this, _document as ILayoutClient);
+					this._validator.append(this, this._document as ILayoutClient);
 			}
-			if (_document is DisplayObjectContainer && !super.parent)
+			if (this._document is DisplayObjectContainer && !super.parent)
 			{
-				(_document as DisplayObjectContainer).addChild(this);
+				(this._document as DisplayObjectContainer).addChild(this);
 			}
-			_id = id;
-			if (!_skin) this.skin = SkinManager.getSkin(this);
+			this._id = id;
+			if (!this._skin) this.skin = SkinManager.getSkin(this);
 			if (validatorChanged) this.invalidate("", null, false);
 		}
 		
-		public function validate(properties:Object):void
+		public function validate(properties:Dictionary):void
 		{
-			if (!_validator)
+			if (!this._validator)
 			{
-				if (_document is ILayoutClient)
+				if (this._document is ILayoutClient)
 				{
-					_validator = (_document as ILayoutClient).validator;
-					_layoutParent = _document as ILayoutClient;
-					if ((_document as ILayoutClient).childLayouts.indexOf(this) < 0)
+					this._validator = (this._document as ILayoutClient).validator;
+					this._layoutParent = this._document as ILayoutClient;
+					if ((this._document as ILayoutClient).childLayouts.indexOf(this) < 0)
 					{
-						(_document as ILayoutClient).childLayouts.push(this);
+						(this._document as ILayoutClient).childLayouts.push(this);
 					}
 				}
 			}
-			else if (parent is ILayoutClient && !_validator)
+			else if (parent is ILayoutClient && !this._validator)
 			{
-				_validator = (parent as ILayoutClient).validator;
-				_layoutParent = parent as ILayoutClient;
+				this._validator = (parent as ILayoutClient).validator;
+				this._layoutParent = parent as ILayoutClient;
 				if ((parent as ILayoutClient).childLayouts.indexOf(this) < 0)
 				{
 					(parent as ILayoutClient).childLayouts.push(this);
 				}
 			}
-			if (!_validator) _validator = new LayoutValidator();
-			_validator.append(this, _layoutParent);
-			if (properties._bounds !== undefined) this.drawHitState();
-			if (properties._userTransform) super.transform = _userTransform;
-			else if (properties._transformMatrix)
+			if (!this._validator) this._validator = new LayoutValidator();
+			this._validator.append(this, this._layoutParent);
+			if (Invalides.BOUNDS in properties) this.drawHitState();
+			if (Invalides.TRANSFORM in properties)
 			{
-				_nativeTransform.matrix = _transformMatrix;
+				if (this._userTransform)
+				{
+					super.transform = this._userTransform;
+					this._userTransform = null;
+				}
+				else _nativeTransform.matrix = this._transformMatrix;
+				
 			}
-			if (!_document) 
+			if (!this._document) 
 			{
-				_document = this;
+				this._document = this;
 				//this.initStyles();
-				super.dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
+				super.dispatchEvent(GUIEvent.INITIALIZED);
 			}
-			_invalidProperties = { };
-			_invalidLayout = false;
-			super.dispatchEvent(new GUIEvent(GUIEvent.VALIDATED));
+			this._invalidProperties = new Dictionary();
+			this._invalidLayout = false;
+			super.dispatchEvent(GUIEvent.VALIDATED);
 		}
 		
-		public function invalidate(property:String, cleanValue:*, 
-														validateParent:Boolean):void
+		public function invalidate(property:Invalides, validateParent:Boolean):void
 		{
-			_invalidProperties[property] = cleanValue;
-			if (_validator) _validator.requestValidation(this, validateParent);
-			_invalidLayout = true;
+			this._invalidProperties[property] = true;
+			if (this._validator) this._validator.requestValidation(this, validateParent);
+			this._invalidLayout = true;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -475,12 +491,12 @@
 		
 		protected function drawHitState():Shape
 		{
-			_hitGraphics = _hitState.graphics;
-			_hitGraphics.clear();
-			_hitGraphics.beginFill(0);
-			_hitGraphics.drawRect(0, 0, _bounds.x, _bounds.y);
-			_hitGraphics.endFill();
-			return _hitState;
+			this._hitGraphics = this._hitState.graphics;
+			this._hitGraphics.clear();
+			this._hitGraphics.beginFill(0);
+			this._hitGraphics.drawRect(0, 0, this._bounds.x, this._bounds.y);
+			this._hitGraphics.endFill();
+			return this._hitState;
 		}
 		
 		protected function addedHandler(event:Event):void 
@@ -490,25 +506,25 @@
 				case super.downState:
 				case super.upState:
 				case super.overState:
-					_lastState = event.target as DisplayObject;
-					if (_lastState)
+					this._lastState = event.target as DisplayObject;
+					if (this._lastState)
 					{
-						if (_lastState is DisplayObjectContainer)
+						if (this._lastState is DisplayObjectContainer)
 						{
-							if (_labelSprite.parent) 
-								_labelSprite.parent.removeChild(_labelSprite);
-							_lastState.width = _bounds.x;
-							_lastState.height = _bounds.y;
+							if (this._labelSprite.parent) 
+								this._labelSprite.parent.removeChild(this._labelSprite);
+							this._lastState.width = this._bounds.x;
+							this._lastState.height = this._bounds.y;
 							
-							_labelSprite.scaleX = 1 / _lastState.scaleX;
-							_labelSprite.scaleY = 1 / _lastState.scaleY;
+							this._labelSprite.scaleX = 1 / this._lastState.scaleX;
+							this._labelSprite.scaleY = 1 / this._lastState.scaleY;
 							
-							_labelSprite.x = 
-								(_lastState.width / _lastState.scaleX) * 0.5;
-							_labelSprite.y = 
-								(_lastState.height / _lastState.scaleY) * 0.5;
-							(_lastState as 
-								DisplayObjectContainer).addChild(_labelSprite);
+							this._labelSprite.x = 
+								(this._lastState.width / this._lastState.scaleX) * 0.5;
+							this._labelSprite.y = 
+								(this._lastState.height / this._lastState.scaleY) * 0.5;
+							(this._lastState as 
+								DisplayObjectContainer).addChild(this._labelSprite);
 						}
 					}
 					break;

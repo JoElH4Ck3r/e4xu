@@ -27,7 +27,11 @@
 		public static const TEXT:Invalides = new Invalides("text");
 		public static const AUTOSIZE:Invalides = new Invalides("autosize");
 		public static const STATE:Invalides = new Invalides("state");
+		public static const STYLE:Invalides = new Invalides("style");
 		public static const NULL:Invalides = new Invalides("null");
+		public static const TEXTFORMAT:Invalides = new Invalides("textformat");
+		public static const DIRECTION:Invalides = new Invalides("direction");
+		public static const TARGET:Invalides = new Invalides("target");
 		
 		//--------------------------------------------------------------------------
 		//

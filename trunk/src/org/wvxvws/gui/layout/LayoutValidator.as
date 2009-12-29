@@ -53,8 +53,8 @@
 		
 		public function append(client:ILayoutClient, toClient:ILayoutClient = null):void
 		{
-			if (!_chainRoot && !client.layoutParent) _chainRoot = client;
-			else if (_chainRoot && !client.layoutParent)
+			if (!this._chainRoot && !client.layoutParent) this._chainRoot = client;
+			else if (this._chainRoot && !client.layoutParent)
 			{
 				if (toClient && this[toClient] !== undefined)
 				{
@@ -62,13 +62,13 @@
 				}
 				else if (toClient && this[toClient] === undefined)
 				{
-					client.layoutParent = _chainRoot;
+					client.layoutParent = this._chainRoot;
 				}
 			}
-			if (!_initializer)
+			if (!this._initializer)
 			{
-				_initializer = new Shape();
-				_initializer.addEventListener(Event.ENTER_FRAME, validationLoop);
+				this._initializer = new Shape();
+				this._initializer.addEventListener(Event.ENTER_FRAME, validationLoop);
 			}
 			this[client] = true;
 		}
@@ -78,9 +78,9 @@
 			delete this[client];
 			for (var obj:Object in this) return;
 			// TODO: this shouldn't happen normally. Need to investigate.
-			if (!_initializer) return;
-			_initializer.removeEventListener(Event.ENTER_FRAME, validationLoop)
-			_initializer = null;
+			if (!this._initializer) return;
+			this._initializer.removeEventListener(Event.ENTER_FRAME, this.validationLoop)
+			this._initializer = null;
 		}
 		
 		public function requestValidation(client:ILayoutClient, affectParent:Boolean):void
@@ -88,7 +88,7 @@
 			if (!this[client]) return;
 			this[client] = false;
 			if (client.layoutParent) this[client.layoutParent] = !affectParent;
-			_hasDirtyClients = true;
+			this._hasDirtyClients = true;
 		}
 		
 		public function processValidation():void
@@ -102,9 +102,9 @@
 				if (!this[obj])
 				{
 					topDirty = obj as ILayoutClient;
-					suspectParent = findDirtyParent(topDirty);
+					suspectParent = this.findDirtyParent(topDirty);
 					if (suspectParent) topDirty = suspectParent;
-					validateChildrenOf(topDirty);
+					this.validateChildrenOf(topDirty);
 				}
 			}
 			if (topDirty) processValidation();
@@ -129,7 +129,7 @@
 		{
 			for each (var client:ILayoutClient in dirtyParent.childLayouts)
 			{
-				validateChildrenOf(client);
+				this.validateChildrenOf(client);
 			}
 			dirtyParent.validate(dirtyParent.invalidProperties);
 			this[dirtyParent] = true;
@@ -145,8 +145,8 @@
 		{
 			if (_hasDirtyClients) 
 			{
-				_hasDirtyClients = false;
-				processValidation();
+				this._hasDirtyClients = false;
+				this.processValidation();
 			}
 		}
 		

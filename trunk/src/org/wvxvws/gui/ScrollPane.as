@@ -12,22 +12,22 @@
 	 */
 	public class ScrollPane extends Sprite
 	{
-		public override function get width():Number { return _realWidth; }
+		public override function get width():Number { return this._realWidth; }
 		
-		public override function get height():Number { return _realHeight; }
+		public override function get height():Number { return this._realHeight; }
 		
 		public function set realWidth(value:int):void
 		{
-			if (_realWidth === value) return;
-			_realWidth = value;
+			if (this._realWidth === value) return;
+			this._realWidth = value;
 			if (super.hasEventListener(EventGenerator.getEventType("width")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		public function set realHeight(value:int):void
 		{
-			if (_realHeight === value) return;
-			_realHeight = value;
+			if (this._realHeight === value) return;
+			this._realHeight = value;
 			if (super.hasEventListener(EventGenerator.getEventType("height")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -36,8 +36,8 @@
 		{
 			if (super.scrollRect && super.scrollRect.equals(value)) return;
 			super.scrollRect = value;
-			if (super.hasEventListener(GUIEvent.SCROLLED))
-				super.dispatchEvent(new GUIEvent(GUIEvent.SCROLLED));
+			if (super.hasEventListener(GUIEvent.SCROLLED.type))
+				super.dispatchEvent(GUIEvent.SCROLLED);
 		}
 		
 		protected var _realWidth:int;

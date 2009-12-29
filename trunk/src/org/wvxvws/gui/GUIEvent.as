@@ -31,14 +31,16 @@ package org.wvxvws.gui
 	*/
 	public class GUIEvent extends Event 
 	{
-		public static const INITIALIZED:String = "initialized";
-		public static const VALIDATED:String = "validated";
-		public static const CHILDREN_CREATED:String = "childrenCreated";
-		public static const DISABLED:String = "disabled";
-		public static const SELECTED:String = "selected";
-		public static const DATA_CHANGED:String = "dataChanged";
-		public static const SCROLLED:String = "scrolled";
-		public static const OPENED:String = "opened";
+		public static const INITIALIZED:GUIEvent = new GUIEvent("initialized");
+		public static const VALIDATED:GUIEvent = new GUIEvent("validated");
+		public static const CHILDREN_CREATED:GUIEvent = new GUIEvent("childrenCreated");
+		public static const DISABLED:GUIEvent = new GUIEvent("disabled");
+		public static const SELECTED:GUIEvent = new GUIEvent("selected");
+		public static const DATA_CHANGED:GUIEvent = new GUIEvent("dataChanged");
+		public static const SCROLLED:GUIEvent = new GUIEvent("scrolled");
+		public static const OPENED:GUIEvent = new GUIEvent("opened");
+		
+		private var _handled:Boolean;
 		
 		public function GUIEvent(type:String, bubbles:Boolean = false, 
 								cancelable:Boolean = false)
@@ -47,11 +49,19 @@ package org.wvxvws.gui
 			
 		} 
 		
-		public override function clone():Event { return this; } 
+		public override function clone():Event
+		{
+			if (!this._handled)
+			{
+				this._handled = true;
+				return this;
+			}
+			return new GUIEvent(this.type, this.bubbles, this.cancelable);
+		} 
 		
 		public override function toString():String 
 		{ 
-			return formatToString("GUIEvent", "type", "bubbles", "cancelable", "eventPhase"); 
+			return super.formatToString("GUIEvent", "type", "bubbles", "cancelable"); 
 		}
 		
 	}
