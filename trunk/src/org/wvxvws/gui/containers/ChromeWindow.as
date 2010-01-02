@@ -9,6 +9,7 @@
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.Border;
 	import org.wvxvws.gui.DIV;
+	import org.wvxvws.gui.layout.Invalides;
 	import org.wvxvws.gui.skins.ISkin;
 	import org.wvxvws.gui.skins.ISkinnable;
 	import org.wvxvws.gui.SPAN;
@@ -39,7 +40,7 @@
 		
 		public override function set width(value:Number):void 
 		{
-			if (value < _minWidth) value = _minWidth;
+			if (value < this._minWidth) value = this._minWidth;
 			super.width = value;
 		}
 		
@@ -49,7 +50,7 @@
 		
 		public override function set height(value:Number):void 
 		{
-			if (value < _minHeight) value = _minHeight;
+			if (value < this._minHeight) value = this._minHeight;
 			super.height = value;
 		}
 		
@@ -64,13 +65,13 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>modalChanged</code> event.
 		*/
-		public function get modal():Boolean { return _modal; }
+		public function get modal():Boolean { return this._modal; }
 		
 		public function set modal(value:Boolean):void
 		{
-			if (_modal === value) return;
-			_modal = value;
-			super.invalidate("_modal", _modal, false);
+			if (this._modal === value) return;
+			this._modal = value;
+			super.invalidate(Invalides.STATE, false);
 			if (super.hasEventListener(EventGenerator.getEventType("modal")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -86,13 +87,13 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>resizableChanged</code> event.
 		*/
-		public function get resizable():Boolean { return _resizable; }
+		public function get resizable():Boolean { return this._resizable; }
 		
 		public function set resizable(value:Boolean):void
 		{
-			if (_resizable === value) return;
-			_resizable = value;
-			super.invalidate("_resizable", _resizable, false);
+			if (this._resizable === value) return;
+			this._resizable = value;
+			super.invalidate(Invalides.STATE, false);
 			if (super.hasEventListener(EventGenerator.getEventType("resizable")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -108,15 +109,15 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>titleBarChanged</code> event.
 		*/
-		public function get titleBar():ChromeBar { return _titleBar; }
+		public function get titleBar():ChromeBar { return this._titleBar; }
 		
 		public function set titleBar(value:ChromeBar):void 
 		{
-			if (_titleBar === value) return;
-			if (_titleBar && super.contains(_titleBar)) 
-				super.removeChild(_titleBar);
-			_titleBar = value;
-			super.invalidate("_titleBar", _titleBar, false);
+			if (this._titleBar === value) return;
+			if (this._titleBar && super.contains(this._titleBar)) 
+				super.removeChild(this._titleBar);
+			this._titleBar = value;
+			super.invalidate(Invalides.CHILDREN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("titleBar")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -132,15 +133,15 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>statusBarChanged</code> event.
 		*/
-		public function get statusBar():SPAN { return _statusBar; }
+		public function get statusBar():SPAN { return this._statusBar; }
 		
 		public function set statusBar(value:SPAN):void 
 		{
-			if (_statusBar === value) return;
-			if (_statusBar && super.contains(_statusBar)) 
+			if (this._statusBar === value) return;
+			if (this._statusBar && super.contains(this._statusBar)) 
 				super.removeChild(_statusBar);
-			_statusBar = value;
-			super.invalidate("_statusBar", _statusBar, false);
+			this._statusBar = value;
+			super.invalidate(Invalides.CHILDREN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("statusBar")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -156,13 +157,13 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>closeSkinChanged</code> event.
 		*/
-		public function get closeSkin():ISkin { return _closeSkin; }
+		public function get closeSkin():ISkin { return this._closeSkin; }
 		
 		public function set closeSkin(value:ISkin):void 
 		{
-			if (_closeSkin === value) return;
-			_closeSkin = value;
-			super.invalidate("_closeSkin", _closeSkin, false);
+			if (this._closeSkin === value) return;
+			this._closeSkin = value;
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("closeSkin")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -178,13 +179,13 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>dockSkinChanged</code> event.
 		*/
-		public function get dockSkin():ISkin { return _dockSkin; }
+		public function get dockSkin():ISkin { return this._dockSkin; }
 		
 		public function set dockSkin(value:ISkin):void 
 		{
-			if (_dockSkin === value) return;
-			_dockSkin = value;
-			super.invalidate("_dockSkin", _dockSkin, false);
+			if (this._dockSkin === value) return;
+			this._dockSkin = value;
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("dockSkin")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -200,13 +201,13 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>expandSkinChanged</code> event.
 		*/
-		public function get expandSkin():ISkin { return _expandSkin; }
+		public function get expandSkin():ISkin { return this._expandSkin; }
 		
 		public function set expandSkin(value:ISkin):void 
 		{
-			if (_expandSkin === value) return;
-			_expandSkin = value;
-			super.invalidate("_expandSkin", _expandSkin, false);
+			if (this._expandSkin === value) return;
+			this._expandSkin = value;
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("expandSkin")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -222,13 +223,13 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>borderChanged</code> event.
 		*/
-		public function get border():Border { return _border; }
+		public function get border():Border { return this._border; }
 		
 		public function set border(value:Border):void 
 		{
-			if (_border === value) return;
-			_border = value;
-			super.invalidate("_border", _border, false);
+			if (this._border === value) return;
+			this._border = value;
+			super.invalidate(Invalides.CHILDREN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("border")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -237,13 +238,16 @@
 		//  Public property children
 		//------------------------------------
 		
-		public function get children():Vector.<DisplayObject> { return _contentPane.children; }
+		public function get children():Vector.<DisplayObject>
+		{
+			return this._contentPane.children;
+		}
 		
 		public function set children(value:Vector.<DisplayObject>):void 
 		{
-			if (_contentPane.children === value) return;
-			_contentPane.children = value;
-			super.invalidate("_contentPane", _contentPane, false);
+			if (this._contentPane.children === value) return;
+			this._contentPane.children = value;
+			super.invalidate(Invalides.CHILDREN, false);
 		}
 		
 		/* INTERFACE org.wvxvws.gui.skins.ISkinnable */
@@ -254,22 +258,24 @@
 		
 		public function get parts():Object
 		{
-			return { close: _closeSkin, dock: _dockSkin, expand: _expandSkin }
+			return { close: this._closeSkin,
+					dock: this._dockSkin,
+					expand: this.expandSkin }
 		}
 		
 		public function set parts(value:Object):void
 		{
 			if (value)
 			{
-				_closeSkin = value["close"];
-				_dockSkin = value["dock"];
-				_expandSkin = value["expand"];
+				this._closeSkin = value["close"];
+				this._dockSkin = value["dock"];
+				this._expandSkin = value["expand"];
 			}
 			else
 			{
-				_closeSkin = null;
-				_dockSkin = null;
-				_expandSkin = null;
+				this._closeSkin = null;
+				this._dockSkin = null;
+				this._expandSkin = null;
 			}
 		}
 		//--------------------------------------------------------------------------
@@ -317,101 +323,102 @@
 		
 		public override function validate(properties:Object):void 
 		{
-			var titleChanged:Boolean = (("_titleBar" in properties) || 
-									("_transformMatrix" in properties) ||
-									("_bounds" in properties)) && _titleBar;
-			var borderChanged:Boolean = (("_border" in properties) ||
-									("_bounds" in properties) || 
-									("_transformMatrix" in properties)) && _border;
-			var statusChanged:Boolean = (("_statusBar" in properties)) || 
-									("_transformMatrix" in properties ||
-									("_bounds" in properties)) && _statusBar;
-			var paneChanged:Boolean = ("_contentPane" in properties) || 
+			var titleChanged:Boolean = ((Invalides.CHILDREN in properties) || 
+									(Invalides.TRANSFORM in properties) ||
+									(Invalides.BOUNDS in properties)) && _titleBar;
+			var borderChanged:Boolean = ((Invalides.CHILDREN in properties) ||
+									(Invalides.BOUNDS in properties) || 
+									(Invalides.TRANSFORM in properties)) && _border;
+			var statusChanged:Boolean = ((Invalides.CHILDREN in properties)) || 
+									(Invalides.TRANSFORM in properties ||
+									(Invalides.BOUNDS in properties)) && _statusBar;
+			var paneChanged:Boolean = (Invalides.CHILDREN in properties) || 
 									titleChanged || borderChanged || statusChanged;
 			var chromeHeight:int;
 			var chromeBounds:Rectangle = new Rectangle();
-			var controlsChanged:Boolean = ("_transformMatrix" in properties) ||
-											("_expandSkin" in properties) ||
-											("_dockSkin" in properties) ||
-											("_closeSkin" in properties);
+			var controlsChanged:Boolean = (Invalides.TRANSFORM in properties) ||
+											(Invalides.SKIN in properties);
 			super.validate(properties);
 			if (titleChanged)
 			{
-				if (!super.contains(_titleBar)) super.addChild(_titleBar);
+				if (!super.contains(_titleBar)) super.addChild(this._titleBar);
 				var i:int = super.numChildren;
 				var a:int = 1;
 				var d:DisplayObject;
 				while (i--)
 				{
 					d = super.getChildAt(i);
-					if (d === _titleBar) break;
-					else if (d === _closeBTN || d === _dockBTN || d === _expandBTN)
+					if (d === this._titleBar) break;
+					else if (d === this._closeBTN || d === this._dockBTN || 
+						d === this._expandBTN)
 					{
 						a++;
 					}
 				}
-				super.setChildIndex(_titleBar, super.numChildren - a);
-				_titleBar.width = _bounds.x;
+				super.setChildIndex(this._titleBar, super.numChildren - a);
+				this._titleBar.width = super._bounds.x;
 			}
 			if (borderChanged)
 			{
-				if (!super.contains(_border)) super.addChildAt(_border, 0);
-				_border.width = _bounds.x;
-				_border.height = _bounds.y;
+				if (!super.contains(_border)) super.addChildAt(this._border, 0);
+				this._border.width = this._bounds.x;
+				this._border.height = this._bounds.y;
 			}
 			if (statusChanged)
 			{
-				if (_border)
+				if (this._border)
 				{
-					_statusBar.width = super._bounds.x - 
-										(_border.left + _border.right);
-					_statusBar.x = _border.left;
-					_statusBar.y = super._bounds.y - 
-									(_statusBar.height + _border.bottom);
+					this._statusBar.width = super._bounds.x - 
+										(this._border.left + this._border.right);
+					this._statusBar.x = this._border.left;
+					this._statusBar.y = super._bounds.y - 
+									(this._statusBar.height + this._border.bottom);
 				}
 				else
 				{
-					_statusBar.width = super._bounds.x;
-					_statusBar.y = super._bounds.y - _statusBar.height;
+					this._statusBar.width = super._bounds.x;
+					this._statusBar.y = super._bounds.y - this._statusBar.height;
 				}
-				if (!super.contains(_statusBar)) super.addChild(_statusBar);
+				if (!super.contains(this._statusBar)) super.addChild(this._statusBar);
 			}
 			if (paneChanged)
 			{
-				if (_titleBar)
+				if (this._titleBar)
 				{
-					_contentPane.y = _titleBar.y + _titleBar.height;
-					chromeHeight += _titleBar.height;
+					this._contentPane.y = this._titleBar.y + this._titleBar.height;
+					chromeHeight += this._titleBar.height;
 				}
-				if (_border)
+				if (this._border)
 				{
-					_contentPane.width = super._bounds.x - (_border.left + _border.right);
-					_contentPane.x = _border.left;
+					this._contentPane.width = super._bounds.x - 
+						(this._border.left + this._border.right);
+					this._contentPane.x = this._border.left;
 				}
-				else _contentPane.width = super._bounds.x;
-				if (_statusBar) chromeHeight += _statusBar.height;
-				if (_border) chromeHeight += _border.bottom;
-				_contentPane.height = super._bounds.y - chromeHeight;
-				if (!super.contains(_contentPane))
-					_contentPane.initialized(this, "contentPane");
-				chromeBounds.width = _contentPane.width;
-				chromeBounds.height = _contentPane.height;
-				_contentPane.validate(_contentPane.invalidProperties);
-				_contentPane.scrollRect = chromeBounds;
+				else this._contentPane.width = super._bounds.x;
+				if (this._statusBar) chromeHeight += this._statusBar.height;
+				if (this._border) chromeHeight += this._border.bottom;
+				this._contentPane.height = super._bounds.y - chromeHeight;
+				if (!super.contains(this._contentPane))
+					this._contentPane.initialized(this, "contentPane");
+				chromeBounds.width = this._contentPane.width;
+				chromeBounds.height = this._contentPane.height;
+				this._contentPane.validate(this._contentPane.invalidProperties);
+				this._contentPane.scrollRect = chromeBounds;
 			}
-			if (controlsChanged && (_closeBTN || _dockBTN || _expandBTN))
+			if (controlsChanged && (this._closeBTN || this._dockBTN || this._expandBTN))
 				this.drawControlButtons();
 		}
 		
 		protected function drawControlButtons():void
 		{
-			if (_closeBTN && super.contains(_closeBTN))
-				super.removeChild(_closeBTN);
-			if (_closeBTN)
+			if (this._closeBTN && super.contains(this._closeBTN))
+				super.removeChild(this._closeBTN);
+			if (this._closeBTN)
 			{
-				_closeBTN = _closeSkin.produce(this) as InteractiveObject;
-				_closeBTN.x = super.width - (_closeBTN.width + _border.right + 2);
-				super.addChild(_closeBTN);
+				this._closeBTN = this._closeSkin.produce(this) as InteractiveObject;
+				this._closeBTN.x = super.width - 
+					(this._closeBTN.width + this._border.right + 2);
+				super.addChild(this._closeBTN);
 			}
 		}
 		

@@ -18,20 +18,21 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public static const TRANSFORM:Invalides = new Invalides("transform");
+		public static const AUTOSIZE:Invalides = new Invalides("autosize");
 		public static const BOUNDS:Invalides = new Invalides("bounds");
-		public static const COLOR:Invalides = new Invalides("color");
 		public static const CHILDREN:Invalides = new Invalides("children");
+		public static const COLOR:Invalides = new Invalides("color");
+		public static const DIRECTION:Invalides = new Invalides("direction");
+		public static const DATAPROVIDER:Invalides = new Invalides("dataprovider");
+		public static const NULL:Invalides = new Invalides("null");
 		public static const SCROLL:Invalides = new Invalides("scroll");
 		public static const SKIN:Invalides = new Invalides("skin");
-		public static const TEXT:Invalides = new Invalides("text");
-		public static const AUTOSIZE:Invalides = new Invalides("autosize");
 		public static const STATE:Invalides = new Invalides("state");
 		public static const STYLE:Invalides = new Invalides("style");
-		public static const NULL:Invalides = new Invalides("null");
-		public static const TEXTFORMAT:Invalides = new Invalides("textformat");
-		public static const DIRECTION:Invalides = new Invalides("direction");
 		public static const TARGET:Invalides = new Invalides("target");
+		public static const TEXT:Invalides = new Invalides("text");
+		public static const TEXTFORMAT:Invalides = new Invalides("textformat");
+		public static const TRANSFORM:Invalides = new Invalides("transform");
 		
 		//--------------------------------------------------------------------------
 		//

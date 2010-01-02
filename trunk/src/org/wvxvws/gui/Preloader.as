@@ -29,6 +29,7 @@ package org.wvxvws.gui
 	import flash.events.IEventDispatcher;
 	import flash.events.ProgressEvent;
 	import mx.core.IMXMLObject;
+	import org.wvxvws.gui.layout.Invalides;
 	import org.wvxvws.gui.skins.ISkin;
 	import org.wvxvws.gui.skins.ISkinnable;
 	import org.wvxvws.gui.skins.SkinManager;
@@ -53,7 +54,7 @@ package org.wvxvws.gui
 		
 		/* INTERFACE org.wvxvws.gui.IPreloader */
 		
-		public function get classAlias():String { return _classAlias; }
+		public function get classAlias():String { return this._classAlias; }
 		
 		public function set classAlias(value:String):void
 		{
@@ -64,45 +65,45 @@ package org.wvxvws.gui
 		
 		public function set target(value:IEventDispatcher):void
 		{
-			if (_target === value) return;
-			if (_target)
+			if (this._target === value) return;
+			if (this._target)
 			{
-				_target.removeEventListener(
+				this._target.removeEventListener(
 					ProgressEvent.PROGRESS, this.progressHandler);
-				_target.removeEventListener(Event.COMPLETE, super.dispatchEvent);
+				this._target.removeEventListener(Event.COMPLETE, super.dispatchEvent);
 			}
-			_target = value;
-			if (_target)
+			this._target = value;
+			if (this._target)
 			{
-				_target.addEventListener(
+				this._target.addEventListener(
 					ProgressEvent.PROGRESS, this.progressHandler);
-				_target.addEventListener(Event.COMPLETE, super.dispatchEvent);
+				this._target.addEventListener(Event.COMPLETE, super.dispatchEvent);
 			}
-			super.invalidate("_target", _target, false);
+			super.invalidate(Invalides.TARGET, false);
 		}
 		
-		public function get target():IEventDispatcher { return _target; }
+		public function get target():IEventDispatcher { return this._target; }
 		
 		public function set percent(value:int):void
 		{
-			if (_percent == value) return;
-			_percent = value;
-			super.invalidate("_percent", _percent, false);
+			if (this._percent === value) return;
+			this._percent = value;
+			super.invalidate(Invalides.STATE, false);
 		}
 		
-		public function get percent():int { return _percent; }
+		public function get percent():int { return this._percent; }
 		
 		/* INTERFACE org.wvxvws.gui.skins.ISkinnable */
 		
-		public function get skin():Vector.<ISkin> { return _skin; }
+		public function get skin():Vector.<ISkin> { return this._skin; }
 		
 		public function set skin(value:Vector.<ISkin>):void
 		{
-			if (_skin === value) return;
-			_skin = value;
-			if (_skin && _skin.length)
-				_progressSkin = _skin[0].produce(this) as IProgress;
-			super.invalidate("_progressSkin", _progressSkin, false);
+			if (this._skin === value) return;
+			this._skin = value;
+			if (this._skin && this._skin.length)
+				this._progressSkin = this._skin[0].produce(this) as IProgress;
+			super.invalidate(Invalides.SKIN, false);
 		}
 		
 		public function get parts():Object { return null; }
@@ -124,12 +125,6 @@ package org.wvxvws.gui
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Private properties
-		//
-		//--------------------------------------------------------------------------
-		
-		//--------------------------------------------------------------------------
-		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
@@ -148,14 +143,14 @@ package org.wvxvws.gui
 		
 		public function start():void
 		{
-			_isPlaying = true;
+			this._isPlaying = true;
 			super.addEventListener(
 				Event.ENTER_FRAME, this.progressHandler, false, 0, true);
 		}
 		
 		public function stop():void
 		{
-			_isPlaying = false;
+			this._isPlaying = false;
 			super.removeEventListener(Event.ENTER_FRAME, this.progressHandler);
 		}
 		
@@ -167,21 +162,21 @@ package org.wvxvws.gui
 		
 		public override function validate(properties:Object):void 
 		{
-			var skinChanged:Boolean = ("_progressSkin" in properties);
+			var skinChanged:Boolean = (Invalides.SKIN in properties);
 			super.validate(properties);
 			if (skinChanged)
 			{
-				if (_progressSkin)
+				if (this._progressSkin)
 				{
-					if (_progressSkin is DisplayObject)
+					if (this._progressSkin is DisplayObject)
 					{
-						(_progressSkin as DisplayObject).width = super.width;
-						(_progressSkin as DisplayObject).height = super.height;
+						(this._progressSkin as DisplayObject).width = super.width;
+						(this._progressSkin as DisplayObject).height = super.height;
 					}
 					(_progressSkin as IMXMLObject).initialized(this, "_progressSkin");
 				}
 			}
-			if (_isPlaying) this.start();
+			if (this._isPlaying) this.start();
 		}
 		
 		//--------------------------------------------------------------------------
@@ -194,31 +189,31 @@ package org.wvxvws.gui
 		{
 			if (event is ProgressEvent)
 			{
-				if (_progressSkin)
+				if (this._progressSkin)
 				{
-					_progressSkin.percent = 
+					this._progressSkin.percent = 
 						(event as ProgressEvent).bytesLoaded * 100 / 
 						(event as ProgressEvent).bytesTotal;
 						return;
 				}
 			}
-			if (_target && _progressSkin)
+			if (this._target && this._progressSkin)
 			{
-				if (_target is DisplayObject)
+				if (this._target is DisplayObject)
 				{
-					_progressSkin.percent = 
+					this._progressSkin.percent = 
 						(_target as DisplayObject).loaderInfo.bytesLoaded * 100 / 
 						(_target as DisplayObject).loaderInfo.bytesTotal;
 						return;
 				}
-				else if (_target is LoaderInfo)
+				else if (this._target is LoaderInfo)
 				{
-					_progressSkin.percent = 
+					this._progressSkin.percent = 
 						(_target as LoaderInfo).bytesLoaded * 100 / 
 						(_target as LoaderInfo).bytesTotal;
 						return;
 				}
-				_progressSkin.percent = 0;
+				this._progressSkin.percent = 0;
 			}
 		}
 		

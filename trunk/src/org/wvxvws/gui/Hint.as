@@ -1,4 +1,25 @@
-﻿package org.wvxvws.gui 
+﻿////////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (C) Oleg Sivokon email: olegsivokon@gmail.com
+//  
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or any later version.
+//  
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//  GNU General Public License for more details.
+//  
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, write to the Free Software
+//  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+//  Or visit http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+//
+////////////////////////////////////////////////////////////////////////////////
+
+package org.wvxvws.gui 
 {
 	//{imports
 	import flash.display.DisplayObject;
@@ -44,12 +65,12 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>factoryChanged</code> event.
 		*/
-		public function get factory():Class { return _factory; }
+		public function get factory():Class { return this._factory; }
 		
 		public function set factory(value:Class):void 
 		{
-			if (_factory === value) return;
-			_factory = value;
+			if (this._factory === value) return;
+			this._factory = value;
 			if (super.hasEventListener(EventGenerator.getEventType("factory")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -65,12 +86,12 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>pointChanged</code> event.
 		*/
-		public function get point():Point { return _point; }
+		public function get point():Point { return this._point; }
 		
 		public function set point(value:Point):void 
 		{
-			if (_point === value) return;
-			_point = value;
+			if (this._point === value) return;
+			this._point = value;
 			if (super.hasEventListener(EventGenerator.getEventType("point")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -86,12 +107,12 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>textChanged</code> event.
 		*/
-		public function get text():String { return _text; }
+		public function get text():String { return this._text; }
 		
 		public function set text(value:String):void 
 		{
-			if (_text == value) return;
-			_text = value;
+			if (this._text === value) return;
+			this._text = value;
 			if (super.hasEventListener(EventGenerator.getEventType("text")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -107,15 +128,21 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>targetChanged</code> event.
 		*/
-		public function get target():DisplayObject { return _target; }
+		public function get target():DisplayObject { return this._target; }
 		
 		public function set target(value:DisplayObject):void 
 		{
-			if (_target == value) return;
-			if (_target) _target.removeEventListener(MouseEvent.MOUSE_OVER, mouseOverHandler);
-			_target = value;
-			_target.addEventListener(MouseEvent.MOUSE_OVER, mouseOverHandler, false, 0, true);
-			_target.addEventListener(MouseEvent.MOUSE_OUT, mouseOutHandler, false, 0, true);
+			if (this._target === value) return;
+			if (this._target)
+			{
+				this._target.removeEventListener(
+					MouseEvent.MOUSE_OVER, this.mouseOverHandler);
+			}
+			this._target = value;
+			this._target.addEventListener(
+				MouseEvent.MOUSE_OVER, this.mouseOverHandler, false, 0, true);
+			this._target.addEventListener(
+				MouseEvent.MOUSE_OUT, this.mouseOutHandler, false, 0, true);
 			if (super.hasEventListener(EventGenerator.getEventType("target")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -131,19 +158,22 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>timeChanged</code> event.
 		*/
-		public function get time():int { return _time; }
+		public function get time():int { return this._time; }
 		
 		public function set time(value:int):void 
 		{
-			if (_time == value) return;
-			_time = value;
-			if (_hideTimer && _hideTimer.running)
+			if (this._time === value) return;
+			this._time = value;
+			if (this._hideTimer && this._hideTimer.running)
 			{
-				_hideTimer.stop();
-				_hideTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, hideTimerCompleteHandler);
+				this._hideTimer.stop();
+				this._hideTimer.removeEventListener(
+					TimerEvent.TIMER_COMPLETE, this.hideTimerCompleteHandler);
 			}
-			_hideTimer = new Timer(value, 1);
-			_hideTimer.addEventListener(TimerEvent.TIMER_COMPLETE, hideTimerCompleteHandler, false, 0, true);
+			this._hideTimer = new Timer(value, 1);
+			this._hideTimer.addEventListener(
+				TimerEvent.TIMER_COMPLETE, 
+				this.hideTimerCompleteHandler, false, 0, true);
 			if (super.hasEventListener(EventGenerator.getEventType("time")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -152,13 +182,13 @@
 		//  Public property instance
 		//------------------------------------
 		
-		public function get instance():DisplayObject { return _instance; }
+		public function get instance():DisplayObject { return this._instance; }
 		
 		//------------------------------------
 		//  Public property hasInstance
 		//------------------------------------
 		
-		public function get hasInstance():Boolean { return _hasInstance; }
+		public function get hasInstance():Boolean { return this._hasInstance; }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -194,10 +224,14 @@
 		public function Hint() 
 		{
 			super();
-			_timer.addEventListener(TimerEvent.TIMER_COMPLETE, timerCompleteHandler, false, 0, true);
-			if (!_hideTimer) _hideTimer = new Timer(_time, 1);
-			_hideTimer.addEventListener(TimerEvent.TIMER_COMPLETE, hideTimerCompleteHandler, false, 0, true);
-			_defaultHintFormat.indent = 1;
+			this._timer.addEventListener(
+				TimerEvent.TIMER_COMPLETE, 
+				this.timerCompleteHandler, false, 0, true);
+			if (!this._hideTimer) this._hideTimer = new Timer(_time, 1);
+			this._hideTimer.addEventListener(
+				TimerEvent.TIMER_COMPLETE, 
+				this.hideTimerCompleteHandler, false, 0, true);
+			this._defaultHintFormat.indent = 1;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -210,50 +244,54 @@
 		
 		public function initialized(document:Object, id:String):void
 		{
-			_document = document;
-			_id = id;
+			this._document = document;
+			this._id = id;
 		}
 		
 		public function show(text:String = null):DisplayObject
 		{
-			if (!_target) return null;
-			if (!_target.stage) return null;
-			if (!text) text = _text;
-			var bounds:Rectangle = _target.getBounds(_target.stage);
+			if (!this._target) return null;
+			if (!this._target.stage) return null;
+			if (!text) text = this._text;
+			var bounds:Rectangle = this._target.getBounds(this._target.stage);
 			var hp:Point;
-			var p:Point = _target.localToGlobal(new Point(_target.mouseX * _target.scaleX, 
-														_target.mouseY * _target.scaleY));
+			var p:Point = this._target.localToGlobal(
+				new Point(this._target.mouseX * this._target.scaleX, 
+				this._target.mouseY * this._target.scaleY));
 			if (!bounds.containsPoint(p)) return null;
-			if (_instance) hide();
+			if (this._instance) this.hide();
 			var ht:DisplayObject;
 			var htBase:DisplayObjectContainer = 
-				_target.stage.getChildAt(_target.stage.numChildren - 1) as DisplayObjectContainer;
-			if (_factory)
+				this._target.stage.getChildAt(
+				this._target.stage.numChildren - 1) as DisplayObjectContainer;
+			if (this._factory)
 			{
-				ht = new _factory() as DisplayObject;
+				ht = new this._factory() as DisplayObject;
 				if (!ht) throw new Error("Factory must extend DisplayObject");
 			}
 			else
 			{
-				if (_point) hp = _target.localToGlobal(_point);
+				if (this._point) hp = this._target.localToGlobal(this._point);
 				else hp = p;
 				ht = drawDefaultHint(htBase, hp, text);
 			}
-			_instance = htBase.addChild(ht);
-			_hideTimer.start();
-			dispatchEvent(new Event("instanceChange"));
-			dispatchEvent(new Event("hasInstanceChange"));
+			this._instance = htBase.addChild(ht);
+			this._hideTimer.start();
+			super.dispatchEvent(new Event("instanceChange"));
+			super.dispatchEvent(new Event("hasInstanceChange"));
 			return ht;
 		}
 		
 		public function hide():void
 		{
-			if (!_instance) return;
-			if (_instance && _instance.parent) _instance.parent.removeChild(_instance);
-			if (_hideTimer && _hideTimer.running) _hideTimer.stop();
-			_instance = null;
-			dispatchEvent(new Event("instanceChange"));
-			dispatchEvent(new Event("hasInstanceChange"));
+			if (!this._instance) return;
+			if (this._instance && this._instance.parent)
+				this._instance.parent.removeChild(this._instance);
+			if (this._hideTimer && this._hideTimer.running)
+				this._hideTimer.stop();
+			this._instance = null;
+			super.dispatchEvent(new Event("instanceChange"));
+			super.dispatchEvent(new Event("hasInstanceChange"));
 		}
 		
 		//--------------------------------------------------------------------------
@@ -264,38 +302,39 @@
 		
 		protected function mouseOverHandler(event:MouseEvent):void 
 		{
-			if (_timer.running)
+			if (this._timer.running)
 			{
-				_timer.stop();
-				_timer.reset();
+				this._timer.stop();
+				this._timer.reset();
 			}
-			hide();
-			_timer.start();
+			this.hide();
+			this._timer.start();
 		}
 		
 		protected function mouseOutHandler(event:MouseEvent):void 
 		{
-			if (_target && _target.stage)
+			if (this._target && this._target.stage)
 			{
-				var bounds:Rectangle = _target.getBounds(_target.stage);
+				var bounds:Rectangle = this._target.getBounds(this._target.stage);
 				var p:Point = new Point(event.stageX, event.stageY);
 				if (bounds.containsPoint(p)) return;
 			}
-			if (_timer.running) _timer.stop();
-			hide();
+			if (this._timer.running) this._timer.stop();
+			this.hide();
 		}
 		
 		protected function timerCompleteHandler(event:TimerEvent):void 
 		{
-			show();
+			this.show();
 		}
 		
 		protected function hideTimerCompleteHandler(event:TimerEvent):void 
 		{
-			hide();
+			this.hide();
 		}
 		
-		protected function drawDefaultHint(where:DisplayObjectContainer, anchor:Point, what:String):DisplayObject
+		protected function drawDefaultHint(where:DisplayObjectContainer, 
+							anchor:Point, what:String):DisplayObject
 		{
 			var s:Sprite = new Sprite();
 			var t:TextField = new TextField();
@@ -303,7 +342,7 @@
 			t.multiline = true;
 			t.wordWrap = false;
 			t.selectable = false;
-			t.defaultTextFormat = _defaultHintFormat;
+			t.defaultTextFormat = this._defaultHintFormat;
 			t.text = what;
 			s.mouseChildren = false;
 			s.graphics.lineStyle(1, 0x3E2F1B);
@@ -311,15 +350,15 @@
 			s.graphics.moveTo(0, 0);
 			s.graphics.lineTo(t.width, 0);
 			s.graphics.lineTo(t.width, t.height);
-			s.graphics.lineTo(t.width / 2 + 5, t.height);
-			s.graphics.lineTo(t.width / 2, t.height + 8);
-			s.graphics.lineTo(t.width / 2 - 5, t.height);
+			s.graphics.lineTo(t.width * 0.5 + 5, t.height);
+			s.graphics.lineTo(t.width * 0.5, t.height + 8);
+			s.graphics.lineTo(t.width * 0.5 - 5, t.height);
 			s.graphics.lineTo(0, t.height);
 			s.graphics.lineTo(0, 0);
 			s.graphics.endFill();
-			s.x = anchor.x - t.width / 2;
+			s.x = anchor.x - t.width * 0.5;
 			s.y = anchor.y - (t.height + 9);
-			s.filters = [new DropShadowFilter(2, 45, 0, .5)];
+			s.filters = [new DropShadowFilter(2, 45, 0, 0.5)];
 			s.addChild(t);
 			return s;
 		}

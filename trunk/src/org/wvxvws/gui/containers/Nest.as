@@ -54,9 +54,9 @@ package org.wvxvws.gui.containers
 	 */
 	public class Nest extends Pane
 	{
-		public function get selectedItem():XML { return _selectedItem; }
+		public function get selectedItem():XML { return this._selectedItem; }
 		
-		public function get selectedChild():IRenderer { return _selectedChild; }
+		public function get selectedChild():IRenderer { return this._selectedChild; }
 		
 		[Bindable("branchLabelFieldChanged")]
 		
@@ -65,14 +65,14 @@ package org.wvxvws.gui.containers
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>branchLabelFieldChanged</code> event.
 		*/
-		public function get branchLabelField():String { return _branchLabelField; }
+		public function get branchLabelField():String { return this._branchLabelField; }
 		
 		public function set branchLabelField(value:String):void 
 		{
-			if (_branchLabelField === value) return;
-			_useBranchLabel = (value !== "" && value !== null);
-			_branchLabelField = value;
-			super.invalidate("_branchLabelField", _branchLabelField, false);
+			if (this._branchLabelField === value) return;
+			this._useBranchLabel = (value !== "" && value !== null);
+			this._branchLabelField = value;
+			super.invalidate("_branchLabelField", this._branchLabelField, false);
 			if (super.hasEventListener(EventGenerator.getEventType("branchLabelField")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -84,13 +84,13 @@ package org.wvxvws.gui.containers
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>leafLabelFieldChanged</code> event.
 		*/
-		public function get leafLabelField():String { return _leafLabelField; }
+		public function get leafLabelField():String { return this._leafLabelField; }
 		
 		public function set leafLabelField(value:String):void 
 		{
-			if (_leafLabelField === value) return;
-			_leafLabelField = value;
-			_useLeafLabel = (value !== "" && value !== null);
+			if (this._leafLabelField === value) return;
+			this._leafLabelField = value;
+			this._useLeafLabel = (value !== "" && value !== null);
 			super.invalidate("_leafLabelField", _leafLabelField, false);
 			if (super.hasEventListener(EventGenerator.getEventType("leafLabelField")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -103,12 +103,12 @@ package org.wvxvws.gui.containers
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>leafLabelFunctionChanged</code> event.
 		*/
-		public function get leafLabelFunction():Function { return _leafLabelFunction; }
+		public function get leafLabelFunction():Function { return this._leafLabelFunction; }
 		
 		public function set leafLabelFunction(value:Function):void 
 		{
-			if (_leafLabelFunction === value) return;
-			_leafLabelFunction = value;
+			if (this._leafLabelFunction === value) return;
+			this._leafLabelFunction = value;
 			super.invalidate("_leafLabelFunction", _leafLabelFunction, false);
 			if (super.hasEventListener(EventGenerator.getEventType("leafLabelFunction")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -121,7 +121,7 @@ package org.wvxvws.gui.containers
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>branchLabelFunctionChanged</code> event.
 		*/
-		public function get branchLabelFunction():Function { return _branchLabelFunction; }
+		public function get branchLabelFunction():Function { return this._branchLabelFunction; }
 		
 		public function set branchLabelFunction(value:Function):void 
 		{

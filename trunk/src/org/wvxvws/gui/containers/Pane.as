@@ -7,6 +7,7 @@
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.DIV;
 	import org.wvxvws.gui.GUIEvent;
+	import org.wvxvws.gui.layout.Invalides;
 	import org.wvxvws.gui.renderers.IRenderer;
 	import org.wvxvws.gui.skins.ISkin;
 	import org.wvxvws.gui.skins.ISkinnable;
@@ -35,15 +36,16 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public function get dataProvider():XML { return _dataProvider; }
+		public function get dataProvider():XML { return this._dataProvider; }
 		
 		public function set dataProvider(value:XML):void 
 		{
-			if (_dataProvider === value) return;
-			_dataProvider = value;
-			_dataProviderCopy = value.copy();
-			_dataProvider.setNotification(providerNotifier);
-			super.invalidate("_dataProvider", _dataProvider, false);
+			if (this._dataProvider === value) return;
+			this._dataProvider = value;
+			if (value) this._dataProviderCopy = value.copy();
+			else this._dataProviderCopy = null;
+			this._dataProvider.setNotification(this.providerNotifier);
+			super.invalidate(Invalides.DATAPROVIDER, false);
 			super.dispatchEvent(new GUIEvent(GUIEvent.DATA_CHANGED));
 		}
 		
@@ -54,16 +56,16 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>labelSkinChanged</code> event.
 		*/
-		public function get labelSkin():ISkin { return _labelSkin; }
+		public function get labelSkin():ISkin { return this._labelSkin; }
 		
 		public function set labelSkin(value:ISkin):void 
 		{
-			if (_labelSkin === value) return;
-			_labelSkin = value;
-			if (!_skin) _skin = new <ISkin>[];
-			while (_skin.length < 2) _skin.push(null);
-			_skin[0] = _labelSkin;
-			super.invalidate("_labelSkin", _labelSkin, false);
+			if (this._labelSkin === value) return;
+			this._labelSkin = value;
+			if (!this._skin) this._skin = new <ISkin>[];
+			while (this._skin.length < 2) this._skin.push(null);
+			this._skin[0] = this._labelSkin;
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("labelSkin")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -75,41 +77,41 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>rendererSkinChanged</code> event.
 		*/
-		public function get rendererSkin():ISkin { return _rendererSkin; }
+		public function get rendererSkin():ISkin { return this._rendererSkin; }
 		
 		public function set rendererSkin(value:ISkin):void 
 		{
-			if (_rendererSkin === value) return;
-			_rendererSkin = value;
-			if (!_skin) _skin = new <ISkin>[];
-			while (_skin.length < 2)_skin.push(null);
-			_skin[1] = _rendererSkin;
-			super.invalidate("_rendererSkin", _rendererSkin, false);
+			if (this._rendererSkin === value) return;
+			this._rendererSkin = value;
+			if (!this._skin) this._skin = new <ISkin>[];
+			while (this._skin.length < 2) this._skin.push(null);
+			this._skin[1] = this._rendererSkin;
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("rendererSkin")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		/* INTERFACE org.wvxvws.gui.skins.ISkinnable */
 		
-		public function get skin():Vector.<ISkin> { return _skin; }
+		public function get skin():Vector.<ISkin> { return this._skin; }
 		
 		public function set skin(value:Vector.<ISkin>):void
 		{
-			if (_skin === value) return;
-			_skin = value;
-			if (_skin)
+			if (this._skin === value) return;
+			this._skin = value;
+			if (this._skin)
 			{
-				if (_skin.length) _labelSkin = _skin[0];
-				if (_skin.length > 1) _rendererSkin = _skin[1];
+				if (this._skin.length) this._labelSkin = this._skin[0];
+				if (this._skin.length > 1) this._rendererSkin = this._skin[1];
 			}
-			super.invalidate("_labelSkin", _labelSkin, false);
+			super.invalidate(Invalides.SKIN, false);
 		}
 		
 		public function get parts():Object { return null; }
 		
 		public function set parts(value:Object):void { }
 		
-		public function get subContainers():Vector.<Pane> { return _subContainers; }
+		public function get subContainers():Vector.<Pane> { return this._subContainers; }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -165,7 +167,7 @@
 			while (i < super.numChildren)
 			{
 				if (super.getChildAt(i) === renderer)
-					return _dataProvider.*[i];
+					return this._dataProvider.*[i];
 				i++;
 			}
 			return null;
@@ -178,7 +180,7 @@
 		
 		public function getNodeAt(index:int):XML
 		{
-			return _dataProvider.*[index];
+			return this._dataProvider.*[index];
 		}
 		
 		public function getIndexForItem(renderer:DisplayObject):int
@@ -208,11 +210,11 @@
 			if (!_skin)
 			{
 				this.skin = SkinManager.getSkin(this);
-				if (!_skin) _skin = new <ISkin>[];
+				if (!this._skin) this._skin = new <ISkin>[];
 				this.validate(properties);
 				return;
 			}
-			if ("_dataProvider" in properties) this.layOutChildren();
+			if (Invalides.DATAPROVIDER in properties) this.layOutChildren();
 			super.validate(properties);
 		}
 		
@@ -224,18 +226,18 @@
 		
 		protected function layOutChildren():void
 		{
-			if (_dataProvider === null) return;
-			if (!_dataProvider.*.length()) return;
-			if (!_rendererSkin) return;
-			_currentItem = 0;
-			_removedChildren = new <DisplayObject>[];
+			if (this._dataProvider === null) return;
+			if (!this._dataProvider.*.length()) return;
+			if (!this._rendererSkin) return;
+			this._currentItem = 0;
+			this._removedChildren = new <DisplayObject>[];
 			var i:int;
 			while (super.numChildren > i)
-				_removedChildren.push(super.removeChildAt(0));
-			_dispatchCreated = false;
-			_dataProvider.*.(this.createChild(valueOf()));
-			if (_dispatchCreated) 
-				super.dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED, false, true));
+				this._removedChildren.push(super.removeChildAt(0));
+			this._dispatchCreated = false;
+			this._dataProvider.*.(this.createChild(valueOf()));
+			if (this._dispatchCreated) 
+				super.dispatchEvent(GUIEvent.CHILDREN_CREATED);
 		}
 		
 		protected function createChild(xml:XML):DisplayObject
@@ -243,7 +245,7 @@
 			var child:DisplayObject;
 			var recycledChild:DisplayObject;
 			var dirtyChild:DisplayObject;
-			for each (var ir:IRenderer in _removedChildren)
+			for each (var ir:IRenderer in this._removedChildren)
 			{
 				if (ir.data === xml && ir.isValid)
 					recycledChild = ir as DisplayObject;
@@ -254,12 +256,12 @@
 			else if (dirtyChild) child = dirtyChild;
 			else
 			{
-				_dispatchCreated = true;
+				this._dispatchCreated = true;
 				child = _rendererSkin.produce(this, xml) as DisplayObject;
 			}
 			if (!child) return null;
 			if (!(child is IRenderer)) return null;
-			(child as IRenderer).labelSkin = _labelSkin;
+			(child as IRenderer).labelSkin = this._labelSkin;
 			if (!recycledChild || dirtyChild)
 			{
 				(child as IRenderer).data = xml;
@@ -267,7 +269,7 @@
 					(child as IMXMLObject).initialized(this, xml.localName());
 			}
 			super.addChild(child);
-			_currentItem++;
+			this._currentItem++;
 			return child;
 		}
 		
@@ -283,7 +285,7 @@
 				    case "attributeAdded":
 					case "attributeChanged":
 					case "attributeRemoved":
-						doc = getItemForNode(target as XML);
+						doc = this.getItemForNode(target as XML);
 						renderer = doc as IRenderer;
 						pane = doc as Pane;
 						if (renderer) renderer.data = target as XML;
@@ -319,39 +321,40 @@
 							}
 							if (needReplace)
 							{
-								if (_dataProvider.*[firstIndex].contains(_dataProviderCopy.*[firstIndex]))
+								if (this._dataProvider.*[firstIndex].contains(
+									this._dataProviderCopy.*[firstIndex]))
 								{
 									nodeList.splice(firstIndex, 1);
-									_dataProvider.setChildren("");
-									_dataProvider.normalize();
+									this._dataProvider.setChildren("");
+									this._dataProvider.normalize();
 									while (nodeList.length)
 									{
 										_dataProvider.appendChild(nodeList.shift());
 									}
-									_dataProviderCopy = _dataProvider.copy();
+									this._dataProviderCopy = this._dataProvider.copy();
 									return;
 								}
 								else
 								{
 									nodeList.splice(lastIndex, 1);
-									_dataProvider.setChildren("");
-									_dataProvider.normalize();
+									this._dataProvider.setChildren("");
+									this._dataProvider.normalize();
 									while (nodeList.length)
 									{
-										_dataProvider.appendChild(nodeList.shift());
+										this._dataProvider.appendChild(nodeList.shift());
 									}
-									_dataProviderCopy = _dataProvider.copy();
+									this._dataProviderCopy = this._dataProvider.copy();
 									return;
 								}
 							}
-							super.invalidate("_dataProvider", _dataProvider, false);
+							super.invalidate(Invalides.DATAPROVIDER, false);
 						}
 						break;
 					case "textSet":
 					case "nameSet":
 					case "nodeChanged":
 					case "nodeRemoved":
-						invalidate("_dataProvider", _dataProvider, false);
+						invalidate(Invalides.DATAPROVIDER, false);
 						break;
 					case "namespaceAdded":
 						
@@ -363,16 +366,9 @@
 						
 						break;
 			}
-			_dataProviderCopy = _dataProvider.copy();
-			super.dispatchEvent(new GUIEvent(GUIEvent.DATA_CHANGED));
+			this._dataProviderCopy = this._dataProvider.copy();
+			if (super.hasEventListener(GUIEvent.DATA_CHANGED.type))
+				super.dispatchEvent(GUIEvent.DATA_CHANGED);
 		}
-		
-		//--------------------------------------------------------------------------
-		//
-		//  Private methods
-		//
-		//--------------------------------------------------------------------------
-		
 	}
-	
 }

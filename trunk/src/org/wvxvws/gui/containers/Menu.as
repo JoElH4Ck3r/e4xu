@@ -72,7 +72,8 @@ package org.wvxvws.gui.containers
 		public function get hasMouse():Boolean
 		{
 			var rect:Rectangle = 
-				new Rectangle(super.x, super.y, _cumulativeWidth, _cumulativeHeight);
+				new Rectangle(super.x, super.y, 
+				this._cumulativeWidth, this._cumulativeHeight);
 			var p:Point = new Point(super.mouseX, super.mouseY);
 			return rect.containsPoint(p);
 		}
@@ -84,28 +85,28 @@ package org.wvxvws.gui.containers
 		public override function set dataProvider(value:XML):void 
 		{
 			super.dataProvider = value;
-			if (_isDeferredKeyInit) this.initiKeyListener();
+			if (this._isDeferredKeyInit) this.initiKeyListener();
 		}
 		
-		public function get borderWidth():Number { return _borderWidth; }
+		public function get borderWidth():Number { return this._borderWidth; }
 		
 		public function set borderWidth(value:Number):void 
 		{
-			_borderWidth = value;
+			this._borderWidth = value;
 		}
 		
-		public function get borderColor():uint { return _borderColor; }
+		public function get borderColor():uint { return this._borderColor; }
 		
 		public function set borderColor(value:uint):void 
 		{
-			_borderColor = value;
+			this._borderColor = value;
 		}
 		
-		public function get itemClickHandler():Function { return _itemClickHandler; }
+		public function get itemClickHandler():Function { return this._itemClickHandler; }
 		
 		public function set itemClickHandler(value:Function):void 
 		{
-			_itemClickHandler = value;
+			this._itemClickHandler = value;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -166,50 +167,50 @@ package org.wvxvws.gui.containers
 		
 		public function collapseChildMenu():void
 		{
-			if (_childMenu && super.contains(_childMenu))
+			if (this._childMenu && super.contains(this._childMenu))
 			{
-				_openedItem = null;
-				super.removeChild(_childMenu);
-				_childMenu = null;
+				this._openedItem = null;
+				super.removeChild(this._childMenu);
+				this._childMenu = null;
 			}
 		}
 		
 		public override function initialized(document:Object, id:String):void 
 		{
 			super.initialized(document, id);
-			if (document is Menu) _parentMenu = document as Menu;
+			if (document is Menu) this._parentMenu = document as Menu;
 			else this.initiKeyListener();
 		}
 		
 		public function initiKeyListener():void
 		{
-			_isRootMenu = true;
+			this._isRootMenu = true;
 			var hkList:XMLList;
 			var compositeKey:Vector.<int>;
-			if (_dataProvider)
+			if (this._dataProvider)
 			{
-				hkList = _dataProvider..*.(hasOwnProperty(_hotkeysField));
+				hkList = _dataProvider..*.(hasOwnProperty(this._hotkeysField));
 				for each (var node:XML in hkList)
 				{
-					if (!node[_hotkeysField].toString().length) continue;
+					if (!node[this._hotkeysField].toString().length) continue;
 					compositeKey = Vector.<int>(node[_hotkeysField].toString().split("|"));
-					_keyListenersMap[node] = KeyUtils.keysToKey(compositeKey);
-					KeyUtils.registerHotKeys(compositeKey, defaultKeyHandler);
+					this._keyListenersMap[node] = KeyUtils.keysToKey(compositeKey);
+					KeyUtils.registerHotKeys(compositeKey, this.defaultKeyHandler);
 				}
 			}
-			else _isDeferredKeyInit = true;
+			else this._isDeferredKeyInit = true;
 		}
 		
 		private function defaultKeyHandler(event:KeyboardEvent):void
 		{
 			var sequenceCode:uint = KeyUtils.currentCombination;
-			if (_itemClickHandler !== null)
+			if (this._itemClickHandler !== null)
 			{
-				for (var obj:Object in _keyListenersMap)
+				for (var obj:Object in this._keyListenersMap)
 				{
-					if (_keyListenersMap[obj] === sequenceCode)
+					if (this._keyListenersMap[obj] === sequenceCode)
 					{
-						_itemClickHandler(obj);
+						this._itemClickHandler(obj);
 					}
 				}
 			}
@@ -229,22 +230,22 @@ package org.wvxvws.gui.containers
 		
 		protected override function layOutChildren():void 
 		{
-			_cumulativeHeight = 0;
-			_cumulativeWidth = 0;
-			_nextY = 0;
-			if (_childMenu && contains(_childMenu))
-				super.removeChild(_childMenu);
+			this._cumulativeHeight = 0;
+			this._cumulativeWidth = 0;
+			this._nextY = 0;
+			if (this._childMenu && contains(this._childMenu))
+				super.removeChild(this._childMenu);
 			super.layOutChildren();
-			super._bounds.x = _cumulativeWidth;
-			super._bounds.y = _cumulativeHeight;
+			super._bounds.x = this._cumulativeWidth;
+			super._bounds.y = this._cumulativeHeight;
 			var i:int = super.numChildren;
 			var child:DisplayObject;
 			while (i--)
 			{
 				child = super.getChildAt(i);
-				child.width = _cumulativeWidth;
+				child.width = this._cumulativeWidth;
 			}
-			if (_childMenu) super.addChild(_childMenu);
+			if (this._childMenu) super.addChild(this._childMenu);
 		}
 		
 		protected override function createChild(xml:XML):DisplayObject 
@@ -253,31 +254,32 @@ package org.wvxvws.gui.containers
 			if (!child) return null;
 			var childWidth:int;
 			child.iconProducer = _iconProducer;
-			if (xml[_hotkeysField].toString().length)
+			if (xml[this._hotkeysField].toString().length)
 			{
-				child.hotKeys = Vector.<int>(xml[_hotkeysField].toString().split("|"));
+				child.hotKeys = 
+					Vector.<int>(xml[this._hotkeysField].toString().split("|"));
 			}
-			if (xml.hasSimpleContent()) child.kind = xml[_kindField].toString();
-			child.enabled = xml[_enabledField] != "false";
+			if (xml.hasSimpleContent()) child.kind = xml[this._kindField].toString();
+			child.enabled = xml[this._enabledField] != "false";
 			if (child.kind !== SEPARATOR)
 			{
-				if (!_groups)
-					_groups = new Vector.<Vector.<IMenuRenderer>>(0, false);
-				if (!_lastGroup)
-					_lastGroup = new Vector.<IMenuRenderer>(0, false);
-				_lastGroup.push(child);
-				_groups.push(_lastGroup);
+				if (!this._groups)
+					this._groups = new Vector.<Vector.<IMenuRenderer>>(0, false);
+				if (!this._lastGroup)
+					this._lastGroup = new Vector.<IMenuRenderer>(0, false);
+				this._lastGroup.push(child);
+				this._groups.push(this._lastGroup);
 			}
 			else
 			{
-				_lastGroup = new Vector.<IMenuRenderer>(0, false);
-				_lastGroup.push(child);
-				_groups.push(_lastGroup);
+				this._lastGroup = new Vector.<IMenuRenderer>(0, false);
+				this._lastGroup.push(child);
+				this._groups.push(this._lastGroup);
 			}
-			(child as DisplayObject).height = _cellHeight;
-			(child as DisplayObject).y = _nextY;
-			if (child.kind == SEPARATOR) _nextY += 4;
-			else _nextY += _cellHeight;
+			(child as DisplayObject).height = this._cellHeight;
+			(child as DisplayObject).y = this._nextY;
+			if (child.kind == SEPARATOR) this._nextY += 4;
+			else this._nextY += this._cellHeight;
 			if (child is ILayoutClient)
 			{
 				(child as ILayoutClient).validate(
@@ -285,7 +287,7 @@ package org.wvxvws.gui.containers
 			}
 			if (child is IMenuRenderer)
 			{
-				(child as IMenuRenderer).clickHandler = _itemClickHandler;
+				(child as IMenuRenderer).clickHandler = this._itemClickHandler;
 				childWidth = (child as IMenuRenderer).desiredWidth;
 			}
 			else
@@ -293,8 +295,8 @@ package org.wvxvws.gui.containers
 				childWidth = (child as DisplayObject).width + 
 							(child as DisplayObject).x;
 			}
-			_cumulativeWidth = Math.max(_cumulativeWidth, childWidth);
-			_cumulativeHeight = _nextY;
+			this._cumulativeWidth = Math.max(this._cumulativeWidth, childWidth);
+			this._cumulativeHeight = this._nextY;
 			return child as DisplayObject;
 		}
 		
@@ -302,12 +304,12 @@ package org.wvxvws.gui.containers
 		{
 			var g:Graphics = super.graphics;
 			g.clear();
-			g.lineStyle(_borderWidth, _borderColor);
+			g.lineStyle(this._borderWidth, this._borderColor);
 			g.beginFill(super._backgroundColor, super._backgroundAlpha);
-			g.drawRect(0, 0, _cumulativeWidth, _cumulativeHeight);
+			g.drawRect(0, 0, this._cumulativeWidth, _this.cumulativeHeight);
 			g.endFill();
 			g.beginFill(0xD0D0D0);
-			g.drawRect(0, 0, 20, _cumulativeHeight);
+			g.drawRect(0, 0, 20, this._cumulativeHeight);
 			g.endFill();
 		}
 		
@@ -319,48 +321,48 @@ package org.wvxvws.gui.containers
 		
 		private function atsHandler(event:Event):void 
 		{
-			super.removeEventListener(Event.ADDED_TO_STAGE, atsHandler);
+			super.removeEventListener(Event.ADDED_TO_STAGE, this.atsHandler);
 			KeyUtils.obtainStage(stage);
 		}
 		
 		private function rollOutHandler(event:MouseEvent):void 
 		{
-			if (_parentMenu && event.target is Menu) _parentMenu.collapseChildMenu();
+			if (this._parentMenu && event.target is Menu)
+				this._parentMenu.collapseChildMenu();
 		}
 		
 		private function selectedHandler(node:XML):void 
 		{
-			if (_itemClickHandler !== null) _itemClickHandler(node);
+			if (this._itemClickHandler !== null) this._itemClickHandler(node);
 		}
 		
 		private function openedHandler(event:GUIEvent):void 
 		{
 			event.stopImmediatePropagation();
-			if (_openedItem === event.target) return;
-			_openedItem = event.target as IMenuRenderer;
-			if (_childMenu && super.contains(_childMenu))
+			if (this._openedItem === event.target) return;
+			this._openedItem = event.target as IMenuRenderer;
+			if (this._childMenu && super.contains(this._childMenu))
 			{
-				if (!_childMenu.hasMouse) this.collapseChildMenu();
+				if (!this._childMenu.hasMouse) this.collapseChildMenu();
 			}
-			if (!_openedItem) return;
-			if (_openedItem.kind !== CONTAINER || !_openedItem.enabled) return;
-			_childMenu = new Menu();
-			_childMenu.backgroundAlpha = _backgroundAlpha;
-			_childMenu.backgroundColor = _backgroundColor;
-			_childMenu.borderWidth = _borderWidth;
-			_childMenu.borderColor = _borderColor;
-			_childMenu.skin = _skin;
-			_childMenu.dataProvider = _openedItem.data as XML;
-			_childMenu.x = (_openedItem as DisplayObject).x + 
-							(_openedItem as DisplayObject).width;
-			_childMenu.y = (_openedItem as DisplayObject).y;
-			_childMenu.visible = false;
-			_childMenu.itemClickHandler = _itemClickHandler;
-			_childMenu.initialized(this, "_childMenu");
-			_childMenu.validate(_childMenu.invalidProperties);
-			_childMenu.visible = true;
+			if (!this._openedItem) return;
+			if (this._openedItem.kind !== CONTAINER || !this._openedItem.enabled)
+				return;
+			this._childMenu = new Menu();
+			this._childMenu.backgroundAlpha = this._backgroundAlpha;
+			this._childMenu.backgroundColor = this._backgroundColor;
+			this._childMenu.borderWidth = this._borderWidth;
+			this._childMenu.borderColor = this._borderColor;
+			this._childMenu.skin = this._skin;
+			this._childMenu.dataProvider = this._openedItem.data as XML;
+			this._childMenu.x = (this._openedItem as DisplayObject).x + 
+							(this._openedItem as DisplayObject).width;
+			this._childMenu.y = (this._openedItem as DisplayObject).y;
+			this._childMenu.visible = false;
+			this._childMenu.itemClickHandler = this._itemClickHandler;
+			this._childMenu.initialized(this, "_childMenu");
+			this._childMenu.validate(this._childMenu.invalidProperties);
+			this._childMenu.visible = true;
 		}
-		
 	}
-	
 }
