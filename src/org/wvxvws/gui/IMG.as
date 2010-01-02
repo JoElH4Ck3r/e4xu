@@ -1,4 +1,25 @@
-﻿package org.wvxvws.gui 
+﻿////////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (C) Oleg Sivokon email: olegsivokon@gmail.com
+//  
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or any later version.
+//  
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//  GNU General Public License for more details.
+//  
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, write to the Free Software
+//  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+//  Or visit http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+//
+////////////////////////////////////////////////////////////////////////////////
+
+package org.wvxvws.gui 
 {
 	//{ imports
 	import flash.display.DisplayObject;
@@ -48,16 +69,16 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>srcChanged</code> event.
 		*/
-		public function get src():String { return _src; }
+		public function get src():String { return this._src; }
 		
 		public function set src(value:String):void 
 		{
-			if (_src === value) return;
-			_src = value;
+			if (this._src === value) return;
+			this._src = value;
 			if (!_loader) this.initLoader();
 			var context:LoaderContext = 
 				new LoaderContext(true, ApplicationDomain.currentDomain);
-			_loader.load(new URLRequest(_src), context);
+			this._loader.load(new URLRequest(this._src), context);
 			if (super.hasEventListener(EventGenerator.getEventType("src")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -73,12 +94,12 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>embedChanged</code> event.
 		*/
-		public function get embed():Class { return _embed; }
+		public function get embed():Class { return this._embed; }
 		
 		public function set embed(value:Class):void 
 		{
-			if (_embed === value) return;
-			_embed = value;
+			if (this._embed === value) return;
+			this._embed = value;
 			if (value)
 			{
 				var bd:Bitmap = new value() as Bitmap;
@@ -94,7 +115,7 @@
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
-		public function get id():String { return _id; }
+		public function get id():String { return this._id; }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -109,21 +130,21 @@
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Private properties
-		//
-		//--------------------------------------------------------------------------
-		
-		//--------------------------------------------------------------------------
-		//
 		//  Cunstructor
 		//
 		//--------------------------------------------------------------------------
+		
 		public function IMG(bitmapData:BitmapData = null, 
 						pixelSnapping:String = "auto", smoothing:Boolean = false) 
 		{
 			super(bitmapData, pixelSnapping, smoothing);
-			
 		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
 		
 		/* INTERFACE mx.core.IMXMLObject */
 		
@@ -133,14 +154,8 @@
 			{
 				(document as DisplayObjectContainer).addChild(this);
 			}
-			_id = id;
+			this._id = id;
 		}
-		
-		//--------------------------------------------------------------------------
-		//
-		//  Public methods
-		//
-		//--------------------------------------------------------------------------
 		
 		//--------------------------------------------------------------------------
 		//
@@ -150,49 +165,36 @@
 		
 		protected function initLoader():void
 		{
-			_loader = new Loader();
-			_loader.contentLoaderInfo.addEventListener(
-							Event.COMPLETE, completeHandler);
-			_loader.contentLoaderInfo.addEventListener(
-							ProgressEvent.PROGRESS, loaderEventsHandler);
-			_loader.contentLoaderInfo.addEventListener(
-							Event.OPEN, loaderEventsHandler);
-			_loader.contentLoaderInfo.addEventListener(
-							IOErrorEvent.IO_ERROR, loaderEventsHandler);
-			_loader.contentLoaderInfo.addEventListener(
-							SecurityErrorEvent.SECURITY_ERROR, loaderEventsHandler);
+			this._loader = new Loader();
+			this._loader.contentLoaderInfo.addEventListener(
+							Event.COMPLETE, this.completeHandler);
+			this._loader.contentLoaderInfo.addEventListener(
+							ProgressEvent.PROGRESS, super.dispatchEvent);
+			this._loader.contentLoaderInfo.addEventListener(
+							Event.OPEN, super.dispatchEvent);
+			this._loader.contentLoaderInfo.addEventListener(
+							IOErrorEvent.IO_ERROR, super.dispatchEvent);
+			this._loader.contentLoaderInfo.addEventListener(
+							SecurityErrorEvent.SECURITY_ERROR, super.dispatchEvent);
 		}
 		
 		protected function completeHandler(event:Event):void 
 		{
-			var d:DisplayObject = _loader.content;
+			var d:DisplayObject = this._loader.content;
 			var bd:BitmapData;
 			if (d is Bitmap)
 			{
 				super.bitmapData = (d as Bitmap).bitmapData.clone();
-				_loader.unload();
+				this._loader.unload();
 			}
 			else
 			{
-				bd = new BitmapData(_loader.loaderInfo.width, 
-									_loader.loaderInfo.height, true, 0x00FFFFFF);
-				bd.draw(_loader);
+				bd = new BitmapData(this._loader.loaderInfo.width, 
+								this._loader.loaderInfo.height, true, 0x00FFFFFF);
+				bd.draw(this._loader);
 				super.bitmapData = bd;
 			}
-			super.dispatchEvent(event);
+			if (super.hasEventListener(Event.COMPLETE)) super.dispatchEvent(event);
 		}
-		
-		//--------------------------------------------------------------------------
-		//
-		//  Private methods
-		//
-		//--------------------------------------------------------------------------
-		
-		private function loaderEventsHandler(event:Event):void 
-		{
-			super.dispatchEvent(event);
-		}
-		
 	}
-	
 }

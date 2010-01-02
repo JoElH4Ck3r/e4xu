@@ -27,7 +27,7 @@ package org.wvxvws.data
 	 * @langVersion 3.0
 	 * @playerVersion 10.0.32
 	 */
-	public class ListIterator
+	public class ListIterator implements IIterator
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -36,6 +36,11 @@ package org.wvxvws.data
 		//--------------------------------------------------------------------------
 		
 		public function get position():int { return _position; }
+		
+		/* INTERFACE org.wvxvws.data.IIterator */
+		
+		public function get next():Function { return this._next; }
+		public function get current():Function { return this._current; }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -53,7 +58,7 @@ package org.wvxvws.data
 		//
 		//--------------------------------------------------------------------------
 		
-		internal function get current():ListCell { return _current; }
+		internal function get currentCell():ListCell { return this._current; }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -74,7 +79,23 @@ package org.wvxvws.data
 		//
 		//--------------------------------------------------------------------------
 		
-		public function next():Object
+		public function reset():void
+		{
+			this._current = this._list.first;
+			this._position = -1;
+		}
+		
+		public function hasNext():Boolean { return this._current.next !== null; }
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
+		
+		protected function _current():Object { return this._current.target; }
+		
+		protected function _next():Object
 		{
 			var ret:Object;
 			if (!this._current.next) return null;
@@ -84,14 +105,5 @@ package org.wvxvws.data
 			return ret;
 		}
 		
-		public function reset():void
-		{
-			this._current = this._list.first;
-			this._position = -1;
-		}
-		
-		public function getCurrent():Object { return _current.target; }
-		
-		public function hasNext():Boolean { return this._current.next !== null; }
 	}
 }

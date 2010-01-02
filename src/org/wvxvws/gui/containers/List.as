@@ -9,6 +9,7 @@
 	import org.wvxvws.data.SetEvent;
 	import org.wvxvws.gui.DIV;
 	import org.wvxvws.gui.GUIEvent;
+	import org.wvxvws.gui.layout.Invalides;
 	import org.wvxvws.gui.renderers.IRenderer;
 	import org.wvxvws.gui.repeaters.IRepeater;
 	import org.wvxvws.gui.repeaters.IRepeaterHost;
@@ -35,7 +36,7 @@
 	{
 		/* INTERFACE org.wvxvws.gui.skins.ISkinnable */
 		
-		public function get skin():Vector.<ISkin> { return _skins; }
+		public function get skin():Vector.<ISkin> { return this._skins; }
 		
 		public function set skin(value:Vector.<ISkin>):void
 		{
@@ -48,71 +49,71 @@
 		
 		/* INTERFACE org.wvxvws.gui.repeaters.IRepeaterHost */
 		
-		public function get factory():ISkin { return _factory; }
+		public function get factory():ISkin { return this._factory; }
 		
 		public function set factory(value:ISkin):void
 		{
-			if (_factory === value) return;
-			_factory = value;
-			super.invalidate("_factory", _factory, false);
+			if (this._factory === value) return;
+			this._factory = value;
+			super.invalidate(Invalides.DATAPROVIDER, false);
 			if (super.hasEventListener(EventGenerator.getEventType("factory")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
-		public function get dataProvider():DataSet { return _dataProvider; }
+		public function get dataProvider():DataSet { return this._dataProvider; }
 		
 		public function set dataProvider(value:DataSet):void
 		{
-			if (_dataProvider === value) return;
-			if (_dataProvider)
+			if (this._dataProvider === value) return;
+			if (this._dataProvider)
 			{
-				_dataProvider.removeEventListener(
+				this._dataProvider.removeEventListener(
 					SetEvent.ADD, this.provider_addHandler);
-				_dataProvider.removeEventListener(
+				this._dataProvider.removeEventListener(
 					SetEvent.CHANGE, this.provider_changeHandler);
-				_dataProvider.removeEventListener(
+				this._dataProvider.removeEventListener(
 					SetEvent.REMOVE, this.provider_removeHandler);
-				_dataProvider.removeEventListener(
+				this._dataProvider.removeEventListener(
 					SetEvent.SORT, this.provider_sortHandler);
 			}
-			_dataProvider = value;
+			this._dataProvider = value;
 			if (_dataProvider)
 			{
-				_dataProvider.addEventListener(
+				this._dataProvider.addEventListener(
 					SetEvent.ADD, this.provider_addHandler);
-				_dataProvider.addEventListener(
+				this._dataProvider.addEventListener(
 					SetEvent.CHANGE, this.provider_changeHandler);
-				_dataProvider.addEventListener(
+				this._dataProvider.addEventListener(
 					SetEvent.REMOVE, this.provider_removeHandler);
-				_dataProvider.addEventListener(
+				this._dataProvider.addEventListener(
 					SetEvent.SORT, this.provider_sortHandler);
 			}
-			super.invalidate("_dataProvider", _dataProvider, false);
+			super.invalidate(Invalides.DATAPROVIDER, false);
 			if (super.hasEventListener(EventGenerator.getEventType("dataProvider")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
-		public function get labelSkin():ISkin { return _labelSkin; }
+		public function get labelSkin():ISkin { return this._labelSkin; }
 		
 		public function set labelSkin(value:ISkin):void 
 		{
-			if (_labelSkin === value) return;
-			_labelSkin = value;
-			super.invalidate("_labelSkin", _dataProvider, false);
+			if (this._labelSkin === value) return;
+			this._labelSkin = value;
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("labelSkin")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		public function set poolSize(value:int):void 
 		{
-			_poolSize = value;
-			while (_pool.length > value) _pool.shift();
+			this._poolSize = value;
+			while (this._pool.length > value) this._pool.shift();
 		}
 		
-		public function get pool():Vector.<Object> { return _pool; }
+		public function get pool():Vector.<Object> { return this._pool; }
 		
 		[Bindable("scrollPaneChanged")]
-		public function get scrollPane():ScrollPane { return _scrollPane; }
+		public function get scrollPane():ScrollPane { return this._scrollPane; }
 		
 		protected var _skins:Vector.<ISkin>;
 		protected var _skin:ISkin;
@@ -135,36 +136,36 @@
 			this._skins = SkinManager.getSkin(this);
 			if (this._skins)
 			{
-				if (this._skins.length > 0) _skin = this._skins[0];
-				if (this._skins.length > 1) _factory = this._skins[1];
+				if (this._skins.length > 0) this._skin = this._skins[0];
+				if (this._skins.length > 1) this._factory = this._skins[1];
 			}
-			_repeater = new ListRepeater(this);
+			this._repeater = new ListRepeater(this);
 			super.addChild(_scrollPane);
-			_scrollPane.addEventListener(
-				GUIEvent.SCROLLED, this.scrollPane_scrolledHandler);
+			this._scrollPane.addEventListener(
+				GUIEvent.SCROLLED.type, this.scrollPane_scrolledHandler);
 		}
 		
 		public override function validate(properties:Object):void 
 		{
-			var sizeChanged:Boolean = ("_bounds" in properties);
-			var needLayoutChildren:Boolean = ("_dataProvider" in properties) || 
-						("_factory" in properties) || sizeChanged ||
-						("_labelSkin" in properties);
+			var sizeChanged:Boolean = (Invalides.BOUNDS in properties);
+			var needLayoutChildren:Boolean = 
+						(Invalides.DATAPROVIDER in properties) || sizeChanged ||
+						(Invalides.SKIN in properties);
 			super.validate(properties);
 			if (sizeChanged)
 			{
-				if (_scrollPane.scrollRect)
+				if (this._scrollPane.scrollRect)
 				{
-					_scrollPane.scrollRect.width = _bounds.x;
-					_scrollPane.scrollRect.height = _bounds.y;
+					this._scrollPane.scrollRect.width = this._bounds.x;
+					this._scrollPane.scrollRect.height = this._bounds.y;
 				}
 				else
 				{
-					_scrollPane.removeEventListener(
-						GUIEvent.SCROLLED, this.scrollPane_scrolledHandler);
-					_scrollPane.scrollRect = 
-						new Rectangle(0, 0, _bounds.x, _bounds.y);
-					_scrollPane.addEventListener(
+					this._scrollPane.removeEventListener(
+						GUIEvent.SCROLLED.type, this.scrollPane_scrolledHandler);
+					this._scrollPane.scrollRect = 
+						new Rectangle(0, 0, super._bounds.x, super._bounds.y);
+					this._scrollPane.addEventListener(
 						GUIEvent.SCROLLED, this.scrollPane_scrolledHandler);
 				}
 			}
@@ -178,69 +179,71 @@
 			var renderer:IRenderer = currentItem as IRenderer;
 			var dobj:DisplayObject = currentItem as DisplayObject;
 			var ret:Boolean = true;
-			if (!_dataProvider) return false;
-			if (index >= _dataProvider.length) return false;
-			if (_direction)
+			if (!this._dataProvider) return false;
+			if (index >= this._dataProvider.length) return false;
+			if (this._direction)
 			{
-				dobj.x = _position + _cumulativeSize;
-				dobj.height = _rendererSize.y;
-				_scrollPane.addChild(dobj);
-				if (_cumulativeSize > _bounds.y) ret = false; // + dobj.height
+				dobj.x = this._position + this._cumulativeSize;
+				dobj.height = this._rendererSize.y;
+				this._scrollPane.addChild(dobj);
+				if (this._cumulativeSize > this._bounds.y) ret = false; // + dobj.height
 				if (renderer)
 				{
-					if (_labelSkin) renderer.labelSkin = _labelSkin;
-					renderer.data = _dataProvider.at(index);
+					if (this._labelSkin) renderer.labelSkin = this._labelSkin;
+					renderer.data = this._dataProvider.at(index);
 				}
-				_cumulativeSize += dobj.width;
+				this._cumulativeSize += dobj.width;
 				if (!ret)
 				{
-					_scrollPane.realHeight = _bounds.y;
-					_scrollPane.realWidth = _dataProvider.length * dobj.width;
-					if (_scrollPane.scrollRect)
+					this._scrollPane.realHeight = super._bounds.y;
+					this._scrollPane.realWidth = 
+						this._dataProvider.length * dobj.width;
+					if (this._scrollPane.scrollRect)
 					{
-						_scrollPane.scrollRect.width = _bounds.x;
-						_scrollPane.scrollRect.height = _bounds.y;
+						this._scrollPane.scrollRect.width = super._bounds.x;
+						this._scrollPane.scrollRect.height = super._bounds.y;
 					}
 					else
 					{
-						_scrollPane.removeEventListener(
-							GUIEvent.SCROLLED, this.scrollPane_scrolledHandler);
-						_scrollPane.scrollRect = 
-							new Rectangle(0, 0, _bounds.x, _bounds.y);
-						_scrollPane.addEventListener(
-							GUIEvent.SCROLLED, this.scrollPane_scrolledHandler);
+						this._scrollPane.removeEventListener(
+							GUIEvent.SCROLLED.type, this.scrollPane_scrolledHandler);
+						this._scrollPane.scrollRect = 
+							new Rectangle(0, 0, super._bounds.x, super._bounds.y);
+						this._scrollPane.addEventListener(
+							GUIEvent.SCROLLED.type, this.scrollPane_scrolledHandler);
 					}
 				}
 			}
 			else
 			{
-				dobj.y = _position + _cumulativeSize;
-				dobj.width = _rendererSize.x;
-				_scrollPane.addChild(dobj);
-				if (_cumulativeSize > _bounds.y) ret = false; // + dobj.height
+				dobj.y = this._position + this._cumulativeSize;
+				dobj.width = this._rendererSize.x;
+				this._scrollPane.addChild(dobj);
+				if (this._cumulativeSize > this._bounds.y) ret = false; // + dobj.height
 				if (renderer)
 				{
-					if (_labelSkin) renderer.labelSkin = _labelSkin;
-					renderer.data = _dataProvider.at(index);
+					if (this._labelSkin) renderer.labelSkin = this._labelSkin;
+					renderer.data = this._dataProvider.at(index);
 				}
-				_cumulativeSize += dobj.height;
+				this._cumulativeSize += dobj.height;
 				if (!ret)
 				{
-					_scrollPane.realWidth = _bounds.x;
-					_scrollPane.realHeight = _dataProvider.length * dobj.height;
-					if (_scrollPane.scrollRect)
+					this._scrollPane.realWidth = super._bounds.x;
+					this._scrollPane.realHeight = 
+						this._dataProvider.length * dobj.height;
+					if (this._scrollPane.scrollRect)
 					{
-						_scrollPane.scrollRect.width = _bounds.x;
-						_scrollPane.scrollRect.height = _bounds.y;
+						this._scrollPane.scrollRect.width = super._bounds.x;
+						this._scrollPane.scrollRect.height = super._bounds.y;
 					}
 					else
 					{
-						_scrollPane.removeEventListener(
-							GUIEvent.SCROLLED, this.scrollPane_scrolledHandler);
-						_scrollPane.scrollRect = 
-							new Rectangle(0, 0, _bounds.x, _bounds.y);
-						_scrollPane.addEventListener(
-							GUIEvent.SCROLLED, this.scrollPane_scrolledHandler);
+						this._scrollPane.removeEventListener(
+							GUIEvent.SCROLLED.type, this.scrollPane_scrolledHandler);
+						this._scrollPane.scrollRect = 
+							new Rectangle(0, 0, super._bounds.x, super._bounds.y);
+						this._scrollPane.addEventListener(
+							GUIEvent.SCROLLED.type, this.scrollPane_scrolledHandler);
 					}
 				}
 			}
@@ -251,24 +254,25 @@
 		{
 			var d:Object = { };
 			var size:int;
-			if (_direction) _rendererSize.y = _bounds.y;
-			else _rendererSize.x = _bounds.x;
-			while (_scrollPane.numChildren)
+			if (this._direction) this._rendererSize.y = super._bounds.y;
+			else this._rendererSize.x = super._bounds.x;
+			while (this._scrollPane.numChildren)
 			{
-				d = _scrollPane.removeChildAt(0);
-				if (_pool.indexOf(d) < 0 && _pool.length < _poolSize) _pool.push(d);
+				d = this._scrollPane.removeChildAt(0);
+				if (this._pool.indexOf(d) < 0 && this._pool.length < this._poolSize)
+					this._pool.push(d);
 			}
-			_cumulativeSize = 0;
+			this._cumulativeSize = 0;
 			if (_direction) size = d.width;
 			else size = d.height;
-			_position = ((_position / size) >> 0) * size;
-			if (_factory) _repeater.begin(_position / size);
+			this._position = ((this._position / size) >> 0) * size;
+			if (this._factory) this._repeater.begin(this._position / size);
 		}
 		
 		protected function scrollPane_scrolledHandler(event:GUIEvent):void 
 		{
-			if (_direction) _position = _scrollPane.scrollRect.x;
-			else _position = _scrollPane.scrollRect.y;
+			if (this._direction) this._position = this._scrollPane.scrollRect.x;
+			else this._position = this._scrollPane.scrollRect.y;
 			this.layoutChildren();
 		}
 		

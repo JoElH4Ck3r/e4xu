@@ -9,6 +9,7 @@
 	import org.wvxvws.gui.DIV;
 	import org.wvxvws.gui.layout.Constraints;
 	import org.wvxvws.gui.layout.ILayoutClient;
+	import org.wvxvws.gui.layout.Invalides;
 	//}
 	
 	[DefaultProperty("children")]
@@ -38,13 +39,13 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>directionChanged</code> event.
 		*/
-		public function get direction():Boolean { return _direction; }
+		public function get direction():Boolean { return this._direction; }
 		
 		public function set direction(value:Boolean):void 
 		{
-			if (_direction === value) return;
-			_direction = value;
-			this.invalidate("_direction", _direction, false);
+			if (this._direction === value) return;
+			this._direction = value;
+			this.invalidate(Invalides.DIRECTION, false);
 			if (super.hasEventListener(EventGenerator.getEventType("direction")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -60,13 +61,13 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>distributeChange</code> event.
 		*/
-		public function get distribute():Number { return _distribute; }
+		public function get distribute():Number { return this._distribute; }
 		
 		public function set distribute(value:Number):void 
 		{
-			if (_distribute == value || value > 1 || value < 0) return;
-			_distribute = value;
-			super.invalidate("_distribute", _distribute, false);
+			if (this._distribute === value || value > 1 || value < 0) return;
+			this._distribute = value;
+			super.invalidate(Invalides.BOUNDS, false);
 			if (super.hasEventListener(EventGenerator.getEventType("distribute")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -82,14 +83,15 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>paddingChanged</code> event.
 		*/
-		public function get padding():Rectangle { return _padding; }
+		public function get padding():Rectangle { return this._padding; }
 		
 		public function set padding(value:Rectangle):void 
 		{
-			if (_padding == value || value && _padding && _padding.equals(value))
+			if (this._padding === value || value && this._padding && 
+				this._padding.equals(value))
 				return;
-			_padding = value ? value.clone() : null;
-			super.invalidate("_padding", _padding, false);
+			this._padding = value ? value.clone() : null;
+			super.invalidate(Invalides.BOUNDS, false);
 			if (super.hasEventListener(EventGenerator.getEventType("padding")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -105,13 +107,13 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>gutterHChanged</code> event.
 		*/
-		public function get gutterH():int { return _gutterH; }
+		public function get gutterH():int { return this._gutterH; }
 		
 		public function set gutterH(value:int):void 
 		{
-			if (_gutterH == value) return;
-			_gutterH = value;
-			super.invalidate("_gutterH", _gutterH, false);
+			if (this._gutterH === value) return;
+			this._gutterH = value;
+			super.invalidate(Invalides.BOUNDS, false);
 			if (super.hasEventListener(EventGenerator.getEventType("gutterH")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -127,13 +129,13 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>gutterVChanged</code> event.
 		*/
-		public function get gutterV():int { return _gutterV; }
+		public function get gutterV():int { return this._gutterV; }
 		
 		public function set gutterV(value:int):void 
 		{
-			if (_gutterV == value) return;
-			_gutterV = value;
-			super.invalidate("_gutterV", _gutterV, false);
+			if (this._gutterV === value) return;
+			this._gutterV = value;
+			super.invalidate(Invalides.BOUNDS, false);
 			if (super.hasEventListener(EventGenerator.getEventType("gutterV")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -149,48 +151,48 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>allowOverlapChanged</code> event.
 		*/
-		public function get allowOverlap():Boolean { return _allowOverlap; }
+		public function get allowOverlap():Boolean { return this._allowOverlap; }
 		
 		public function set allowOverlap(value:Boolean):void 
 		{
-			if (_allowOverlap == value) return;
-			_allowOverlap = value;
-			super.invalidate("_allowOverlap", _allowOverlap, false);
+			if (this._allowOverlap === value) return;
+			this._allowOverlap = value;
+			super.invalidate(Invalides.BOUNDS, false);
 			if (super.hasEventListener(EventGenerator.getEventType("allowOverlap")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
-		public function get children():Vector.<DisplayObject> { return _children.concat(); }
+		public function get children():Vector.<DisplayObject> { return this._children.concat(); }
 		
 		public function set children(value:Vector.<DisplayObject>):void 
 		{
-			if (_children === value) return;
-			if (_children.length)
+			if (this._children === value) return;
+			if (this._children.length)
 			{
-				for each (var d:DisplayObject in _children)
+				for each (var d:DisplayObject in this._children)
 				{
 					if (super.contains(d)) super.removeChild(d);
 				}
 			}
-			_children.length = 0;
+			this._children.length = 0;
 			var i:int;
 			var j:int = (value) ? value.length : 0;
 			while (i < j)
 			{
-				_children.push(value[i]);
+				this._children.push(value[i]);
 				this.addChildAt(value[i], i);
 				i++;
 			}
-			if (_performLayout) this.constrain();
+			if (this._performLayout) this.constrain();
 		}
 		
-		public function get performLayout():Boolean { return _performLayout; }
+		public function get performLayout():Boolean { return this._performLayout; }
 		
 		public function set performLayout(value:Boolean):void 
 		{
-			if (_performLayout == value) return;
-			_performLayout = value;
-			super.invalidate("_performLayout", _performLayout, false);
+			if (this._performLayout == value) return;
+			this._performLayout = value;
+			super.invalidate(Invalides.NULL, false);
 			if (super.hasEventListener(EventGenerator.getEventType("performLayout")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -237,7 +239,7 @@
 			var lc:ILayoutClient;
 			var i:int = super.numChildren;
 			super.validate(properties);
-			if (_performLayout) this.constrain();
+			if (this._performLayout) this.constrain();
 			else
 			{
 				while (i--)
@@ -250,8 +252,8 @@
 		
 		public override function addChild(child:DisplayObject):DisplayObject 
 		{
-			if (_mxmlChild === child) return super.addChild(child);
-			return this.addChildAt(child, _children.length);
+			if (this._mxmlChild === child) return super.addChild(child);
+			return this.addChildAt(child, this._children.length);
 		}
 		
 		public override function addChildAt(child:DisplayObject, index:int):DisplayObject 
@@ -260,34 +262,34 @@
 			if (child.parent) child.parent.removeChild(child);
 			if (child is IMXMLObject)
 			{
-				_mxmlChild = child;
+				this._mxmlChild = child;
 				(child as IMXMLObject).initialized(this, "chid" + index);
 			}
 			else 
 			{
-				_mxmlChild = null;
+				this._mxmlChild = null;
 				child = super.addChildAt(child, index);
 			}
-			var i:int = _children.indexOf(child);
-			if (i > -1) _children.splice(i, 1);
-			_children.splice(index, 0, child);
-			if (_performLayout) this.constrain();
+			var i:int = this._children.indexOf(child);
+			if (i > -1) this._children.splice(i, 1);
+			this._children.splice(index, 0, child);
+			if (this._performLayout) this.constrain();
 			return child;
 		}
 		
 		public override function removeChild(child:DisplayObject):DisplayObject 
 		{
 			var child:DisplayObject = super.removeChild(child);
-			_children.pop();
-			if (_performLayout) this.constrain();
+			this._children.pop();
+			if (this._performLayout) this.constrain();
 			return child;
 		}
 		
 		public override function removeChildAt(index:int):DisplayObject 
 		{
 			var child:DisplayObject = super.removeChildAt(index);
-			_children.splice(index, 1);
-			if (_performLayout) this.constrain();
+			this._children.splice(index, 1);
+			if (this._performLayout) this.constrain();
 			return child;
 		}
 		
@@ -299,23 +301,24 @@
 			while (i < j)
 			{
 				child = super.getChildAt(i);
-				if (_children.indexOf(child) > -1)
+				if (this._children.indexOf(child) > -1)
 				{
 					i++;
 					continue;
 				}
-				_children.splice(i, 0, child);
+				this._children.splice(i, 0, child);
 				i++;
 			}
-			_layoutRect.width = _bounds.x;
-			_layoutRect.height = _bounds.y;
-			Constraints.constrain(_children, _distribute, 
-						_direction, _gutterH, _gutterV, _padding, _layoutRect);
+			this._layoutRect.width = super._bounds.x;
+			this._layoutRect.height = super._bounds.y;
+			Constraints.constrain(this._children, this._distribute, 
+				this._direction, this._gutterH, this._gutterV, 
+				this._padding, this._layoutRect);
 			i = 0;
-			j = _children.length;
+			j = this._children.length;
 			while (i < j)
 			{
-				child = _children[i];
+				child = this._children[i];
 				if (child.parent !== this)
 				{
 					if (child.parent) child.parent.removeChild(child);
@@ -324,18 +327,5 @@
 				i++;
 			}
 		}
-		
-		//--------------------------------------------------------------------------
-		//
-		//  Protected methods
-		//
-		//--------------------------------------------------------------------------
-		
-		//--------------------------------------------------------------------------
-		//
-		//  Private methods
-		//
-		//--------------------------------------------------------------------------
 	}
-	
 }

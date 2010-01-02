@@ -8,6 +8,7 @@
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.cursor.Cursor;
 	import org.wvxvws.gui.GUIEvent;
+	import org.wvxvws.gui.layout.Invalides;
 	import org.wvxvws.gui.renderers.HeaderRenderer;
 	import org.wvxvws.gui.renderers.IRenderer;
 	import org.wvxvws.gui.renderers.NestGridRenderer;
@@ -44,13 +45,13 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>openClassChanged</code> event.
 		*/
-		public function get openClass():Class { return _openClass; }
+		public function get openClass():Class { return this._openClass; }
 		
 		public function set openClass(value:Class):void 
 		{
-			if (_openClass === value) return;
-			_openClass = value;
-			super.invalidate("_openClass", _openClass, false);
+			if (this._openClass === value) return;
+			this._openClass = value;
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("openClass")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -66,13 +67,13 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>closedClassChanged</code> event.
 		*/
-		public function get closedClass():Class { return _closedClass; }
+		public function get closedClass():Class { return this._closedClass; }
 		
 		public function set closedClass(value:Class):void 
 		{
-			if (_closedClass === value) return;
-			_closedClass = value;
-			super.invalidate("_closedClass", _closedClass, false);
+			if (this._closedClass === value) return;
+			this._closedClass = value;
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("closedClass")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -88,13 +89,13 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>iconProducerChanged</code> event.
 		*/
-		public function get iconProducer():ISkin { return _iconProducer; }
+		public function get iconProducer():ISkin { return this._iconProducer; }
 		
 		public function set iconProducer(value:ISkin):void 
 		{
-			if (_iconProducer == value) return;
-			_iconProducer = value;
-			super.invalidate("_iconProducer", _iconProducer, false);
+			if (this._iconProducer == value) return;
+			this._iconProducer = value;
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("iconProducer")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -110,13 +111,13 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>folderProducerChanged</code> event.
 		*/
-		public function get folderProducer():ISkin { return _folderProducer; }
+		public function get folderProducer():ISkin { return this._folderProducer; }
 		
 		public function set folderProducer(value:ISkin):void 
 		{
-			if (_folderProducer === value) return;
-			_folderProducer = value;
-			super.invalidate("_folderProducer", _folderProducer, false);
+			if (this._folderProducer === value) return;
+			this._folderProducer = value;
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("folderProducer")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -132,20 +133,20 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>columnsChanged</code> event.
 		*/
-		public function get columns():Vector.<Column> { return _columns; }
+		public function get columns():Vector.<Column> { return this._columns; }
 		
 		public function set columns(value:Vector.<Column>):void 
 		{
-			if (_columns === value) return;
-			if (!_nestColumn) _nestColumn = new Column();
-			if (value) _columns = value.concat();
-			else _columns = new <Column>[_nestColumn];
+			if (this._columns === value) return;
+			if (!this._nestColumn) this._nestColumn = new Column();
+			if (value) this._columns = value.concat();
+			else this._columns = new <Column>[this._nestColumn];
 			
-			if (_columns.indexOf(_nestColumn) < 0)
+			if (this._columns.indexOf(this._nestColumn) < 0)
 			{
-				_columns = new <Column>[_nestColumn].concat(_columns);
+				this._columns = new <Column>[this._nestColumn].concat(this._columns);
 			}
-			super.invalidate("_columns", _columns, false);
+			super.invalidate(Invalides.CHILDREN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("columns")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -157,9 +158,9 @@
 		public function set firstColumnWidth(value:int):void 
 		{
 			if (value < 100) value = 100;
-			if (_nestColumn.width === value) return;
-			_nestColumn.width = value;
-			super.invalidate("_nestColumn", _nestColumn, false);
+			if (this._nestColumn.width === value) return;
+			this._nestColumn.width = value;
+			super.invalidate(Invalides.CHILDREN, false);
 		}
 		
 		//------------------------------------
@@ -173,13 +174,13 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>headerRendererChanged</code> event.
 		*/
-		public function get headerRenderer():Class { return _headerRenderer; }
+		public function get headerRenderer():Class { return this._headerRenderer; }
 		
 		public function set headerRenderer(value:Class):void 
 		{
 			if (_headerRenderer === value) return;
 			_headerRenderer = value;
-			super.invalidate("_headerRenderer", _headerRenderer, false);
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("headerRenderer")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -195,13 +196,13 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>headerLabelChanged</code> event.
 		*/
-		public function get headerLabel():String { return _headerLabel; }
+		public function get headerLabel():String { return this._headerLabel; }
 		
 		public function set headerLabel(value:String):void 
 		{
-			if (_headerLabel === value) return;
-			_headerLabel = value;
-			super.invalidate("_headerLabel", _headerLabel, false);
+			if (this._headerLabel === value) return;
+			this._headerLabel = value;
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("headerLabel")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -217,13 +218,13 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>headerFactoryChanged</code> event.
 		*/
-		public function get headerFactory():Function { return _headerFactory; }
+		public function get headerFactory():Function { return this._headerFactory; }
 		
 		public function set headerFactory(value:Function):void 
 		{
-			if (_headerFactory === value) return;
-			_headerFactory = value;
-			super.invalidate("_headerFactory", _headerFactory, false);
+			if (this._headerFactory === value) return;
+			this._headerFactory = value;
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("headerFactory")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -239,13 +240,13 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>includeTextChanged</code> event.
 		*/
-		public function get includeText():Boolean { return _includeText; }
+		public function get includeText():Boolean { return this._includeText; }
 		
 		public function set includeText(value:Boolean):void 
 		{
-			if (_includeText === value) return;
-			_includeText = value;
-			super.invalidate("_includeText", _includeText, false);
+			if (this._includeText === value) return;
+			this._includeText = value;
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("includeText")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -261,13 +262,13 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>headerHeightChanged</code> event.
 		*/
-		public function get headerHeight():int { return _headerHeight; }
+		public function get headerHeight():int { return this._headerHeight; }
 		
 		public function set headerHeight(value:int):void 
 		{
-			if (_headerHeight === value) return;
-			_headerHeight = value;
-			super.invalidate("_headerHeight", _headerHeight, false);
+			if (this._headerHeight === value) return;
+			this._headerHeight = value;
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("headerHeight")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -276,25 +277,25 @@
 		//  Public property selectedItem
 		//------------------------------------
 		
-		public function get selectedItem():XML { return _selectedItem; }
+		public function get selectedItem():XML { return this._selectedItem; }
 		
 		//------------------------------------
 		//  Public property selectedChild
 		//------------------------------------
 		
-		public function get selectedChild():IRenderer { return _selectedChild; }
+		public function get selectedChild():IRenderer { return this._selectedChild; }
 		
 		//------------------------------------
 		//  Public property nestColumn
 		//------------------------------------
 		
-		public function get nestColumn():Column { return _nestColumn; }
+		public function get nestColumn():Column { return this._nestColumn; }
 		
 		//------------------------------------
 		//  Public property scrollPane
 		//------------------------------------
 		
-		public function get scrollPane():DisplayObjectContainer { return _scrollPane; }
+		public function get scrollPane():DisplayObjectContainer { return this._scrollPane; }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -349,14 +350,14 @@
 			// TODO: remove this dependency.
 			_headerRenderer = HeaderRenderer;
 			var headSkin:Vector.<ISkin> = SkinManager.getSkin(new Renderer());
-			if (headSkin && headSkin.length) _headerProducer = headSkin[0];
+			if (headSkin && headSkin.length) this._headerProducer = headSkin[0];
 			super.addEventListener(GUIEvent.OPENED, 
 									this.openedHandler, false, int.MAX_VALUE);
 			super.addEventListener(GUIEvent.SELECTED, 
 									this.selectedHandler, false, int.MAX_VALUE);
 			super.addEventListener(Event.ADDED_TO_STAGE, 
 									this.addedToStageHandler, false, 0, true);
-			super.addChild(_scrollPane);
+			super.addChild(this._scrollPane);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -372,21 +373,18 @@
 		
 		public function isNodeVisibe(node:XML):Boolean
 		{
-			while (node && node !== _dataProvider)
+			while (node && node !== this._dataProvider)
 			{
 				node = node.parent() as XML;
-				if (_closedNodes.indexOf(node) > -1) return false;
+				if (this._closedNodes.indexOf(node) > -1) return false;
 			}
 			return true;
 		}
 		
 		public override function validate(properties:Object):void 
 		{
-			var needLayout:Boolean = (!("_dataProvider" in properties)) &&
-			(("_iconProducer" in properties) || ("_folderProducer" in properties) ||
-			("_nestColumn" in properties) || ("_columns" in properties) ||
-			("_openClass" in properties) || ("_closedClass" in properties) || 
-			("_includeText" in properties) || ("_headerHeight" in properties));
+			var needLayout:Boolean = (!(Invalides.DATAPROVIDER in properties)) &&
+			((Invalides.SKIN in properties) || (Invalides.CHILDREN in properties));
 			super.validate(properties);
 			if (needLayout) this.layOutChildren();
 		}
@@ -399,75 +397,74 @@
 		
 		protected override function layOutChildren():void 
 		{
-			if (_dataProvider === null) return;
+			if (this._dataProvider === null) return;
 			var dataList:XMLList = 
-				_dataProvider.*.(nodeKind() !== "text" || _includeText);
+				this._dataProvider.*.(nodeKind() !== "text" || this._includeText);
 			var dataLenght:int = dataList.length();
 			if (!dataLenght) return;
-			if (!_rendererSkin) return;
-			_currentItem = 0;
-			_removedChildren = new <DisplayObject>[];
+			if (!this._rendererSkin) return;
+			this._currentItem = 0;
+			this._removedChildren = new <DisplayObject>[];
 			var i:int;
-			while (_scrollPane.numChildren > i)
-				_removedChildren.push(_scrollPane.removeChildAt(0));
-			_dispatchCreated = false;
-			if (_columns.indexOf(_nestColumn) < 0)
+			while (this._scrollPane.numChildren > i)
+				this._removedChildren.push(this._scrollPane.removeChildAt(0));
+			this._dispatchCreated = false;
+			if (this._columns.indexOf(this._nestColumn) < 0)
 			{
-				_columns.unshift(_nestColumn);
+				this._columns.unshift(this._nestColumn);
 			}
-			var cumulativeX:int = _padding.left;
-			var numColons:int = _columns.length;
+			var cumulativeX:int = this._padding.left;
+			var numColons:int = this._columns.length;
 			var colWidth:int = width / numColons;
 			var col:Column;
-			var totalWidth:int = super.width - (_padding.right + _padding.left);
-			var j:int = _columns.length;
+			var totalWidth:int = super.width - (this._padding.right + this._padding.left);
+			var j:int = this._columns.length;
 			var hRenderer:IRenderer;
 			while (i < j)
 			{
-				col = _columns[i];
-				if (_headers.length - 1 < i)
-					_headers.push(new _headerRenderer() as IRenderer);
+				col = this._columns[i];
+				if (this._headers.length - 1 < i)
+					this._headers.push(new this._headerRenderer() as IRenderer);
 				if (!super.contains(col))
 				{
 					if (col.minWidth > col.definedWidth)
 					{
 						col.width = colWidth;
-						totalWidth -= colWidth + _gutterH;
+						totalWidth -= colWidth + this._gutterH;
 					}
-					else totalWidth -= col.width + _gutterH;
-					if (j - i === 1 && totalWidth + _gutterH > 0)
-						col.width += totalWidth + _gutterH;
+					else totalWidth -= col.width + this._gutterH;
+					if (j - i === 1 && totalWidth + this._gutterH > 0)
+						col.width += totalWidth + this._gutterH;
 					col.x = cumulativeX;
-					col.y = _headerHeight + _padding.top;
+					col.y = this._headerHeight + this._padding.top;
 					col.gutter = _gutterV;
-					if (col === _nestColumn)
-						_nestColumn.rendererFactory = _defaultRenderer;
+					if (col === this._nestColumn)
+						this._nestColumn.rendererFactory = this._defaultRenderer;
 					else col.rendererFactory = super._rendererSkin;
-					_scrollPane.addChild(col);
-					col.initialized(this, "column" + _columns.indexOf(col));
-					cumulativeX += col.width + _gutterH;
+					this._scrollPane.addChild(col);
+					col.initialized(this, "column" + this._columns.indexOf(col));
+					cumulativeX += col.width + this._gutterH;
 				}
-				(_headers[i] as DisplayObject).width = col.width;
-				(_headers[i] as DisplayObject).x = col.x;
-				(_headers[i] as DisplayObject).height = _headerHeight;
-				(_headers[i] as HeaderRenderer).resizable = _columnsResizable;
-				trace(this, "_headerProducer", _headerProducer);
-				_headers[i].labelSkin = _headerProducer;
-				_headers[i].data = _dataProvider;
-				(_headers[i] as DisplayObject).addEventListener(
+				(this._headers[i] as DisplayObject).width = col.width;
+				(this._headers[i] as DisplayObject).x = col.x;
+				(this._headers[i] as DisplayObject).height = this._headerHeight;
+				(this._headers[i] as HeaderRenderer).resizable = this._columnsResizable;
+				this._headers[i].labelSkin = _headerProducer;
+				this._headers[i].data = this._dataProvider;
+				(this._headers[i] as DisplayObject).addEventListener(
 						ToolEvent.RESIZE_END, this.header_resizeEndHandler);
-				(_headers[i] as DisplayObject).addEventListener(
+				(this._headers[i] as DisplayObject).addEventListener(
 						ToolEvent.RESIZE_REQUEST, this.header_resizeRequestHandler);
-				(_headers[i] as DisplayObject).addEventListener(
+				(this._headers[i] as DisplayObject).addEventListener(
 						ToolEvent.RESIZE_START, this.header_resizeStartHandler);
-				(_headers[i] as DisplayObject).addEventListener(
+				(this._headers[i] as DisplayObject).addEventListener(
 						ToolEvent.RESIZED, this.header_resizedHandler);
 				super.addChild(_headers[i] as DisplayObject);
-				col.dataProvider = _dataProvider;
+				col.dataProvider = this._dataProvider;
 				i++;
 			}
-			_subContainers = Vector.<Pane>(_columns.concat());
-			_dataProvider.setNotification(providerNotifier);
+			this._subContainers = Vector.<Pane>(this._columns.concat());
+			this._dataProvider.setNotification(providerNotifier);
 			for each (col in _columns)
 			{
 				if (!col.parentIsCreator) col.parentIsCreator = true;
@@ -478,21 +475,22 @@
 			var maxChildHeight:int;
 			
 			var nn:XML;
-			_currentList = _dataProvider..*.(nodeKind() !== "text" || _includeText);
-			_currentNode = _dataProvider;
+			_currentList = 
+				this._dataProvider..*.(nodeKind() !== "text" || this._includeText);
+			_currentNode = this._dataProvider;
 			_currentDepth = 0;
 			i = 0;
-			j = _currentList.length();
+			j = this._currentList.length();
 			var isClosed:Boolean;
 			
 			while (i < j)
 			{
-				nn = _currentList[i];
-				_currentDepth = getNodeDepth(nn);
+				nn = this._currentList[i];
+				this._currentDepth = this.getNodeDepth(nn);
 				isClosed = false;
-				if (_closedNodes.indexOf(nn) > -1)
+				if (this._closedNodes.indexOf(nn) > -1)
 				{
-					closedNodes = nn..*.(nodeKind() !== "text" || _includeText);
+					closedNodes = nn..*.(nodeKind() !== "text" || this._includeText);
 					i += closedNodes.length();
 					isClosed = true;
 				}
@@ -503,54 +501,55 @@
 					maxChildHeight = Math.max(maxChildHeight, child.height);
 					if (child is NestGridRenderer)
 					{
-						(child as NestGridRenderer).indent = _indent;
-						(child as NestGridRenderer).depth = _currentDepth - 1;
+						(child as NestGridRenderer).indent = this._indent;
+						(child as NestGridRenderer).depth = this._currentDepth - 1;
 						(child as NestGridRenderer).gutter = 8;
 						if (nn.hasSimpleContent())
 						{
-							(child as NestGridRenderer).iconProducer = _iconProducer;
+							(child as NestGridRenderer).iconProducer = 
+								this._iconProducer;
 						}
 						else
 						{
 							if (isClosed) 
 								(child as NestGridRenderer).closed = true;
 							(child as NestGridRenderer).iconProducer = 
-																_folderProducer;
-							(child as NestGridRenderer).openClass = _openClass;
-							(child as NestGridRenderer).closedClass = _closedClass;
+								this._folderProducer;
+							(child as NestGridRenderer).openClass = this._openClass;
+							(child as NestGridRenderer).closedClass = 
+								this._closedClass;
 						}
 					}
 				}
 				for each (col in _columns)
 				{
-					col.adjustHeight(maxChildHeight + _gutterV);
+					col.adjustHeight(maxChildHeight + this._gutterV);
 				}
 				i++;
 			}
 			for each (col in _columns)
 			{
 				col.endLayoutChildren(super.height - 
-										(_padding.top + _padding.bottom));
+										(this._padding.top + this._padding.bottom));
 			}
 			var sRect:Rectangle;
 			_scrollPane.realHeight = child.y + child.height;
 			_scrollPane.realWidth = super.width;
-			if (!_scrollPane.scrollRect)
+			if (!this._scrollPane.scrollRect)
 			{
-				_scrollPane.scrollRect = 
+				this._scrollPane.scrollRect = 
 					new Rectangle(0, 0, super.width, super.height);// - _headerHeight);
 			}
 			else
 			{
-				sRect = _scrollPane.scrollRect.clone();
+				sRect = this._scrollPane.scrollRect.clone();
 				sRect.width = super.width;
 				sRect.height = super.height;// - _headerHeight;
-				_scrollPane.scrollRect = sRect;
+				this._scrollPane.scrollRect = sRect;
 			}
-			if (_dispatchCreated)
+			if (this._dispatchCreated)
 			{
-				super.dispatchEvent(
-					new GUIEvent(GUIEvent.CHILDREN_CREATED, false, true));
+				super.dispatchEvent(GUIEvent.CHILDREN_CREATED);
 			}
 		}
 		
@@ -574,17 +573,17 @@
 		protected function selectedHandler(event:GUIEvent):void 
 		{
 			var lastSelected:IRenderer;
-			if (event.target is IRenderer) lastSelected = _selectedChild;
+			if (event.target is IRenderer) lastSelected = this._selectedChild;
 			if (!(event.target is IRenderer)) return;
-			_selectedChild = event.target as IRenderer;
+			this._selectedChild = event.target as IRenderer;
 			event.stopImmediatePropagation();
-			_selectedItem = _selectedChild.data as XML;
-			if (lastSelected && lastSelected !== _selectedChild && 
+			this._selectedItem = this._selectedChild.data as XML;
+			if (lastSelected && lastSelected !== this._selectedChild && 
 				(lastSelected as Object).hasOwnProperty("selected"))
 			{
 				(lastSelected as Object).selected = false;
 			}
-			super.dispatchEvent(new GUIEvent(GUIEvent.SELECTED));
+			super.dispatchEvent(GUIEvent.SELECTED);
 		}
 		
 		protected function openedHandler(event:GUIEvent):void 
@@ -595,24 +594,24 @@
 			var renderer:NestGridRenderer = event.target as NestGridRenderer;
 			if (renderer.closed)
 			{
-				_closedNodes.push(renderer.data);
+				this._closedNodes.push(renderer.data);
 			}
 			else
 			{
-				index = _closedNodes.indexOf(renderer.data);
+				index = this._closedNodes.indexOf(renderer.data);
 				if (index > -1)
 				{
-					_closedNodes.splice(index, 1);
+					this._closedNodes.splice(index, 1);
 				}
 			}
 			super._invalidProperties._dataProvider = _dataProvider;
 			super.validate(super._invalidProperties);
-			super.dispatchEvent(new GUIEvent(GUIEvent.OPENED));
+			super.dispatchEvent(GUIEvent.OPENED);
 		}
 		
 		protected function addedToStageHandler(event:Event):void 
 		{
-			removeEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
+			super.removeEventListener(Event.ADDED_TO_STAGE, this.addedToStageHandler);
 			Cursor.init(stage);
 		}
 		
@@ -635,7 +634,5 @@
 		{
 			
 		}
-		
 	}
-	
 }

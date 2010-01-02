@@ -69,7 +69,7 @@ package org.wvxvws.data
 		//
 		//--------------------------------------------------------------------------
 		
-		internal function get first():ListCell { return _first; }
+		internal function get first():ListCell { return this._first; }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -169,7 +169,7 @@ package org.wvxvws.data
 		
 		public function add(item:Object, position:int = -1):void
 		{
-			if (!(item is _type)) return;
+			if (!(item is this._type)) return;
 			position = Math.min(Math.max(-1, position), this._length);
 			var seekCell:ListCell;
 			var i:int;
@@ -224,7 +224,7 @@ package org.wvxvws.data
 					break;
 				}
 			}
-			if (this._iterator && cell && this._iterator.current === cell)
+			if (this._iterator && cell && this._iterator.currentCell === cell)
 			{
 				this._iterator.reset();
 			}
@@ -235,11 +235,11 @@ package org.wvxvws.data
 		public function seek(position:int):Object
 		{
 			var i:int;
-			var cell:ListCell = _first;
+			var cell:ListCell = this._first;
 			while (cell.next)
 			{
 				cell = cell.next;
-				if (++i == position) return cell.target as _type;
+				if (++i == position) return cell.target as this._type;
 			}
 			return null;
 		}
@@ -247,7 +247,7 @@ package org.wvxvws.data
 		public function find(item:Object):int
 		{
 			var i:int;
-			var cell:ListCell = _first;
+			var cell:ListCell = this._first;
 			while (cell.next)
 			{
 				cell = cell.next;
