@@ -39,22 +39,22 @@ package org.wvxvws.gui.renderers
 		//
 		//--------------------------------------------------------------------------
 		
-		public function get closed():Boolean { return _closed; }
+		public function get closed():Boolean { return this._closed; }
 		
 		public function set closed(value:Boolean):void 
 		{
-			if (_closed === value) return;
-			_closed = value;
+			if (this._closed === value) return;
+			this._closed = value;
 		}
 		
-		public function get selected():Boolean { return _selected; }
+		public function get selected():Boolean { return this._selected; }
 		
 		public function set selected(value:Boolean):void 
 		{
-			if (_selected === value) return;
-			_selected = value;
-			if (!_selected) _backgroundColor = 0xFFFFFF;
-			else _backgroundColor = 0xAAAAFF;
+			if (this._selected === value) return;
+			this._selected = value;
+			if (!this._selected) super._backgroundColor = 0xFFFFFF;
+			else this._backgroundColor = 0xAAAAFF;
 			super.drawBackground();
 		}
 		
@@ -89,15 +89,15 @@ package org.wvxvws.gui.renderers
 		protected override function renderText():void 
 		{
 			super.renderText();
-			super.addEventListener(MouseEvent.CLICK, clickHandler);
+			super.addEventListener(MouseEvent.CLICK, this.clickHandler);
 		}
 		
 		protected function clickHandler(event:MouseEvent):void 
 		{
-			this.closed = (!_closed);
+			this.closed = (!this._closed);
 			this.selected = true;
-			super.dispatchEvent(new GUIEvent(GUIEvent.OPENED, true, true));
-			super.dispatchEvent(new GUIEvent(GUIEvent.SELECTED, true, true));
+			super.dispatchEvent(new GUIEvent(GUIEvent.OPENED.type, true, true));
+			super.dispatchEvent(new GUIEvent(GUIEvent.SELECTED.type, true, true));
 		}
 	}
 

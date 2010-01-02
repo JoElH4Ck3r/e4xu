@@ -49,81 +49,81 @@ package org.wvxvws.gui.renderers
 		
 		public override function set width(value:Number):void 
 		{
-			if (_width === value) return;
-			_width = value;
-			if (_data) this.render();
+			if (super._width === value) return;
+			super._width = value;
+			if (super._data) this.render();
 		}
 		
-		public function get indent():int { return _indent; }
+		public function get indent():int { return this._indent; }
 		
 		public function set indent(value:int):void 
 		{
-			if (_indent === value) return;
-			_indent = value;
-			if (_data) this.render();
+			if (this._indent === value) return;
+			this._indent = value;
+			if (this._data) this.render();
 		}
 		
-		public function get depth():int { return _depth; }
+		public function get depth():int { return this._depth; }
 		
 		public function set depth(value:int):void 
 		{
-			if (_depth === value) return;
-			_depth = value;
-			if (_data) this.render();
+			if (this._depth === value) return;
+			this._depth = value;
+			if (super._data) this.render();
 		}
 		
-		public function get gutter():int { return _gutter; }
+		public function get gutter():int { return this._gutter; }
 		
 		public function set gutter(value:int):void 
 		{
-			if (_gutter === value) return;
-			_gutter = value;
-			if (_data) this.render();
+			if (this._gutter === value) return;
+			this._gutter = value;
+			if (super._data) this.render();
 		}
 		
 		public function get closed():Boolean { return _closed; }
 		
 		public function set closed(value:Boolean):void 
 		{
-			if (_closed === value) return;
-			_closed = value;
-			if (_data) this.render();
+			if (this._closed === value) return;
+			this._closed = value;
+			if (super._data) this.render();
 		}
 		
-		public function get openClass():Class { return _openClass; }
+		public function get openClass():Class { return this._openClass; }
 		
 		public function set openClass(value:Class):void 
 		{
-			if (_openClass === value) return;
-			_openClass = value;
-			if (_data) this.render();
+			if (this._openClass === value) return;
+			this._openClass = value;
+			if (super._data) this.render();
 		}
 		
-		public function get closedClass():Class { return _closedClass; }
+		public function get closedClass():Class { return this._closedClass; }
 		
 		public function set closedClass(value:Class):void 
 		{
-			if (_closedClass === value) return;
-			_closedClass = value;
-			if (_data) this.render();
+			if (this._closedClass === value) return;
+			this._closedClass = value;
+			if (super._data) this.render();
 		}
 		
-		public function get iconProducer():ISkin { return _iconProducer; }
+		public function get iconProducer():ISkin { return this._iconProducer; }
 		
 		public function set iconProducer(value:ISkin):void 
 		{
-			if (_iconProducer === value) return;
-			_iconProducer = value;
-			if (_data) this.render();
+			if (this._iconProducer === value) return;
+			this._iconProducer = value;
+			if (super._data) this.render();
 		}
 		
-		public function get selected():Boolean { return _selected; }
+		public function get selected():Boolean { return this._selected; }
 		
 		public function set selected(value:Boolean):void 
 		{
-			if (_selected === value) return;
-			_selected = value;
-			if (_data) this.renderText();
+			if (this._selected === value) return;
+			this._selected = value;
+			if (super._data) this.renderText();
 		}
 		
 		//--------------------------------------------------------------------------
@@ -174,60 +174,66 @@ package org.wvxvws.gui.renderers
 		
 		protected function drawIcon():void
 		{
-			if (!super.contains(_openClose) || 
-				!(_openClass in _openClose.states) || 
-				!(_closedClass in _openClose.states))
+			if (!super.contains(this._openClose) || 
+				!(this._openClass in this._openClose.states) || 
+				!(this._closedClass in this._openClose.states))
 			{
-				_openClose.states = { "open": _openClass, "closed": _closedClass };
-				super.addChildAt(_openClose, 0);
-				_openClose.state = _closed ? "closed" : "open";
-				_openClose.addEventListener(MouseEvent.MOUSE_DOWN, 
-														openClose_mouseDownHandler);
+				this._openClose.states = 
+					{ "open": this._openClass, "closed": this._closedClass };
+				super.addChildAt(this._openClose, 0);
+				this._openClose.state = this._closed ? "closed" : "open";
+				this._openClose.addEventListener(MouseEvent.MOUSE_DOWN, 
+					this.openClose_mouseDownHandler);
 			}
-			_openClose.x = _depth * _indent;
-			if (_icon && super.contains(_icon))
-				super.removeChild(_icon);
-			if (_iconProducer)
+			this._openClose.x = this._depth * this._indent;
+			if (this._icon && super.contains(this._icon))
+				super.removeChild(this._icon);
+			if (this._iconProducer)
 			{
-				_icon = _iconProducer.produce(this) as InteractiveObject;
-				if (_icon) super.addChild(_icon);
+				this._icon = this._iconProducer.produce(this) as InteractiveObject;
+				if (this._icon) super.addChild(this._icon);
 			}
-			if (_icon)
+			if (this._icon)
 			{
-				if (_openClose.width)
+				if (this._openClose.width)
 				{
-					_icon.x = _openClose.x + _openClose.width + _gutter;
-					_openClose.x = _depth * _indent + (_gutter >> 1);
+					this._icon.x = 
+						this._openClose.x + this._openClose.width + this._gutter;
+					this._openClose.x = 
+						this._depth * this._indent + (this._gutter >> 1);
 				}
 				else
 				{
-					_icon.x = _openClose.x + _openClose.width;
+					this._icon.x = this._openClose.x + this._openClose.width;
 				}
-				_openClose.y = (_icon.height - _openClose.height) >> 1;
+				this._openClose.y = 
+					(this._icon.height - this._openClose.height) >> 1;
 			}
 		}
 		
 		protected override function renderText():void
 		{
-			if (!_data) return;
-			if (!_field.hasEventListener(MouseEvent.CLICK))
+			if (!super._data) return;
+			if (!super._field.hasEventListener(MouseEvent.CLICK))
 			{
-				_field.addEventListener(MouseEvent.CLICK, text_clickHandler);
-				_field.doubleClickEnabled = true;
-				_field.addEventListener(
-							MouseEvent.DOUBLE_CLICK, text_doubleClickHandler);
+				super._field.addEventListener(
+					MouseEvent.CLICK, this.text_clickHandler);
+				super._field.doubleClickEnabled = true;
+				super._field.addEventListener(
+					MouseEvent.DOUBLE_CLICK, this.text_doubleClickHandler);
 			}
-			if (_labelSkin)
-				_field.text = _labelSkin.produce(_data) as String;
-			else _field.text = _data.localName();
-			if (_icon) _field.x = _icon.x + _icon.width + _gutter;
-			else _field.x = _depth * _indent;
-			if (_selected)
+			if (super._labelSkin)
+				super._field.text = super._labelSkin.produce(super._data) as String;
+			else super._field.text = super._data.localName();
+			if (this._icon)
+				super._field.x = this._icon.x + this._icon.width + this._gutter;
+			else super._field.x = this._depth * this._indent;
+			if (this._selected)
 			{
-				_field.background = true;
-				_field.backgroundColor = 0xC0C0C0;
+				super._field.background = true;
+				super._field.backgroundColor = 0xC0C0C0;
 			}
-			else _field.background = false;
+			else super._field.background = false;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -238,17 +244,17 @@ package org.wvxvws.gui.renderers
 		
 		private function openClose_mouseDownHandler(event:MouseEvent):void 
 		{
-			if (_openClose.state === "open")
+			if (this._openClose.state === "open")
 			{
-				_openClose.state = "closed";
-				closed = true;
+				this._openClose.state = "closed";
+				this.closed = true;
 			}
 			else
 			{
-				_openClose.state = "open";
-				closed = false;
+				this._openClose.state = "open";
+				this.closed = false;
 			}
-			super.dispatchEvent(new GUIEvent(GUIEvent.OPENED, true, true));
+			super.dispatchEvent(new GUIEvent(GUIEvent.OPENED.type, true, true));
 		}
 		
 		private function text_doubleClickHandler(event:MouseEvent):void 
@@ -258,8 +264,8 @@ package org.wvxvws.gui.renderers
 		
 		private function text_clickHandler(event:MouseEvent):void 
 		{
-			selected = true;
-			super.dispatchEvent(new GUIEvent(GUIEvent.SELECTED, true, true));
+			this.selected = true;
+			super.dispatchEvent(new GUIEvent(GUIEvent.SELECTED.type, true, true));
 		}
 		
 	}

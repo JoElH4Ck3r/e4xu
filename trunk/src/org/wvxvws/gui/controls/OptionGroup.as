@@ -28,12 +28,12 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>optionsChanged</code> event.
 		*/
-		public function get options():Vector.<Option> { return _options.concat(); }
+		public function get options():Vector.<Option> { return this._options.concat(); }
 		
 		public function set options(value:Vector.<Option>):void 
 		{
-			if (_options === value) return;
-			_options.length = 0;
+			if (this._options === value) return;
+			this._options.length = 0;
 			var i:int;
 			var j:int;
 			var opt:Option;
@@ -43,27 +43,27 @@
 				while (i < j)
 				{
 					opt = value[i];
-					if (_options.indexOf(opt) < 0)
+					if (this._options.indexOf(opt) < 0)
 					{
-						_options.push(opt);
-						opt.addEventListener(GUIEvent.SELECTED, 
+						this._options.push(opt);
+						opt.addEventListener(GUIEvent.SELECTED.type, 
 							this.option_selectedHandler, false, 0, true);
 					}
 					i++;
 				}
 			}
-			if (_document) this.reparentOptions();
+			if (this._document) this.reparentOptions();
 			if (super.hasEventListener(EventGenerator.getEventType("options")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
-		public function get selectedOtion():Option { return _selected; }
+		public function get selectedOtion():Option { return this._selected; }
 		
 		protected function option_selectedHandler(event:GUIEvent):void 
 		{
-			if (_selected && event.currentTarget !== _selected)
-				_selected.selected = false;
-			_selected = event.currentTarget as Option;
+			if (this._selected && event.currentTarget !== this._selected)
+				this._selected.selected = false;
+			this._selected = event.currentTarget as Option;
 			super.dispatchEvent(event);
 		}
 		
@@ -78,9 +78,9 @@
 		
 		public function initialized(document:Object, id:String):void
 		{
-			_document = document as DisplayObjectContainer;
-			_id = id;
-			if (_document) this.reparentOptions();
+			this._document = document as DisplayObjectContainer;
+			this._id = id;
+			if (this._document) this.reparentOptions();
 		}
 		
 		protected function reparentOptions():void
@@ -93,7 +93,8 @@
 				//}
 				if (!opt.parent)
 				{
-					opt.initialized(_document, "option" + _options.indexOf(opt));
+					opt.initialized(this._document, 
+						"option" + this._options.indexOf(opt));
 				}
 			}
 		}

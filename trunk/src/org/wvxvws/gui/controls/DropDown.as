@@ -2,6 +2,7 @@
 {
 	//{ imports
 	import flash.display.DisplayObject;
+	import flash.utils.Dictionary;
 	import org.wvxvws.data.DataSet;
 	import org.wvxvws.gui.containers.List;
 	import org.wvxvws.gui.DIV;
@@ -24,21 +25,21 @@
 	{
 		/* INTERFACE org.wvxvws.gui.skins.ISkinnable */
 		
-		public function get skin():Vector.<ISkin> { return _skin; }
+		public function get skin():Vector.<ISkin> { return this._skin; }
 		
 		public function set skin(value:Vector.<ISkin>):void
 		{
-			if (_skin === value) return;
-			_skin = value;
-			if (_openClose && super.contains(_openClose))
+			if (this._skin === value) return;
+			this._skin = value;
+			if (this._openClose && super.contains(this._openClose))
 			{
-				super.removeChild(_openClose);
-				_openClose = null;
+				super.removeChild(this._openClose);
+				this._openClose = null;
 			}
-			if (_skin && _skin.length)
+			if (this._skin && this._skin.length)
 			{
-				_openClose = _skin[0].produce(this) as StatefulButton;
-				if (_openClose) _openClose.initialized(this, "_openClose");
+				this._openClose = this._skin[0].produce(this) as StatefulButton;
+				if (this._openClose) this._openClose.initialized(this, "openClose");
 			}
 		}
 		
@@ -46,20 +47,20 @@
 		
 		public function set parts(value:Object):void { }
 		
-		public function get dataProvider():DataSet { return _list.dataProvider; }
+		public function get dataProvider():DataSet { return this._list.dataProvider; }
 		
 		public function set dataProvider(value:DataSet):void 
 		{
-			_list.dataProvider = value;
+			this._list.dataProvider = value;
 		}
 		
-		public function get closed():Boolean { return _closed; }
+		public function get closed():Boolean { return this._closed; }
 		
 		public function set closed(value:Boolean):void 
 		{
-			if (_closed === value) return;
-			_closed = value;
-			if (_closed)
+			if (this._closed === value) return;
+			this._closed = value;
+			if (this._closed)
 			{
 				
 			}
@@ -69,18 +70,18 @@
 			}
 		}
 		
-		public function get openClose():StatefulButton { return _openClose; }
+		public function get openClose():StatefulButton { return this._openClose; }
 		
 		public function set openClose(value:StatefulButton):void 
 		{
-			_openClose = value;
+			this._openClose = value;
 		}
 		
-		public function get listHeight():int { return _listHeight; }
+		public function get listHeight():int { return this._listHeight; }
 		
 		public function set listHeight(value:int):void 
 		{
-			_listHeight = value;
+			this._listHeight = value;
 		}
 		
 		protected var _ilabel:ILabel;
@@ -97,21 +98,21 @@
 			this.skin = SkinManager.getSkin(this);
 		}
 		
-		public override function validate(properties:Object):void 
+		public override function validate(properties:Dictionary):void 
 		{
 			super.validate(properties);
 			var dob:DisplayObject;
-			if (!_ilabel)
+			if (!this._ilabel)
 			{
-				_ilabel = new SPAN();
-				super.addChildAt(_ilabel as DisplayObject, 0);
+				this._ilabel = new SPAN();
+				super.addChildAt(this._ilabel as DisplayObject, 0);
 			}
-			dob = _ilabel as DisplayObject;
-			if (_openClose)
-				_openClose.width = Math.max(_bounds.x, _openClose.width);
-			if (!_openClose) dob.width = _bounds.x;
-			else dob.width = _bounds.x - _openClose.width;
-			dob.height = _bounds.y;
+			dob = this._ilabel as DisplayObject;
+			if (this._openClose)
+				this._openClose.width = Math.max(_bounds.x, this._openClose.width);
+			if (!this._openClose) dob.width = this._bounds.x;
+			else dob.width = this._bounds.x - this._openClose.width;
+			dob.height = this._bounds.y;
 		}
 	}
 }

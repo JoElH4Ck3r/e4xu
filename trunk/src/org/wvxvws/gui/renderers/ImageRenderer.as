@@ -44,17 +44,17 @@ package org.wvxvws.gui.renderers
 		//
 		//--------------------------------------------------------------------------
 		
-		public function get data():XML { return _data; }
+		public function get data():XML { return this._data; }
 		
 		public function set data(value:XML):void 
 		{
-			if (isValid && _data === value) return;
-			_data = value;
-			var lastSRC:String = _src;
-			_src = _data.@src;
+			if (isValid && this._data === value) return;
+			this._data = value;
+			var lastSRC:String = this._src;
+			this._src = this._data.@src;
 			if (!_src) throw new Error("Must define @src attribute");
-			if (_image.content && lastSRC != _src) _image.unload();
-			else _image.load(new URLRequest(_src));
+			if (this._image.content && lastSRC != this._src) this._image.unload();
+			else this._image.load(new URLRequest(this._src));
 		}
 		
 		/**
@@ -63,8 +63,8 @@ package org.wvxvws.gui.renderers
 		 */
 		public function get isValid():Boolean
 		{
-			if (!_data) return false;
-			return _src == _data.@src;
+			if (!this._data) return false;
+			return this._src == this._data.@src;
 		}
 		
 		public function set labelFunction(value:Function):void
@@ -109,12 +109,12 @@ package org.wvxvws.gui.renderers
 			super.graphics.beginFill(0xFFFFFF, 0);
 			super.graphics.drawRect(0, 0, 100, 100);
 			super.graphics.endFill();
-			_image.contentLoaderInfo.addEventListener(
-									Event.COMPLETE, completeHandler);
-			_image.contentLoaderInfo.addEventListener(
-									IOErrorEvent.IO_ERROR, ioErrorHandler);
-			_image.contentLoaderInfo.addEventListener(
-						SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
+			this._image.contentLoaderInfo.addEventListener(
+									Event.COMPLETE, this.completeHandler);
+			this._image.contentLoaderInfo.addEventListener(
+									IOErrorEvent.IO_ERROR, super.dispatchEvent);
+			this._image.contentLoaderInfo.addEventListener(
+						SecurityErrorEvent.SECURITY_ERROR, super.dispatchEvent);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -132,8 +132,8 @@ package org.wvxvws.gui.renderers
 		 */
 		public function initialized(document:Object, id:String):void
 		{
-			_document = document;
-			_id = id;
+			this._document = document;
+			this._id = id;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -142,31 +142,21 @@ package org.wvxvws.gui.renderers
 		//
 		//--------------------------------------------------------------------------
 		
-		protected function securityErrorHandler(event:SecurityErrorEvent):void 
-		{
-			//trace(event);
-		}
-		
-		protected function ioErrorHandler(event:IOErrorEvent):void 
-		{
-			//trace(event);
-		}
-		
 		protected function completeHandler(event:Event):void 
 		{
-			if (_imageData) _imageData.dispose();
-			_image.width = width;
-			_image.height = height;
-			_image.scaleX = Math.min(_image.scaleX, _image.scaleY);
-			_image.scaleY = _image.scaleX;
-			_imageData = new BitmapData(_image.width, 
-											_image.height, true, 0x00FFFFFF);
-			_imageData.draw(_image.content, _image.transform.matrix, 
+			if (this._imageData) this._imageData.dispose();
+			this._image.width = super.width;
+			this._image.height = super.height;
+			this._image.scaleX = Math.min(this._image.scaleX, this._image.scaleY);
+			this._image.scaleY = this._image.scaleX;
+			this._imageData = new BitmapData(this._image.width, 
+											this._image.height, true, 0x00FFFFFF);
+			this._imageData.draw(this._image.content, this._image.transform.matrix, 
 														null, null, null, true);
-			_imageBitmap = new Bitmap(_imageData, "always", true);
-			_imageBitmap.x = (width - _imageBitmap.width) >> 1;
-			_imageBitmap.y = (height - _imageBitmap.height) >> 1;
-			super.addChild(_imageBitmap);
+			this._imageBitmap = new Bitmap(this._imageData, "always", true);
+			this._imageBitmap.x = (super.width - this._imageBitmap.width) >> 1;
+			this._imageBitmap.y = (super.height - this._imageBitmap.height) >> 1;
+			super.addChild(this._imageBitmap);
 		}
 		
 		//--------------------------------------------------------------------------
