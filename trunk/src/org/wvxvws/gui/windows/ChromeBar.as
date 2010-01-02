@@ -31,7 +31,9 @@ package org.wvxvws.gui.windows
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
+	import flash.utils.Dictionary;
 	import org.wvxvws.gui.DIV;
+	import org.wvxvws.gui.layout.Invalides;
 	import org.wvxvws.gui.skins.ISkin;
 	//}
 	
@@ -58,13 +60,13 @@ package org.wvxvws.gui.windows
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>labelChanged</code> event.
 		*/
-		public function get label():String { return _label; }
+		public function get label():String { return this._label; }
 		
 		public function set label(value:String):void 
 		{
-			if (_label === value) return;
-			_label = value;
-			super.invalidate("_label", _label, false);
+			if (this._label === value) return;
+			this._label = value;
+			super.invalidate(Invalides.SKIN, false);
 			super.dispatchEvent(new Event("labelChanged"));
 		}
 		
@@ -79,13 +81,13 @@ package org.wvxvws.gui.windows
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>iconProducerChanged</code> event.
 		*/
-		public function get iconProducer():ISkin { return _iconProducer; }
+		public function get iconProducer():ISkin { return this._iconProducer; }
 		
 		public function set iconProducer(value:ISkin):void 
 		{
-			if (_iconProducer === value) return;
-			_iconProducer = value;
-			super.invalidate("_iconProducer", _iconProducer, false);
+			if (this._iconProducer === value) return;
+			this._iconProducer = value;
+			super.invalidate(Invalides.SKIN, false);
 			super.dispatchEvent(new Event("iconProducerChanged"));
 		}
 		
@@ -100,13 +102,13 @@ package org.wvxvws.gui.windows
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>labelPaddingChanged</code> event.
 		*/
-		public function get labelPadding():int { return _labelPadding; }
+		public function get labelPadding():int { return this._labelPadding; }
 		
 		public function set labelPadding(value:int):void 
 		{
-			if (_labelPadding === value) return;
-			_labelPadding = value;
-			super.invalidate("_labelPadding", _labelPadding, false);
+			if (this._labelPadding === value) return;
+			this._labelPadding = value;
+			super.invalidate(Invalides.SKIN, false);
 			super.dispatchEvent(new Event("labelPaddingChanged"));
 		}
 		
@@ -121,12 +123,12 @@ package org.wvxvws.gui.windows
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>iconDownHandlerChanged</code> event.
 		*/
-		public function get iconDownHandler():Function { return _iconDownHandler; }
+		public function get iconDownHandler():Function { return this._iconDownHandler; }
 		
 		public function set iconDownHandler(value:Function):void 
 		{
-			if (_iconDownHandler === value) return;
-			_iconDownHandler = value;
+			if (this._iconDownHandler === value) return;
+			this._iconDownHandler = value;
 			super.dispatchEvent(new Event("iconDownHandlerChanged"));
 		}
 		
@@ -158,18 +160,24 @@ package org.wvxvws.gui.windows
 		//
 		//--------------------------------------------------------------------------
 		
-		public override function validate(properties:Object):void 
+		public override function validate(properties:Dictionary):void 
 		{
-			var iconClassChanged:Boolean = ("_iconProducer" in properties);
-			var labelChanged:Boolean = ("_label" in properties) || 
-										iconClassChanged || 
-										("_labelPadding" in properties) ||
-										("_iconFactory" in properties) || 
-										("_bounds" in properties);
+			var iconClassChanged:Boolean = (Invalides.SKIN in properties);
+			var labelChanged:Boolean = 
+				iconClassChanged || (Invalides.BOUNDS in properties);
 			super.validate(properties);
 			if (iconClassChanged)
 			{
-				_icon = _iconProducer.produce(this) as DisplayObject;
+				if (this._iconProducer)
+					this._icon = this._iconProducer.produce(this) as DisplayObject;
+				else if (this._icon)
+				{
+					this._icon.removeEventListener(
+						MouseEvent.MOUSE_DOWN, this.icon_downHandler);
+					if (super.contains(this._icon))
+						super.removeChild(this._icon);
+					this._icon = null;
+				}
 				this.drawIcon();
 			}
 			if (labelChanged) this.drawLabel();
@@ -183,82 +191,82 @@ package org.wvxvws.gui.windows
 		
 		protected function drawLabel():void
 		{
-			if (_label !== null && _label !== "")
+			if (this._label !== null && this._label !== "")
 			{
-				if (!_labelTXT)
+				if (!this._labelTXT)
 				{
-					_labelTXT = new TextField();
-					_labelTXT.selectable = false;
-					_labelTXT.defaultTextFormat = _labelFormat;
-					_labelTXT.autoSize = TextFieldAutoSize.LEFT;
-					_labelTXT.width = 1;
-					_labelTXT.height = 1;
-					_labelTXT.mouseEnabled = false;
-					_labelTXT.tabEnabled = false;
+					this._labelTXT = new TextField();
+					this._labelTXT.selectable = false;
+					this._labelTXT.defaultTextFormat = this._labelFormat;
+					this._labelTXT.autoSize = TextFieldAutoSize.LEFT;
+					this._labelTXT.width = 1;
+					this._labelTXT.height = 1;
+					this._labelTXT.mouseEnabled = false;
+					this._labelTXT.tabEnabled = false;
 				}
-				_labelTXT.text = _label;
+				this._labelTXT.text = _label;
 				if (_icon)
 				{
-					_labelTXT.scrollRect = new Rectangle(0, 0, 
-						super.width - (_icon.width + _labelPadding + _icon.x), 
-						_labelTXT.height);
-					_labelTXT.x = _icon.x + _icon.width + 2;
+					this._labelTXT.scrollRect = new Rectangle(0, 0, 
+						super.width - (this._icon.width + 
+						this._labelPadding + _this.icon.x), 
+						this._labelTXT.height);
+					this._labelTXT.x = this._icon.x + this._icon.width + 2;
 				}
 				else
 				{
-					_labelTXT.scrollRect = 
-						new Rectangle(2, 0, super.width - _labelPadding, 
-						_labelTXT.height);
-					_labelTXT.x = 2;
+					this._labelTXT.scrollRect = 
+						new Rectangle(2, 0, super.width - this._labelPadding, 
+						this._labelTXT.height);
+					this._labelTXT.x = 2;
 				}
-				_labelTXT.y = (super.height - _labelTXT.height) >> 1;
-				if (!super.contains(_labelTXT)) super.addChild(_labelTXT);
+				this._labelTXT.y = (super.height - this._labelTXT.height) >> 1;
+				if (!super.contains(this._labelTXT)) super.addChild(this._labelTXT);
 			}
-			else if (_labelTXT)
+			else if (this._labelTXT)
 			{
-				if (super.contains(_labelTXT)) super.removeChild(_labelTXT);
-				_labelTXT = null;
+				if (super.contains(this._labelTXT)) super.removeChild(this._labelTXT);
+				this._labelTXT = null;
 			}
 		}
 		
 		protected function drawIcon():void
 		{
-			if (_icon is InteractiveObject)
+			if (this._icon is InteractiveObject)
 			{
-				(_icon as InteractiveObject).addEventListener(
-						MouseEvent.MOUSE_DOWN, icon_downHandler);
+				(this._icon as InteractiveObject).addEventListener(
+						MouseEvent.MOUSE_DOWN, this.icon_downHandler);
 			}
 			else
 			{
-				super.addEventListener(MouseEvent.MOUSE_DOWN, icon_downHandler);
+				super.addEventListener(MouseEvent.MOUSE_DOWN, this.icon_downHandler);
 			}
-			if (_icon is DisplayObjectContainer)
+			if (this._icon is DisplayObjectContainer)
 			{
-				(_icon as DisplayObjectContainer).mouseChildren = false;
-				(_icon as DisplayObjectContainer).tabChildren = false;
+				(this._icon as DisplayObjectContainer).mouseChildren = false;
+				(this._icon as DisplayObjectContainer).tabChildren = false;
 			}
-			_icon.x = 2;
-			_icon.y = (super.height - _icon.height) >> 1;
-			super.addChild(_icon);
+			this._icon.x = 2;
+			this._icon.y = (super.height - this._icon.height) >> 1;
+			super.addChild(this._icon);
 		}
 		
 		protected function icon_downHandler(event:MouseEvent):void 
 		{
 			var t:InteractiveObject = event.currentTarget as InteractiveObject;
-			if (t && t === _icon)
+			if (t && t === this._icon)
 			{
-				if (_iconDownHandler !== null)
-					_iconDownHandler(event);
+				if (this._iconDownHandler !== null)
+					this._iconDownHandler(event);
 			}
 			else if (t === this)
 			{
-				if (_icon && _iconDownHandler !== null &&
-					_icon.hitTestPoint(_icon.mouseX, _icon.mouseY))
+				if (this._icon && this._iconDownHandler !== null &&
+					this._icon.hitTestPoint(this._icon.mouseX, this._icon.mouseY))
 				{
-					_iconDownHandler(event);
+					this._iconDownHandler(event);
 				}
 			}
 		}
 	}
-	
 }
