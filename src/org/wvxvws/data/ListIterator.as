@@ -40,6 +40,7 @@ package org.wvxvws.data
 		/* INTERFACE org.wvxvws.data.IIterator */
 		
 		public function get next():Function { return this._next; }
+		
 		public function get current():Function { return this._current; }
 		
 		//--------------------------------------------------------------------------
@@ -50,7 +51,7 @@ package org.wvxvws.data
 		
 		protected var _list:DataList;
 		protected var _position:int = -1;
-		protected var _current:ListCell;
+		protected var _currentCell:ListCell;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -58,7 +59,7 @@ package org.wvxvws.data
 		//
 		//--------------------------------------------------------------------------
 		
-		internal function get currentCell():ListCell { return this._current; }
+		internal function get currentCell():ListCell { return this._currentCell; }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -70,7 +71,7 @@ package org.wvxvws.data
 		{
 			super();
 			this._list = list;
-			this._current = list.first;
+			this._currentCell = list.first;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -81,11 +82,11 @@ package org.wvxvws.data
 		
 		public function reset():void
 		{
-			this._current = this._list.first;
+			this._currentCell = this._list.first;
 			this._position = -1;
 		}
 		
-		public function hasNext():Boolean { return this._current.next !== null; }
+		public function hasNext():Boolean { return this._currentCell.next !== null; }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -93,15 +94,15 @@ package org.wvxvws.data
 		//
 		//--------------------------------------------------------------------------
 		
-		protected function _current():Object { return this._current.target; }
+		protected function _current():Object { return this._currentCell.target; }
 		
 		protected function _next():Object
 		{
 			var ret:Object;
-			if (!this._current.next) return null;
-			ret = this._current.target;
+			if (!this._currentCell.next) return null;
+			ret = this._currentCell.target;
 			this._position++;
-			this._current = this._current.next;
+			this._currentCell = this._currentCell.next;
 			return ret;
 		}
 		

@@ -4,9 +4,11 @@
 	import flash.events.MouseEvent;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
+	import flash.utils.Dictionary;
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.DIV;
 	import org.wvxvws.gui.GUIEvent;
+	import org.wvxvws.gui.layout.Invalides;
 	import org.wvxvws.gui.skins.ISkin;
 	import org.wvxvws.gui.skins.ISkinnable;
 	import org.wvxvws.gui.skins.SkinDefaults;
@@ -43,14 +45,14 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>selectedChanged</code> event.
 		*/
-		public function get selected():Boolean { return _selected; }
+		public function get selected():Boolean { return this._selected; }
 		
 		public function set selected(value:Boolean):void 
 		{
-			if (_selected === value) return;
-			_selected = value;
-			_button.state = _selected ? SELECTED_STATE : UP_STATE; 
-			super.invalidate("_selected", _selected, false);
+			if (this._selected === value) return;
+			this._selected = value;
+			this._button.state = this._selected ? SELECTED_STATE : UP_STATE; 
+			super.invalidate(Invalides.STATE, false);
 			if (super.hasEventListener(EventGenerator.getEventType("selected")))
 				super.dispatchEvent(EventGenerator.getEvent());
 			if (_selected) super.dispatchEvent(new GUIEvent(GUIEvent.SELECTED));
@@ -67,16 +69,16 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>disabledChanged</code> event.
 		*/
-		public function get disabled():Boolean { return _disabled; }
+		public function get disabled():Boolean { return this._disabled; }
 		
 		public function set disabled(value:Boolean):void 
 		{
-			if (_disabled === value) return;
-			_disabled = value;
-			super.invalidate("_disabled", _disabled, false);
+			if (this._disabled === value) return;
+			this._disabled = value;
+			super.invalidate(Invalides.STATE, false);
 			if (super.hasEventListener(EventGenerator.getEventType("disabled")))
 				super.dispatchEvent(EventGenerator.getEvent());
-			if (_disabled) super.dispatchEvent(new GUIEvent(GUIEvent.DISABLED));
+			if (this._disabled) super.dispatchEvent(GUIEvent.DISABLED);
 		}
 		
 		//------------------------------------
@@ -90,35 +92,38 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>skinChanged</code> event.
 		*/
-		public function get skin():Vector.<ISkin> { return new <ISkin>[_skin]; }
+		public function get skin():Vector.<ISkin> { return new <ISkin>[this._skin]; }
 		
 		public function set skin(value:Vector.<ISkin>):void 
 		{
-			if (value && value.length && _skin === value[0]) return;
-			if (_skin === value) return;
-			if (value && value.length) _skin = value[0];
-			if (_skin)
+			if (value && value.length && this._skin === value[0]) return;
+			if (this._skin === value) return;
+			if (value && value.length) this._skin = value[0];
+			if (this._skin)
 			{
-				_button.states[UP_STATE] = _skin.produce(_button, UP_STATE);
-				_button.states[DOWN_STATE] = _skin.produce(_button, DOWN_STATE);
-				_button.states[OVER_STATE] = _skin.produce(_button, OVER_STATE);
-				_button.states[SELECTED_STATE] = 
-					_skin.produce(_button, SELECTED_STATE);
-				_button.states[DISABLED_STATE] = 
-					_skin.produce(_button, DISABLED_STATE);
-				_button.states[SELECTED_DISABLED_STATE] = 
-					_skin.produce(_button, SELECTED_DISABLED_STATE);
+				this._button.states[UP_STATE] = 
+					this._skin.produce(this._button, UP_STATE);
+				this._button.states[DOWN_STATE] = 
+					this._skin.produce(this._button, DOWN_STATE);
+				this._button.states[OVER_STATE] = 
+					this._skin.produce(this._button, OVER_STATE);
+				this._button.states[SELECTED_STATE] = 
+					this._skin.produce(this._button, SELECTED_STATE);
+				this._button.states[DISABLED_STATE] = 
+					this._skin.produce(this._button, DISABLED_STATE);
+				this._button.states[SELECTED_DISABLED_STATE] = 
+					this._skin.produce(this._button, SELECTED_DISABLED_STATE);
 			}
 			else
 			{
-				delete _button.states[UP_STATE];
-				delete _button.states[DOWN_STATE];
-				delete _button.states[OVER_STATE];
-				delete _button.states[SELECTED_STATE];
-				delete _button.states[DISABLED_STATE];
-				delete _button.states[SELECTED_DISABLED_STATE];
+				delete this._button.states[UP_STATE];
+				delete this._button.states[DOWN_STATE];
+				delete this._button.states[OVER_STATE];
+				delete this._button.states[SELECTED_STATE];
+				delete this._button.states[DISABLED_STATE];
+				delete this._button.states[SELECTED_DISABLED_STATE];
 			}
-			super.invalidate("_skin", _skin, false);
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("skin")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -138,13 +143,13 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>labelChanged</code> event.
 		*/
-		public function get label():ISkin { return _label; }
+		public function get label():ISkin { return this._label; }
 		
 		public function set label(value:ISkin):void 
 		{
-			if (_label === value) return;
-			_label = value;
-			super.invalidate("_label", _label, false);
+			if (this._label === value) return;
+			this._label = value;
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("label")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -164,14 +169,14 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>labelPlacementChanged</code> event.
 		*/
-		public function get labelPlacement():int { return _labelPlacement; }
+		public function get labelPlacement():int { return this._labelPlacement; }
 		
 		public function set labelPlacement(value:int):void 
 		{
 			value = Math.min(Math.max(value, 1), 5);
-			if (_selected === value) return;
-			_labelPlacement = value;
-			super.invalidate("_labelPlacement", _labelPlacement, false);
+			if (this._selected === value) return;
+			this._labelPlacement = value;
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("labelPlacement")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -191,145 +196,151 @@
 		{
 			super();
 			super.addEventListener(
-				MouseEvent.CLICK, button_clickHandler, false, int.MAX_VALUE);
+				MouseEvent.CLICK, this.button_clickHandler, false, int.MAX_VALUE);
 			super.addEventListener(
-				MouseEvent.MOUSE_OVER, button_overHandler, false, int.MAX_VALUE);
+				MouseEvent.MOUSE_OVER, this.button_overHandler, false, int.MAX_VALUE);
 			super.addEventListener(
-				MouseEvent.MOUSE_OUT, button_outHandler, false, int.MAX_VALUE);
-			_labelField.multiline = false;
-			_labelField.wordWrap = false;
-			_labelField.selectable = false;
-			_labelField.mouseEnabled = false;
-			_labelField.autoSize = TextFieldAutoSize.LEFT;
-			_labelField.defaultTextFormat = SkinDefaults.DARK_FORMAT;
-			super.addChild(_labelField);
+				MouseEvent.MOUSE_OUT, this.button_outHandler, false, int.MAX_VALUE);
+			this._labelField.multiline = false;
+			this._labelField.wordWrap = false;
+			this._labelField.selectable = false;
+			this._labelField.mouseEnabled = false;
+			this._labelField.autoSize = TextFieldAutoSize.LEFT;
+			this._labelField.defaultTextFormat = SkinDefaults.DARK_FORMAT;
+			super.addChild(this._labelField);
 		}
 		
 		protected function button_outHandler(event:MouseEvent):void 
 		{
-			if (_disabled || _selected) return;
-			_button.state = UP_STATE;
+			if (this._disabled || this._selected) return;
+			this._button.state = UP_STATE;
 		}
 		
 		protected function button_overHandler(event:MouseEvent):void 
 		{
-			if (_disabled || _selected) return;
-			_button.state = OVER_STATE;
+			if (this._disabled || this._selected) return;
+			this._button.state = OVER_STATE;
 		}
 		
 		protected function button_clickHandler(event:MouseEvent):void 
 		{
-			if (_disabled) return;
-			this.selected = !_selected;
+			if (this._disabled) return;
+			this.selected = !this._selected;
 		}
 		
-		public override function validate(properties:Object):void 
+		public override function validate(properties:Dictionary):void 
 		{
-			if (!_skin) this.skin = SkinManager.getSkin(this);
-			var placementChanged:Boolean = ("_labelPlacement" in properties);
-			var labelChanged:Boolean = ("_label" in properties);
-			var disabledChanged:Boolean = ("_disabled" in properties);
+			if (!this._skin) this.skin = SkinManager.getSkin(this);
+			var skinChanged:Boolean = (Invalides.SKIN in properties);
+			var stateChanged:Boolean = (Invalides.STATE in properties);
 			super.validate(properties);
-			if (!super.contains(_button))
+			if (!super.contains(this._button))
 			{
-				_button.initialized(this, "button");
-				_button.state = _disabled ? DISABLED_STATE : UP_STATE;
+				this._button.initialized(this, "button");
+				this._button.state = this._disabled ? DISABLED_STATE : UP_STATE;
 				placementChanged = true;
 			}
-			if (labelChanged)
+			if (skinChanged)
 			{
-				if (_label)
+				if (this._label)
 				{
-					_labelField.text = _label.produce(this) as String;
-					if (!super.contains(_labelField)) super.addChild(_labelField);
+					this._labelField.text = this._label.produce(this) as String;
+					if (!super.contains(this._labelField))
+						super.addChild(this._labelField);
 				}
 				else
 				{
-					super.removeChild(_labelField);
-					_labelField.text = "";
+					super.removeChild(this._labelField);
+					this._labelField.text = "";
 				}
 			}
-			if (disabledChanged)
+			if (stateChanged)
 			{
-				if (_selected)
+				if (this._selected)
 				{
-					_button.state = 
-						_disabled ? SELECTED_DISABLED_STATE : SELECTED_STATE;
+					this._button.state = 
+						this._disabled ? SELECTED_DISABLED_STATE : SELECTED_STATE;
 				}
 				else
 				{
-					_button.state = _disabled ? DISABLED_STATE : UP_STATE;
+					this._button.state = this._disabled ? DISABLED_STATE : UP_STATE;
 				}
 			}
-			if (placementChanged || labelChanged)
+			if (skinChanged)
 			{
-				switch (_labelPlacement)
+				switch (this._labelPlacement)
 				{
 					case 1:
-						_labelField.x = 0;
-						_labelField.y = 0;
-						_button.x = (_labelField.width - _button.width) >> 1;
-						_button.y = _labelField.height + _gutter;
+						this._labelField.x = 0;
+						this._labelField.y = 0;
+						this._button.x = 
+							(this._labelField.width - this._button.width) >> 1;
+						this._button.y = this._labelField.height + this._gutter;
 						break;
 					case 2:
-						_labelField.x = 0;
-						if (_labelField.height > _button.height)
+						this._labelField.x = 0;
+						if (this._labelField.height > this._button.height)
 						{
-							_labelField.y = 0;
-							_button.y = (_labelField.height - _button.height) >> 1;
+							this._labelField.y = 0;
+							this._button.y = 
+								(this._labelField.height - this._button.height) >> 1;
 						}
 						else
 						{
-							_button.y = 0;
-							_labelField.y = 
-								(_button.height - _labelField.height) >> 1;
+							this._button.y = 0;
+							this._labelField.y = 
+								(this._button.height - this._labelField.height) >> 1;
 						}
-						_button.x = _labelField.width + _gutter;
+						this._button.x = this._labelField.width + this._gutter;
 						break;
 					case 3:
-						if (_labelField.height > _button.height)
+						if (this._labelField.height > this._button.height)
 						{
-							_labelField.y = 0;
-							_button.y = (_labelField.height - _button.height) >> 1;
+							this._labelField.y = 0;
+							this._button.y = 
+								(this._labelField.height - this._button.height) >> 1;
 						}
 						else
 						{
-							_button.y = 0;
-							_labelField.y = 
-								(_button.height - _labelField.height) >> 1;
+							this._button.y = 0;
+							this._labelField.y = 
+								(this._button.height - this._labelField.height) >> 1;
 						}
-						if (_labelField.width > _button.width)
+						if (this._labelField.width > this._button.width)
 						{
-							_labelField.x = 0;
-							_button.x = (_labelField.width - _button.width) >> 1;
+							this._labelField.x = 0;
+							this._button.x = 
+								(this._labelField.width - this._button.width) >> 1;
 						}
 						else
 						{
-							_button.x = 0;
-							_labelField.x = 
-								(_button.width - _labelField.width) >> 1;
+							this._button.x = 0;
+							this._labelField.x = 
+								(this._button.width - this._labelField.width) >> 1;
 						}
 						break;
 					case 4:
-						_button.x = 0;
-						_labelField.x = _button.width + _gutter;
-						if (_labelField.height > _button.height)
+						this._button.x = 0;
+						this._labelField.x = this._button.width + this._gutter;
+						if (this._labelField.height > this._button.height)
 						{
-							_labelField.y = 0;
-							_button.y = (_labelField.height - _button.height) >> 1;
+							this._labelField.y = 0;
+							this._button.y = 
+								(this._labelField.height - this._button.height) >> 1;
 						}
 						else
 						{
-							_button.y = 0;
-							_labelField.y = 
-								(_button.height - _labelField.height) >> 1;
+							this._button.y = 0;
+							this._labelField.y = 
+								(this._button.height - this._labelField.height) >> 1;
 						}
 						break;
 					case 5:
-						_labelField.x = 0;
-						_labelField.y = _button.height + _gutter;
-						_button.x = (_labelField.width - _button.width) >> 1;
-						_button.y = 0;
+						this._labelField.x = 0;
+						this._labelField.y = this._button.height + this._gutter;
+						this._button.x = 
+							(this._labelField.width - this._button.width) >> 1;
+						this._button.y = 0;
 						break;
 				}
 			}

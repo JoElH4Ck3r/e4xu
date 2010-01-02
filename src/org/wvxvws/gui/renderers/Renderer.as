@@ -48,45 +48,48 @@ package org.wvxvws.gui.renderers
 		
 		public override function set width(value:Number):void 
 		{
-			if (_width === (value >> 0)) return;
-			_width = value;
+			if (this._width === (value >> 0)) return;
+			this._width = value;
 			this.drawBackground();
 		}
 		
 		public function get isValid():Boolean
 		{
-			if (!_data) return false;
-			return _field.text == _data.toString();
+			if (!this._data) return false;
+			return this._field.text == this._data.toString();
 		}
 		
-		public function get data():Object { return _data; }
+		public function get data():Object { return this._data; }
 		
 		public function set data(value:Object):void 
 		{
-			if (isValid && _data === value) return;
-			_data = value;
-			if (!_data) return;
+			if (this.isValid && this._data === value) return;
+			this._data = value;
+			if (!this._data) return;
 			this.renderText();
 		}
 		
-		public function get labelSkin():ISkin { return _labelSkin; }
+		public function get labelSkin():ISkin { return this._labelSkin; }
 		
 		public function set labelSkin(value:ISkin):void 
 		{
-			if (_labelSkin === value) return;
-			_labelSkin = value;
-			if (_data) this.renderText();
+			if (this._labelSkin === value) return;
+			this._labelSkin = value;
+			if (this._data) this.renderText();
 		}
 		
 		/* INTERFACE org.wvxvws.gui.skins.ISkinnable */
 		
-		public function get skin():Vector.<ISkin> { return new <ISkin>[_labelSkin]; }
+		public function get skin():Vector.<ISkin>
+		{
+			return new <ISkin>[this._labelSkin];
+		}
 		
 		public function set skin(value:Vector.<ISkin>):void
 		{
-			if (value && value.length && _labelSkin === value[0]) return;
-			if (value && value.length) _labelSkin = value[0];
-			else _labelSkin = null;
+			if (value && value.length && this._labelSkin === value[0]) return;
+			if (value && value.length) this._labelSkin = value[0];
+			else this._labelSkin = null;
 		}
 		
 		public function get parts():Object { return null; }
@@ -112,12 +115,6 @@ package org.wvxvws.gui.renderers
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Private properties
-		//
-		//--------------------------------------------------------------------------
-		
-		//--------------------------------------------------------------------------
-		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
@@ -125,14 +122,14 @@ package org.wvxvws.gui.renderers
 		public function Renderer() 
 		{
 			super();
-			super.addChild(_field);
-			_skins = SkinManager.getSkin(this);
-			if (_skins && _skins.length) _labelSkin = _skins[0];
-			_field.selectable = false;
-			_field.autoSize = TextFieldAutoSize.LEFT;
-			_field.width = 1;
-			_field.height = 1;
-			_field.defaultTextFormat = _textFormat;
+			super.addChild(this._field);
+			this._skins = SkinManager.getSkin(this);
+			if (this._skins && this._skins.length) this._labelSkin = this._skins[0];
+			this._field.selectable = false;
+			this._field.autoSize = TextFieldAutoSize.LEFT;
+			this._field.width = 1;
+			this._field.height = 1;
+			this._field.defaultTextFormat = this._textFormat;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -145,8 +142,8 @@ package org.wvxvws.gui.renderers
 		
 		public function initialized(document:Object, id:String):void
 		{
-			_document = document;
-			_id = id;
+			this._document = document;
+			this._id = id;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -157,11 +154,11 @@ package org.wvxvws.gui.renderers
 		
 		protected function renderText():void
 		{
-			if (!_data) return;
-			_field.defaultTextFormat = _textFormat;
-			if (_labelSkin) 
-				_field.text = _labelSkin.produce(_data) as String;
-			else _field.text = _data.toString();
+			if (!this._data) return;
+			this._field.defaultTextFormat = this._textFormat;
+			if (this._labelSkin) 
+				this._field.text = this._labelSkin.produce(this._data) as String;
+			else this._field.text = this._data.toString();
 			this.drawBackground();
 		}
 		
@@ -169,16 +166,9 @@ package org.wvxvws.gui.renderers
 		{
 			var g:Graphics = super.graphics;
 			g.clear();
-			g.beginFill(_backgroundColor, _backgroundAlpha);
-			g.drawRect(0, 0, _width, _field.height);
+			g.beginFill(this._backgroundColor, this._backgroundAlpha);
+			g.drawRect(0, 0, this._width, this._field.height);
 			g.endFill();
 		}
-		
-		//--------------------------------------------------------------------------
-		//
-		//  Private methods
-		//
-		//--------------------------------------------------------------------------
 	}
-	
 }

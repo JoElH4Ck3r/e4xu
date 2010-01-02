@@ -27,7 +27,9 @@ package org.wvxvws.gui.renderers
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
+	import flash.utils.Dictionary;
 	import org.wvxvws.gui.layout.ILayoutClient;
+	import org.wvxvws.gui.layout.Invalides;
 	import org.wvxvws.gui.layout.LayoutValidator;
 	import org.wvxvws.gui.renderers.IRenderer;
 	import org.wvxvws.gui.skins.ISkin;
@@ -48,67 +50,71 @@ package org.wvxvws.gui.renderers
 		
 		public override function set width(value:Number):void 
 		{
-			if (_width === (value >> 0)) return;
-			_width = value;
-			this.invalidate("_width", _width, false);
+			if (this._width === (value >> 0)) return;
+			this._width = value;
+			this.invalidate(Invalides.BOUNDS, false);
 		}
 		
 		public override function set height(value:Number):void 
 		{
-			if (_height === (value >> 0)) return;
-			_height = value;
-			this.invalidate("_height", _height, false);
+			if (this._height === (value >> 0)) return;
+			this._height = value;
+			this.invalidate(Invalides.BOUNDS, false);
 		}
 		
 		/* INTERFACE org.wvxvws.gui.renderers.IRenderer */
 		
 		public function get isValid():Boolean
 		{
-			if (!_data) return false;
-			return _invalidLayout;
+			if (!this._data) return false;
+			return this._invalidLayout;
 		}
 		
 		public function set labelSkin(value:ISkin):void
 		{
-			if (_labelSkin === value) return;
-			_labelSkin = value;
-			this.invalidate("_labelSkin", _data, false);
+			if (this._labelSkin === value) return;
+			this._labelSkin = value;
+			this.invalidate(Invalides.SKIN, false);
 		}
 		
-		public function get data():Object { return _data; }
+		public function get data():Object { return this._data; }
 		
 		public function set data(value:Object):void
 		{
-			if (isValid && _data === value) return;
-			_data = value;
-			this.invalidate("_data", _data, false);
+			if (this.isValid && this._data === value) return;
+			this._data = value;
+			this.invalidate(Invalides.DATAPROVIDER, false);
 		}
 		
-		public function get label():String { return _label; }
+		public function get label():String { return this._label; }
 		
 		public function set label(value:String):void 
 		{
-			if (_label == value) return;
-			_label = value;
-			this.invalidate("_label", _label, false);
+			if (this._label == value) return;
+			this._label = value;
+			this.invalidate(Invalides.SKIN, false);
 		}
 		
 		/* INTERFACE org.wvxvws.gui.layout.ILayoutClient */
 		
-		public function get validator():LayoutValidator { return _validator; }
+		public function get validator():LayoutValidator { return this._validator; }
 		
 		public function get invalidProperties():Object
 		{
-			return _invalidProperties;
+			return this._invalidProperties;
 		}
 		
-		public function get layoutParent():ILayoutClient { return _layoutParent; }
+		public function get layoutParent():ILayoutClient
+		{
+			return this._layoutParent;
+		}
 		
 		public function set layoutParent(value:ILayoutClient):void
 		{
-			_layoutParent = value;
-			_validator = _layoutParent.validator;
-			_validator.append(this, _layoutParent);
+			this._layoutParent = value;
+			if (value) this._validator = this._layoutParent.validator;
+			else this._validator = null;
+			this._validator.append(this, this._layoutParent);
 		}
 		
 		public function get childLayouts():Vector.<ILayoutClient> { return null; }
@@ -123,7 +129,7 @@ package org.wvxvws.gui.renderers
 		protected var _labelSkin:ISkin;
 		protected var _validator:LayoutValidator;
 		protected var _layoutParent:ILayoutClient;
-		protected var _invalidProperties:Object = { };
+		protected var _invalidProperties:Dictionary = new Dictionary();
 		protected var _invalidLayout:Boolean;
 		protected var _labelTXT:TextField;
 		protected var _label:String;
@@ -142,13 +148,13 @@ package org.wvxvws.gui.renderers
 		public function ToolStripRenderer()
 		{
 			super();
-			_labelTXT = new TextField();
-			_labelTXT.defaultTextFormat = _labelFormat;
-			_labelTXT.autoSize = TextFieldAutoSize.LEFT;
-			_labelTXT.width = 1;
-			_labelTXT.height = 1;
-			_labelTXT.selectable = false;
-			super.addChild(_labelTXT);
+			this._labelTXT = new TextField();
+			this._labelTXT.defaultTextFormat = this._labelFormat;
+			this._labelTXT.autoSize = TextFieldAutoSize.LEFT;
+			this._labelTXT.width = 1;
+			this._labelTXT.height = 1;
+			this._labelTXT.selectable = false;
+			super.addChild(this._labelTXT);
 			super.mouseChildren = false;
 			super.tabChildren = false;
 		}
@@ -159,61 +165,63 @@ package org.wvxvws.gui.renderers
 		//
 		//--------------------------------------------------------------------------
 		
-		public function invalidate(property:String, 
-									cleanValue:*, validateParent:Boolean):void
+		public function invalidate(property:Invalides, validateParent:Boolean):void
 		{
-			_invalidProperties[property] = cleanValue;
-			if (!_validator)
+			this._invalidProperties[property] = true;
+			if (!this._validator)
 			{
 				if (super.parent && super.parent is ILayoutClient)
 				{
-					_layoutParent = super.parent as ILayoutClient;
-					_validator = _layoutParent.validator;
-					if (_validator)
-						_validator.append(this, _layoutParent);
+					this._layoutParent = super.parent as ILayoutClient;
+					this._validator = this._layoutParent.validator;
+					if (this._validator)
+						this._validator.append(this, this._layoutParent);
 				}
 			}
-			if (_validator)  _validator.requestValidation(this, validateParent);
-			_invalidLayout = true;
+			if (this._validator)
+			this._validator.requestValidation(this, validateParent);
+			this._invalidLayout = true;
 		}
 		
-		public function validate(properties:Object):void 
+		public function validate(properties:Dictionary):void 
 		{
-			var explicitHeight:int = _height;
-			var explicitWidth:int = _width;
-			if (!_data && !("_label" in properties)) properties._label = "";
+			var explicitHeight:int = this._height;
+			var explicitWidth:int = this._width;
+			if (!this._data && !(Invalides.SKIN in properties))
+				properties[Invalides.SKIN] = "";
 			else
 			{
-				if (_labelSkin) 
-					properties._label = _labelSkin.produce(_data);
+				if (this._labelSkin) 
+					properties[Invalides.SKIN] = this._labelSkin.produce(this._data);
 			}
-			_label = properties._label;
-			if (_labelTXT.text !== _label)
+			this._label = properties[Invalides.SKIN];
+			if (this._labelTXT.text !== this._label)
 			{
-				_labelTXT.text = _label || "";
-				_height = Math.max(super.height, _height);
-				_labelTXT.y = (_height - _labelTXT.height) >> 1;
-				_width = Math.max(super.width, _width);
-				_labelTXT.x = (_width - _labelTXT.width) >> 1;
+				this._labelTXT.text = this._label || "";
+				this._height = Math.max(super.height, this._height);
+				this._labelTXT.y = (this._height - this._labelTXT.height) >> 1;
+				this._width = Math.max(super.width, this._width);
+				this._labelTXT.x = (this._width - this._labelTXT.width) >> 1;
 				
-				_height = explicitHeight;
-				_width = explicitWidth;
+				this._height = explicitHeight;
+				this._width = explicitWidth;
 				
-				if (_labelTXT.x < 0)
+				if (this._labelTXT.x < 0)
 				{
-					_labelTXT.x = 0;
+					this._labelTXT.x = 0;
 					if (super.numChildren > 1)
 					{
-						_width = super.width - 2;
-						_height = super.height - 2;
-						_labelTXT.scrollRect = new Rectangle(0, 0, _width, _height);
+						this._width = super.width - 2;
+						this._height = super.height - 2;
+						this._labelTXT.scrollRect = 
+							new Rectangle(0, 0, this._width, this._height);
 					}
 				}
-				if (_labelTXT.y < 0) _labelTXT.y = 0;
+				if (this._labelTXT.y < 0) this._labelTXT.y = 0;
 			}
 			this.drawBackground();
-			_invalidProperties = { };
-			_invalidLayout = false;
+			this._invalidProperties = new Dictionary();
+			this._invalidLayout = false;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -224,20 +232,19 @@ package org.wvxvws.gui.renderers
 		
 		protected function drawBackground():void
 		{
-			var explicitHeight:int = _height;
-			var explicitWidth:int = _width;
-			_width = Math.max(_width, super.width);
-			_height = Math.max(super.height, _height);
-			_backgroundAlpha = 1;
-			_backgroundColor = 0xFF8000;
+			var explicitHeight:int = this._height;
+			var explicitWidth:int = this._width;
+			this._width = Math.max(this._width, super.width);
+			this._height = Math.max(super.height, this._height);
+			this._backgroundAlpha = 1;
+			this._backgroundColor = 0xFF8000;
 			var g:Graphics = super.graphics;
 			g.clear();
-			g.beginFill(_backgroundColor, _backgroundAlpha);
-			g.drawRect(0, 0, _width, _height);
+			g.beginFill(this._backgroundColor, this._backgroundAlpha);
+			g.drawRect(0, 0, this._width, this._height);
 			g.endFill();
-			_height = explicitHeight;
-			_width = explicitWidth;
+			this._height = explicitHeight;
+			this._width = explicitWidth;
 		}
 	}
-
 }

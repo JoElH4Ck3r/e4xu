@@ -2,8 +2,10 @@
 {
 	import flash.events.MouseEvent;
 	import flash.geom.Matrix;
+	import flash.utils.Dictionary;
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.DIV;
+	import org.wvxvws.gui.layout.Invalides;
 	import org.wvxvws.gui.skins.ISkin;
 	import org.wvxvws.gui.skins.ISkinnable;
 	import org.wvxvws.gui.skins.SkinManager;
@@ -34,31 +36,31 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>incrementSkinChanged</code> event.
 		*/
-		public function get incrementSkin():ISkin { return _incrementSkin; }
+		public function get incrementSkin():ISkin { return this._incrementSkin; }
 		
 		public function set incrementSkin(value:ISkin):void 
 		{
-			if (_incrementSkin === value) return;
-			_incrementSkin = value;
-			if (_incrementSkin)
+			if (this._incrementSkin === value) return;
+			this._incrementSkin = value;
+			if (this._incrementSkin)
 			{
-				_incrementButton.states[UP_STATE] = 
-					_incrementSkin.produce(_incrementButton, UP_STATE);
-				_incrementButton.states[DOWN_STATE] = 
-					_incrementSkin.produce(_incrementButton, DOWN_STATE);
-				_incrementButton.states[OVER_STATE] = 
-					_incrementSkin.produce(_incrementButton, OVER_STATE);
-				_incrementButton.states[DISABLED_STATE] = 
-					_incrementSkin.produce(_incrementButton, DISABLED_STATE);
+				this._incrementButton.states[UP_STATE] = 
+					this._incrementSkin.produce(this._incrementButton, UP_STATE);
+				this._incrementButton.states[DOWN_STATE] = 
+					this._incrementSkin.produce(this._incrementButton, DOWN_STATE);
+				this._incrementButton.states[OVER_STATE] = 
+					this._incrementSkin.produce(this._incrementButton, OVER_STATE);
+				this._incrementButton.states[DISABLED_STATE] = 
+					this._incrementSkin.produce(_incrementButton, DISABLED_STATE);
 			}
 			else
 			{
-				delete _incrementButton.states[UP_STATE];
-				delete _incrementButton.states[DOWN_STATE];
-				delete _incrementButton.states[OVER_STATE];
-				delete _incrementButton.states[DISABLED_STATE];
+				delete this._incrementButton.states[UP_STATE];
+				delete this._incrementButton.states[DOWN_STATE];
+				delete this._incrementButton.states[OVER_STATE];
+				delete this._incrementButton.states[DISABLED_STATE];
 			}
-			super.invalidate("_incrementSkin", _incrementSkin, false);
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("incrementSkin")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -74,31 +76,31 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>decrementSkinChanged</code> event.
 		*/
-		public function get decrementSkin():ISkin { return _decrementSkin; }
+		public function get decrementSkin():ISkin { return this._decrementSkin; }
 		
 		public function set decrementSkin(value:ISkin):void 
 		{
-			if (_decrementSkin === value) return;
-			_decrementSkin = value;
-			if (_decrementSkin)
+			if (this._decrementSkin === value) return;
+			this._decrementSkin = value;
+			if (this._decrementSkin)
 			{
-				_decrementButton.states[UP_STATE] = 
-					_decrementSkin.produce(_decrementButton, UP_STATE);
-				_decrementButton.states[DOWN_STATE] = 
-					_decrementSkin.produce(_decrementButton, DOWN_STATE);
-				_decrementButton.states[OVER_STATE] = 
-					_decrementSkin.produce(_decrementButton, OVER_STATE);
-				_decrementButton.states[DISABLED_STATE] = 
-					_decrementSkin.produce(_decrementButton, DISABLED_STATE);
+				this._decrementButton.states[UP_STATE] = 
+					this._decrementSkin.produce(this._decrementButton, UP_STATE);
+				this._decrementButton.states[DOWN_STATE] = 
+					this._decrementSkin.produce(this._decrementButton, DOWN_STATE);
+				this._decrementButton.states[OVER_STATE] = 
+					this._decrementSkin.produce(this._decrementButton, OVER_STATE);
+				this._decrementButton.states[DISABLED_STATE] = 
+					this._decrementSkin.produce(this._decrementButton, DISABLED_STATE);
 			}
 			else
 			{
-				delete _decrementButton.states[UP_STATE];
-				delete _decrementButton.states[DOWN_STATE];
-				delete _decrementButton.states[OVER_STATE];
-				delete _decrementButton.states[DISABLED_STATE];
+				delete this._decrementButton.states[UP_STATE];
+				delete this._decrementButton.states[DOWN_STATE];
+				delete this._decrementButton.states[OVER_STATE];
+				delete this._decrementButton.states[DISABLED_STATE];
 			}
-			super.invalidate("_decrementSkin", _decrementSkin, false);
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("decrementSkin")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -129,14 +131,14 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>buttonPlacementChanged</code> event.
 		*/
-		public function get buttonPlacement():int { return _buttonPlacement; }
+		public function get buttonPlacement():int { return this._buttonPlacement; }
 		
 		public function set buttonPlacement(value:int):void 
 		{
 			value = Math.min(Math.max(value, 1), 4);
-			if (_buttonPlacement === value) return;
-			_buttonPlacement = value;
-			super.invalidate("_buttonPlacement", _decrementSkin, false);
+			if (this._buttonPlacement === value) return;
+			this._buttonPlacement = value;
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("buttonPlacement")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -150,12 +152,12 @@
 		/**
 		* @copy org/wvxvws/gui/tools/Stepper#formatter
 		*/
-		public function get formatter():Function { return _stepper.formatter; }
+		public function get formatter():Function { return this._stepper.formatter; }
 		
 		public function set formatter(value:Function):void 
 		{
-			if (_stepper.formatter === value) return;
-			_stepper.formatter = value;
+			if (this._stepper.formatter === value) return;
+			this._stepper.formatter = value;
 			if (super.hasEventListener(EventGenerator.getEventType("formatter")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -169,12 +171,12 @@
 		/**
 		* @copy org/wvxvws/gui/tools/Stepper#step
 		*/
-		public function get step():Number { return _stepper.step; }
+		public function get step():Number { return this._stepper.step; }
 		
 		public function set step(value:Number):void 
 		{
-			if (_stepper.step === value) return;
-			_stepper.step = value;
+			if (this._stepper.step === value) return;
+			this._stepper.step = value;
 			if (super.hasEventListener(EventGenerator.getEventType("step")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -188,12 +190,12 @@
 		/**
 		* @copy org/wvxvws/gui/tools/Stepper#min
 		*/
-		public function get min():Number { return _stepper.min; }
+		public function get min():Number { return this._stepper.min; }
 		
 		public function set min(value:Number):void 
 		{
-			if (_stepper.min === value) return;
-			_stepper.min = value;
+			if (this._stepper.min === value) return;
+			this._stepper.min = value;
 			if (super.hasEventListener(EventGenerator.getEventType("min")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -207,12 +209,12 @@
 		/**
 		* @copy org/wvxvws/gui/tools/Stepper#max
 		*/
-		public function get max():Number { return _stepper.max; }
+		public function get max():Number { return this._stepper.max; }
 		
 		public function set max(value:Number):void 
 		{
-			if (_stepper.max === value) return;
-			_stepper.max = value;
+			if (this._stepper.max === value) return;
+			this._stepper.max = value;
 			if (super.hasEventListener(EventGenerator.getEventType("max")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -221,20 +223,20 @@
 		
 		public function get skin():Vector.<ISkin>
 		{
-			return new <ISkin>[_incrementSkin, _decrementSkin];
+			return new <ISkin>[this._incrementSkin, this._decrementSkin];
 		}
 		
 		public function set skin(value:Vector.<ISkin>):void
 		{
 			if (value && value.length)
 			{
-				_incrementSkin = value[0];
-				if (value.length > 1) _decrementSkin = value[1];
+				this._incrementSkin = value[0];
+				if (value.length > 1) this._decrementSkin = value[1];
 			}
 			else
 			{
-				_incrementSkin = null;
-				_decrementSkin = null;
+				this._incrementSkin = null;
+				this._decrementSkin = null;
 			}
 		}
 		
@@ -256,7 +258,7 @@
 		{
 			super();
 			var skins:Vector.<ISkin>;
-			if (!_incrementSkin)
+			if (!this._incrementSkin)
 			{
 				skins = SkinManager.getSkin(this);
 				if (skins && skins.length)
@@ -265,117 +267,149 @@
 					this.decrementSkin = skins[0];
 				}
 			}
-			_incrementButton.state = UP_STATE;
-			_incrementButton.addEventListener(MouseEvent.MOUSE_DOWN, button_downHandler);
-			_incrementButton.addEventListener(MouseEvent.MOUSE_UP, button_upHandler);
-			_decrementButton.state = UP_STATE;
-			_decrementButton.addEventListener(MouseEvent.MOUSE_DOWN, button_downHandler);
-			_decrementButton.addEventListener(MouseEvent.MOUSE_UP, button_upHandler);
-			_stepper.initialized(this, "stepper");
-			_invalidProperties._buttonPlacement = _buttonPlacement;
+			this._incrementButton.state = UP_STATE;
+			this._incrementButton.addEventListener(
+				MouseEvent.MOUSE_DOWN, this.button_downHandler);
+			this._incrementButton.addEventListener(
+				MouseEvent.MOUSE_UP, this.button_upHandler);
+			this._decrementButton.state = UP_STATE;
+			this._decrementButton.addEventListener(
+				MouseEvent.MOUSE_DOWN, this.button_downHandler);
+			this._decrementButton.addEventListener(
+				MouseEvent.MOUSE_UP, this.button_upHandler);
+			this._stepper.initialized(this, "stepper");
+			super._invalidProperties[Invalides.SKIN] = true;
 		}
 		
-		protected function button_upHandler(event:MouseEvent):void { _stepper.stop(); }
+		protected function button_upHandler(event:MouseEvent):void
+		{
+			this._stepper.stop();
+		}
 		
 		protected function button_downHandler(event:MouseEvent):void 
 		{
-			_stepper.start(event.currentTarget === _incrementButton);
+			this._stepper.start(event.currentTarget === this._incrementButton);
 		}
 		
-		public override function validate(properties:Object):void 
+		public override function validate(properties:Dictionary):void 
 		{
-			var placementChanged:Boolean = ("_buttonPlacement" in properties);
-			var sizeChanged:Boolean = ("_bounds" in properties);
+			var placementChanged:Boolean = (Invalides.SKIN in properties);
+			var sizeChanged:Boolean = (Invalides.BOUNDS in properties);
 			super.validate(properties);
 			var mI:Matrix;
 			var mD:Matrix;
 			if (placementChanged || sizeChanged)
 			{
-				switch (_buttonPlacement)
+				switch (this._buttonPlacement)
 				{
 					case 1:
-						_incrementButton.rotation = 0;
-						_decrementButton.rotation = 0;
-						_decrementButton.scaleX = 1;
-						_incrementButton.scaleX = 1;
-						_decrementButton.scaleY = 1;
-						_incrementButton.scaleY = 1;
+						this._incrementButton.rotation = 0;
+						this._decrementButton.rotation = 0;
+						this._decrementButton.scaleX = 1;
+						this._incrementButton.scaleX = 1;
+						this._decrementButton.scaleY = 1;
+						this._incrementButton.scaleY = 1;
 						mI = new Matrix();
 						mI.rotate(Math.PI * 0.5);
-						mI.scale(_buttonWidth / _incrementButton.width, 
-								_bounds.y / _incrementButton.height);
-						_incrementButton.transform.matrix = mI;
+						mI.scale(this._buttonWidth / this._incrementButton.width, 
+								this._bounds.y / this._incrementButton.height);
+						this._incrementButton.transform.matrix = mI;
 						mD = new Matrix();
 						mD.rotate(Math.PI * -0.5);
-						mD.scale(_buttonWidth / _decrementButton.width, 
-								_bounds.y / _decrementButton.height);
-						_decrementButton.transform.matrix = mD;
-						if (_bounds.x - _buttonWidth * 2 < _minTextWidth) 
-							_stepper.width = _minTextWidth;
-						else _stepper.width = _bounds.x - _buttonWidth * 2;
-						_stepper.height = Math.max(_textHeight, _bounds.y);
-						_decrementButton.x = 0;
-						_decrementButton.y = _stepper.height;
-						_incrementButton.x = _stepper.width + _incrementButton.width * 2;
-						_incrementButton.y = 0;
-						_stepper.x = _incrementButton.width;
+						mD.scale(this._buttonWidth / this._decrementButton.width, 
+								super._bounds.y / this._decrementButton.height);
+						this._decrementButton.transform.matrix = mD;
+						if (super._bounds.x - this._buttonWidth * 2 < 
+							this._minTextWidth) 
+							this._stepper.width = this._minTextWidth;
+						else
+						{
+							this._stepper.width = 
+								super._bounds.x - this._buttonWidth * 2;
+						}
+						this._stepper.height = 
+							Math.max(this._textHeight, super._bounds.y);
+						this._decrementButton.x = 0;
+						this._decrementButton.y = this._stepper.height;
+						this._incrementButton.x = 
+							this._stepper.width + this._incrementButton.width * 2;
+						this._incrementButton.y = 0;
+						this._stepper.x = this._incrementButton.width;
 						break;
 					case 2:
-						_incrementButton.rotation = 0;
-						_decrementButton.rotation = 180;
-						_incrementButton.x = 0;
-						_decrementButton.width = Math.max(_buttonWidth, _bounds.x);
-						_incrementButton.width = _decrementButton.width;
-						_stepper.width = _decrementButton.width;
-						_decrementButton.height = Math.min(_buttonWidth >> 1, _bounds.y >> 1);
-						_incrementButton.height = _decrementButton.height;
-						_decrementButton.x = _decrementButton.width;
-						_stepper.height = _bounds.y - _decrementButton.height * 2;
-						_decrementButton.y = _bounds.y;
-						_stepper.x = 0;
-						_stepper.y = _incrementButton.height
+						this._incrementButton.rotation = 0;
+						this._decrementButton.rotation = 180;
+						this._incrementButton.x = 0;
+						this._decrementButton.width = 
+							Math.max(this._buttonWidth, this._bounds.x);
+						this._incrementButton.width = this._decrementButton.width;
+						this._stepper.width = this._decrementButton.width;
+						this._decrementButton.height = 
+							Math.min(this._buttonWidth >> 1, super._bounds.y >> 1);
+						this._incrementButton.height = this._decrementButton.height;
+						this._decrementButton.x = this._decrementButton.width;
+						this._stepper.height = 
+							super._bounds.y - this._decrementButton.height * 2;
+						this._decrementButton.y = super._bounds.y;
+						this._stepper.x = 0;
+						this._stepper.y = this._incrementButton.height;
 						break;
 					default:
 					case 3:
-						_incrementButton.rotation = 0;
-						_decrementButton.transform.matrix = new Matrix();
-						_incrementButton.width = _buttonWidth;
-						_decrementButton.width = _buttonWidth;
-						if (_bounds.x - _buttonWidth < _minTextWidth) 
-							_stepper.width = _minTextWidth;
-						else _stepper.width = _bounds.x - _buttonWidth;
-						_stepper.height = Math.max(_textHeight, _bounds.y);
-						_incrementButton.height = _stepper.height >> 1;
-						_decrementButton.height = _stepper.height - _incrementButton.height;
-						_incrementButton.x = _stepper.width;
-						_decrementButton.rotation = 180;
-						_decrementButton.x = _stepper.width + _decrementButton.width;
-						_decrementButton.y = _incrementButton.height + _decrementButton.height;
+						this._incrementButton.rotation = 0;
+						this._decrementButton.transform.matrix = new Matrix();
+						this._incrementButton.width = this._buttonWidth;
+						this._decrementButton.width = this._buttonWidth;
+						if (super._bounds.x - this._buttonWidth < this._minTextWidth) 
+							this._stepper.width = this._minTextWidth;
+						else
+						{
+							this._stepper.width = 
+								super._bounds.x - this._buttonWidth;
+						}
+						this._stepper.height = 
+							Math.max(this._textHeight, super._bounds.y);
+						this._incrementButton.height = this._stepper.height >> 1;
+						this._decrementButton.height = 
+							this._stepper.height - this._incrementButton.height;
+						this._incrementButton.x = this._stepper.width;
+						this._decrementButton.rotation = 180;
+						this._decrementButton.x = 
+							this._stepper.width + this._decrementButton.width;
+						this._decrementButton.y = 
+							this._incrementButton.height + 
+							this._decrementButton.height;
 						break;
 					case 4:
-						_incrementButton.rotation = 0;
-						_stepper.y = 0;
-						_decrementButton.transform.matrix = new Matrix();
-						_incrementButton.width = _buttonWidth;
-						_decrementButton.width = _buttonWidth;
-						if (_bounds.x - _buttonWidth < _minTextWidth) 
-							_stepper.width = _minTextWidth;
-						else _stepper.width = _bounds.x - _buttonWidth;
-						_stepper.height = Math.max(_textHeight, _bounds.y);
-						_incrementButton.height = _stepper.height >> 1;
-						_decrementButton.height = _stepper.height - _incrementButton.height;
-						_incrementButton.x = 0;
-						_decrementButton.rotation = 180;
-						_decrementButton.x = _decrementButton.width;
-						_decrementButton.y = _decrementButton.height * 2;
-						_stepper.x = _incrementButton.width;
+						this._incrementButton.rotation = 0;
+						this._stepper.y = 0;
+						this._decrementButton.transform.matrix = new Matrix();
+						this._incrementButton.width = this._buttonWidth;
+						this._decrementButton.width = this._buttonWidth;
+						if (super._bounds.x - this._buttonWidth < this._minTextWidth) 
+							this._stepper.width = this._minTextWidth;
+						else
+						{
+							this._stepper.width = 
+								super._bounds.x - this._buttonWidth;
+						}
+						this._stepper.height = 
+							Math.max(this._textHeight, super._bounds.y);
+						this._incrementButton.height = this._stepper.height >> 1;
+						this._decrementButton.height = 
+							this._stepper.height - this._incrementButton.height;
+						this._incrementButton.x = 0;
+						this._decrementButton.rotation = 180;
+						this._decrementButton.x = this._decrementButton.width;
+						this._decrementButton.y = this._decrementButton.height * 2;
+						this._stepper.x = this._incrementButton.width;
 						break;
 				}
 			}
-			if (!super.contains(_incrementButton))
+			if (!super.contains(this._incrementButton))
 			{
-				_incrementButton.initialized(this, "iButton");
-				_decrementButton.initialized(this, "dButton");
+				this._incrementButton.initialized(this, "iButton");
+				this._decrementButton.initialized(this, "dButton");
 			}
 		}
 	}

@@ -50,25 +50,25 @@ package org.wvxvws.gui.renderers
 		
 		public override function set height(value:Number):void 
 		{
-			if (_height === value) return;
-			_height = value;
-			if (_data) super.renderText();
+			if (this._height === value) return;
+			this._height = value;
+			if (super._data) super.renderText();
 		}
 		
 		public override function set width(value:Number):void 
 		{
-			if (value < _minWidth) value = _minWidth;
+			if (value < this._minWidth) value = this._minWidth;
 			super.width = value;
-			if (_data) super.renderText();
+			if (super._data) super.renderText();
 		}
 		
-		public function get resizable():Boolean { return _resizable; }
+		public function get resizable():Boolean { return this._resizable; }
 		
 		public function set resizable(value:Boolean):void 
 		{
-			if (_resizable === value) return;
-			_resizable = value;
-			if (_data) super.renderText();
+			if (this._resizable === value) return;
+			this._resizable = value;
+			if (super._data) super.renderText();
 		}
 		
 		//--------------------------------------------------------------------------
@@ -108,63 +108,65 @@ package org.wvxvws.gui.renderers
 		{
 			var g:Graphics = super.graphics;
 			g.clear();
-			g.beginFill(_backgroundColor, _backgroundAlpha);
-			g.drawRect(0, 0, _width, _height);
+			g.beginFill(super._backgroundColor, super._backgroundAlpha);
+			g.drawRect(0, 0, super._width, super._height);
 			g.endFill();
-			if (_resizable)
+			if (this._resizable)
 			{
-				if (!super.contains(_resizeHandle)) this.drawResizeHandle(false);
+				if (!super.contains(this._resizeHandle))
+					this.drawResizeHandle(false);
 			}
 			else this.drawResizeHandle(true);
-			_field.y = (_height - _field.height) >> 1;
+			super._field.y = (super._height - super._field.height) >> 1;
 		}
 		
 		protected function drawResizeHandle(remove:Boolean):void
 		{
-			var g:Graphics = _resizeHandle.graphics;
+			var g:Graphics = this._resizeHandle.graphics;
 			g.clear();
 			if (!remove)
 			{
 				g.beginFill(0xFF, 1);
-				g.drawRect(-5, 0, 5, _height);
+				g.drawRect(-5, 0, 5, super._height);
 				g.endFill();
-				_resizeHandle.addEventListener(
-						MouseEvent.MOUSE_OVER, resize_mouseOverHandler);
-				_resizeHandle.addEventListener(
-						MouseEvent.MOUSE_OUT, resize_mouseOutHandler);
-				_resizeHandle.addEventListener(
-						MouseEvent.MOUSE_DOWN, resize_mouseDownHandler);
-				_resizeHandle.x = _width;
-				super.addChild(_resizeHandle);
+				this._resizeHandle.addEventListener(
+						MouseEvent.MOUSE_OVER, this.resize_mouseOverHandler);
+				this._resizeHandle.addEventListener(
+						MouseEvent.MOUSE_OUT, this.resize_mouseOutHandler);
+				this._resizeHandle.addEventListener(
+						MouseEvent.MOUSE_DOWN, this.resize_mouseDownHandler);
+				this._resizeHandle.x = super._width;
+				super.addChild(this._resizeHandle);
 			}
 			else
 			{
-				_resizeHandle.removeEventListener(
-						MouseEvent.MOUSE_OVER, resize_mouseOverHandler);
-				_resizeHandle.removeEventListener(
-						MouseEvent.MOUSE_OUT, resize_mouseOutHandler);
-				_resizeHandle.removeEventListener(
-						MouseEvent.MOUSE_DOWN, resize_mouseDownHandler);
-				if (super.contains(_resizeHandle)) super.removeChild(_resizeHandle);
+				this._resizeHandle.removeEventListener(
+						MouseEvent.MOUSE_OVER, this.resize_mouseOverHandler);
+				this._resizeHandle.removeEventListener(
+						MouseEvent.MOUSE_OUT, this.resize_mouseOutHandler);
+				this._resizeHandle.removeEventListener(
+						MouseEvent.MOUSE_DOWN, this.resize_mouseDownHandler);
+				if (super.contains(this._resizeHandle))
+					super.removeChild(this._resizeHandle);
 			}
 		}
 		
 		protected function resize_mouseDownHandler(event:MouseEvent):void 
 		{
-			stage.addEventListener(MouseEvent.MOUSE_UP, 
-									stage_mouseUpHandler, false, 0, true);
-			stage.addEventListener(MouseEvent.MOUSE_MOVE, 
-									stage_mouseMoveHandler, false, 0, false);
-			_resizing = true;
+			super.stage.addEventListener(MouseEvent.MOUSE_UP, 
+									this.stage_mouseUpHandler, false, 0, true);
+			super.stage.addEventListener(MouseEvent.MOUSE_MOVE, 
+									this.stage_mouseMoveHandler, false, 0, false);
+			this._resizing = true;
 		}
 		
 		protected function stage_mouseUpHandler(event:MouseEvent):void 
 		{
-			stage.removeEventListener(MouseEvent.MOUSE_UP, 
-									stage_mouseUpHandler);
-			stage.removeEventListener(MouseEvent.MOUSE_MOVE, 
-									stage_mouseMoveHandler);
-			_resizing = false;
+			super.stage.removeEventListener(MouseEvent.MOUSE_UP, 
+									this.stage_mouseUpHandler);
+			super.stage.removeEventListener(MouseEvent.MOUSE_MOVE, 
+									this.stage_mouseMoveHandler);
+			this._resizing = false;
 			super.dispatchEvent(
 				new ToolEvent(ToolEvent.RESIZE_END, false, true, this));
 		}
@@ -176,7 +178,7 @@ package org.wvxvws.gui.renderers
 		
 		protected function resize_mouseOutHandler(event:MouseEvent):void 
 		{
-			if (_resizing) return;
+			if (this._resizing) return;
 			super.dispatchEvent(
 				new ToolEvent(ToolEvent.RESIZE_END, false, true, this));
 		}
