@@ -86,14 +86,16 @@ package org.wvxvws.data
 		public static function fromXML(from:XML):DataSet
 		{
 			var ds:DataSet = new DataSet(XML);
-			from.*.(ds.add(valueOf()));
+			var s:Vector.<XML> = ds._source as Vector.<XML>;
+			from.*.(s.push(valueOf()));
 			return ds;
 		}
 		
 		public static function fromXMLList(from:XMLList):DataSet
 		{
 			var ds:DataSet = new DataSet(XML);
-			from.(ds.add(valueOf()));
+			var s:Vector.<XML> = ds._source as Vector.<XML>;
+			from.(s.push(valueOf()));
 			return ds;
 		}
 		
@@ -106,14 +108,13 @@ package org.wvxvws.data
 		
 		public static function fromVector(from:Object):DataSet
 		{
-			var type:Class;
 			var ts:String = describeType(from).@name;
 			if (ts.indexOf("::Vector") < 0)
 				throw new ArgumentError(from + " must be Vector.");
 			ts = ts.replace(/.*<(.*)>.*/g, "$1");
-			type = getDefinitionByName(ts) as Class;
-			var ds:DataSet = new DataSet(type);
-			for each (var o:Object in from) ds.add(o);
+			var ds:DataSet = new DataSet(getDefinitionByName(ts) as Class);
+			var s:Object = ds._source;
+			for each (var o:Object in from) s.push(o);
 			return ds;
 		}
 		
@@ -159,6 +160,15 @@ package org.wvxvws.data
 			var ds:DataSet = new DataSet(this._type);
 			ds._source = this._source.concat();
 			return ds;
+		}
+		
+		public function bubbleSort(callback:Function = null):void
+		{
+			this._source.sort(callback);
+			if (super.hasEventListener(SetEvent.SORT))
+			{
+				super.dispatchEvent(new SetEvent(SetEvent.SORT, null));
+			}
 		}
 		
 		public function sort(callback:Function = null):void
