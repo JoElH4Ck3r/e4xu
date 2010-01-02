@@ -13,9 +13,9 @@
 	{
 		/* INTERFACE org.wvxvws.gui.repeaters.IRepeater */
 		
-		public function get index():int { return _index; }
+		public function get index():int { return this._index; }
 		
-		public function get currentItem():Object { return _currentItem; }
+		public function get currentItem():Object { return this._currentItem; }
 		
 		protected var _id:String;
 		protected var _ihost:IRepeaterHost;
@@ -30,35 +30,35 @@
 			super();
 			if (host)
 			{
-				_ihost = host;
-				_creationCallback = host.repeatCallback;
+				this._ihost = host;
+				this._creationCallback = host.repeatCallback;
 			}
-			_event = new RepeaterEvent(RepeaterEvent.REPEAT, this);
+			this._event = new RepeaterEvent(RepeaterEvent.REPEAT, this);
 		}
 		
 		/* INTERFACE mx.core.IMXMLObject */
 		
 		public function initialized(document:Object, id:String):void
 		{
-			_ihost = document as IRepeaterHost;
-			if (_ihost) _creationCallback = _ihost.repeatCallback;
-			_id = id;
+			this._ihost = document as IRepeaterHost;
+			if (this._ihost) this._creationCallback = this._ihost.repeatCallback;
+			this._id = id;
 		}
 		
 		public function begin(at:int):void
 		{
 			this._index = at - 1;
-			_factory = _ihost.factory;
+			this._factory = this._ihost.factory;
 			var pool:Vector.<Object> = _ihost.pool;
 			var dispatch:Boolean = super.hasEventListener(RepeaterEvent.REPEAT);
 			do
 			{
 				this._index++;
 				if (pool && pool.length) this._currentItem = pool.pop();
-				else this._currentItem = _factory.produce(_ihost, this._index);
-				if (dispatch) super.dispatchEvent(_event);
+				else this._currentItem = _factory.produce(this._ihost, this._index);
+				if (dispatch) super.dispatchEvent(this._event);
 			}
-			while (_creationCallback(this._currentItem, this._index));
+			while (this._creationCallback(this._currentItem, this._index));
 		}
 	}
 }

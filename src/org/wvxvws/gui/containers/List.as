@@ -1,5 +1,27 @@
-﻿package org.wvxvws.gui.containers 
+﻿////////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (C) Oleg Sivokon email: olegsivokon@gmail.com
+//  
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or any later version.
+//  
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//  GNU General Public License for more details.
+//  
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, write to the Free Software
+//  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+//  Or visit http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+//
+////////////////////////////////////////////////////////////////////////////////
+
+package org.wvxvws.gui.containers 
 {
+	//{ imports
 	import flash.display.DisplayObject;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
@@ -18,6 +40,7 @@
 	import org.wvxvws.gui.skins.ISkin;
 	import org.wvxvws.gui.skins.ISkinnable;
 	import org.wvxvws.gui.skins.SkinManager;
+	//}
 	
 	[Skin("org.wvxvws.skins.ListSkin")]
 	[Skin("org.wvxvws.skins.renderers.ListRendererSkin")]
@@ -34,6 +57,12 @@
 	 */
 	public class List extends DIV implements ISkinnable, IRepeaterHost
 	{
+		//--------------------------------------------------------------------------
+		//
+		//  Public properties
+		//
+		//--------------------------------------------------------------------------
+		
 		/* INTERFACE org.wvxvws.gui.skins.ISkinnable */
 		
 		public function get skin():Vector.<ISkin> { return this._skins; }
@@ -115,6 +144,12 @@
 		[Bindable("scrollPaneChanged")]
 		public function get scrollPane():ScrollPane { return this._scrollPane; }
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected properties
+		//
+		//--------------------------------------------------------------------------
+		
 		protected var _skins:Vector.<ISkin>;
 		protected var _skin:ISkin;
 		protected var _dataProvider:DataSet;
@@ -130,6 +165,12 @@
 		protected var _poolSize:int = 100;
 		protected var _labelSkin:ISkin;
 		
+		//--------------------------------------------------------------------------
+		//
+		//  Constructor
+		//
+		//--------------------------------------------------------------------------
+		
 		public function List() 
 		{
 			super();
@@ -144,6 +185,12 @@
 			this._scrollPane.addEventListener(
 				GUIEvent.SCROLLED.type, this.scrollPane_scrolledHandler);
 		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
 		
 		public override function validate(properties:Object):void 
 		{
@@ -249,6 +296,12 @@
 			}
 			return ret;
 		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
 		
 		protected function layoutChildren():void
 		{

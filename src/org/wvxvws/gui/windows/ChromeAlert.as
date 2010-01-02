@@ -1,4 +1,25 @@
-﻿package org.wvxvws.gui.windows 
+﻿////////////////////////////////////////////////////////////////////////////////
+//
+//  Copyright (C) Oleg Sivokon email: olegsivokon@gmail.com
+//  
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or any later version.
+//  
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//  GNU General Public License for more details.
+//  
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, write to the Free Software
+//  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+//  Or visit http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+//
+////////////////////////////////////////////////////////////////////////////////
+
+package org.wvxvws.gui.windows 
 {
 	//{ imports
 	import flash.display.DisplayObjectContainer;
@@ -8,6 +29,7 @@
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
+	import flash.utils.Dictionary;
 	import org.wvxvws.gui.Button;
 	import org.wvxvws.gui.containers.ChromeWindow;
 	import org.wvxvws.gui.skins.TextFormatDefaults;
@@ -32,39 +54,39 @@
 									ok:Boolean = true, cancel:Boolean = true) 
 		{
 			super();
-			_field.width = 1;
-			_field.height = 1;
+			this._field.width = 1;
+			this._field.height = 1;
 			var f:TextFormat = TextFormatDefaults.defaultFormat;
 			f.align = TextFormatAlign.CENTER;
-			_field.defaultTextFormat = f;
-			_field.multiline = true;
-			_field.wordWrap = true;
-			_contentPane.addChild(_field);
+			this._field.defaultTextFormat = f;
+			this._field.multiline = true;
+			this._field.wordWrap = true;
+			super._contentPane.addChild(this._field);
 			if (message !== null) 
 			{
-				_message = message;
-				_field.text = message;
+				this._message = message;
+				this._field.text = message;
 			}
-			_userActionHandler = actionHandler;
-			_contentPane.gutterH = 10;
-			_contentPane.padding = new Rectangle(5, 5, 0, 0);
+			this._userActionHandler = actionHandler;
+			super._contentPane.gutterH = 10;
+			super._contentPane.padding = new Rectangle(5, 5, 0, 0);
 			if (ok)
 			{
-				_okButton = new Button("OK");
-				_okButton.width = 100;
-				_okButton.height = 24;
-				_okButton.initialized(_contentPane, "ok");
-				_okButton.addEventListener(MouseEvent.CLICK, 
-								button_clickHandler, false, 0, true);
+				this._okButton = new Button("OK");
+				this._okButton.width = 100;
+				this._okButton.height = 24;
+				this._okButton.initialized(super._contentPane, "ok");
+				this._okButton.addEventListener(MouseEvent.CLICK, 
+								this.button_clickHandler, false, 0, true);
 			}
 			if (cancel)
 			{
-				_cancelButton = new Button("Cancel");
-				_cancelButton.width = 100;
-				_cancelButton.height = 24;
-				_cancelButton.initialized(_contentPane, "cancel");
-				_cancelButton.addEventListener(MouseEvent.CLICK, 
-								button_clickHandler, false, 0, true);
+				this._cancelButton = new Button("Cancel");
+				this._cancelButton.width = 100;
+				this._cancelButton.height = 24;
+				this._cancelButton.initialized(super._contentPane, "cancel");
+				this._cancelButton.addEventListener(MouseEvent.CLICK, 
+								this.button_clickHandler, false, 0, true);
 			}
 			var tb:ChromeBar = new ChromeBar();
 			tb.label = "Alert";
@@ -76,47 +98,52 @@
 			super.backgroundAlpha = 1;
 		}
 		
-		public override function validate(properties:Object):void
+		public override function validate(properties:Dictionary):void
 		{
 			super.validate(properties);
 			var fieldHeight:int;
 			var middle:int;
-			if (_okButton || _cancelButton)
+			if (this._okButton || this._cancelButton)
 			{
-				if (_okButton)
+				if (this._okButton)
 				{
-					fieldHeight = _okButton.height;
-					_okButton.y = _contentPane.height - 
-						(_okButton.height + _contentPane.padding.bottom);
+					fieldHeight = this._okButton.height;
+					this._okButton.y = super._contentPane.height - 
+						(this._okButton.height + super._contentPane.padding.bottom);
 				}
-				if (_cancelButton)
+				if (this._cancelButton)
 				{
-					fieldHeight = Math.max(fieldHeight, _cancelButton.height);
-					_cancelButton.y = _contentPane.height - 
-						(_cancelButton.height + _contentPane.padding.bottom);
+					fieldHeight = Math.max(fieldHeight, this._cancelButton.height);
+					this._cancelButton.y = 
+						super._contentPane.height - (this._cancelButton.height + 
+						super._contentPane.padding.bottom);
 				}
-				middle = (_contentPane.width - 
-						(_contentPane.padding.left + _contentPane.padding.right)) >> 1;
-				if (_okButton && _cancelButton)
+				middle = 
+					(super._contentPane.width - (super._contentPane.padding.left + 
+					super._contentPane.padding.right)) >> 1;
+				if (this._okButton && this._cancelButton)
 				{
-					_okButton.x = middle - (_okButton.width + _contentPane.gutterH * 0.5);
-					_cancelButton.x = middle + _contentPane.gutterH * 0.5;
+					this._okButton.x = 
+						middle - (this._okButton.width + 
+						super._contentPane.gutterH * 0.5);
+					this._cancelButton.x = middle + super._contentPane.gutterH * 0.5;
 				}
-				else if (_okButton)
+				else if (this._okButton)
 				{
-					_okButton.x = middle - (_okButton.width >> 1);
+					this._okButton.x = middle - (this._okButton.width >> 1);
 				}
-				else _cancelButton.x = middle - (_cancelButton.width >> 1);
-				if (_okButton) 
-					_okButton.validate(_okButton.invalidProperties);
-				if (_cancelButton) 
-					_cancelButton.validate(_cancelButton.invalidProperties);
-				fieldHeight = _contentPane.height - 
-					(fieldHeight + _contentPane.padding.bottom);
-				_field.height = fieldHeight;
-				_field.width = _contentPane.width -  (_contentPane.padding.left + 
-					_contentPane.padding.right);
-				_field.x = _contentPane.padding.left;
+				else this._cancelButton.x = middle - (this._cancelButton.width >> 1);
+				if (this._okButton) 
+					this._okButton.validate(this._okButton.invalidProperties);
+				if (this._cancelButton) 
+					this._cancelButton.validate(this._cancelButton.invalidProperties);
+				fieldHeight = super._contentPane.height - 
+					(fieldHeight + super._contentPane.padding.bottom);
+				this._field.height = fieldHeight;
+				this._field.width = 
+					super._contentPane.width - (super._contentPane.padding.left + 
+					super._contentPane.padding.right);
+				this._field.x = super._contentPane.padding.left;
 			}
 		}
 		
@@ -139,13 +166,9 @@
 		
 		protected function button_clickHandler(event:MouseEvent):void 
 		{
-			if (_userActionHandler === null) return;
-			if (event.currentTarget === _okButton)
-				_userActionHandler(true);
-			else _userActionHandler(false);
+			if (this._userActionHandler === null) return;
+			this._userActionHandler(event.currentTarget === this._okButton);
 			WindowManager.destroy(this);
 		}
-		
 	}
-
 }
