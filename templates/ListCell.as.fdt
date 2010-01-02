@@ -22,11 +22,11 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public function List_$$(Type)Cell(target:$$(Type), next:List_$$(Type)Cell) $(CSLB){
+		public function List_$$(Type)Cell(target:$$(Type), next:List_$$(Type)Cell, prev:List_$$(Type)Cell) $(CSLB){
 			super();
 			this.target = target;
 			this.next = next;
-			this.prev = next;
+			this.prev = prev;
 			$(EntryPoint)
 		}
 		

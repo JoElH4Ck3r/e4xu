@@ -41,7 +41,8 @@ package org.wvxvws.data
 		public function get index():int { return this._index; }
 		
 		protected var _data:Object;
-		protected var _index:int;
+		protected var _index:int = -1;
+		protected var _handled:Boolean;
 		
 		public function SetEvent(type:String, data:Object, index:int = -1) 
 		{ 
@@ -49,11 +50,19 @@ package org.wvxvws.data
 			this._data = data;
 		} 
 		
-		public override function clone():Event { return this; } 
+		public override function clone():Event
+		{
+			if (!this._handled)
+			{
+				this._handled = true;
+				return this;
+			}
+			return new SetEvent(this.type, this._data, this._index);
+		} 
 		
 		public override function toString():String 
 		{ 
-			return formatToString("DataChangeEvent", "type", "data"); 
+			return super.formatToString("DataChangeEvent", "type", "data"); 
 		}
 	}
 	
