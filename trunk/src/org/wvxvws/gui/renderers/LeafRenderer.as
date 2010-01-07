@@ -93,7 +93,7 @@ package org.wvxvws.gui.renderers
 			_selected = value;
 			if (_selected)
 			{
-				dispatchEvent(new GUIEvent(GUIEvent.SELECTED, true, true));
+				super.dispatchEvent(new GUIEvent(GUIEvent.SELECTED.type, true, true));
 				_field.background = true;
 				_field.backgroundColor = 0xD0D0D0;
 			}

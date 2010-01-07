@@ -34,6 +34,7 @@ package org.wvxvws.tools
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.utils.Dictionary;
 	import org.wvxvws.gui.DIV;
 	import org.wvxvws.gui.skins.Drawings;
 	//}
@@ -110,7 +111,7 @@ package org.wvxvws.tools
 			return _colorPixel.getPixel(0, 0);
 		}
 		
-		public override function validate(properties:Object):void 
+		public override function validate(properties:Dictionary):void 
 		{
 			var dimensionChanged:Boolean = ("_transformMatrix" in properties);
 			super.validate(properties);

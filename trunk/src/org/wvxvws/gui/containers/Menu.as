@@ -154,7 +154,7 @@ package org.wvxvws.gui.containers
 			super();
 			skins = SkinManager.getSkin(this);
 			if (skins && skins.length) super._rendererSkin = skins[0];
-			super.addEventListener(GUIEvent.OPENED, this.openedHandler);
+			super.addEventListener(GUIEvent.OPENED.type, this.openedHandler);
 			super.addEventListener(MouseEvent.ROLL_OUT, this.rollOutHandler);
 			super.addEventListener(Event.ADDED_TO_STAGE, this.atsHandler);
 		}
@@ -216,7 +216,7 @@ package org.wvxvws.gui.containers
 			}
 		}
 		
-		public override function validate(properties:Object):void 
+		public override function validate(properties:Dictionary):void 
 		{
 			super.validate(properties);
 			this.drawIconBG();
@@ -306,7 +306,7 @@ package org.wvxvws.gui.containers
 			g.clear();
 			g.lineStyle(this._borderWidth, this._borderColor);
 			g.beginFill(super._backgroundColor, super._backgroundAlpha);
-			g.drawRect(0, 0, this._cumulativeWidth, _this.cumulativeHeight);
+			g.drawRect(0, 0, this._cumulativeWidth, this._cumulativeHeight);
 			g.endFill();
 			g.beginFill(0xD0D0D0);
 			g.drawRect(0, 0, 20, this._cumulativeHeight);

@@ -9,7 +9,7 @@
 	
 	<!-- load properties file -->
 	<property file="${basedir}/build.properties" />
-	<property name="FLEX_HOME" value="C:/sdks/trunk" />
+	<property name="FLEX_HOME" value="C:/off-trunk" />
 	
 	<!-- points to our flexTasks.jar we copied to the libs folder to distribute with the project -->
 	<taskdef resource="flexTasks.tasks" classpath="${basedir}/tasks/flexTasks.jar"/> 

@@ -34,6 +34,7 @@ package org.wvxvws.gui.containers
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.layout.ILayoutClient;
+	import org.wvxvws.gui.layout.Invalides;
 	import org.wvxvws.gui.renderers.IBranchRenderer;
 	import org.wvxvws.gui.renderers.IRenderer;
 	import org.wvxvws.gui.renderers.BranchRenderer;
@@ -72,7 +73,7 @@ package org.wvxvws.gui.containers
 			if (this._branchLabelField === value) return;
 			this._useBranchLabel = (value !== "" && value !== null);
 			this._branchLabelField = value;
-			super.invalidate("_branchLabelField", this._branchLabelField, false);
+			super.invalidate(Invalides.STYLE, false);
 			if (super.hasEventListener(EventGenerator.getEventType("branchLabelField")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -91,7 +92,7 @@ package org.wvxvws.gui.containers
 			if (this._leafLabelField === value) return;
 			this._leafLabelField = value;
 			this._useLeafLabel = (value !== "" && value !== null);
-			super.invalidate("_leafLabelField", _leafLabelField, false);
+			super.invalidate(Invalides.STYLE, false);
 			if (super.hasEventListener(EventGenerator.getEventType("leafLabelField")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -109,7 +110,7 @@ package org.wvxvws.gui.containers
 		{
 			if (this._leafLabelFunction === value) return;
 			this._leafLabelFunction = value;
-			super.invalidate("_leafLabelFunction", _leafLabelFunction, false);
+			super.invalidate(Invalides.STYLE, false);
 			if (super.hasEventListener(EventGenerator.getEventType("leafLabelFunction")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -128,7 +129,7 @@ package org.wvxvws.gui.containers
 			if (_branchLabelFunction === value) return;
 			_branchLabelFunction = value;
 			_useBrunchFunction = Boolean(value);
-			super.invalidate("_branchLabelFunction", _branchLabelFunction, false);
+			super.invalidate(Invalides.STYLE, false);
 			if (super.hasEventListener(EventGenerator.getEventType("branchLabelFunction")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -139,7 +140,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_folderIcon === value) return;
 			_folderIcon = value;
-			super.invalidate("_folderIcon", _folderIcon, false);
+			super.invalidate(Invalides.SKIN, false);
 		}
 		
 		public function get closedIcon():Class { return _closedIcon; }
@@ -148,7 +149,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_closedIcon === value) return;
 			_closedIcon = value;
-			super.invalidate("_closedIcon", _closedIcon, false);
+			super.invalidate(Invalides.SKIN, false);
 		}
 		
 		public function get openIcon():Class { return _openIcon; }
@@ -157,7 +158,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_openIcon === value) return;
 			_openIcon = value;
-			super.invalidate("_openIcon", _openIcon, false);
+			super.invalidate(Invalides.SKIN, false);
 		}
 		
 		public function get docIcon():Class { return _docIcon; }
@@ -166,7 +167,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_docIcon === value) return;
 			_docIcon = value;
-			super.invalidate("_docIcon", _docIcon, false);
+			super.invalidate(Invalides.SKIN, false);
 		}
 		
 		public function get docIconFactory():Function { return _docIconFactory; }
@@ -175,7 +176,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_docIconFactory === value) return;
 			_docIconFactory = value;
-			super.invalidate("_docIconFactory", _docIconFactory, false);
+			super.invalidate(Invalides.STYLE, false);
 		}
 		
 		public function get lastOpened():int { return _lastOpened; }
@@ -215,8 +216,10 @@ package org.wvxvws.gui.containers
 		{
 			super();
 			super._rendererFactory = _branchRenderer;
-			addEventListener(GUIEvent.SELECTED, selectedHandler, false, int.MAX_VALUE);
-			addEventListener(GUIEvent.OPENED, openedHandler, false, int.MAX_VALUE);
+			super.addEventListener(
+				GUIEvent.SELECTED.type, this.selectedHandler, false, int.MAX_VALUE);
+			super.addEventListener(
+				GUIEvent.OPENED.type, this.openedHandler, false, int.MAX_VALUE);
 		}
 		
 		private function openedHandler(event:GUIEvent):void 
@@ -224,8 +227,8 @@ package org.wvxvws.gui.containers
 			if (event.target !== this)
 			{
 				event.stopImmediatePropagation();
-				layOutChildren();
-				dispatchEvent(new GUIEvent(GUIEvent.OPENED));
+				this.layOutChildren();
+				super.dispatchEvent(GUIEvent.OPENED);
 			}
 		}
 		
@@ -258,7 +261,7 @@ package org.wvxvws.gui.containers
 				if (obj is BranchRenderer)
 				{
 					if (!(obj as BranchRenderer).unselectRecursively(
-									_selectedChild as DisplayObject))
+						_selectedChild as DisplayObject))
 						break;
 				}
 				if (obj is LeafRenderer)
@@ -270,7 +273,7 @@ package org.wvxvws.gui.containers
 					}
 				}
 			}
-			dispatchEvent(new GUIEvent(GUIEvent.SELECTED));
+			super.dispatchEvent(GUIEvent.SELECTED);
 		}
 		
 		protected override function layOutChildren():void 

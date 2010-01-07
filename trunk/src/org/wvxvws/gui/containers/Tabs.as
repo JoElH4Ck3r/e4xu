@@ -4,8 +4,10 @@
 	import flash.display.DisplayObject;
 	import flash.display.InteractiveObject;
 	import flash.events.Event;
+	import flash.utils.Dictionary;
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.DIV;
+	import org.wvxvws.gui.layout.Invalides;
 	import org.wvxvws.gui.renderers.TabRenderer;
 	import org.wvxvws.gui.skins.SkinProducer;
 	//}
@@ -63,7 +65,7 @@
 					if (_labelFactory !== null)
 				}
 			}
-			super.invalidate("_documents", _documents, false);
+			super.invalidate(Invalides.CHILDREN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("documents")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -91,7 +93,7 @@
 		{
 			if (_labelFactory === value) return;
 			_labelFactory = value;
-			super.invalidate("_labelFactory", _labelFactory, false);
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("labelFactory")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -129,7 +131,7 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		override public function validate(properties:Object):void 
+		override public function validate(properties:Dictionary):void 
 		{
 			super.validate(properties);
 		}

@@ -26,8 +26,10 @@ package org.wvxvws.gui.containers
 	import flash.events.Event;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.utils.Dictionary;
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.GUIEvent;
+	import org.wvxvws.gui.layout.Invalides;
 	import org.wvxvws.gui.renderers.IRenderer;
 	import org.wvxvws.gui.skins.ISkin;
 	//}
@@ -74,7 +76,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_rendererSkin === value) return;
 			_rendererSkin = value;
-			super.invalidate("_rendererSkin", _rendererSkin, false);
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("rendererFactory")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -96,7 +98,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_cellHeight === value) return;
 			_cellHeight = value;
-			super.invalidate("_cellHeight", _cellHeight, false);
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("cellHeight")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -118,7 +120,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_gutter === value) return;
 			_gutter = value;
-			super.invalidate("_gutter", _gutter, false);
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("gutter")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -140,7 +142,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_padding === value) return;
 			_padding = value;
-			super.invalidate("_padding", _padding, false);
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("padding")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -162,7 +164,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_parentIsCreator === value) return;
 			_parentIsCreator = value;
-			super.invalidate("_parentIsCreator", _parentIsCreator, false);
+			super.invalidate(Invalides.DATAPROVIDER, false);
 			if (super.hasEventListener(EventGenerator.getEventType("parentIsCreator")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -222,7 +224,7 @@ package org.wvxvws.gui.containers
 		//
 		//--------------------------------------------------------------------------
 		
-		public override function validate(properties:Object):void 
+		public override function validate(properties:Dictionary):void 
 		{
 			if (super.width < _minWidth) _bounds.x = _minWidth;
 			_cumulativeHeight = _padding.top;
@@ -294,7 +296,7 @@ package org.wvxvws.gui.containers
 				if (_dispatchCreated)
 				{
 					super.dispatchEvent(new GUIEvent(
-						GUIEvent.CHILDREN_CREATED, false, true));
+						GUIEvent.CHILDREN_CREATED.type, false, true));
 				}
 			}
 		}

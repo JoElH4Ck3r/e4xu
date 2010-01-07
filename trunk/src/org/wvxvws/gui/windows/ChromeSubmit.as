@@ -7,6 +7,7 @@
 	import flash.text.TextFieldType;
 	import flash.text.TextFormat;
 	import flash.ui.Keyboard;
+	import flash.utils.Dictionary;
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.Button;
 	import org.wvxvws.gui.DIV;
@@ -149,7 +150,7 @@
 			if (!_skin) this.skin = SkinManager.getSkin(this);
 		}
 		
-		public override function validate(properties:Object):void 
+		public override function validate(properties:Dictionary):void 
 		{
 			var sizeChanged:Boolean = ("_bounds" in properties);
 			super.validate(properties);

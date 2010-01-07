@@ -27,6 +27,7 @@ package org.wvxvws.gui.containers
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.geom.Rectangle;
+	import flash.utils.Dictionary;
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.Border;
 	import org.wvxvws.gui.DIV;
@@ -342,7 +343,7 @@ package org.wvxvws.gui.containers
 		//
 		//--------------------------------------------------------------------------
 		
-		public override function validate(properties:Object):void 
+		public override function validate(properties:Dictionary):void 
 		{
 			var titleChanged:Boolean = ((Invalides.CHILDREN in properties) || 
 									(Invalides.TRANSFORM in properties) ||

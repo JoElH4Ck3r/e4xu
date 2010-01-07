@@ -6,6 +6,7 @@
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import org.wvxvws.gui.DIV;
+	import org.wvxvws.gui.layout.Invalides;
 	import org.wvxvws.gui.skins.LineStyle;
 	
 	[DefaultProperty("valueAt")]
@@ -21,7 +22,7 @@
 		public function set valueAt(value:Function):void 
 		{
 			if (_valueAt === value) return;
-			super.invalidate("_valueAt", _valueAt, false);
+			super.invalidate(Invalides.STYLE, false);
 			_valueAt = value;
 			super.dispatchEvent(new Event("valueAtChange"));
 		}
@@ -31,7 +32,7 @@
 		public function set step(value:int):void 
 		{
 			if (_step === value) return;
-			super.invalidate("_step", _step, false);
+			super.invalidate(Invalides.STYLE, false);
 			_step = value;
 			super.dispatchEvent(new Event("stepChange"));
 		}
@@ -41,7 +42,7 @@
 		public function set backgroundPattern(value:BitmapData):void 
 		{
 			if (_backgroundPattern === value) return;
-			super.invalidate("_backgroundPattern", _backgroundPattern, false);
+			super.invalidate(Invalides.SKIN, false);
 			_backgroundPattern = value;
 			super.dispatchEvent(new Event("_backgroundPatternChange"));
 		}
@@ -51,7 +52,7 @@
 		public function set translation(value:Point):void 
 		{
 			if (_translation === value) return;
-			super.invalidate("_translation", _translation, false);
+			super.invalidate(Invalides.STYLE, false);
 			_translation = value;
 			super.dispatchEvent(new Event("translationChange"));
 		}
@@ -61,7 +62,7 @@
 		public function set lineStyle(value:LineStyle):void 
 		{
 			if (_lineStyle === value) return;
-			super.invalidate("_lineStyle", _lineStyle, false);
+			super.invalidate(Invalides.STYLE, false);
 			_lineStyle = value;
 			super.dispatchEvent(new Event("lineStyleChange"));
 		}
