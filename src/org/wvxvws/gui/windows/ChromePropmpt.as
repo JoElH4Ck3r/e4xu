@@ -4,6 +4,7 @@
 	import flash.display.DisplayObjectContainer;
 	import flash.events.MouseEvent;
 	import flash.geom.Rectangle;
+	import flash.utils.Dictionary;
 	import mx.core.IMXMLObject;
 	import org.wvxvws.gui.Button;
 	import org.wvxvws.gui.containers.ChromeWindow;
@@ -103,7 +104,7 @@
 			super.y = (super.parent.height - super.height) >> 1;
 		}
 		
-		public override function validate(properties:Object):void 
+		public override function validate(properties:Dictionary):void 
 		{
 			var i:int;
 			var j:int;

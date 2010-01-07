@@ -209,7 +209,7 @@ package org.wvxvws.gui.windows
 				{
 					this._labelTXT.scrollRect = new Rectangle(0, 0, 
 						super.width - (this._icon.width + 
-						this._labelPadding + _this.icon.x), 
+						this._labelPadding + this._icon.x), 
 						this._labelTXT.height);
 					this._labelTXT.x = this._icon.x + this._icon.width + 2;
 				}

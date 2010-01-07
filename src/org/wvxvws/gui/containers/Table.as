@@ -29,6 +29,7 @@ package org.wvxvws.gui.containers
 	import flash.geom.Rectangle;
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.GUIEvent;
+	import org.wvxvws.gui.layout.Invalides;
 	import org.wvxvws.gui.renderers.Renderer;
 	import org.wvxvws.gui.skins.ISkin;
 	import org.wvxvws.gui.skins.SkinManager;
@@ -54,7 +55,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_columns === value) return;
 			_columns = value;
-			super.invalidate("_columns", _columns, false);
+			super.invalidate(Invalides.CHILDREN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("columns")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -65,7 +66,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_cellHeight === value) return;
 			_cellHeight = value;
-			super.invalidate("_cellHeight", _cellHeight, false);
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("cellHeight")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -76,7 +77,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_gutterH === value) return;
 			_gutterH = value;
-			super.invalidate("_gutterH", _gutterH, false);
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("gutterH")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -87,7 +88,7 @@ package org.wvxvws.gui.containers
 		{
 			if (_gutterV === value) return;
 			_gutterV = value;
-			super.invalidate("_gutterV", _gutterV, false);
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("gutterV")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -99,7 +100,7 @@ package org.wvxvws.gui.containers
 			if (_padding === value || _padding && value && _padding.equals(value))
 				return;
 			_padding = value;
-			super.invalidate("_padding", _padding, false);
+			super.invalidate(Invalides.SKIN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("padding")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -214,7 +215,7 @@ package org.wvxvws.gui.containers
 			{
 				col.endLayoutChildren(super.height - (_padding.top + _padding.bottom));
 			}
-			super.dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED));
+			super.dispatchEvent(GUIEvent.CHILDREN_CREATED);
 		}
 		
 		//--------------------------------------------------------------------------

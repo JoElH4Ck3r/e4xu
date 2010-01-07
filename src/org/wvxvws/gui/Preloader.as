@@ -28,6 +28,7 @@ package org.wvxvws.gui
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
 	import flash.events.ProgressEvent;
+	import flash.utils.Dictionary;
 	import mx.core.IMXMLObject;
 	import org.wvxvws.gui.layout.Invalides;
 	import org.wvxvws.gui.skins.ISkin;
@@ -160,7 +161,7 @@ package org.wvxvws.gui
 			this.start();
 		}
 		
-		public override function validate(properties:Object):void 
+		public override function validate(properties:Dictionary):void 
 		{
 			var skinChanged:Boolean = (Invalides.SKIN in properties);
 			super.validate(properties);

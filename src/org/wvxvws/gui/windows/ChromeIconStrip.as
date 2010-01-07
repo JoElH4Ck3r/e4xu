@@ -7,6 +7,7 @@
 	import flash.geom.Rectangle;
 	import org.wvxvws.gui.containers.Pane;
 	import org.wvxvws.gui.layout.ILayoutClient;
+	import org.wvxvws.gui.layout.Invalides;
 	import org.wvxvws.gui.renderers.IRenderer;
 	import org.wvxvws.gui.skins.SkinProducer;
 	
@@ -46,8 +47,8 @@
 				_dragHandle.addEventListener(
 					MouseEvent.MOUSE_DOWN, handle_mouseDownHandler);
 			}
-			super.invalidate("_dragHandle", _dragHandle, false);
-			super.invalidate("_dataProvider", _dataProvider, false);
+			super.invalidate(Invalides.CHILDREN, false);
+			super.invalidate(Invalides.DATAPROVIDER, false);
 			super.dispatchEvent(new Event("dragHandleChanged"));
 		}
 		
@@ -68,8 +69,8 @@
 		{
 			if (_rendererProducer === value) return;
 			_rendererProducer = value;
-			super.invalidate("_rendererProducer", _rendererProducer, false);
-			super.invalidate("_dataProvider", _dataProvider, false);
+			super.invalidate(Invalides.SKIN, false);
+			super.invalidate(Invalides.DATAPROVIDER, false);
 			super.dispatchEvent(new Event("rendererProducerChanged"));
 		}
 		

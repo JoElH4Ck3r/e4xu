@@ -4,6 +4,7 @@
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.geom.Rectangle;
+	import flash.utils.Dictionary;
 	import mx.core.IMXMLObject;
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.DIV;
@@ -234,7 +235,7 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public override function validate(properties:Object):void 
+		public override function validate(properties:Dictionary):void 
 		{
 			var lc:ILayoutClient;
 			var i:int = super.numChildren;

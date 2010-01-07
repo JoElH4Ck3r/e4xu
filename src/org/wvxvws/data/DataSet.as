@@ -186,8 +186,10 @@ package org.wvxvws.data
 					temp = this._source[i];
 					j = i;
 					while (j >= inc && 
-						((callback && callback(this._source[(j - inc) >>> 0], temp)) || 
-						(!callback && this._source[(j - inc) >>> 0] > temp)))
+						(((callback is Function) && 
+						callback(this._source[(j - inc) >>> 0], temp)) || 
+						(!(callback is Function) && 
+						this._source[(j - inc) >>> 0] > temp)))
 					{
 						this._source[j] = this._source[int(j - inc)];
 						j = j - inc;

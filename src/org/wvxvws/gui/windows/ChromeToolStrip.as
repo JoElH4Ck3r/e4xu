@@ -29,10 +29,12 @@ package org.wvxvws.gui.windows
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.utils.Dictionary;
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.containers.Menu;
 	import org.wvxvws.gui.containers.Pane;
 	import org.wvxvws.gui.layout.ILayoutClient;
+	import org.wvxvws.gui.layout.Invalides;
 	import org.wvxvws.gui.renderers.IRenderer;
 	import org.wvxvws.gui.renderers.ToolStripRenderer;
 	import org.wvxvws.gui.skins.ISkin;
@@ -108,8 +110,8 @@ package org.wvxvws.gui.windows
 				_dragHandle.addEventListener(
 					MouseEvent.MOUSE_DOWN, handle_mouseDownHandler);
 			}
-			super.invalidate("_dragHandle", _dragHandle, false);
-			super.invalidate("_dataProvider", _dataProvider, false);
+			super.invalidate(Invalides.CHILDREN, false);
+			super.invalidate(Invalides.DATAPROVIDER, false);
 			if (super.hasEventListener(EventGenerator.getEventType("dataProvider")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -131,8 +133,8 @@ package org.wvxvws.gui.windows
 		{
 			if (_rendererProducer === value) return;
 			_rendererProducer = value;
-			super.invalidate("_rendererProducer", _rendererProducer, false);
-			super.invalidate("_dataProvider", _dataProvider, false);
+			super.invalidate(Invalides.SKIN, false);
+			super.invalidate(Invalides.DATAPROVIDER, false);
 			if (super.hasEventListener(EventGenerator.getEventType("rendererProducer")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -194,7 +196,7 @@ package org.wvxvws.gui.windows
 		//
 		//--------------------------------------------------------------------------
 		
-		public override function validate(properties:Object):void 
+		public override function validate(properties:Dictionary):void 
 		{
 			if (_menu && ("_labelSkin" in properties))
 				_menu.labelSkin = _labelSkin;

@@ -55,7 +55,7 @@
 			super.invalidate(Invalides.STATE, false);
 			if (super.hasEventListener(EventGenerator.getEventType("selected")))
 				super.dispatchEvent(EventGenerator.getEvent());
-			if (_selected) super.dispatchEvent(new GUIEvent(GUIEvent.SELECTED));
+			if (_selected) super.dispatchEvent(GUIEvent.SELECTED);
 		}
 		
 		//------------------------------------
@@ -78,7 +78,7 @@
 			super.invalidate(Invalides.STATE, false);
 			if (super.hasEventListener(EventGenerator.getEventType("disabled")))
 				super.dispatchEvent(EventGenerator.getEvent());
-			if (_disabled) super.dispatchEvent(new GUIEvent(GUIEvent.DISABLED));
+			if (_disabled) super.dispatchEvent(GUIEvent.DISABLED);
 		}
 		
 		//------------------------------------
@@ -238,7 +238,7 @@
 			{
 				this._button.initialized(this, "button");
 				this._button.state = this._disabled ? DISABLED_STATE : UP_STATE;
-				placementChanged = true;
+				stateChanged = true;
 			}
 			if (skinChanged)
 			{

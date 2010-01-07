@@ -164,14 +164,14 @@ package org.wvxvws.gui
 		{
 			if (this._time === value) return;
 			this._time = value;
-			if (this._hideTimer && this._hideTimer.running)
+			if (_HIDE_TIMER && _HIDE_TIMER.running)
 			{
-				this._hideTimer.stop();
-				this._hideTimer.removeEventListener(
+				_HIDE_TIMER.stop();
+				_HIDE_TIMER.removeEventListener(
 					TimerEvent.TIMER_COMPLETE, this.hideTimerCompleteHandler);
 			}
-			this._hideTimer = new Timer(value, 1);
-			this._hideTimer.addEventListener(
+			_HIDE_TIMER = new Timer(value, 1);
+			_HIDE_TIMER.addEventListener(
 				TimerEvent.TIMER_COMPLETE, 
 				this.hideTimerCompleteHandler, false, 0, true);
 			if (super.hasEventListener(EventGenerator.getEventType("time")))
@@ -182,7 +182,7 @@ package org.wvxvws.gui
 		//  Public property instance
 		//------------------------------------
 		
-		public function get instance():DisplayObject { return this._instance; }
+		public function get instance():DisplayObject { return _INSTANCE; }
 		
 		//------------------------------------
 		//  Public property hasInstance
@@ -212,9 +212,9 @@ package org.wvxvws.gui
 		//
 		//--------------------------------------------------------------------------
 		
-		private static var _instance:DisplayObject;
-		private static var _timer:Timer = new Timer(100, 1);
-		private static var _hideTimer:Timer;
+		private static var _INSTANCE:DisplayObject;
+		private static var _TIMER:Timer = new Timer(100, 1);
+		private static var _HIDE_TIMER:Timer;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -224,11 +224,11 @@ package org.wvxvws.gui
 		public function Hint() 
 		{
 			super();
-			this._timer.addEventListener(
+			_TIMER.addEventListener(
 				TimerEvent.TIMER_COMPLETE, 
 				this.timerCompleteHandler, false, 0, true);
-			if (!this._hideTimer) this._hideTimer = new Timer(_time, 1);
-			this._hideTimer.addEventListener(
+			if (!_HIDE_TIMER) _HIDE_TIMER = new Timer(_time, 1);
+			_HIDE_TIMER.addEventListener(
 				TimerEvent.TIMER_COMPLETE, 
 				this.hideTimerCompleteHandler, false, 0, true);
 			this._defaultHintFormat.indent = 1;
@@ -259,7 +259,7 @@ package org.wvxvws.gui
 				new Point(this._target.mouseX * this._target.scaleX, 
 				this._target.mouseY * this._target.scaleY));
 			if (!bounds.containsPoint(p)) return null;
-			if (this._instance) this.hide();
+			if (_INSTANCE) this.hide();
 			var ht:DisplayObject;
 			var htBase:DisplayObjectContainer = 
 				this._target.stage.getChildAt(
@@ -275,8 +275,8 @@ package org.wvxvws.gui
 				else hp = p;
 				ht = drawDefaultHint(htBase, hp, text);
 			}
-			this._instance = htBase.addChild(ht);
-			this._hideTimer.start();
+			_INSTANCE = htBase.addChild(ht);
+			_HIDE_TIMER.start();
 			super.dispatchEvent(new Event("instanceChange"));
 			super.dispatchEvent(new Event("hasInstanceChange"));
 			return ht;
@@ -284,12 +284,12 @@ package org.wvxvws.gui
 		
 		public function hide():void
 		{
-			if (!this._instance) return;
-			if (this._instance && this._instance.parent)
-				this._instance.parent.removeChild(this._instance);
-			if (this._hideTimer && this._hideTimer.running)
-				this._hideTimer.stop();
-			this._instance = null;
+			if (!_INSTANCE) return;
+			if (_INSTANCE && _INSTANCE.parent)
+				_INSTANCE.parent.removeChild(_INSTANCE);
+			if (_HIDE_TIMER && _HIDE_TIMER.running)
+				_HIDE_TIMER.stop();
+			_INSTANCE = null;
 			super.dispatchEvent(new Event("instanceChange"));
 			super.dispatchEvent(new Event("hasInstanceChange"));
 		}
@@ -302,13 +302,13 @@ package org.wvxvws.gui
 		
 		protected function mouseOverHandler(event:MouseEvent):void 
 		{
-			if (this._timer.running)
+			if (_TIMER.running)
 			{
-				this._timer.stop();
-				this._timer.reset();
+				_TIMER.stop();
+				_TIMER.reset();
 			}
 			this.hide();
-			this._timer.start();
+			_TIMER.start();
 		}
 		
 		protected function mouseOutHandler(event:MouseEvent):void 
@@ -319,7 +319,7 @@ package org.wvxvws.gui
 				var p:Point = new Point(event.stageX, event.stageY);
 				if (bounds.containsPoint(p)) return;
 			}
-			if (this._timer.running) this._timer.stop();
+			if (_TIMER.running) _TIMER.stop();
 			this.hide();
 		}
 		

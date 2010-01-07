@@ -68,14 +68,14 @@ package org.wvxvws.gui.renderers
 		{
 			if (super._width === (value >> 0)) return;
 			super._width = value;
-			this.invalidate("_width", _width, false);
+			this.invalidate(Invalides.BOUNDS, false);
 		}
 		
 		public override function set height(value:Number):void 
 		{
-			if (super._height === (value >> 0)) return;
-			super._height = value;
-			this.invalidate("_height", _height, false);
+			if (this._height === (value >> 0)) return;
+			this._height = value;
+			this.invalidate(Invalides.BOUNDS, false);
 		}
 		
 		/* INTERFACE org.wvxvws.gui.renderers.IMenuRenderer */
@@ -84,14 +84,14 @@ package org.wvxvws.gui.renderers
 		{
 			if (this._iconProducer === value) return;
 			this._iconProducer = value;
-			this.invalidate("_iconProducer", _iconProducer, false);
+			this.invalidate(Invalides.SKIN, false);
 		}
 		
 		public function set hotKeys(value:Vector.<int>):void
 		{
 			if (this._hotKeys === value) return;
 			this._hotKeys = value;
-			this.invalidate("_hotKeys", _hotKeys, false);
+			this.invalidate(Invalides.STYLE, false);
 		}
 		
 		public function get kind():String { return this._kind; }
@@ -102,7 +102,7 @@ package org.wvxvws.gui.renderers
 				value !== Menu.CONTAINER && value !== Menu.NONE && 
 				value !== Menu.RADIO && value !== Menu.SEPARATOR)) return;
 			this._kind = value;
-			this.invalidate("_data", _data, false);
+			this.invalidate(Invalides.DATAPROVIDER, false);
 		}
 		
 		public function set clickHandler(value:Function):void
@@ -117,7 +117,7 @@ package org.wvxvws.gui.renderers
 		{
 			if (_enabled === value) return;
 			_enabled = value;
-			this.invalidate("_enabled", _enabled, false);
+			this.invalidate(Invalides.STATE, false);
 		}
 		
 		public override function get data():Object { return this._data; }
@@ -130,14 +130,14 @@ package org.wvxvws.gui.renderers
 			if (isValid && super._data === value) return;
 			super._data = value;
 			if (!super._data) return;
-			this.invalidate("_data", _data, false);
+			this.invalidate(Invalides.DATAPROVIDER, false);
 		}
 		
 		/* INTERFACE org.wvxvws.gui.layout.ILayoutClient */
 		
 		public function get validator():LayoutValidator { return this._validator; }
 		
-		public function get invalidProperties():Object
+		public function get invalidProperties():Dictionary
 		{
 			return this._invalidProperties;
 		}
@@ -290,7 +290,7 @@ package org.wvxvws.gui.renderers
 				return;
 			}
 			super._field.x = 30;
-			super._field.y = Math.max((super._height - super._field.height) >> 1, 0);
+			super._field.y = Math.max((this._height - super._field.height) >> 1, 0);
 			if (super._labelSkin) 
 				super._field.text = super._labelSkin.produce(super._data) as String;
 			else super._field.text = super._data.toString();
@@ -353,7 +353,7 @@ package org.wvxvws.gui.renderers
 				this._hkField.x = Math.max(super._field.width, 
 					super._width - (20 + this._hkField.width));
 				this._hkField.y = 
-					Math.max((super._height - super._hkField.height) >> 1, 0);
+					Math.max((this._height - this._hkField.height) >> 1, 0);
 			}
 		}
 		
@@ -375,7 +375,7 @@ package org.wvxvws.gui.renderers
 			if (this._arrow && super.contains(this._arrow))
 			{
 				this._arrow.x = super._width - (this._arrow.width + 4);
-				this._arrow.y = (super._height - this._arrow.height) >> 1;
+				this._arrow.y = (this._height - this._arrow.height) >> 1;
 			}
 		}
 		
@@ -384,7 +384,7 @@ package org.wvxvws.gui.renderers
 			var g:Graphics = super.graphics;
 			g.clear();
 			g.beginFill(super._backgroundColor, super._backgroundAlpha);
-			g.drawRect(0, 0, super._width, super._height);
+			g.drawRect(0, 0, super._width, this._height);
 			g.endFill();
 		}
 		

@@ -109,7 +109,7 @@ package org.wvxvws.gui.renderers
 			var g:Graphics = super.graphics;
 			g.clear();
 			g.beginFill(super._backgroundColor, super._backgroundAlpha);
-			g.drawRect(0, 0, super._width, super._height);
+			g.drawRect(0, 0, super._width, this._height);
 			g.endFill();
 			if (this._resizable)
 			{
@@ -117,7 +117,7 @@ package org.wvxvws.gui.renderers
 					this.drawResizeHandle(false);
 			}
 			else this.drawResizeHandle(true);
-			super._field.y = (super._height - super._field.height) >> 1;
+			super._field.y = (this._height - super._field.height) >> 1;
 		}
 		
 		protected function drawResizeHandle(remove:Boolean):void
@@ -127,7 +127,7 @@ package org.wvxvws.gui.renderers
 			if (!remove)
 			{
 				g.beginFill(0xFF, 1);
-				g.drawRect(-5, 0, 5, super._height);
+				g.drawRect(-5, 0, 5, this._height);
 				g.endFill();
 				this._resizeHandle.addEventListener(
 						MouseEvent.MOUSE_OVER, this.resize_mouseOverHandler);

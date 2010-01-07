@@ -5,6 +5,7 @@
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.containers.Pane;
 	import org.wvxvws.gui.GUIEvent;
+	import org.wvxvws.gui.layout.Invalides;
 	import org.wvxvws.gui.renderers.DrillRenderer;
 	import org.wvxvws.gui.renderers.IDrillRenderer;
 	import org.wvxvws.gui.renderers.IRenderer;
@@ -25,7 +26,7 @@
 		{
 			if (_renderClasses === value) return;
 			_renderClasses = value;
-			super.invalidate("_rendererClasses", _renderClasses, false);
+			super.invalidate(Invalides.SKIN, false);
 		}
 		
 		public function get padding():Rectangle { return _padding; }
@@ -34,7 +35,7 @@
 		{
 			if (_padding === value) return;
 			_padding = value;
-			super.invalidate("_padding", _padding, false);
+			super.invalidate(Invalides.STYLE, false);
 			if (super.hasEventListener(EventGenerator.getEventType("padding")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -54,10 +55,10 @@
 		public function Drill() 
 		{
 			super();
-			super.addEventListener(GUIEvent.SELECTED, 
-									selectedHandler, false, int.MAX_VALUE);
-			super.addEventListener(GUIEvent.OPENED, 
-									openedHandler, false, int.MAX_VALUE);
+			super.addEventListener(GUIEvent.SELECTED.type, 
+									this.selectedHandler, false, int.MAX_VALUE);
+			super.addEventListener(GUIEvent.OPENED.type, 
+									this.openedHandler, false, int.MAX_VALUE);
 		}
 		
 		public function collapseAll():void
@@ -168,7 +169,8 @@
 			rect.height = super._bounds.y;
 			super.scrollRect = rect;
 			if (_dispatchCreated) 
-				super.dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED, false, true));
+				super.dispatchEvent(
+				new GUIEvent(GUIEvent.CHILDREN_CREATED.type, false, true));
 		}
 		
 		protected override function createChild(xml:XML):DisplayObject 
@@ -209,7 +211,7 @@
 			{
 				(lastSelected as Object).selected = false;
 			}
-			super.dispatchEvent(new GUIEvent(GUIEvent.SELECTED));
+			super.dispatchEvent(GUIEvent.SELECTED);
 		}
 		
 		private function openedHandler(event:GUIEvent):void 
@@ -230,7 +232,7 @@
 			}
 			super._invalidProperties._dataProvider = _dataProvider;
 			super.validate(super._invalidProperties);
-			super.dispatchEvent(new GUIEvent(GUIEvent.OPENED));
+			super.dispatchEvent(GUIEvent.OPENED);
 		}
 		
 	}

@@ -32,6 +32,8 @@ package org.wvxvws.gui
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
 	import flash.text.TextField;
+	import flash.utils.Dictionary;
+	import org.wvxvws.gui.layout.Invalides;
 	import org.wvxvws.gui.skins.ISkin;
 	//}
 	
@@ -60,9 +62,9 @@ package org.wvxvws.gui
 		
 		public function set skin(value:ISkin):void 
 		{
-			if (_skin == value) return;
+			if (_skin === value) return;
 			_skin = value;
-			super.invalidate("_skin", _skin, false);
+			super.invalidate(Invalides.SKIN, false);
 			super.dispatchEvent(new Event("skinChanged"));
 		}
 		
@@ -70,9 +72,9 @@ package org.wvxvws.gui
 		
 		public function set label(value:String):void 
 		{
-			if (_label == value) return;
+			if (_label === value) return;
 			_label = value;
-			super.invalidate("_label", _label, false);
+			super.invalidate(Invalides.SKIN, false);
 		}
 		
 		public function get labelTXT():TextField { return _labelTXT; }
@@ -81,20 +83,20 @@ package org.wvxvws.gui
 		
 		public function set currentState(value:String):void 
 		{
-			if (_currentState == value) return;
+			if (_currentState === value) return;
 			_currentState = value;
-			super.invalidate("_currentState", _currentState, false);
+			super.invalidate(Invalides.STATE, false);
 		}
 		
 		public function get disabled():Boolean { return _disabled; }
 		
 		public function set disabled(value:Boolean):void 
 		{
-			if (_disabled == value) return;
+			if (_disabled === value) return;
 			_disabled = value;
-			_currentState = GUIEvent.DISABLED;
-			super.invalidate("_currentState", _currentState, false);
-			super.dispatchEvent(new GUIEvent(GUIEvent.DISABLED));
+			_currentState = GUIEvent.DISABLED.type;
+			super.invalidate(Invalides.STATE, false);
+			super.dispatchEvent(GUIEvent.DISABLED);
 		}
 		
 		protected var _label:String = "";
@@ -171,7 +173,7 @@ package org.wvxvws.gui
 			this.currentState = MouseEvent.MOUSE_UP;
 		}
 		
-		public override function validate(properties:Object):void 
+		public override function validate(properties:Dictionary):void 
 		{
 			super.validate(properties);
 			if (_skin && _currentState != _skin.state && _skin is DisplayObject)

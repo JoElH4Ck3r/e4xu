@@ -3,6 +3,7 @@
 	//{imports
 	import flash.display.DisplayObject;
 	import flash.events.Event;
+	import flash.utils.Dictionary;
 	import mx.core.IMXMLObject;
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.DIV;
@@ -46,7 +47,7 @@
 			else this._dataProviderCopy = null;
 			this._dataProvider.setNotification(this.providerNotifier);
 			super.invalidate(Invalides.DATAPROVIDER, false);
-			super.dispatchEvent(new GUIEvent(GUIEvent.DATA_CHANGED));
+			super.dispatchEvent(GUIEvent.DATA_CHANGED);
 		}
 		
 		[Bindable("labelSkinChanged")]
@@ -205,7 +206,7 @@
 			return -1;
 		}
 		
-		public override function validate(properties:Object):void 
+		public override function validate(properties:Dictionary):void 
 		{
 			if (!_skin)
 			{

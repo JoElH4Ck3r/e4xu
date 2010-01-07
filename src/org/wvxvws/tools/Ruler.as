@@ -31,8 +31,10 @@ package org.wvxvws.tools
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
+	import flash.utils.Dictionary;
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.DIV;
+	import org.wvxvws.gui.layout.Invalides;
 	//}
 	
 	/**
@@ -53,7 +55,7 @@ package org.wvxvws.tools
 		{
 			var temp:Number = Math.max(1, value);
 			if (temp === _ratio) return;
-			super.invalidate("_ratio", _ratio, false);
+			super.invalidate(Invalides.STYLE, false);
 			_ratio = temp;
 			if (super.hasEventListener(EventGenerator.getEventType("ratio")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -65,7 +67,7 @@ package org.wvxvws.tools
 		{
 			var temp:Number = Math.max(2, value);
 			if (temp === _step) return;
-			super.invalidate("_step", _step, false);
+			super.invalidate(Invalides.STYLE, false);
 			_step = value;
 			if (super.hasEventListener(EventGenerator.getEventType("step")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -76,7 +78,7 @@ package org.wvxvws.tools
 		public function set position(value:int):void 
 		{
 			if (_position === value) return;
-			super.invalidate("_position", _position, false);
+			super.invalidate(Invalides.STYLE, false);
 			_position = value;
 			if (super.hasEventListener(EventGenerator.getEventType("position")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -87,7 +89,7 @@ package org.wvxvws.tools
 		public function set direction(value:Boolean):void 
 		{
 			if (_direction === value) return;
-			super.invalidate("_direction", _direction, false);
+			super.invalidate(Invalides.DIRECTION, false);
 			_direction = value;
 			if (super.hasEventListener(EventGenerator.getEventType("direction")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -98,7 +100,7 @@ package org.wvxvws.tools
 		public function set zoom(value:Number):void 
 		{
 			if (_zoom === value) return;
-			super.invalidate("_zoom", _zoom, false);
+			super.invalidate(Invalides.STYLE, false);
 			_zoom = value;
 			if (super.hasEventListener(EventGenerator.getEventType("zoom")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -130,7 +132,7 @@ package org.wvxvws.tools
 		
 		public function Ruler() { super(); }
 		
-		public override function validate(properties:Object):void 
+		public override function validate(properties:Dictionary):void 
 		{
 			var ratioChanged:Boolean = 
 							("_ratio" in properties) || ("_zoom" in properties) ||

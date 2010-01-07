@@ -27,7 +27,9 @@ package org.wvxvws.gui
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Matrix;
+	import flash.utils.Dictionary;
 	import org.wvxvws.binding.EventGenerator;
+	import org.wvxvws.gui.layout.Invalides;
 	import org.wvxvws.gui.skins.ISkin;
 	import org.wvxvws.gui.skins.ISkinnable;
 	import org.wvxvws.gui.skins.SkinManager;
@@ -76,11 +78,11 @@ package org.wvxvws.gui
 		{
 			var temp:Number = Math.max(Math.min(value, 1), 0);
 			if (temp === _position) return;
-			super.invalidate("_position", temp, false);
+			super.invalidate(Invalides.TRANSFORM, false);
 			_position = temp;
 			if (super.hasEventListener(EventGenerator.getEventType("position")))
 				super.dispatchEvent(EventGenerator.getEvent());
-			super.dispatchEvent(new GUIEvent(GUIEvent.DATA_CHANGED));
+			super.dispatchEvent(GUIEvent.DATA_CHANGED);
 		}
 		
 		//------------------------------------
@@ -99,7 +101,7 @@ package org.wvxvws.gui
 		public function set handle(value:Sprite):void 
 		{
 			if (_handle === value) return;
-			super.invalidate("_handle", _handle, false);
+			super.invalidate(Invalides.CHILDREN, false);
 			if (_handle && super.contains(_handle))
 			{
 				_handle.removeEventListener(
@@ -145,7 +147,7 @@ package org.wvxvws.gui
 				super.removeChild(_body);
 			_body = value;
 			if (_body) super.addChildAt(_body, 0);
-			super.invalidate("_body", _body, false);
+			super.invalidate(Invalides.CHILDREN, false);
 			if (super.hasEventListener(EventGenerator.getEventType("body")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -167,7 +169,7 @@ package org.wvxvws.gui
 		{
 			if (value === _direction) return;
 			_direction = value;
-			super.invalidate("_direction", _direction, true);
+			super.invalidate(Invalides.DIRECTION, true);
 			if (super.hasEventListener(EventGenerator.getEventType("direction")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -212,7 +214,7 @@ package org.wvxvws.gui
 		//
 		//--------------------------------------------------------------------------
 		
-		public override function validate(properties:Object):void 
+		public override function validate(properties:Dictionary):void 
 		{
 			var skinChanged:Boolean = ("_parts" in properties);
 			super.validate(properties);

@@ -351,9 +351,9 @@
 			_headerRenderer = HeaderRenderer;
 			var headSkin:Vector.<ISkin> = SkinManager.getSkin(new Renderer());
 			if (headSkin && headSkin.length) this._headerProducer = headSkin[0];
-			super.addEventListener(GUIEvent.OPENED, 
+			super.addEventListener(GUIEvent.OPENED.type, 
 									this.openedHandler, false, int.MAX_VALUE);
-			super.addEventListener(GUIEvent.SELECTED, 
+			super.addEventListener(GUIEvent.SELECTED.type, 
 									this.selectedHandler, false, int.MAX_VALUE);
 			super.addEventListener(Event.ADDED_TO_STAGE, 
 									this.addedToStageHandler, false, 0, true);
@@ -381,7 +381,7 @@
 			return true;
 		}
 		
-		public override function validate(properties:Object):void 
+		public override function validate(properties:Dictionary):void 
 		{
 			var needLayout:Boolean = (!(Invalides.DATAPROVIDER in properties)) &&
 			((Invalides.SKIN in properties) || (Invalides.CHILDREN in properties));

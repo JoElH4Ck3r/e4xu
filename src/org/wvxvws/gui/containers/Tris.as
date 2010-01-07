@@ -33,6 +33,7 @@ package org.wvxvws.gui.containers
 	import org.wvxvws.animation.easingDefault;
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.gui.DIV;
+	import org.wvxvws.gui.GUIEvent;
 	//}
 	
 	/**
@@ -284,7 +285,7 @@ package org.wvxvws.gui.containers
 				_removedWidows.push(_windowHolder.removeChildAt(0));
 			}
 			_dataProvider.*.(addHandle(valueOf()) && addWindow(valueOf()));
-			dispatchEvent(new GUIEvent(GUIEvent.CHILDREN_CREATED));
+			super.dispatchEvent(GUIEvent.CHILDREN_CREATED);
 		}
 		
 		protected function addHandle(xml:XML):Boolean

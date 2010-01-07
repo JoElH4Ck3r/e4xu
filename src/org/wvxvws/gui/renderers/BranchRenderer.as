@@ -42,6 +42,7 @@ package org.wvxvws.gui.renderers
 	import org.wvxvws.gui.containers.Nest;
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.layout.ILayoutClient;
+	import org.wvxvws.gui.layout.Invalides;
 	import org.wvxvws.gui.layout.LayoutValidator;
 	import org.wvxvws.gui.StatefulButton;
 	//}
@@ -65,34 +66,40 @@ package org.wvxvws.gui.renderers
 		
 		/* INTERFACE org.wvxvws.gui.layout.ILayoutClient */
 		
-		public function get validator():LayoutValidator { return _validator; }
+		public function get validator():LayoutValidator { return this._validator; }
 		
-		public function get invalidProperties():Object { return _invalidProperties; }
+		public function get invalidProperties():Dictionary
+		{
+			return this._invalidProperties;
+		}
 		
-		public function get layoutParent():ILayoutClient { return _layoutParent; }
+		public function get layoutParent():ILayoutClient
+		{
+			return this._layoutParent;
+		}
 		
 		public function set layoutParent(value:ILayoutClient):void
 		{
-			_layoutParent = value;
+			this._layoutParent = value;
 		}
 		
 		public function get childLayouts():Vector.<ILayoutClient>
 		{
-			return _childLayouts;
+			return this._childLayouts;
 		}
 		
-		public function get id():String { return _id; }
+		public function get id():String { return this._id; }
 		
 		//public function get closed():Boolean { return !_opened; }
 		
-		public function get selected():Boolean { return _selected; }
+		public function get selected():Boolean { return this._selected; }
 		
 		public function set selected(value:Boolean):void
 		{
-			_selected = value;
+			this._selected = value;
 			if (value)
 			{
-				super.dispatchEvent(new GUIEvent(GUIEvent.SELECTED, true, true));
+				super.dispatchEvent(new GUIEvent(GUIEvent.SELECTED.type, true, true));
 				_label.background = true;
 				_label.backgroundColor = 0xD0D0D0;
 			}
@@ -111,7 +118,7 @@ package org.wvxvws.gui.renderers
 			_opened = value;
 			if (_opened) _openCloseIcon.state = "open";
 			else _openCloseIcon.state = "closed";
-			this.invalidate("_opened", _opened, true);
+			this.invalidate(Invalides.SKIN, true);
 		}
 		
 		//{ display stuff
@@ -119,63 +126,63 @@ package org.wvxvws.gui.renderers
 		{
 			if (_leafLabelFunction === value) return;
 			_leafLabelFunction = value;
-			this.invalidate("_leafLabelFunction", _leafLabelFunction, false);
+			this.invalidate(Invalides.SKIN, false);
 		}
 		
 		public function set leafLabelField(value:String):void
 		{
 			if (_leafLabelField === value) return;
 			_leafLabelField = value;
-			this.invalidate("_leafLabelField", _leafLabelField, false);
+			this.invalidate(Invalides.SKIN, false);
 		}
 		
 		public function set folderIcon(value:Class):void
 		{
 			if (_folderIcon === value) return;
 			_folderIcon = value;
-			this.invalidate("_folderIcon", _folderIcon, false);
+			this.invalidate(Invalides.SKIN, false);
 		}
 		
 		public function set closedIcon(value:Class):void
 		{
 			if (_closedIcon === value) return;
 			_closedIcon = value;
-			this.invalidate("_closedIcon", _closedIcon, false);
+			this.invalidate(Invalides.SKIN, false);
 		}
 		
 		public function set openIcon(value:Class):void
 		{
 			if (_openIcon === value) return;
 			_openIcon = value;
-			this.invalidate("_openIcon", _openIcon, false);
+			this.invalidate(Invalides.SKIN, false);
 		}
 		
 		public function set docIconFactory(value:Function):void
 		{
 			if (_docIconFactory === value) return;
 			_docIconFactory = value;
-			this.invalidate("_docIconFactory", _docIconFactory, false);
+			this.invalidate(Invalides.SKIN, false);
 		}
 		
 		public function set labelFunction(value:Function):void
 		{
 			if (_labelFunction === value) return;
 			_labelFunction = value;
-			this.invalidate("_labelFunction", _labelFunction, false);
+			this.invalidate(Invalides.SKIN, false);
 		}
 		
 		public function set labelField(value:String):void
 		{
 			if (_labelField === value) return;
 			_labelField = value;
-			this.invalidate("_labelField", _labelField, false);
+			this.invalidate(Invalides.SKIN, false);
 		}
 		
 		public function set folderFactory(value:Function):void
 		{
 			if (_folderFactory === value) return;
 			_folderFactory = value;
-			this.invalidate("_folderFactory", _folderFactory, false);
+			this.invalidate(Invalides.SKIN, false);
 		}
 		//}
 		
@@ -192,7 +199,7 @@ package org.wvxvws.gui.renderers
 			if (isValid && _data === value) return;
 			_data = value;
 			_dataCopy = value.copy();
-			this.invalidate("", undefined, true);
+			this.invalidate(Invalides.NULL, true);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -262,7 +269,7 @@ package org.wvxvws.gui.renderers
 		//
 		//--------------------------------------------------------------------------
 		
-		public function validate(properties:Object):void
+		public function validate(properties:Dictionary):void
 		{
 			this.drawUI();
 			this.createChildren();
@@ -270,7 +277,7 @@ package org.wvxvws.gui.renderers
 			_invalidProperties = { };
 			_hasPendingValidation = false;
 			if (properties.hasOwnProperty("_opened"))
-				super.dispatchEvent(new GUIEvent(GUIEvent.OPENED, true, true));
+				super.dispatchEvent(new GUIEvent(GUIEvent.OPENED.type, true, true));
 		}
 		
 		public function invalidate(property:String, 
@@ -361,9 +368,9 @@ package org.wvxvws.gui.renderers
 				_validator.append(this);
 			}
 			_id = id;
-			if (_hasPendingValidation) invalidate("", undefined, true);
-			super.addEventListener(GUIEvent.OPENED, childOpenedHandler);
-			super.dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
+			if (_hasPendingValidation) invalidate(Invalides.NULL, true);
+			super.addEventListener(GUIEvent.OPENED.type, this.childOpenedHandler);
+			super.dispatchEvent(GUIEvent.INITIALIZED);
 		}
 		
 		public function unselectRecursively(selection:DisplayObject):Boolean
@@ -415,8 +422,7 @@ package org.wvxvws.gui.renderers
 			}
 			if (_layoutParent && lastHeight !== super.height)
 			{
-				//_layoutParent.invalidate("", undefined, true);
-				//trace("1 lastHeight, super.height", lastHeight, super.height);
+				//_layoutParent.invalidate(Invalides.NULL, true);
 			}
 			if (!_opened) return;
 			super.removeChild(_lines);
@@ -454,8 +460,7 @@ package org.wvxvws.gui.renderers
 			}
 			if (_layoutParent && lastHeight !== super.height)
 			{
-				//trace("2 lastHeight, super.height", lastHeight, super.height);
-				//_layoutParent.invalidate("", undefined, true);
+				//_layoutParent.invalidate(Invalides.NULL, true);
 			}
 		}
 		

@@ -99,7 +99,7 @@ package org.wvxvws.gui.renderers
 		
 		public function get validator():LayoutValidator { return this._validator; }
 		
-		public function get invalidProperties():Object
+		public function get invalidProperties():Dictionary
 		{
 			return this._invalidProperties;
 		}

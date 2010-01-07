@@ -426,7 +426,7 @@
 			}
 			this._id = id;
 			if (!this._skin) this.skin = SkinManager.getSkin(this);
-			if (validatorChanged) this.invalidate("", null, false);
+			if (validatorChanged) this.invalidate(Invalides.NULL, false);
 		}
 		
 		public function validate(properties:Dictionary):void

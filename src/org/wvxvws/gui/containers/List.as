@@ -26,6 +26,7 @@ package org.wvxvws.gui.containers
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.utils.describeType;
+	import flash.utils.Dictionary;
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.data.DataSet;
 	import org.wvxvws.data.SetEvent;
@@ -192,7 +193,7 @@ package org.wvxvws.gui.containers
 		//
 		//--------------------------------------------------------------------------
 		
-		public override function validate(properties:Object):void 
+		public override function validate(properties:Dictionary):void 
 		{
 			var sizeChanged:Boolean = (Invalides.BOUNDS in properties);
 			var needLayoutChildren:Boolean = 
@@ -213,7 +214,7 @@ package org.wvxvws.gui.containers
 					this._scrollPane.scrollRect = 
 						new Rectangle(0, 0, super._bounds.x, super._bounds.y);
 					this._scrollPane.addEventListener(
-						GUIEvent.SCROLLED, this.scrollPane_scrolledHandler);
+						GUIEvent.SCROLLED.type, this.scrollPane_scrolledHandler);
 				}
 			}
 			if (needLayoutChildren) this.layoutChildren();

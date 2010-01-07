@@ -62,7 +62,7 @@ package org.wvxvws.tools
 			_dataProviderCopy = value.copy();
 			_dataProvider.setNotification(providerNotifier);
 			super.invalidLayout = true;
-			super.dispatchEvent(new GUIEvent(GUIEvent.DATA_CHANGED));
+			super.dispatchEvent(GUIEvent.DATA_CHANGED);
 		}
 		
 		public function get slideWidthFactory():Function { return _slideWidthFactory; }
@@ -250,7 +250,7 @@ package org.wvxvws.tools
 			{
 				(_document as DisplayObjectContainer).addChild(this);
 			}
-			super.dispatchEvent(new GUIEvent(GUIEvent.INITIALIZED));
+			super.dispatchEvent(GUIEvent.INITIALIZED);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -443,7 +443,7 @@ package org.wvxvws.tools
 						break;
 			}
 			_dataProviderCopy = _dataProvider.copy();
-			super.dispatchEvent(new GUIEvent(GUIEvent.DATA_CHANGED));
+			super.dispatchEvent(GUIEvent.DATA_CHANGED);
 		}
 		
 		//--------------------------------------------------------------------------
