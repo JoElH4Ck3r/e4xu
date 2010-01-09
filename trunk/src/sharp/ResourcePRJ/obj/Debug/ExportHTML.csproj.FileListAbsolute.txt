@@ -1,7 +1,0 @@
-C:\www\sharp\fd\FD3\FlashDevelop\Bin\Debug\Plugins\ExportHTML.dll
-C:\www\sharp\fd\FD3\FlashDevelop\Bin\Debug\Plugins\ExportHTML.pdb
-C:\www\sharp\fd\FD3\External\Plugins\ExportHTML\obj\Debug\ResolveAssemblyReference.cache
-C:\www\sharp\fd\FD3\External\Plugins\ExportHTML\obj\Debug\ExportHTML.Resources.en_US.resources
-C:\www\sharp\fd\FD3\External\Plugins\ExportHTML\obj\Debug\ExportHTML.csproj.GenerateResource.Cache
-C:\www\sharp\fd\FD3\External\Plugins\ExportHTML\obj\Debug\ExportHTML.dll
-C:\www\sharp\fd\FD3\External\Plugins\ExportHTML\obj\Debug\ExportHTML.pdb

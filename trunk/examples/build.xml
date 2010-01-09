@@ -6,11 +6,11 @@
 	
 	<!-- delete and recreate the DEPLOY dir -->
 	<target name="init">
-		<delete>
+		<mkdir dir="${EXAMPLES_DEPLOY_DIR}" />
+		<delete failonerror="false">
 			<fileset dir="${EXAMPLES_DEPLOY_DIR}" includes="**/*.swf"/>
 			<fileset dir="${EXAMPLES_DEPLOY_DIR}" includes="**/*.html"/>
 		</delete>
-		<mkdir dir="${EXAMPLES_DEPLOY_DIR}" />
 		<mkdir dir="${EXAMPLES_DEPLOY_DIR}/js" />
 		<copy file="${EXAMPLES_RSX_DIR}/index.html" tofile="${EXAMPLES_DEPLOY_DIR}/ListExample.html"/>
 		<copy file="${EXAMPLES_RSX_DIR}/swfobject.js" todir="${EXAMPLES_DEPLOY_DIR}/js"/>
@@ -25,7 +25,6 @@
 	
 	<!-- Build ListExample -->
 	<target name="ListExample" depends="init">
-		<echo>${EXAMPLES_CONFIG_DIR}/build-ListExample.xml</echo>
 		<mxmlc file="${EXAMPLES_SRC_DIR}/gui/listBasedControls/ListExample.mxml" 
 				output="${EXAMPLES_DEPLOY_DIR}/ListExample-${TODAY}.swf"
 				static-link-runtime-shared-libraries="true"
