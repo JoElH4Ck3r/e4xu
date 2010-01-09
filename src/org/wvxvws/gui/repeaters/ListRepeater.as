@@ -49,13 +49,17 @@
 		{
 			this._index = at - 1;
 			this._factory = this._ihost.factory;
-			var pool:Vector.<Object> = _ihost.pool;
+			var pool:Vector.<Object> = this._ihost.pool;
 			var dispatch:Boolean = super.hasEventListener(RepeaterEvent.REPEAT);
 			do
 			{
 				this._index++;
 				if (pool && pool.length) this._currentItem = pool.pop();
-				else this._currentItem = _factory.produce(this._ihost, this._index);
+				else
+				{
+					this._currentItem = 
+						this._factory.produce(this._ihost, this._index);
+				}
 				if (dispatch) super.dispatchEvent(this._event);
 			}
 			while (this._creationCallback(this._currentItem, this._index));

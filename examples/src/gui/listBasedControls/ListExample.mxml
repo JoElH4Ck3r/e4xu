@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<my:DIV 
+	xmlns:mx="http://ns.adobe.com/mxml/2009"
+	xmlns:my="http://e4xu.googlecode.com"
+	initialized="init()"
+	backgroundColor="0xC0C0C0"
+	backgroundAlpha="1"
+	>
+	<mx:Script>
+		<![CDATA[
+		import flash.display.StageAlign;
+		import flash.display.StageScaleMode;
+		import org.wvxvws.data.DataSet;
+		
+		// These would be naturally compiled with the skins.swc
+		// However, for the purpose of an example, we would import them here
+		import org.wvxvws.skins.ListSkin; ListSkin;
+		import org.wvxvws.skins.renderers.ListRendererSkin; ListRendererSkin;
+		import org.wvxvws.skins.scroller.ScrollMaxSkin; ScrollMaxSkin;
+		import org.wvxvws.skins.scroller.ScrollMinSkin; ScrollMinSkin;
+		import org.wvxvws.skins.scroller.ScrollHandleSkin; ScrollHandleSkin;
+		import org.wvxvws.skins.scroller.ScrollBodySkin; ScrollBodySkin;
+		
+		private function init():void
+		{
+			super.stage.align = StageAlign.TOP_LEFT;
+			super.stage.scaleMode = StageScaleMode.NO_SCALE;
+			this.ls.initialized(this, "list");
+			this.sc.initialized(this, "scroller");
+		}
+		// This is going to change. DataSet will be instantiated similar to Vector.<T>
+		// in MXML layout.
+		[Bindable]
+		private var ds:DataSet = DataSet.fromArray(
+			[1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 
+			6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+		]]>
+	</mx:Script>
+	<!-- 
+		Since DIV isn't a container, we need to declare children inside the Declarations
+		tag and then addChild() them when we initialize.
+		However, normally, you'll be working with containers. The containers would 
+		normally have <children/> tag, where you put child components.
+	-->
+	<mx:Declarations>
+		<my:List id="ls" 
+			width="300" height="300" 
+			dataProvider="{ds}" 
+			backgroundAlpha="1"
+			/>
+		<my:Scroller id="sc" 
+			x="300" width="20" 
+			height="300" direction="true" 
+			target="{ls.scrollPane}"
+			/>
+	</mx:Declarations>
+</my:DIV>

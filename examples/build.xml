@@ -1,4 +1,40 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<data>
-
-</data>
+﻿<project name="E4XU build and test" default="ListExample">
+	
+	<!-- load properties file -->
+	<property file="${basedir}/examples/build.properties" />
+	<property name="FLEX_HOME" value="C:/off-trunk" />
+	
+	<!-- delete and recreate the DEPLOY dir -->
+	<target name="init">
+		<delete>
+			<fileset dir="${EXAMPLES_DEPLOY_DIR}" includes="**/*.swf"/>
+			<fileset dir="${EXAMPLES_DEPLOY_DIR}" includes="**/*.html"/>
+		</delete>
+		<mkdir dir="${EXAMPLES_DEPLOY_DIR}" />
+		<mkdir dir="${EXAMPLES_DEPLOY_DIR}/js" />
+		<copy file="${EXAMPLES_RSX_DIR}/index.html" tofile="${EXAMPLES_DEPLOY_DIR}/ListExample.html"/>
+		<copy file="${EXAMPLES_RSX_DIR}/swfobject.js" todir="${EXAMPLES_DEPLOY_DIR}/js"/>
+		<copy file="${EXAMPLES_RSX_DIR}/expressInstall.swf" todir="${EXAMPLES_DEPLOY_DIR}"/>
+		<tstamp>
+			<format property="TODAY" pattern="d-MM-yy"/>
+		</tstamp>
+		<replace file="${EXAMPLES_DEPLOY_DIR}/ListExample.html">
+			<replacefilter token="@swf@" value="ListExample-${TODAY}"/>
+		</replace>
+	</target>
+	
+	<!-- Build ListExample -->
+	<target name="ListExample" depends="init">
+		<echo>${EXAMPLES_CONFIG_DIR}/build-ListExample.xml</echo>
+		<mxmlc file="${EXAMPLES_SRC_DIR}/gui/listBasedControls/ListExample.mxml" 
+				output="${EXAMPLES_DEPLOY_DIR}/ListExample-${TODAY}.swf"
+				static-link-runtime-shared-libraries="true"
+				debug="${DEBUGGING}"
+				keep-generated-actionscript="true"
+				use-network="true">
+	        <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
+	        <load-config filename="${EXAMPLES_CONFIG_DIR}/build-ListExample.xml"/>
+		</mxmlc>
+	</target>
+	
+</project>
