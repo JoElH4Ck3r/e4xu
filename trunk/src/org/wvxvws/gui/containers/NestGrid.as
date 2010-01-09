@@ -397,12 +397,11 @@
 		
 		protected override function layOutChildren():void 
 		{
-			if (this._dataProvider === null) return;
+			if (this._dataProvider === null || !this._rendererSkin) return;
 			var dataList:XMLList = 
 				this._dataProvider.*.(nodeKind() !== "text" || this._includeText);
 			var dataLenght:int = dataList.length();
 			if (!dataLenght) return;
-			if (!this._rendererSkin) return;
 			this._currentItem = 0;
 			this._removedChildren = new <DisplayObject>[];
 			var i:int;
@@ -417,7 +416,8 @@
 			var numColons:int = this._columns.length;
 			var colWidth:int = width / numColons;
 			var col:Column;
-			var totalWidth:int = super.width - (this._padding.right + this._padding.left);
+			var totalWidth:int = 
+				super.width - (this._padding.right + this._padding.left);
 			var j:int = this._columns.length;
 			var hRenderer:IRenderer;
 			while (i < j)
@@ -475,10 +475,10 @@
 			var maxChildHeight:int;
 			
 			var nn:XML;
-			_currentList = 
+			this._currentList = 
 				this._dataProvider..*.(nodeKind() !== "text" || this._includeText);
-			_currentNode = this._dataProvider;
-			_currentDepth = 0;
+			this._currentNode = this._dataProvider;
+			this._currentDepth = 0;
 			i = 0;
 			j = this._currentList.length();
 			var isClosed:Boolean;

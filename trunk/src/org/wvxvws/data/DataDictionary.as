@@ -78,7 +78,7 @@
 		{
 			if (!(key is this._keyType) || !(value is this._valueType)) return;
 			this._source[key] = value;
-			super.dispatchEvent(new SetEvent(SetEvent.ADD, value, -1));
+			super.dispatchEvent(new SetEvent(SetEventType.ADD, value, -1));
 		}
 		
 		public function removeValue(value:Object):void
@@ -94,7 +94,7 @@
 				}
 			}
 			delete this._source[key];
-			super.dispatchEvent(new SetEvent(SetEvent.REMOVE, value, -1));
+			super.dispatchEvent(new SetEvent(SetEventType.REMOVE, value, -1));
 		}
 		
 		public function removeKey(key:Object):void

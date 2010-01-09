@@ -31,23 +31,21 @@ package org.wvxvws.data
 	*/
 	public class SetEvent extends Event 
 	{
-		public static const ADD:String = "add";
-		public static const REMOVE:String = "remove";
-		public static const CHANGE:String = "change";
-		public static const SORT:String = "sort";
-		
 		public function get data():Object { return this._data; }
 		
 		public function get index():int { return this._index; }
 		
 		protected var _data:Object;
 		protected var _index:int = -1;
+		protected var _type:SetEventType;
 		protected var _handled:Boolean;
 		
-		public function SetEvent(type:String, data:Object, index:int = -1) 
+		public function SetEvent(type:SetEventType, data:Object, index:int = -1) 
 		{ 
-			super(type);
+			super(type.toString());
 			this._data = data;
+			this._index = index;
+			this._type = type;
 		} 
 		
 		public override function clone():Event
@@ -57,7 +55,7 @@ package org.wvxvws.data
 				this._handled = true;
 				return this;
 			}
-			return new SetEvent(this.type, this._data, this._index);
+			return new SetEvent(this._type, this._data, this._index);
 		} 
 		
 		public override function toString():String 
