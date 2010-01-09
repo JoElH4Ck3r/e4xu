@@ -25,6 +25,7 @@ package org.wvxvws.data
 	import flash.utils.describeType;
 	import flash.utils.getDefinitionByName;
 	import flash.utils.getQualifiedClassName;
+	import mx.core.IMXMLObject;
 	import org.wvxvws.data.IIterator;
 	
 	[Event(name="add", type="org.wvxvws.data.SetEvent")]
@@ -32,11 +33,13 @@ package org.wvxvws.data
 	[Event(name="remove", type="org.wvxvws.data.SetEvent")]
 	[Event(name="sort", type="org.wvxvws.data.SetEvent")]
 	
+	[DefaultProperty("source")]
+	
 	/**
 	 * DataSet class.
 	 * @author wvxvw
 	 */
-	public class DataSet extends EventDispatcher implements Iterable
+	public class DataSet extends EventDispatcher implements Iterable, IMXMLObject
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -52,6 +55,46 @@ package org.wvxvws.data
 		
 		public function get type():Class { return this._type; }
 		
+		[Bindable("change")]
+		
+		public function get source():Object { return this._source; }
+		
+		public function set source(value:Object):void 
+		{
+			if (this._source === value) return;
+			if (this._iterator) this._iterator = null;
+			if (!value)
+			{
+				this._source = null;
+			}
+			else
+			{
+				switch (true)
+				{
+					case (value is XML):
+						fromXML(value as XML, this);
+						break;
+					case (value is XMLList):
+						fromXMLList(value as XMLList, this);
+						break;
+					case (value is Array):
+						fromArray(value as Array, this);
+						break;
+					case (describeType(value).@name.toString(
+						).indexOf("::Vector") > -1):
+						fromVector(value as XML, this);
+						break;
+					default:
+						this._source = null;
+						break;
+				}
+			}
+			if (super.hasEventListener(SetEventType.CHANGE.toString()))
+				super.dispatchEvent(new SetEvent(SetEventType.CHANGE, null));
+		}
+		
+		public function get id():String { return _id; }
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected properties
@@ -61,6 +104,7 @@ package org.wvxvws.data
 		protected var _source:Object;
 		protected var _type:Class;
 		protected var _iterator:IIterator;
+		protected var _id:String;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -68,13 +112,16 @@ package org.wvxvws.data
 		//
 		//--------------------------------------------------------------------------
 		
-		public function DataSet(type:Class) 
+		public function DataSet(type:Class = null) 
 		{
 			super();
-			this._type = type;
-			var c:Class = getDefinitionByName("__AS3__.vec::Vector.<" + 
-				getQualifiedClassName(type) + ">") as Class;
-			this._source = new c();
+			if (type)
+			{
+				this._type = type;
+				var c:Class = getDefinitionByName("__AS3__.vec::Vector.<" + 
+					getQualifiedClassName(type) + ">") as Class;
+				this._source = new c();
+			}
 		}
 		
 		//--------------------------------------------------------------------------
@@ -83,36 +130,58 @@ package org.wvxvws.data
 		//
 		//--------------------------------------------------------------------------
 		
-		public static function fromXML(from:XML):DataSet
+		public static function fromXML(from:XML, to:DataSet = null):DataSet
 		{
-			var ds:DataSet = new DataSet(XML);
+			var ds:DataSet = to || new DataSet(XML);
+			if (to)
+			{
+				ds._type = XML;
+				ds._source = new <XML>[];
+			}
 			var s:Vector.<XML> = ds._source as Vector.<XML>;
 			from.*.(s.push(valueOf()));
 			return ds;
 		}
 		
-		public static function fromXMLList(from:XMLList):DataSet
+		public static function fromXMLList(from:XMLList, to:DataSet = null):DataSet
 		{
-			var ds:DataSet = new DataSet(XML);
+			var ds:DataSet = to || new DataSet(XML);
+			if (to)
+			{
+				ds._type = XML;
+				ds._source = new <XML>[];
+			}
 			var s:Vector.<XML> = ds._source as Vector.<XML>;
 			from.(s.push(valueOf()));
 			return ds;
 		}
 		
-		public static function fromArray(from:Array):DataSet
+		public static function fromArray(from:Array, to:DataSet = null):DataSet
 		{
-			var ds:DataSet = new DataSet(Object);
+			var ds:DataSet = to || new DataSet(Object);
+			if (to)
+			{
+				ds._type = XML;
+				ds._source = new <Object>[];
+			}
 			ds._source.push.apply(ds._source, from);
 			return ds;
 		}
 		
-		public static function fromVector(from:Object):DataSet
+		public static function fromVector(from:Object, to:DataSet = null):DataSet
 		{
 			var ts:String = describeType(from).@name;
 			if (ts.indexOf("::Vector") < 0)
 				throw new ArgumentError(from + " must be Vector.");
 			ts = ts.replace(/.*<(.*)>.*/g, "$1");
-			var ds:DataSet = new DataSet(getDefinitionByName(ts) as Class);
+			var ds:DataSet = to || new DataSet(getDefinitionByName(ts) as Class);
+			if (to)
+			{
+				ds._type = getDefinitionByName(ts) as Class;
+				var c:Class = 
+					getDefinitionByName("__AS3__.vec::Vector.<" + ts + ">") as Class;
+				ds._source = new c();
+			}
 			var s:Object = ds._source;
 			for each (var o:Object in from) s.push(o);
 			return ds;
@@ -218,6 +287,13 @@ package org.wvxvws.data
 		{
 			if (!_iterator) _iterator = new SetIterator(this);
 			return _iterator;
+		}
+		
+		/* INTERFACE mx.core.IMXMLObject */
+		
+		public function initialized(document:Object, id:String):void
+		{
+			this._id = id;
 		}
 		
 		//--------------------------------------------------------------------------

@@ -71,5 +71,5 @@
 	<!-- SKINS -->
 	<component id="TextFormatMXML" class="org.wvxvws.gui.skins.TextFormatMXML"/>
 	<!-- DATA -->
-	<component id="Collection" class="org.wvxvws.data.DataSet"/>
+	<component id="DataSet" class="org.wvxvws.data.DataSet"/>
 </componentPackage>
