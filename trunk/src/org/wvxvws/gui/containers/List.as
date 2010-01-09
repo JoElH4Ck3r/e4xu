@@ -30,6 +30,7 @@ package org.wvxvws.gui.containers
 	import org.wvxvws.binding.EventGenerator;
 	import org.wvxvws.data.DataSet;
 	import org.wvxvws.data.SetEvent;
+	import org.wvxvws.data.SetEventType;
 	import org.wvxvws.gui.DIV;
 	import org.wvxvws.gui.GUIEvent;
 	import org.wvxvws.gui.layout.Invalides;
@@ -99,25 +100,25 @@ package org.wvxvws.gui.containers
 			if (this._dataProvider)
 			{
 				this._dataProvider.removeEventListener(
-					SetEvent.ADD, this.provider_addHandler);
+					SetEventType.ADD.toString(), this.provider_addHandler);
 				this._dataProvider.removeEventListener(
-					SetEvent.CHANGE, this.provider_changeHandler);
+					SetEventType.CHANGE.toString(), this.provider_changeHandler);
 				this._dataProvider.removeEventListener(
-					SetEvent.REMOVE, this.provider_removeHandler);
+					SetEventType.REMOVE.toString(), this.provider_removeHandler);
 				this._dataProvider.removeEventListener(
-					SetEvent.SORT, this.provider_sortHandler);
+					SetEventType.SORT.toString(), this.provider_sortHandler);
 			}
 			this._dataProvider = value;
 			if (_dataProvider)
 			{
 				this._dataProvider.addEventListener(
-					SetEvent.ADD, this.provider_addHandler);
+					SetEventType.ADD.toString(), this.provider_addHandler);
 				this._dataProvider.addEventListener(
-					SetEvent.CHANGE, this.provider_changeHandler);
+					SetEventType.CHANGE.toString(), this.provider_changeHandler);
 				this._dataProvider.addEventListener(
-					SetEvent.REMOVE, this.provider_removeHandler);
+					SetEventType.REMOVE.toString(), this.provider_removeHandler);
 				this._dataProvider.addEventListener(
-					SetEvent.SORT, this.provider_sortHandler);
+					SetEventType.SORT.toString(), this.provider_sortHandler);
 			}
 			super.invalidate(Invalides.DATAPROVIDER, false);
 			if (super.hasEventListener(EventGenerator.getEventType("dataProvider")))
