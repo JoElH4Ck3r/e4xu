@@ -28,14 +28,14 @@
 		{
 			super();
 			if (!states) 
-				_states = new <String>[UP_STATE, OVER_STATE, DOWN_STATE];
-			else _states = states;
-			_stateClasses = stateClasses;
+				this._states = new <String>[UP_STATE, OVER_STATE, DOWN_STATE];
+			else this._states = states;
+			this._stateClasses = stateClasses;
 			if (!stateFactories) 
-				_stateFactories = new <Function>[defaultStateFactory, 
+				this._stateFactories = new <Function>[defaultStateFactory, 
 													defaultStateFactory,
 													defaultStateFactory];
-			else _stateFactories = stateFactories;
+			else this._stateFactories = stateFactories;
 		}
 		
 		private function defaultStateFactory(inContext:Object, 
@@ -65,19 +65,19 @@
 		{
 			var index:int;
 			var state:String = args ? args[0] : null;
-			if (_states && _states.length)
+			if (this._states && this._states.length)
 			{
 				if (state === null) state = _states[0];
-				index = _states.indexOf(state);
+				index = this._states.indexOf(state);
 			}
 			else index = 0;
 			if (index < 0) index = 0;
-			if (_stateClasses && _stateClasses.length > index && 
-				_stateClasses[index])
-				return new _stateClasses[index]();
-			if (_stateFactories && _stateFactories.length > index && 
-				_stateFactories[index])
-				return _stateFactories[index](inContext, state);
+			if (this._stateClasses && this._stateClasses.length > index && 
+				this._stateClasses[index])
+				return new this._stateClasses[index]();
+			if (this._stateFactories && this._stateFactories.length > index && 
+				this._stateFactories[index])
+				return this._stateFactories[index](inContext, state);
 			return null;
 		}
 	}

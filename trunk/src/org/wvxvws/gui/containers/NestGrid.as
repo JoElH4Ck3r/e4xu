@@ -604,7 +604,7 @@
 					this._closedNodes.splice(index, 1);
 				}
 			}
-			super._invalidProperties._dataProvider = _dataProvider;
+			super._invalidProperties[Invalides.DATAPROVIDER] = true;
 			super.validate(super._invalidProperties);
 			super.dispatchEvent(GUIEvent.OPENED);
 		}

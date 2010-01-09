@@ -1,4 +1,4 @@
-﻿<project name="E4XU build and test" default="ListExample">
+﻿<project name="E4XU build and test" default="NestGridExample">
 	
 	<!-- load properties file -->
 	<property file="${basedir}/examples/build.properties" />
@@ -13,6 +13,7 @@
 		</delete>
 		<mkdir dir="${EXAMPLES_DEPLOY_DIR}/js" />
 		<copy file="${EXAMPLES_RSX_DIR}/index.html" tofile="${EXAMPLES_DEPLOY_DIR}/ListExample.html"/>
+		<copy file="${EXAMPLES_RSX_DIR}/index.html" tofile="${EXAMPLES_DEPLOY_DIR}/NestGridExample.html"/>
 		<copy file="${EXAMPLES_RSX_DIR}/swfobject.js" todir="${EXAMPLES_DEPLOY_DIR}/js"/>
 		<copy file="${EXAMPLES_RSX_DIR}/expressInstall.swf" todir="${EXAMPLES_DEPLOY_DIR}"/>
 		<tstamp>
@@ -20,6 +21,9 @@
 		</tstamp>
 		<replace file="${EXAMPLES_DEPLOY_DIR}/ListExample.html">
 			<replacefilter token="@swf@" value="ListExample-${TODAY}"/>
+		</replace>
+		<replace file="${EXAMPLES_DEPLOY_DIR}/NestGridExample.html">
+			<replacefilter token="@swf@" value="NestGridExample-${TODAY}"/>
 		</replace>
 	</target>
 	
@@ -33,6 +37,19 @@
 				use-network="true">
 	        <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
 	        <load-config filename="${EXAMPLES_CONFIG_DIR}/build-ListExample.xml"/>
+		</mxmlc>
+	</target>
+	
+	<!-- Build NestGridExample -->
+	<target name="NestGridExample" depends="ListExample">
+		<mxmlc file="${EXAMPLES_SRC_DIR}/gui/xmlDrivenControls/NestGridExample.mxml" 
+				output="${EXAMPLES_DEPLOY_DIR}/NestGridExample-${TODAY}.swf"
+				static-link-runtime-shared-libraries="true"
+				debug="${DEBUGGING}"
+				keep-generated-actionscript="true"
+				use-network="true">
+	        <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
+	        <load-config filename="${EXAMPLES_CONFIG_DIR}/build-NestGridExample.xml"/>
 		</mxmlc>
 	</target>
 	

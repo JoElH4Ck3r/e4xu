@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<my:DIV 
+	xmlns:mx="http://ns.adobe.com/mxml/2009"
+	xmlns:my="http://e4xu.googlecode.com"
+	initialized="init()"
+	backgroundColor="0xC0C0C0"
+	backgroundAlpha="1"
+	>
+	<mx:Script>
+		<![CDATA[
+		import flash.display.Bitmap;
+		import flash.display.BitmapData;
+		import flash.display.InteractiveObject;
+		import flash.display.StageAlign;
+		import flash.display.StageScaleMode;
+		import org.wvxvws.skins.ButtonSkin;
+		
+		[Bindable]
+		[Embed(source='../../../rsx/plus.png')]
+		private static var _plus:Class;
+		[Bindable]
+		[Embed(source='../../../rsx/minus.png')]
+		private static var _minus:Class;
+		[Bindable]
+		[Embed(source='../../../rsx/page_white.png')]
+		private static var _icon:Class;
+		[Bindable]
+		[Embed(source='../../../rsx/folder.png')]
+		private static var _folder:Class;
+		
+		// These would be naturally compiled with the skins.swc
+		// However, for the purpose of an example, we would import them here
+		import org.wvxvws.skins.LabelSkin; LabelSkin;
+		import org.wvxvws.skins.scroller.ScrollMaxSkin; ScrollMaxSkin;
+		import org.wvxvws.skins.scroller.ScrollMinSkin; ScrollMinSkin;
+		import org.wvxvws.skins.scroller.ScrollHandleSkin; ScrollHandleSkin;
+		import org.wvxvws.skins.scroller.ScrollBodySkin; ScrollBodySkin;
+		
+		private var _iconData:BitmapData = (new _icon() as Bitmap).bitmapData;
+		private var _folderData:BitmapData = (new _folder() as Bitmap).bitmapData;
+		
+		private function iconFactory():ButtonSkin
+		{
+			return new ButtonSkin(new <String>["up"], null, new <Function>[di]);
+		}
+		
+		private function folderFactory():ButtonSkin
+		{
+			return new ButtonSkin(new <String>["up"], null, new <Function>[df]);
+		}
+		
+		private function di(o:Object, i:String):InteractiveObject
+		{
+			var s:Sprite = new Sprite();
+			var b:Bitmap = new _icon() as Bitmap;
+			s.addChild(b);
+			return s;
+		}
+		
+		private function df(o:Object, i:String):InteractiveObject
+		{
+			var s:Sprite = new Sprite();
+			var b:Bitmap = new _folder() as Bitmap;
+			s.addChild(b);
+			return s;
+		}
+		
+		private function init():void
+		{
+			super.stage.align = StageAlign.TOP_LEFT;
+			super.stage.scaleMode = StageScaleMode.NO_SCALE;
+			this.ng.initialized(this, "tree");
+			this.sc.initialized(this, "scroller");
+		}
+		]]>
+	</mx:Script>
+	<!-- 
+		Since DIV isn't a container, we need to declare children inside the Declarations
+		tag and then addChild() them when we initialize.
+		However, normally, you'll be working with containers. The containers would 
+		normally have <children/> tag, where you put child components.
+	-->
+	<mx:Declarations>
+		<my:NestGrid id="ng" 
+			width="300" height="300" 
+			backgroundAlpha="1"
+			folderProducer="{this.folderFactory()}" 
+			iconProducer="{this.iconFactory()}"
+			openClass="{_minus}"
+			closedClass="{_plus}"
+			>
+			<mx:XML>
+				<root>
+					<level0>
+						<level1>
+							<level2/>
+							<level2/>
+							<level2/>
+						</level1>
+						<level1>
+							<level2/>
+							<level2/>
+							<level2/>
+						</level1>
+						<level1/>
+						<level1/>
+						<level1>
+							<level2/>
+							<level2/>
+							<level2/>
+						</level1>
+					</level0>
+					<level0/>
+					<level0/>
+				</root>
+			</mx:XML>
+		</my:NestGrid>
+		<my:Scroller id="sc" 
+			x="300" width="20" 
+			height="300" direction="true" 
+			target="{ng.scrollPane}"
+			/>
+	</mx:Declarations>
+</my:DIV>

@@ -14,15 +14,15 @@
 		public function Skin(classFactory:Class, functionFactory:Function = null) 
 		{
 			super();
-			_classFactory = classFactory;
-			_functionFactory = functionFactory;
+			this._classFactory = classFactory;
+			this._functionFactory = functionFactory;
 		}
 		
 		public override function produce(inContext:Object, ...args):Object
 		{
-			if (_classFactory) return new _classFactory();
-			else if (_functionFactory !== null)
-				return _functionFactory(inContext, args);
+			if (this._classFactory) return new this._classFactory();
+			else if (this._functionFactory !== null)
+				return this._functionFactory(inContext, args);
 			return null;
 		}
 	}
