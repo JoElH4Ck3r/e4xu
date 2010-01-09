@@ -128,18 +128,18 @@ package org.wvxvws.data
 		{
 			if (index < 0) this._source.push(item);
 			else this._source.splice(index, 0, item);
-			if (super.hasEventListener(SetEvent.ADD))
+			if (super.hasEventListener(SetEventType.ADD.toString()))
 			{
-				super.dispatchEvent(new SetEvent(SetEvent.ADD, item, index));
+				super.dispatchEvent(new SetEvent(SetEventType.ADD, item, index));
 			}
 		}
 		
 		public function put(item:Object, index:int):void
 		{
-			_source[index] = item;
-			if (super.hasEventListener(SetEvent.CHANGE))
+			this._source[index] = item;
+			if (super.hasEventListener(SetEventType.CHANGE.toString()))
 			{
-				super.dispatchEvent(new SetEvent(SetEvent.CHANGE, item, index));
+				super.dispatchEvent(new SetEvent(SetEventType.CHANGE, item, index));
 			}
 		}
 		
@@ -147,9 +147,9 @@ package org.wvxvws.data
 		{
 			var i:int = this._source.indexOf(item);
 			this._source.splice(i, 1);
-			if (super.hasEventListener(SetEvent.REMOVE))
+			if (super.hasEventListener(SetEventType.REMOVE.toString()))
 			{
-				super.dispatchEvent(new SetEvent(SetEvent.REMOVE, item, i));
+				super.dispatchEvent(new SetEvent(SetEventType.REMOVE, item, i));
 			}
 		}
 		
@@ -165,9 +165,9 @@ package org.wvxvws.data
 		public function bubbleSort(callback:Function = null):void
 		{
 			this._source.sort(callback);
-			if (super.hasEventListener(SetEvent.SORT))
+			if (super.hasEventListener(SetEventType.SORT.toString()))
 			{
-				super.dispatchEvent(new SetEvent(SetEvent.SORT, null));
+				super.dispatchEvent(new SetEvent(SetEventType.SORT, null));
 			}
 		}
 		
@@ -199,9 +199,9 @@ package org.wvxvws.data
 				inc = inc * 0.45454545454545453 + 0.5;
 			}
 			
-			if (super.hasEventListener(SetEvent.SORT))
+			if (super.hasEventListener(SetEventType.SORT.toString()))
 			{
-				super.dispatchEvent(new SetEvent(SetEvent.SORT, null));
+				super.dispatchEvent(new SetEvent(SetEventType.SORT, null));
 			}
 		}
 		
