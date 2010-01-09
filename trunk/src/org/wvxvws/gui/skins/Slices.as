@@ -6,6 +6,9 @@
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
 	
+	// FIXME: Widht or height less then sum of side slices bug.
+	// FIXME: support scaleX and scaleY
+	
 	/**
 	 * Slices class.
 	 * @author wvxvw
@@ -24,7 +27,7 @@
 		
 		public override function set height(value:Number):void 
 		{
-			if (_height === value || value < 0) return;
+			if (this._height === value || value < 0) return;
 			this._height = value;
 			this.draw();
 		}
@@ -99,31 +102,39 @@
 		 */
 		protected function draw():void
 		{
-			var o4Width:Number = this._originalWidth - (this._web0.width + this._web2.width);
-			var o4Height:Number = this._originalHeight - (this._web0.height + this._web6.height);
+			var o4Width:Number = 
+				this._originalWidth - (this._web0.width + this._web2.width);
+			var o4Height:Number = 
+				this._originalHeight - (this._web0.height + this._web6.height);
 			
-			var m4Width:Number = this._width - (this._web0.width + this._web2.width);
-			var m4Height:Number = _height - (this._web0.height + this._web6.height);
+			var m4Width:Number = 
+				this._width - (this._web0.width + this._web2.width);
+			var m4Height:Number = 
+				this._height - (this._web0.height + this._web6.height);
 			
 			var a:Number;
 			var d:Number;
 			
 			var g:Graphics = super.graphics;
 			
-			switch (_scaleMode)
+			switch (this._scaleMode)
 			{
 				case 0:
-					this._web1.width = this._web4.width = this._web7.width = m4Width;
-					this._web3.height = this._web4.height = this._web5.height = m4Height;
+					this._web1.width = 
+						this._web4.width = this._web7.width = m4Width;
+					this._web3.height = 
+						this._web4.height = this._web5.height = m4Height;
 					
 					a = this._web1.width / o4Width;
 					d = this._web3.height / o4Height;
 					
 					this._web1.x = this._web4.x = this._web7.x = this._web0.width;
-					this._web2.x = this._web5.x = this._web8.x = this._web1.width + this._web1.x;
+					this._web2.x = this._web5.x = 
+						this._web8.x = this._web1.width + this._web1.x;
 					
 					this._web3.y = this._web4.y = this._web5.y = this._web0.height;
-					this._web6.y = this._web7.y = this._web8.y = this._web3.height + this._web3.y;
+					this._web6.y = this._web7.y = 
+						this._web8.y = this._web3.height + this._web3.y;
 					
 					this._webMatrix1.a = this._webMatrix4.a = this._webMatrix7.a = a;
 					this._webMatrix3.d = this._webMatrix4.d = this._webMatrix5.d = d;

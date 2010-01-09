@@ -51,6 +51,7 @@ package org.wvxvws.gui.containers
 	// TODO: Requires some profiling, it seems like we have an 
 	// insignificant, although persistent leak here.
 	// However, it might been the test example that's leaking.
+	// TODO: Highlight selected renderer.
 	
 	/**
 	 * List class.

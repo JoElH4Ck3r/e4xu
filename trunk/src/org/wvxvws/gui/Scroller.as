@@ -189,7 +189,7 @@ package org.wvxvws.gui
 						this.skinnables_mouseOutHandler, false, 0, true);
 					this._maxHandle.addEventListener(MouseEvent.MOUSE_OVER, 
 						this.skinnables_mouseOverHandler, false, 0, true);
-					(this._minHandle as StatefulButton).state = UP_STATE;
+					(this._maxHandle as StatefulButton).state = UP_STATE;
 				}
 				super.addChild(this._maxHandle);
 				this._maxHandle.addEventListener(MouseEvent.MOUSE_DOWN, 
