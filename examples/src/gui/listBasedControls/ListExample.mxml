@@ -10,7 +10,6 @@
 		<![CDATA[
 		import flash.display.StageAlign;
 		import flash.display.StageScaleMode;
-		import org.wvxvws.data.DataSet;
 		
 		// These would be naturally compiled with the skins.swc
 		// However, for the purpose of an example, we would import them here
@@ -28,12 +27,6 @@
 			this.ls.initialized(this, "list");
 			this.sc.initialized(this, "scroller");
 		}
-		// This is going to change. DataSet will be instantiated similar to Vector.<T>
-		// in MXML layout.
-		[Bindable]
-		private var ds:DataSet = DataSet.fromArray(
-			[1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 
-			6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
 		]]>
 	</mx:Script>
 	<!-- 
@@ -45,9 +38,37 @@
 	<mx:Declarations>
 		<my:List id="ls" 
 			width="300" height="300" 
-			dataProvider="{ds}" 
 			backgroundAlpha="1"
-			/>
+			>
+			<my:dataProvider>
+				<my:DataSet>
+					<mx:Array>
+						<mx:int>1</mx:int>
+						<mx:int>2</mx:int>
+						<mx:int>3</mx:int>
+						<mx:int>4</mx:int>
+						<mx:int>5</mx:int>
+						<mx:int>6</mx:int>
+						<mx:int>7</mx:int>
+						<mx:int>8</mx:int>
+						<mx:int>9</mx:int>
+						<mx:int>10</mx:int>
+						<mx:int>12</mx:int>
+						<mx:int>13</mx:int>
+						<mx:int>14</mx:int>
+						<mx:int>15</mx:int>
+						<mx:int>16</mx:int>
+						<mx:int>17</mx:int>
+						<mx:int>18</mx:int>
+						<mx:int>19</mx:int>
+						<mx:int>20</mx:int>
+						<mx:int>21</mx:int>
+						<mx:int>22</mx:int>
+						<mx:int>23</mx:int>
+					</mx:Array>
+				</my:DataSet>
+			</my:dataProvider>
+		</my:List>
 		<my:Scroller id="sc" 
 			x="300" width="20" 
 			height="300" direction="true" 
