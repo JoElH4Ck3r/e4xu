@@ -3,7 +3,6 @@
 	//{ imports
 	import flash.events.EventDispatcher;
 	import mx.core.IMXMLObject;
-	import org.wvxvws.data.IIterator;
 	//}
 	
 	/**
@@ -48,7 +47,7 @@
 			{
 				if (!ret) ret = new <DataTree>[];
 				desc = dt.descendants;
-				if (desc) ret.concat(desc);
+				if (desc) ret = ret.concat(desc);
 			}
 			return ret;
 		}
