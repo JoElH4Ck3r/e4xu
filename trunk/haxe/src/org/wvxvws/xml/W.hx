@@ -215,6 +215,7 @@ class W
 		{
 			case 0: u = this._current;
 			case 1: u = this._attributes;
+			case 2: u = this._texts;
 		}
 		return u;
 	}
