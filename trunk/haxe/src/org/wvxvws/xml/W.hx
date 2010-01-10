@@ -4,6 +4,7 @@
  */
 package org.wvxvws.xml;
 
+
 class W 
 {
 	private var _root:Xml;
@@ -28,7 +29,7 @@ class W
 		return new W(value);
 	}
 	
-	public function gen(x:Null<Xml>->Bool):W
+	public function gen(?x:Null<Xml>->Bool):W
 	{
 		var it:Iterator<Null<Xml>> = this._current.iterator();
 		var itw:Iterator<Null<Xml>>;
@@ -56,7 +57,11 @@ class W
 			{
 				if (a == null) a = new Array<Xml>();
 				node = it.next();
-				if (x(node)) a.push(node);
+				if (x != null)
+				{
+					if (x(node)) a.push(node);
+				}
+				else a.push(node);
 			}
 		}
 		
@@ -64,9 +69,38 @@ class W
 		return this;
 	}
 	
-	public function all(x:Null<Xml>->Bool):W
+	public function all(?x:Null<Xml>->Bool):W
 	{
+		var it:Iterator<Null<Xml>> = this._current.iterator();
+		var working:Array<Xml> = null;
+		var a:Array<Xml> = null;
+		var node:Xml;
 		
+		while (it.hasNext())
+		{
+			node = it.next();
+			if (node.nodeType == Xml.Element)
+			{
+				if (working == null) working = new Array<Xml>();
+				working = working.concat(this.rec(node));
+			}
+		}
+		if (working != null)
+		{
+			it = working.iterator();
+			while (it.hasNext())
+			{
+				if (a == null) a = new Array<Xml>();
+				node = it.next();
+				if (x != null)
+				{
+					if (x(node)) a.push(node);
+				}
+				else a.push(node);
+			}
+		}
+		
+		this._current = a;
 		return this;
 	}
 	
@@ -101,4 +135,27 @@ class W
 	}
 	
 	public function ret():Array<Xml> { return this._current; }
+	
+	private function rec(node:Xml):Array<Xml>
+	{
+		var ret:Array<Xml> = null;
+		if (node.nodeType != Xml.Element)
+		{
+			ret = new Array<Xml>();
+			ret.push(node);
+			return ret;
+		}
+		var tmp:Array<Xml>;
+		var it:Iterator<Xml> = node.elements();
+		var n:Xml;
+		while (it.hasNext())
+		{
+			if (ret == null) ret = new Array<Xml>();
+			n = it.next();
+			tmp = this.rec(n);
+			ret.push(n);
+			if (tmp != null) ret = ret.concat(this.rec(n));
+		}
+		return ret;
+	}
 }
