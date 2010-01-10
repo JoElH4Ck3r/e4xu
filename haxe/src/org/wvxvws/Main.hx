@@ -42,7 +42,6 @@ class Main extends Sprite
         var result3:Float = points3[0].x * scale;
         var result4:Float = points4[0].x * scale;
 		var iter:Iterator<Null<Dynamic>> = points.iterator();
-        Lambda.
 		var result5:Float = iter.next().x * scale;
 		
 		trace(result);
