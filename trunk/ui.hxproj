@@ -19,7 +19,7 @@
   <build>
     <option directives="" />
     <option flashStrict="False" />
-    <option mainClass="org.wvxvws.Main" />
+    <option mainClass="org.wvxvws.TestW" />
     <option override="False" />
     <option verbose="False" />
     <option additional="" />
@@ -32,6 +32,7 @@
   <compileTargets>
     <compile path="src\org\wvxvws\Main.hx" />
     <compile path="haxe\src\org\wvxvws\Main.hx" />
+    <compile path="haxe\src\org\wvxvws\TestW.hx" />
   </compileTargets>
   <!-- Assets to embed into the output SWF -->
   <library>

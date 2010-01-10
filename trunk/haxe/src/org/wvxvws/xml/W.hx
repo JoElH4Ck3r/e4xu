@@ -8,28 +8,25 @@ package org.wvxvws.xml;
 class W 
 {
 	private var _root:Xml;
+	private var _parent:Xml;
 	private var _current:Array<Xml>;
+	private var _attributes:Array<Hash<String>>;
+	private var _texts:Array<Null<String>>;
+	private var _retCode:Int;
 	
 	public function new(value:Xml)
 	{
 		this._root = value;
+		this._retCode = 0;
 		this._current = new Array<Xml>();
 		if (value != null && value.nodeType == Xml.Document)
-		{
 			this._current.push(value.firstElement());
-		}
-		else if (value != null)
-		{
-			this._current.push(value);
-		}
+		else if (value != null) this._current.push(value);
 	}
 	
-	public static function walk(value:Xml):W
-	{
-		return new W(value);
-	}
+	public static function alk(value:Xml):W { return new W(value); }
 	
-	public function gen(?x:Null<Xml>->Bool):W
+	public function c(?x:Null<Xml>->Bool):W
 	{
 		var it:Iterator<Null<Xml>> = this._current.iterator();
 		var itw:Iterator<Null<Xml>>;
@@ -44,10 +41,7 @@ class W
 			{
 				if (working == null) working = new Array<Xml>();
 				itw = node.iterator();
-				while (itw.hasNext())
-				{
-					working.push(itw.next());
-				}
+				while (itw.hasNext()) working.push(itw.next());
 			}
 		}
 		if (working != null)
@@ -64,12 +58,12 @@ class W
 				else a.push(node);
 			}
 		}
-		
 		this._current = a;
+		this._retCode = 0;
 		return this;
 	}
 	
-	public function all(?x:Null<Xml>->Bool):W
+	public function d(?x:Null<Xml>->Bool):W
 	{
 		var it:Iterator<Null<Xml>> = this._current.iterator();
 		var working:Array<Xml> = null;
@@ -99,42 +93,131 @@ class W
 				else a.push(node);
 			}
 		}
-		
 		this._current = a;
+		this._retCode = 0;
 		return this;
 	}
 	
-	public function bac(x:Null<Xml>->Bool):W
+	public function p(?x:Null<Xml>->Bool):W
 	{
 		
 		return this;
 	}
 	
-	public function att(x:Null<Xml>->Bool):W
+	public function a(?x:String->String->Bool):W
+	{
+		var it:Iterator<Null<Xml>> = this._current.iterator();
+		var ait:Iterator<String>;
+		var node:Xml;
+		var atts:Hash<String> = null;
+		var allatts:Array<Hash<String>> = null;
+		var s:String;
+		var vs:String;
+		var a:Array<Xml> = null;
+		
+		while (it.hasNext())
+		{
+			node = it.next();
+			if (node.nodeType != Xml.Element) continue;
+			ait = node.attributes();
+			atts = null;
+			if (allatts == null) allatts = new Array<Hash<String>>();
+			while (ait.hasNext())
+			{
+				if (x == null)
+				{
+					if (atts == null) atts = new Hash<String>();
+					s = ait.next();
+					atts.set(s, node.get(s));
+					if (a == null) a = new Array<Xml>();
+					a.push(node);
+				}
+				else 
+				{
+					s = ait.next();
+					vs = node.get(s);
+					if (x(s, vs))
+					{
+						if (atts == null) atts = new Hash<String>();
+						atts.set(s, vs);
+						if (a == null) a = new Array<Xml>();
+						a.push(node);
+					}
+				}
+			}
+			if (atts != null) allatts.push(atts);
+		}
+		this._attributes = allatts;
+		this._current = a;
+		this._retCode = 1;
+		return this;
+	}
+	
+	public function ns(?x:Null<Xml>->Bool):W
 	{
 		
 		return this;
 	}
 	
-	public function ns(x:Null<Xml>->Bool):W
+	public function v(?x:Null<Xml>->Bool):W
 	{
 		
 		return this;
 	}
 	
-	public function val(x:Null<Xml>->Bool):W
+	public function t(?x:Null<String>->Bool):W
 	{
+		var it:Iterator<Null<Xml>> = this._current.iterator();
+		var itw:Iterator<Null<String>>;
+		var working:Array<Null<String>> = null;
+		var a:Array<Null<String>> = null;
+		var ca:Array<Xml> = null;
+		var node:Xml;
+		var tnode:String;
+		var i:Int = 0;
 		
+		while (it.hasNext())
+		{
+			node = it.next();
+			if (node.nodeType == Xml.Element)
+			{
+				if (working == null) working = new Array<Null<String>>();
+				working.push(node.nodeValue);
+				if (ca != null) ca = new Array<Xml>();
+				ca.push(node);
+			}
+		}
+		if (working != null)
+		{
+			itw = working.iterator();
+			while (itw.hasNext())
+			{
+				if (a == null) a = new Array<Null<String>>();
+				tnode = itw.next();
+				if (x != null)
+				{
+					if (x(tnode)) a.push(tnode);
+					else ca.splice(i, 1);
+				}
+				else a.push(tnode);
+			}
+		}
+		this._current = ca;
+		this._texts = a;
+		this._retCode = 2;
 		return this;
 	}
 	
-	public function txt(x:Null<Xml>->Bool):W
+	public function z():Dynamic
 	{
-		
-		return this;
+		var u:Dynamic = null;
+		switch (this._retCode)
+		{
+			case 0: u = this._current;
+			case 1: u = this._attributes;
+		}
+		return u;
 	}
-	
-	public function ret():Array<Xml> { return this._current; }
 	
 	private function rec(node:Xml):Array<Xml>
 	{
