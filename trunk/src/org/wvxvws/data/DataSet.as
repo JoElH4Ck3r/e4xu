@@ -57,7 +57,11 @@ package org.wvxvws.data
 		
 		[Bindable("change")]
 		
-		public function get source():Object { return this._source; }
+		public function get source():Object
+		{
+			if (this._source) return this._source.concat();
+			return null;
+		}
 		
 		public function set source(value:Object):void 
 		{
