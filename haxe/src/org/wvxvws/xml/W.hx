@@ -26,13 +26,14 @@ class W
 	
 	public static function alk(value:Xml):W { return new W(value); }
 	
-	public function c(?x:Null<Xml>->Bool):W
+	public function c(?x:Null<Xml>->Int->Bool):W
 	{
 		var it:Iterator<Null<Xml>> = this._current.iterator();
 		var itw:Iterator<Null<Xml>>;
 		var working:Array<Xml> = null;
 		var a:Array<Xml> = null;
 		var node:Xml;
+		var i:Int = 0;
 		
 		while (it.hasNext())
 		{
@@ -53,9 +54,10 @@ class W
 				node = it.next();
 				if (x != null)
 				{
-					if (x(node)) a.push(node);
+					if (x(node, i)) a.push(node);
 				}
 				else a.push(node);
+				i++;
 			}
 		}
 		this._current = a;
@@ -78,6 +80,11 @@ class W
 				if (working == null) working = new Array<Xml>();
 				working = working.concat(this.rec(node));
 			}
+			else
+			{
+				if (working == null) working = new Array<Xml>();
+				working.push(node);
+			}
 		}
 		if (working != null)
 		{
@@ -98,13 +105,48 @@ class W
 		return this;
 	}
 	
-	public function p(?x:Null<Xml>->Bool):W
+	public function p(?x:Null<Xml>->Int->Bool):W
 	{
+		var it:Iterator<Null<Xml>> = this._current.iterator();
+		var itw:Iterator<Null<Xml>>;
+		var working:Array<Xml> = null;
+		var a:Array<Xml> = null;
+		var node:Xml;
+		var pnode:Xml;
+		var i:Int = 0;
 		
+		while (it.hasNext())
+		{
+			node = it.next();
+			pnode = node.parent;
+			if (pnode != null)
+			{
+				if (working == null) working = new Array<Xml>();
+				if (!Lambda.has(working, pnode)) working.push(pnode);
+				else if (working.length == 0) working = null;
+			}
+		}
+		if (working != null)
+		{
+			it = working.iterator();
+			while (it.hasNext())
+			{
+				if (a == null) a = new Array<Xml>();
+				node = it.next();
+				if (x != null)
+				{
+					if (x(node, i)) a.push(node);
+				}
+				else a.push(node);
+				i++;
+			}
+		}
+		this._current = a;
+		this._retCode = 0;
 		return this;
 	}
 	
-	public function a(?x:String->String->Bool):W
+	public function a(?x:String->String->Xml->Bool):W
 	{
 		var it:Iterator<Null<Xml>> = this._current.iterator();
 		var ait:Iterator<String>;
@@ -136,7 +178,7 @@ class W
 				{
 					s = ait.next();
 					vs = node.get(s);
-					if (x(s, vs))
+					if (x(s, vs, node))
 					{
 						if (atts == null) atts = new Hash<String>();
 						atts.set(s, vs);
@@ -165,14 +207,16 @@ class W
 		return this;
 	}
 	
-	public function t(?x:Null<String>->Bool):W
+	public function t(?x:Null<String>->Xml->Bool):W
 	{
 		var it:Iterator<Null<Xml>> = this._current.iterator();
+		var itt:Iterator<Null<Xml>>;
 		var itw:Iterator<Null<String>>;
 		var working:Array<Null<String>> = null;
 		var a:Array<Null<String>> = null;
 		var ca:Array<Xml> = null;
 		var node:Xml;
+		var vnode:Xml;
 		var tnode:String;
 		var i:Int = 0;
 		
@@ -181,9 +225,24 @@ class W
 			node = it.next();
 			if (node.nodeType == Xml.Element)
 			{
+				itt = node.iterator();
+				while (itt.hasNext())
+				{
+					vnode = itt.next();
+					if (vnode.nodeType == Xml.CData || vnode.nodeType == Xml.PCData)
+					{
+						if (working == null) working = new Array<Null<String>>();
+						working.push(vnode.nodeValue);
+						if (ca == null) ca = new Array<Xml>();
+						ca.push(vnode);
+					}
+				}
+			}
+			else if (node.nodeType == Xml.CData || node.nodeType == Xml.PCData)
+			{
 				if (working == null) working = new Array<Null<String>>();
 				working.push(node.nodeValue);
-				if (ca != null) ca = new Array<Xml>();
+				if (ca == null) ca = new Array<Xml>();
 				ca.push(node);
 			}
 		}
@@ -196,10 +255,18 @@ class W
 				tnode = itw.next();
 				if (x != null)
 				{
-					if (x(tnode)) a.push(tnode);
+					if (x(tnode, ca[i]))
+					{
+						i++;
+						a.push(tnode);
+					}
 					else ca.splice(i, 1);
 				}
-				else a.push(tnode);
+				else
+				{
+					i++;
+					a.push(tnode);
+				}
 			}
 		}
 		this._current = ca;
@@ -230,7 +297,7 @@ class W
 			return ret;
 		}
 		var tmp:Array<Xml>;
-		var it:Iterator<Xml> = node.elements();
+		var it:Iterator<Xml> = node.iterator();
 		var n:Xml;
 		while (it.hasNext())
 		{
