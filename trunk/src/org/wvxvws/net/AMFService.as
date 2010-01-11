@@ -27,6 +27,7 @@ package org.wvxvws.net
 	import flash.events.SecurityErrorEvent;
 	import flash.net.NetConnection;
 	import flash.net.Responder;
+	import org.wvxvws.binding.EventGenerator;
 	//}
 	
 	[DefaultProperty("methods")]
@@ -56,68 +57,74 @@ package org.wvxvws.net
 		//  Public property baseURL
 		//------------------------------------
 		
-		[Bindable("baseURLChange")]
+		[Bindable("baseURLChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>baseURLChange</code> event.
+		* When this property is modified, it dispatches the <code>baseURLChanged</code> event.
 		*/
-		public function get baseURL():String { return _baseURL; }
+		public function get baseURL():String { return this._baseURL; }
 		
 		public function set baseURL(value:String):void 
 		{
-		   if (_baseURL == value) return;
-		   _baseURL = value;
-		   super.dispatchEvent(new Event("baseURLChange"));
+			if (this._baseURL === value) return;
+			this._baseURL = value;
+			if (super.hasEventListener(EventGenerator.getEventType("baseURL")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
 		//  Public property methods
 		//------------------------------------
 		
-		[Bindable("methodsChange")]
+		[Bindable("methodsChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>methodsChange</code> event.
+		* When this property is modified, it dispatches the <code>methodsChanged</code> event.
 		*/
-		public function get methods():Vector.<ServiceMethod> { return _methods.concat(); }
+		public function get methods():Vector.<ServiceMethod>
+		{
+			return this._methods.concat();
+		}
 		
 		public function set methods(value:Vector.<ServiceMethod>):void 
 		{
-		   if (_methods == value) return;
-		   _methods.length = 0;
-		   for each (var sm:ServiceMethod in value)
-		   {
-			   if (_methods.indexOf(sm) < 0)
-			   {
-				   _methods.push(sm);
-				   sm.initialized(this, "method");
-			   }
-		   }
-		   super.dispatchEvent(new Event("methodsChange"));
+			if (this._methods === value) return;
+			this._methods.length = 0;
+			for each (var sm:ServiceMethod in value)
+			{
+				if (this._methods.indexOf(sm) < 0)
+				{
+					this._methods.push(sm);
+					sm.initialized(this, "method");
+				}
+			}
+			if (super.hasEventListener(EventGenerator.getEventType("methods")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
 		//  Public property parameters
 		//------------------------------------
 		
-		[Bindable("parametersChange")]
+		[Bindable("parametersChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>parametersChange</code> event.
+		* When this property is modified, it dispatches the <code>parametersChanged</code> event.
 		*/
-		public function get parameters():ServiceArguments { return _parameters; }
+		public function get parameters():ServiceArguments { return this._parameters; }
 		
 		public function set parameters(value:ServiceArguments):void 
 		{
-		   if (_parameters == value) return;
-		   _parameters = value;
-		   super.dispatchEvent(new Event("parametersChange"));
+			if (this._parameters === value) return;
+			this._parameters = value;
+			if (super.hasEventListener(EventGenerator.getEventType("parameters")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
@@ -131,56 +138,59 @@ package org.wvxvws.net
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>resultCallBackChange</code> event.
 		*/
-		public function get resultCallBack():Function { return _resultCallBack; }
+		public function get resultCallBack():Function { return this._resultCallBack; }
 		
 		public function set resultCallBack(value:Function):void 
 		{
-		   if (_resultCallBack === value) return;
-		   _resultCallBack = value;
-		   super.dispatchEvent(new Event("resultCallBackChange"));
+			if (this._resultCallBack === value) return;
+			this._resultCallBack = value;
+			if (super.hasEventListener(EventGenerator.getEventType("resultCallBack")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
 		//  Public property faultCallBack
 		//------------------------------------
 		
-		[Bindable("faultCallBackChange")]
+		[Bindable("faultCallBackChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>faultCallBackChange</code> event.
+		* When this property is modified, it dispatches the <code>faultCallBackChanged</code> event.
 		*/
-		public function get faultCallBack():Function { return _faultCallBack; }
+		public function get faultCallBack():Function { return this._faultCallBack; }
 		
 		public function set faultCallBack(value:Function):void 
 		{
-			if (_faultCallBack === value) return;
-			_faultCallBack = value;
-			super.dispatchEvent(new Event("faultCallBackChange"));
+			if (this._faultCallBack === value) return;
+			this._faultCallBack = value;
+			if (super.hasEventListener(EventGenerator.getEventType("faultCallBack")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		//------------------------------------
 		//  Public property responder
 		//------------------------------------
 		
-		[Bindable("responderChange")]
+		[Bindable("responderChanged")]
 		
 		/**
 		* ...
 		* This property can be used as the source for data binding.
-		* When this property is modified, it dispatches the <code>responderChange</code> event.
+		* When this property is modified, it dispatches the <code>responderChanged</code> event.
 		*/
-		public function get responder():Responder { return _responder; }
+		public function get responder():Responder { return this._responder; }
 		
 		public function set responder(value:Responder):void 
 		{
-		   if (_responder == value) return;
-		   _responder = value;
-		   super.dispatchEvent(new Event("responderChange"));
+			if (this._responder === value) return;
+			this._responder = value;
+			if (super.hasEventListener(EventGenerator.getEventType("responder")))
+				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
-		public function get id():String { return _id; }
+		public function get id():String { return this._id; }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -221,14 +231,16 @@ package org.wvxvws.net
 									faultCallBack:Function = null)
 		{
 			super();
-			_resultCallBack = resultCallBack;
-			_faultCallBack = faultCallBack;
-			_responder = new Responder(defaultResultCallBack, defaultFaultCallBack);
-			_synchronizer = Synchronizer.getInstance();
-			super.addEventListener(NetStatusEvent.NET_STATUS, 
-												netStatusHandler, false, 0, true);
-			super.addEventListener(SecurityErrorEvent.SECURITY_ERROR, 
-											securityErrorHandler, false, 0, true);
+			this._resultCallBack = resultCallBack;
+			this._faultCallBack = faultCallBack;
+			this._responder = 
+				new Responder(this.defaultResultCallBack, this.defaultFaultCallBack);
+			this._synchronizer = Synchronizer.getInstance();
+			super.addEventListener(
+				NetStatusEvent.NET_STATUS, this.netStatusHandler, false, 0, true);
+			super.addEventListener(
+				SecurityErrorEvent.SECURITY_ERROR, 
+				this.securityErrorHandler, false, 0, true);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -255,25 +267,25 @@ package org.wvxvws.net
 		public function send(method:String = null, parameters:ServiceArguments = null):void
 		{
 			if (!method) throw new Error("Must specify method");
-			var id:int = _synchronizer.putOnQueve(this, method);
-			var sm:ServiceMethod = this.methodForName(_id + "." + method);
+			var id:int = this._synchronizer.putOnQueve(this, method);
+			var sm:ServiceMethod = this.methodForName(this._id + "." + method);
 			if (sm.parameters && !parameters) parameters = sm.parameters;
-			if (!parameters) parameters = _parameters;
+			if (!parameters) parameters = this._parameters;
 			var operation:Operation = new Operation(id, sm, parameters);
-			_operations[id] = operation;
+			this._operations[id] = operation;
 		}
 		
 		public function cancel(method:String = null):void
 		{
-			_connected = false;
+			this._connected = false;
 			super.close();
 		}
 		
-		public function get sending():Boolean { return _sending; }
+		public function get sending():Boolean { return this._sending; }
 		
-		public function get result():Object { return _result; }
+		public function get result():Object { return this._result; }
 		
-		public function get fault():Object { return _fault; }
+		public function get fault():Object { return this._fault; }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -283,29 +295,29 @@ package org.wvxvws.net
 		
 		protected function defaultFaultCallBack(value:Object):void
 		{
-			_synchronizer.acknowledge(_currentID);
-			_sending = false;
-			_fault = value;
-			if (_faultCallBack !== null) _faultCallBack(value);
+			this._synchronizer.acknowledge(this._currentID);
+			this._sending = false;
+			this._fault = value;
+			if (this._faultCallBack !== null) this._faultCallBack(value);
 			super.dispatchEvent(new Event(Event.COMPLETE));
 			super.dispatchEvent(new ServiceEvent(ServiceEvent.FAULT, value));
 		}
 		
 		protected function defaultResultCallBack(value:Object):void
 		{
-			_synchronizer.acknowledge(_currentID);
-			_sending = false;
-			_result = value;
-			if (_resultCallBack !== null) _resultCallBack(value);
+			this._synchronizer.acknowledge(this._currentID);
+			this._sending = false;
+			this._result = value;
+			if (this._resultCallBack !== null) this._resultCallBack(value);
 			super.dispatchEvent(new Event(Event.COMPLETE));
 			super.dispatchEvent(new ServiceEvent(ServiceEvent.RESULT, value));
 		}
 		
 		protected function methodForName(name:String):ServiceMethod
 		{
-			for each(var method:ServiceMethod in _methods)
+			for each(var method:ServiceMethod in this._methods)
 			{
-				if (method.name == name) return method;
+				if (method.name === name) return method;
 			}
 			return null;
 		}
@@ -318,10 +330,10 @@ package org.wvxvws.net
 					switch (event.info.code)
 					{
 						case "NetConnection.Connect.Success":
-							if (_deferredOperation)
+							if (this._deferredOperation)
 							{
-								super.call.apply(this, _deferredOperation);
-								_deferredOperation = null;
+								super.call.apply(this, this._deferredOperation);
+								this._deferredOperation = null;
 							}
 							break;
 					}
@@ -346,29 +358,29 @@ package org.wvxvws.net
 		
 		net_internal function internalSend(id:int):void
 		{
-			_sending = true;
-			_currentID = id;
-			var operation:Operation = _operations[id];
-			_deferredOperation = [operation.method.name, _responder];
+			this._sending = true;
+			this._currentID = id;
+			var operation:Operation = this._operations[id];
+			this._deferredOperation = [operation.method.name, this._responder];
 			if (operation.parameters.parameters && 
 				operation.parameters.parameters.length)
 			{
-				_deferredOperation = 
-					_deferredOperation.concat(operation.parameters.parameters);
+				this._deferredOperation = 
+					this._deferredOperation.concat(operation.parameters.parameters);
 			}
-			if (!_baseURL) _baseURL = _synchronizer.defaultGetaway;
-			if (!_baseURL) 
+			if (!this._baseURL) this._baseURL = this._synchronizer.defaultGetaway;
+			if (!this._baseURL) 
 			{
 				this.defaultFaultCallBack("must specify baseURL");
 				return;
 			}
-			if (!_connected)
+			if (!this._connected)
 			{
-				super.connect(_baseURL);
-				_connected = true;
+				super.connect(this._baseURL);
+				this._connected = true;
 			}
-			super.call.apply(this, _deferredOperation);
-			_deferredOperation = null;
+			super.call.apply(this, this._deferredOperation);
+			this._deferredOperation = null;
 		}
 	}
 }

@@ -1,7 +1,7 @@
 ﻿/**
- * Xml walker utility class.
- * @author wvxvw
- */
+	Xml walker utility class.
+	<p class="author">wvxvw</p>
+**/
 package org.wvxvws.xml;
 
 
@@ -14,6 +14,10 @@ class W
 	private var _texts:Array<Null<String>>;
 	private var _retCode:Int;
 	
+	/**
+		Creates new walking operation.
+		<p class="code">param</p>	value	The XML document or fragment to start walking from.
+	**/
 	public function new(value:Xml)
 	{
 		this._root = value;
@@ -24,8 +28,21 @@ class W
 		else if (value != null) this._current.push(value);
 	}
 	
+	/**
+		Creates new walking operation.
+		<p class="code">param</p>	value	The XML document or fragment to start walking from.
+		Note: if XML document is passed, the firstElement is used.
+		<p class="code">return</p> new walker, you can chain the further calls to it.
+	**/
 	public static function alk(value:Xml):W { return new W(value); }
 	
+	/**
+		Filters child nodes.
+		<p class="code">param</p>	?x	A callback to execute on each <b>child</b> node.
+		Note: the child list is not copied.
+		Note: if no callback provided, all <b>child</b> nodes are included in result.
+		<p class="code">return</p> new walker, you can chain the further calls to it.
+	**/
 	public function c(?x:Null<Xml>->Int->Bool):W
 	{
 		var it:Iterator<Null<Xml>> = this._current.iterator();
@@ -65,6 +82,13 @@ class W
 		return this;
 	}
 	
+	/**
+		Filters child nodes.
+		<p class="code">param</p>	?x	A callback to execute on each <b>descendant</b> node.
+		Note: the child list is not copied.
+		Note: if no callback provided, all <b>descendant</b> nodes are included in result.
+		<p class="code">return</p> new walker, you can chain the further calls to it.
+	**/
 	public function d(?x:Null<Xml>->Bool):W
 	{
 		var it:Iterator<Null<Xml>> = this._current.iterator();
@@ -105,6 +129,13 @@ class W
 		return this;
 	}
 	
+	/**
+		Filters child nodes.
+		<p class="code">param</p>	?x	A callback to execute on each <b>parent</b> node.
+		Note: the child list is not copied.
+		Note: if no callback provided, all <b>parent</b> nodes are included in result.
+		<p class="code">return</p> new walker, you can chain the further calls to it.
+	**/
 	public function p(?x:Null<Xml>->Int->Bool):W
 	{
 		var it:Iterator<Null<Xml>> = this._current.iterator();
@@ -146,6 +177,13 @@ class W
 		return this;
 	}
 	
+	/**
+		Filters child nodes.
+		<p class="code">param</p>	?x	A callback to execute on each <b>attribute</b> node.
+		Note: the child list is not copied.
+		Note: if no callback provided, all <b>attribute</b> nodes are included in result.
+		<p class="code">return</p> new walker, you can chain the further calls to it.
+	**/
 	public function a(?x:String->String->Xml->Bool):W
 	{
 		var it:Iterator<Null<Xml>> = this._current.iterator();
@@ -207,6 +245,13 @@ class W
 		return this;
 	}
 	
+	/**
+		Filters child nodes.
+		<p class="code">param</p>	?x	A callback to execute on each <b>text</b> node.
+		Note: the child list is not copied.
+		Note: if no callback provided, all <b>text</b> nodes are included in result.
+		<p class="code">return</p> new walker, you can chain the further calls to it.
+	**/
 	public function t(?x:Null<String>->Xml->Bool):W
 	{
 		var it:Iterator<Null<Xml>> = this._current.iterator();
@@ -275,6 +320,13 @@ class W
 		return this;
 	}
 	
+	/**
+		Call this at the end of the procedure if you need the last result returned after filtering.
+		<p class="code">return</p> If the last operation filtered either child nodes or descendant nodes or parent nodes
+		the returned value will be of type Array&lt;Xml&gt;. If the last operation filtered attributes
+		the return value will be of type Arrat&lt;Hash&lt;String&gt;&gt;. If the last operation
+		filtered text nodes, the return value will be of type Array&lt;Null&lt;String&gt;&gt;.
+	**/
 	public function z():Dynamic
 	{
 		var u:Dynamic = null;

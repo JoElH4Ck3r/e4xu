@@ -27,7 +27,7 @@
 		public static const DISPATCHER:String = "dispatcher";
 		public static const EVENT_TYPES:String = "eventTypes";
 		
-		public function get id():String { return _id; }
+		public function get id():String { return this._id; }
 		
 		//------------------------------------
 		//  Public property dispatcher
@@ -40,13 +40,13 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>dispatcherChanged</code> event.
 		*/
-		public function get dispatcher():IEventDispatcher { return _dispatcher; }
+		public function get dispatcher():IEventDispatcher { return this._dispatcher; }
 		
 		public function set dispatcher(value:IEventDispatcher):void 
 		{
-			if (_dispatcher == value) return;
-			_dispatcher = value;
-			if (_dispatcher) this.addUnamangedHandlers();
+			if (this._dispatcher == value) return;
+			this._dispatcher = value;
+			if (this._dispatcher) this.addUnamangedHandlers();
 			if (super.hasEventListener(EventGenerator.getEventType(DISPATCHER)))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -62,21 +62,21 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>eventTypesChanged</code> event.
 		*/
-		public function get eventTypes():Vector.<String> { return _eventTypes; }
+		public function get eventTypes():Vector.<String> { return this._eventTypes; }
 		
 		public function set eventTypes(value:Vector.<String>):void 
 		{
-			if (_eventTypes === value) return;
+			if (this._eventTypes === value) return;
 			var s:String;
-			if (_dispatcher)
+			if (this._dispatcher)
 			{
-				for each (s in _eventTypes)
+				for each (s in this._eventTypes)
 				{
-					_dispatcher.removeEventListener(s, super.dispatchEvent);
+					this._dispatcher.removeEventListener(s, super.dispatchEvent);
 				}
 			}
-			_eventTypes.length = 0;
-			for each (s in value) _eventTypes.push(s);
+			this._eventTypes.length = 0;
+			for each (s in value) this._eventTypes.push(s);
 			if (super.hasEventListener(EventGenerator.getEventType(EVENT_TYPES)))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -111,8 +111,8 @@
 		
 		public function initialized(document:Object, id:String):void
 		{
-			_document = document as Map;
-			_id = id;
+			this._document = document as Map;
+			this._id = id;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -133,15 +133,16 @@
 						useCapture, priority, useWeakReference);
 					break;
 				default:
-					if (_dispatcher)
+					if (this._dispatcher)
 					{
-						_dispatcher.addEventListener(type, listener, 
+						this._dispatcher.addEventListener(type, listener, 
 							useCapture, priority, useWeakReference);
 					}
 					else
 					{
-						if (!_unmanagedHandlers) _unmanagedHandlers = new <Array>[];
-						_unmanagedHandlers.push(arguments);
+						if (!this._unmanagedHandlers)
+							this._unmanagedHandlers = new <Array>[];
+						this._unmanagedHandlers.push(arguments);
 					}
 			}
 		}
@@ -154,9 +155,9 @@
 		
 		protected function addUnamangedHandlers():void
 		{
-			for each (var a:Array in _unmanagedHandlers)
+			for each (var a:Array in this._unmanagedHandlers)
 				this.addEventListener.apply(this, a);
-			_unmanagedHandlers.length = 0;
+			this._unmanagedHandlers.length = 0;
 		}
 		
 		//--------------------------------------------------------------------------

@@ -36,18 +36,18 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>linkChanged</code> event.
 		*/
-		public function get link():String { return _link.id; }
+		public function get link():String { return this._link.id; }
 		
 		public function set link(value:String):void 
 		{
-			if (_link && _link.id === value) return;
-			var vm:Vector.<Map> = Map.getMaps(_domain);
+			if (this._link && this._link.id === value) return;
+			var vm:Vector.<Map> = Map.getMaps(this._domain);
 			for each (var m:Map in vm)
 			{
-				_link = m.getLink(value);
-				if (_link) break;
+				this._link = m.getLink(value);
+				if (this._link) break;
 			}
-			if (!_link) throw new Error("Cannot resolve the link for: " + value);
+			if (!this._link) throw new Error("Cannot resolve the link for: " + value);
 			this.addHandlers();
 			if (super.hasEventListener(EventGenerator.getEventType("link")))
 				super.dispatchEvent(EventGenerator.getEvent());
@@ -64,20 +64,20 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>handlersChanged</code> event.
 		*/
-		public function get handlers():Vector.<Handler> { return _handlers; }
+		public function get handlers():Vector.<Handler> { return this._handlers; }
 		
 		public function set handlers(value:Vector.<Handler>):void 
 		{
-			if (_handlers === value) return;
-			_handlers = value;
-			if (_link) this.addHandlers();
+			if (this._handlers === value) return;
+			this._handlers = value;
+			if (this._link) this.addHandlers();
 			if (super.hasEventListener(EventGenerator.getEventType("handlers")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
 		public function get dispatcher():IEventDispatcher
 		{
-			if (_link) return _link.dispatcher;
+			if (this._link) return this._link.dispatcher;
 			return null;
 		}
 		
@@ -120,8 +120,8 @@
 		
 		public function initialized(document:Object, id:String):void
 		{
-			_document = document;
-			_id = id;
+			this._document = document;
+			this._id = id;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -135,11 +135,11 @@
 			var s:String;
 			var v:Vector.<Function>;
 			var f:Function;
-			for each (var h:Handler in _handlers)
+			for each (var h:Handler in this._handlers)
 			{
 				v = h.handlers;
 				s = h.type;
-				for each (f in v) _link.addEventListener(s, f);
+				for each (f in v) this._link.addEventListener(s, f);
 			}
 		}
 		
