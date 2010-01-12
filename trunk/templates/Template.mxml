@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!---
+	MXML class $(Package).$(FileName)
+	@author $(DefaultUser) 
+--->
+<fl:Sprite
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:fl="flash.display.*"
+	xmlns:my="$(Package).*"
+	enterFrame="
+	super.removeEventListener(Event.ENTER_FRAME, arguments.callee);
+	if (super.stage) this.init();
+	else super.addEventListener(Event.ADDED_TO_STAGE, this.init);
+	"
+	>
+	<mx:Script>
+		<![CDATA[
+		import flash.display.StageAlign;
+		import flash.display.StageScaleMode;
+		
+		protected function init():void
+		{
+			super.stage.align = StageAlign.TOP_LEFT;
+			super.stage.scaleMode = StageScaleMode.NO_SCALE;
+		}
+		]]>
+	</mx:Script>
+</fl:Sprite>
