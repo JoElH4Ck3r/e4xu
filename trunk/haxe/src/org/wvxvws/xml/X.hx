@@ -24,27 +24,23 @@ class X
 	private static var ATT_SORTING_ALPHA:Int = 0;
 	private static var ATT_SORTING_XMLNS_FIRST:Int = 1;
 	private static var ATT_SORTING_XMLNS_FIRST_ALPHA:Int = 2;
-	private static var ATT_SORTING_REVERSE:Int = 3;
-	private static var ATT_SORTING_XMLNS_FIRST_REVERSE:Int = 3;
-	private static var ATT_SORTING_XMLNS_LAST_REVERSE:Int = 4;
-	private static var ATT_SORTING_XMLNS_LAST_ALPHA:Int = 5;
-	private static var ATT_SORTING_XMLNS_LAST:Int = 6;
+	private static var ATT_SORTING_XMLNS_LAST_ALPHA:Int = 3;
+	private static var ATT_SORTING_XMLNS_LAST:Int = 4;
 	
-	private static var _options:XmlPrintOptions;
+	private static var _options:XOptions;
 	private static var _out:String;
-	private static var _outBuff:StringBuf;
-	private static var _nlRE:EReg = ~/[\r\n]+/gm;
 	
 	public function new() { }
 	
-	public static function print(input:Xml, ?options:XmlPrintOptions):String
+	public static function print(input:Xml, ?options:XOptions):String
 	{
 		var prolog:String = "";
 		var space:String;
 		var quot:String;
 		var iter:Iterator<Xml>;
+		var arr:Array<String>;
 		if (options != null) _options = options;
-		else _options = new XmlPrintOptions();
+		else _options = new XOptions();
 		if (input.nodeType == Xml.Document)
 		{
 			if (_options.outputProlog)
@@ -52,23 +48,23 @@ class X
 				//<?xml version="1.0" encoding="utf-8"?>
 				space = _options.wrapEqWithSpaces ? SPACE_CHAR : "";
 				quot = _options.useSingleQuotes ? "'" : "\"";
-				prolog = Xml.createProlog(
-					"<?xml version" + space + "=" + space + quot + 
-					_options.xmlVersion + quot + " encoding" + space + 
-					space + quot + _options.xmlEncoding + quot + "?>").toString();
+				arr = cast ["<?xml version", space, "=", space, quot, 
+					_options.xmlVersion, quot, " encoding", space, space, 
+					quot, _options.xmlEncoding, quot, "?>", _options.lineEnd];
+				prolog = Xml.createProlog(arr.join("")).toString();
 			}
 			_out = prolog;
 			iter = input.iterator();
 			while (iter.hasNext())
 			{
-				_out += printNode(iter.next(), 0);
+				_out += printNode(iter.next(), 0, true);
 			}
 		}
-		else _out = printNode(input, 0);
+		else _out = printNode(input, 0, true);
 		return _out;
 	}
 	
-	private static function printNode(node:Xml, depth:Int):String
+	private static function printNode(node:Xml, depth:Int, nl:Bool):String
 	{
 		var sb:StringBuf = new StringBuf();
 		var attList:Array<Hash<String>>;
@@ -81,28 +77,37 @@ class X
 		var lineLen:Int;
 		var lineBreakInd:Int;
 		var i:Int = depth;
-		while (i > 0)
+		var ind:String;
+		var nextNode:Xml;
+		var chars:Array<String> = new Array<String>();
+		var hasAttributes:Bool;
+		
+		if (nl)
 		{
-			sb.addChar(_options.indentChar);
-			i--;
+			while (i-- > 0) chars[i] = _options.indentChar;
+			ind = chars.join("");
 		}
-		var ind:String = sb.toString();
+		else ind = "";
+		
 		switch (node.nodeType)
 		{
 			case Xml.Element:
+				sb.add(ind);
 				sb.addChar(LT);
 				sb.add(node.nodeName);
+				hasAttributes = false;
 				switch (_options.attributeSorting)
 				{
 					case ATT_SORTING_NONE:
 						attIter = node.attributes();
+						hasAttributes = attIter.hasNext();
 						while (attIter.hasNext())
 						{
 							if (_options.attributesOnNewLine)
 							{
 								sb.add(_options.lineEnd);
 								sb.add(ind);
-								sb.addChar(_options.indentChar);
+								sb.add(_options.indentChar);
 							}
 							else sb.addChar(SPACE);
 							name = attIter.next();
@@ -127,23 +132,31 @@ class X
 					//case ATT_SORTING_XMLNS_LAST:;
 				}
 				chIter = node.iterator();
-				if (!chIter.hasNext()) sb.addChar(SLASH);
+				i = hasChildren(chIter);
+				if (i < 1) sb.addChar(SLASH);
+				if (_options.gtOnNewLine > 0 && hasAttributes)
+				{
+					sb.add(_options.lineEnd);
+					sb.add(ind);
+					if (_options.gtOnNewLine > 1) sb.add(_options.indentChar);
+				}
 				sb.addChar(GT);
-				sb.add(_options.lineEnd);
-				i = 0;
+				if (i < 3) sb.add(_options.lineEnd);
+				chIter = node.iterator();
 				while (chIter.hasNext())
 				{
-					i++;
-					sb.add(printNode(chIter.next(), depth + 1));
+					nextNode = chIter.next();
+					if (i == 3) sb.add(printNode(nextNode, (depth + 1), false));
+					else sb.add(printNode(nextNode, (depth + 1), true));
 				}
 				if (i > 0)
 				{
-					sb.add(ind.substr(1));
+					if (i < 3) sb.add(ind);
 					sb.addChar(LT);
 					sb.addChar(SLASH);
 					sb.add(node.nodeName);
 					sb.addChar(GT);
-					sb.add(_options.lineEnd);
+					if (nl) sb.add(_options.lineEnd);
 				}
 			case Xml.CData:
 				sb.add(node.nodeValue);
@@ -164,22 +177,23 @@ class X
 						}
 						break;
 					}
-					i = lineLen;
 					if (lineLen < lineBreakInd)
 					{
 						while (lineBreakInd > lineLen)
 						{
+							lineBreakInd--;
 							name = line.charAt(lineBreakInd);
 							if (name == SPACE_CHAR || name == TAB_CHAR || 
 							name == RET_CHAR || name == NL_CHAR)
 							{
-								lineBreakInd--;
 								continue;
 							}
 							break;
 						}
 					}
-					sb.add(line.substr(lineLen, lineBreakInd - lineLen));
+					if (nl && lineBreakInd > lineLen) sb.add(ind);
+					sb.add(line.substr(lineLen, 1 + lineBreakInd - lineLen));
+					if (nl && lineBreakInd > lineLen) sb.add(_options.lineEnd);
 				}
 				else sb.add(node.nodeValue);
 			case Xml.Comment:
@@ -188,5 +202,30 @@ class X
 				return "";
 		}
 		return sb.toString();
+	}
+	
+	/**
+		
+		@param	iter
+		@return 
+		0 - no children
+		1 - one child not text
+		2 - many children
+		3 - only one text child
+	**/
+	private static function hasChildren(iter:Iterator<Xml>):Int
+	{
+		var i:Int = 0;
+		var isText:Bool = false;
+		var node:Xml;
+		while (iter.hasNext())
+		{
+			node = iter.next();
+			isText = node.nodeType == Xml.PCData;
+			i++;
+			if (i > 1) break;
+		}
+		if (isText && i == 1) return 3;
+		else return i;
 	}
 }
