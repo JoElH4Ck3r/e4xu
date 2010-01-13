@@ -15,6 +15,11 @@ class X
 	private static var SINGLE_Q:Int = 39;
 	private static var DOUBLE_Q:Int = 34;
 	
+	private static var SPACE_CHAR:String = " ";
+	private static var TAB_CHAR:String = "\t";
+	private static var RET_CHAR:String = "\r";
+	private static var NL_CHAR:String = "\n";
+	
 	private static var ATT_SORTING_NONE:Int = -1;
 	private static var ATT_SORTING_ALPHA:Int = 0;
 	private static var ATT_SORTING_XMLNS_FIRST:Int = 1;
@@ -34,7 +39,32 @@ class X
 	
 	public static function print(input:Xml, ?options:XmlPrintOptions):String
 	{
-		
+		var prolog:String = "";
+		var space:String;
+		var quot:String;
+		var iter:Iterator<Xml>;
+		if (options != null) _options = options;
+		else _options = new XmlPrintOptions();
+		if (input.nodeType == Xml.Document)
+		{
+			if (_options.outputProlog)
+			{
+				//<?xml version="1.0" encoding="utf-8"?>
+				space = _options.wrapEqWithSpaces ? SPACE_CHAR : "";
+				quot = _options.useSingleQuotes ? "'" : "\"";
+				prolog = Xml.createProlog(
+					"<?xml version" + space + "=" + space + quot + 
+					_options.xmlVersion + quot + " encoding" + space + 
+					space + quot + _options.xmlEncoding + quot + "?>").toString();
+			}
+			_out = prolog;
+			iter = input.iterator();
+			while (iter.hasNext())
+			{
+				_out += printNode(iter.next(), 0);
+			}
+		}
+		else _out = printNode(input, 0);
 		return _out;
 	}
 	
@@ -51,7 +81,11 @@ class X
 		var lineLen:Int;
 		var lineBreakInd:Int;
 		var i:Int = depth;
-		while (i-- > 0) sb.addChar(_options.indentChar);
+		while (i > 0)
+		{
+			sb.addChar(_options.indentChar);
+			i--;
+		}
 		var ind:String = sb.toString();
 		switch (node.nodeType)
 		{
@@ -66,52 +100,22 @@ class X
 						{
 							if (_options.attributesOnNewLine)
 							{
-								sb.addChar(_options.lineEnd);
+								sb.add(_options.lineEnd);
 								sb.add(ind);
 								sb.addChar(_options.indentChar);
 							}
-							else if (_options.lineMaxLength < 0)
-							{
-								sb.addChar(SPACE);
-							}
-							else
-							{
-								line = sb.toString();
-								lineLen = _options.lineMaxLength;
-								lineBreakInd = line.lastIndexOf("\r");
-								if (lineBreakInd < 0)
-								{
-									lineBreakInd = line.lastIndexOf("\n");
-								}
-								else
-								{
-									lineBreakInd = 
-										cast (Math.max(lineBreakInd, 
-										line.lastIndexOf("\n")), Int);
-								}
-							}
-							name = attIter.next();
-							att = new StringBuf()
-							att.add(name);
-							if (_options.wrapEqWithSpaces)
-							{
-								att.addChar(SPACE);
-							}
-							att.addChar(EQ);
-							if (_options.wrapEqWithSpaces)
-							{
-								att.addChar(SPACE);
-							}
-							att.add(node.get(name));
-							attLines = _nlRE.split(att.toString());
-							if (lineLen - lineBreakInd + attLines[0].length > 
-								_options.lineMaxLength)
-							{
-								sb.addChar(_options.lineEnd);
-							}
 							else sb.addChar(SPACE);
-							sb.add(attLines.join(
-								String.fromCharCode(_options.lineEnd)));
+							name = attIter.next();
+							sb.add(name);
+							if (_options.wrapEqWithSpaces) sb.addChar(SPACE);
+							sb.addChar(EQ);
+							if (_options.wrapEqWithSpaces) sb.addChar(SPACE);
+							// TODO: maybe escape opposite quotes?
+							if (_options.useSingleQuotes) sb.addChar(SINGLE_Q);
+							else sb.addChar(DOUBLE_Q);
+							sb.add(node.get(name));
+							if (_options.useSingleQuotes) sb.addChar(SINGLE_Q);
+							else sb.addChar(DOUBLE_Q);
 						}
 					//case ATT_SORTING_ALPHA:;
 					//case ATT_SORTING_XMLNS_FIRST:;
@@ -123,10 +127,65 @@ class X
 					//case ATT_SORTING_XMLNS_LAST:;
 				}
 				chIter = node.iterator();
+				if (!chIter.hasNext()) sb.addChar(SLASH);
+				sb.addChar(GT);
+				sb.add(_options.lineEnd);
+				i = 0;
 				while (chIter.hasNext())
 				{
+					i++;
 					sb.add(printNode(chIter.next(), depth + 1));
 				}
+				if (i > 0)
+				{
+					sb.add(ind.substr(1));
+					sb.addChar(LT);
+					sb.addChar(SLASH);
+					sb.add(node.nodeName);
+					sb.addChar(GT);
+					sb.add(_options.lineEnd);
+				}
+			case Xml.CData:
+				sb.add(node.nodeValue);
+			case Xml.PCData:
+				if (_options.ignoreWhite)
+				{
+					line = node.toString();
+					lineLen = 0;
+					lineBreakInd = line.length;
+					while (lineLen < lineBreakInd)
+					{
+						name = line.charAt(lineLen);
+						if (name == SPACE_CHAR || name == TAB_CHAR || 
+							name == RET_CHAR || name == NL_CHAR)
+						{
+							lineLen++;
+							continue;
+						}
+						break;
+					}
+					i = lineLen;
+					if (lineLen < lineBreakInd)
+					{
+						while (lineBreakInd > lineLen)
+						{
+							name = line.charAt(lineBreakInd);
+							if (name == SPACE_CHAR || name == TAB_CHAR || 
+							name == RET_CHAR || name == NL_CHAR)
+							{
+								lineBreakInd--;
+								continue;
+							}
+							break;
+						}
+					}
+					sb.add(line.substr(lineLen, lineBreakInd - lineLen));
+				}
+				else sb.add(node.nodeValue);
+			case Xml.Comment:
+				if (!_options.ignoreComments) sb.add(node.toString());
+			case Xml.Prolog:
+				return "";
 		}
 		return sb.toString();
 	}
