@@ -133,7 +133,7 @@ class X
 				}
 				chIter = node.iterator();
 				i = hasChildren(chIter);
-				if (i < 1) sb.addChar(SLASH);
+				if (i < 1 && !_options.alwaysExpand) sb.addChar(SLASH);
 				if (_options.gtOnNewLine > 0 && hasAttributes)
 				{
 					sb.add(_options.lineEnd);
@@ -141,7 +141,11 @@ class X
 					if (_options.gtOnNewLine > 1) sb.add(_options.indentChar);
 				}
 				sb.addChar(GT);
-				if (i < 3) sb.add(_options.lineEnd);
+				if (i < 3)
+				{
+					if (i != 0 || !_options.alwaysExpand)
+						sb.add(_options.lineEnd);
+				}
 				chIter = node.iterator();
 				while (chIter.hasNext())
 				{
@@ -152,6 +156,14 @@ class X
 				if (i > 0)
 				{
 					if (i < 3) sb.add(ind);
+					sb.addChar(LT);
+					sb.addChar(SLASH);
+					sb.add(node.nodeName);
+					sb.addChar(GT);
+					if (nl) sb.add(_options.lineEnd);
+				}
+				else if (i == 0 && _options.alwaysExpand)
+				{
 					sb.addChar(LT);
 					sb.addChar(SLASH);
 					sb.add(node.nodeName);

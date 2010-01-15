@@ -21,6 +21,7 @@ class XOptions
 	public var xmlEncoding:String;
 	public var useSingleQuotes:Bool;
 	public var wrapEqWithSpaces:Bool;
+	public var alwaysExpand:Bool;
 	
 	public function new() 
 	{
@@ -38,5 +39,6 @@ class XOptions
 		this.xmlEncoding = "utf-8";
 		this.useSingleQuotes = false;
 		this.wrapEqWithSpaces = false;
+		this.alwaysExpand = true;// false;
 	}
 }
