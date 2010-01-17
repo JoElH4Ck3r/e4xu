@@ -75,6 +75,7 @@ class X
 	private static var _currentTexts:Array<String>;
 	private static var _position:Int;
 	
+	//{ Constructor
 	public function new()
 	{
 		_methods = new Hash<String>();
@@ -109,6 +110,7 @@ class X
 		_methods.set("ceiling", "ceiling");
 		_methods.set("round", "round");
 	}
+	//}
 	
 	public static function path(input:Xml, expression:String, scope:Dynamic):Dynamic
 	{
@@ -121,6 +123,7 @@ class X
 		else _currentNodes.push(input);
 		evalPath(expression);
 		trace(_currentNodes);
+		trace(_currentAtts);
 		return null;
 	}
 	
@@ -171,7 +174,6 @@ class X
 					isChild = false;
 					isParent = false;
 					isDescendant = false;
-					isAll = false;
 					isAtt = false;
 					isNS = false;
 					isThis = false;
@@ -184,6 +186,7 @@ class X
 							selectElements(word);
 							word = "";
 						}
+						if (isAll) isAll = false;
 						nodes2 = new Array<Xml>();
 						for (n in _currentNodes.iterator())
 						{
@@ -191,6 +194,19 @@ class X
 							nodes2 = nodes2.concat(getDesc(n));
 						}
 						_currentNodes = nodes2;
+						isAttType = false;
+					}
+					else if (ch2 == X_AMP)
+					{
+						isAtt = true;
+						isAttType = true;
+						i++;
+						if (word != "")
+						{
+							selectElements(word);
+							word = "";
+						}
+						selectAttributes();
 					}
 					else
 					{
@@ -200,25 +216,31 @@ class X
 							selectElements(word);
 							word = "";
 						}
-						nodes2 = new Array<Xml>();
-						for (n in _currentNodes.iterator())
-						{
-							nodes2.push(n);
-						}
-						_currentNodes = nodes2;
+						if (isAll) isAll = false;
+						isAttType = false;
 					}
 					isElemType = true;
-					isAttType = false;
 					isTextType = false;
 				//}
 				
+				//{ Attributes
 				case X_AMP: //- @
+					if (isAtt) throw "Illegal character at: " + i;
+					if (isAll) isAll = false;
 					isAtt = true;
 					isElemType = false;
 					isAttType = true;
 					isTextType = false;
+					if (word != "") throw "Illegal character at: " + i;
+					//{
+						//filterAttributes(word);
+						//word = "";
+					//}
+					//else 
+					selectAttributes();
+				//}
 				case X_ALL: //- *
-					if (word.length > 0)
+					if (word.length > 0 || isAll)
 						throw "Illegal character at: " + i;
 					isAll = true;
 				case X_COL: //- :
@@ -242,10 +264,10 @@ class X
 					isChild = false;
 					isParent = false;
 					isDescendant = false;
-					isAll = false;
 					isAtt = false;
 					isNS = false;
 					isThis = false;
+					if (isAll) isAll = false;
 					if (ch2 == X_THIS)
 					{
 						isParent = true;
@@ -273,6 +295,7 @@ class X
 				
 				//{ Word
 				default:
+					if (isAll) throw "Illegal character at: " + i;
 					isChild = false;
 					isParent = false;
 					isDescendant = false;
@@ -292,17 +315,21 @@ class X
 						(ch > 57 && ch < 65) || (ch > 90 && ch < 97) || ch > 122)
 					{
 						// End of the word
+						if (isAttType)
+						{
+							filterAttributes(word);
+						}
 						if (ch == X_OB)
 						{
 							// Function
 							if (!isElemType)
 								throw "Illegal character at: " + i;
 						}
-						else if (ch == X_OP)
+						else if (!isAttType && ch == X_OP)
 						{
 							// Array
 							selectElements(word);
-							word = null;
+							word = "";
 							evalExpr(expr.substr(i));
 						}
 					}
@@ -311,15 +338,69 @@ class X
 			}
 			i++;
 		}
-		if (word != null)
+		if (word != "")
 		{
-			selectElements(word);
+			if (isAttType) filterAttributes(word);
+			else if (isElemType) selectElements(word);
+			//else if (isTextType) selectElements(word);
+			else throw "Extra characters";
 		}
+	}
+	
+	private static function selectAttributes():Void
+	{
+		var res:Array<Hash<String>> = new Array<Hash<String>>();
+		var h:Hash<String>;
+		for (n in _currentNodes.iterator())
+		{
+			if (n.nodeType == Xml.Element)
+			{
+				h = null;
+				for (a in n.attributes())
+				{
+					if (h == null) h = new Hash<String>();
+					h.set(a, n.get(a));
+				}
+				if (h != null) res.push(h);
+			}
+		}
+		_currentAtts = res;
+	}
+	
+	private static function filterAttributes(name:String):Void
+	{
+		//var res:Array<Hash<String>> = new Array<Hash<String>>();
+		//var h:Hash<String>;
+		//for (n in _currentNodes.iterator())
+		//{
+			//if (n.nodeType == Xml.Element && n.exists(name))
+			//{
+				//h = new Hash<String>();
+				//h.set(name, n.get(name));
+				//res.push(h);
+			//}
+		//}
+		//_currentAtts = res;
+		var nh:Hash<String>;
+		var na:Array<Hash<String>> = null;
+		for (h in _currentAtts.iterator())
+		{
+			for (k in h.keys())
+			{
+				if (k == name)
+				{
+					if (na == null) na = new Array<Hash<String>>();
+					nh = new Hash<String>();
+					nh.set(k, h.get(k));
+					na.push(nh);
+				}
+			}
+		}
+		_currentAtts = na;
 	}
 	
 	private static function selectElements(name:String):Void
 	{
-		trace("selecting " + name);
 		var nodes:Array<Xml> = new Array<Xml>();
 		for (n in _currentNodes.iterator())
 		{
