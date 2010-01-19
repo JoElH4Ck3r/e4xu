@@ -4,7 +4,7 @@
   <output>
     <movie disabled="False" />
     <movie input="" />
-    <movie path="bin\ui.swf" />
+    <movie path="bin\main.swf" />
     <movie fps="30" />
     <movie width="800" />
     <movie height="600" />
@@ -14,12 +14,13 @@
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
     <class path="haxe\src" />
+    <class path="..\protobuf\as3-lib\src" />
   </classpaths>
   <!-- Build options -->
   <build>
     <option directives="" />
     <option flashStrict="False" />
-    <option mainClass="org.wvxvws.TestW" />
+    <option mainClass="org.wvxvws.Main" />
     <option override="False" />
     <option verbose="False" />
     <option additional="" />
@@ -32,7 +33,6 @@
   <compileTargets>
     <compile path="src\org\wvxvws\Main.hx" />
     <compile path="haxe\src\org\wvxvws\Main.hx" />
-    <compile path="haxe\src\org\wvxvws\TestW.hx" />
   </compileTargets>
   <!-- Assets to embed into the output SWF -->
   <library>

@@ -55,6 +55,6 @@ package org.wvxvws.data
 		
 		public function valueOf():Object { return this.target; }
 		
-		public function toString():Object { return String(this.target); }
+		public function toString():String { return String(this.target); }
 	}
 }
