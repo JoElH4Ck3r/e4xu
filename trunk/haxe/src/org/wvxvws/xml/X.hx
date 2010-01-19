@@ -127,9 +127,10 @@ class X
 		return null;
 	}
 	
-	private static function evalExpr(expr:String):Void
+	private static function evalExpr(expr:String):Int
 	{
-		
+		trace("expr " + expr);
+		return 100000;
 	}
 	
 	private static function evalPath(expr:String):Void
@@ -277,6 +278,7 @@ class X
 							selectElements(word);
 							word = "";
 						}
+						trace("isParent");
 						nodes2 = new Array<Xml>();
 						for (n in _currentNodes.iterator())
 						{
@@ -317,20 +319,21 @@ class X
 						// End of the word
 						if (isAttType)
 						{
+							trace("me... " + word);
 							filterAttributes(word);
 						}
 						if (ch == X_OB)
 						{
-							// Function
-							if (!isElemType)
-								throw "Illegal character at: " + i;
+							// Array
+							i = evalExpr(expr.substr(i));
 						}
 						else if (!isAttType && ch == X_OP)
 						{
-							// Array
+							// Function
+							if (!isElemType)
+								throw "Illegal character at: " + i;
 							selectElements(word);
 							word = "";
-							evalExpr(expr.substr(i));
 						}
 					}
 					else word += String.fromCharCode(ch);
@@ -642,6 +645,7 @@ class Axis
 	public static var PARENT:String = "parent";
 	public static var ATTRIBUTE:String = "attribute";
 	public static var DESCENDANT:String = "descendant";
+	public static var ANCESTOR:String = "ancestor";
 	public static var FOLLOWING:String = "following";
 	public static var FOLLOWING_SIBLING:String = "following-sibling";
 	public static var PRECEDING:String = "preceding";
