@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <my:DIV 
-	xmlns:mx="http://ns.adobe.com/mxml/2009"
+	xmlns:mx="http://e4xu.googlecode.com/mxml"
 	xmlns:my="http://e4xu.googlecode.com"
 	initialized="init()"
 	backgroundColor="0xC0C0C0"

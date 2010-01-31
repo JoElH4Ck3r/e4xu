@@ -437,16 +437,17 @@ public class Binding
 	 */
 	private function nodeSeqEqual(x:XMLList, y:XMLList):Boolean
 	{
-		var n:uint = x.length();
-		if (n == y.length())
+		var n:int = x.length();
+		var i:int = -1;
+		if (n === y.length())
 		{
-			for (var i:uint = 0; i < n && x[i] === y[i]; i++);
-			return i == n;
+			while (i++ < n)
+			{
+				if (x[i] !== y[i]) return false;
+			}
+			return true;
 		}
-		else
-		{
-			return false;
-		}
+		return false;
 	}
 
     /**
