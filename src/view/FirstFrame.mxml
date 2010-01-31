@@ -1,11 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- xmlns:mx="http://www.adobe.com/2006/mxml" -->
+<!-- xmlns:mx="http://ns.adobe.com/mxml/2009" -->
 <e4xu:FrameOne 
-	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:mx="http://e4xu.googlecode.com/mxml"
 	xmlns:e4xu="http://e4xu.googlecode.com"
 	frameTwoAlias="'view.SecondFrame'"
 	width="800"
 	height="600"
 	>
+	<mx:Declarations>
+		<mx:String id="s1">"This"</mx:String>
+		<mx:String id="s2">"is"</mx:String>
+		<mx:String id="s3">"test"</mx:String>
+		<mx:String id="s4">"method"</mx:String>
+	</mx:Declarations>
 	
 	<mx:Script>
 		<![CDATA[
@@ -24,10 +32,5 @@
 			complete="test(s1, s2, s3, s4);"
 			/>
 	</e4xu:preloader>
-	
-	<mx:String id="s1">"This"</mx:String>
-	<mx:String id="s2">"is"</mx:String>
-	<mx:String id="s3">"test"</mx:String>
-	<mx:String id="s4">"method"</mx:String>
 	
 </e4xu:FrameOne>

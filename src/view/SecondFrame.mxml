@@ -1,19 +1,56 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- xmlns:mx="http://www.adobe.com/2006/mxml" -->
+<!-- xmlns:ex="http://ns.adobe.com/mxml/2009" -->
 <e4xu:FrameTwo 
-	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:ex="http://e4xu.googlecode.com/mxml"
 	xmlns:e4xu="http://e4xu.googlecode.com"
 	width="800"
 	height="600"
 	backgroundColor="0x3E2F1B"
 	initialized="testMe()"
 	>
-	<mx:Metadata>
+	<ex:Metadata>
 		[SWF(width="800", height="600", scriptTimeLimit="15", frameRate="30", backgroundColor="0x3E2F1B")]
 		[Frame(factoryClass="view.FirstFrame")]
 		[Frame(extraFrame="view.FirstFrame")]
 		[Mixin]
-	</mx:Metadata>
-	<mx:Script>
+	</ex:Metadata>
+	
+	<ex:Declarations>
+		<e4xu:SPAN 
+			id="testSPAN"
+			text="'Test text'"
+			align="'center'"
+			background="true"
+			backgroundColor="#FF8811"
+			width="700"
+			height="25"
+			x="50"
+			y="20"
+			/>
+		<e4xu:AMFService 
+			id="testService"
+			resultCallBack="serviceSuccess" 
+			faultCallBack="serviceFault"
+			baseURL="'http://localhost/amfphp/gateway.php'"
+			>
+			<e4xu:ServiceMethod name="'sayHi'" >
+				<e4xu:ServiceArguments>
+					<ex:String id="foo">"bar"</ex:String>
+					<ex:Number id="bar">22222</ex:Number>
+				</e4xu:ServiceArguments>
+			</e4xu:ServiceMethod>
+			
+			<e4xu:ServiceMethod name="'sayBoo'" >
+				<e4xu:ServiceArguments>
+					<ex:String id="oof">"rab"</ex:String>
+					<ex:Number id="rab">11111</ex:Number>
+				</e4xu:ServiceArguments>
+			</e4xu:ServiceMethod>
+		</e4xu:AMFService>
+	</ex:Declarations>
+	
+	<ex:Script>
 		<![CDATA[
 			import mx.messaging.config.ServerConfig
 			private function testMe():void
@@ -32,38 +69,6 @@
 				this.testSPAN.text = value.toString();
 			}
 		]]>
-	</mx:Script>
-	<e4xu:SPAN 
-		id="testSPAN"
-		text="'Test text'"
-		align="'center'"
-		background="true"
-		backgroundColor="#FF8811"
-		width="700"
-		height="25"
-		x="50"
-		y="20"
-		/>
-	
-	<e4xu:AMFService 
-		id="testService"
-		resultCallBack="serviceSuccess" 
-		faultCallBack="serviceFault"
-		baseURL="'http://localhost/amfphp/gateway.php'"
-		>
-		<e4xu:ServiceMethod name="'sayHi'" >
-			<e4xu:ServiceArguments>
-				<mx:String id="foo">"bar"</mx:String>
-				<mx:Number id="bar">22222</mx:Number>
-			</e4xu:ServiceArguments>
-		</e4xu:ServiceMethod>
-		
-		<e4xu:ServiceMethod name="'sayBoo'" >
-			<e4xu:ServiceArguments>
-				<mx:String id="oof">"rab"</mx:String>
-				<mx:Number id="rab">11111</mx:Number>
-			</e4xu:ServiceArguments>
-		</e4xu:ServiceMethod>
-	</e4xu:AMFService>
+	</ex:Script>
 	
 </e4xu:FrameTwo>
