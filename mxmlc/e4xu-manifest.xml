@@ -26,6 +26,4 @@
     <component id="State" class="mx.states.State" lookupOnly="true"/>
     <component id="AddItems" class="mx.states.AddItems" lookupOnly="true"/>
 		
-		<component id="Test" class="Test" lookupOnly="true" />
-
 </componentPackage>
