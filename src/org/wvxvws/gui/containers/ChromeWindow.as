@@ -386,8 +386,9 @@ package org.wvxvws.gui.containers
 				this._border.width = this._bounds.x;
 				this._border.height = this._bounds.y;
 			}
-			if (statusChanged)
+			if (statusChanged && this._statusBar)
 			{
+				trace("this._statusBar, this._border", this._statusBar, this._border);
 				if (this._border)
 				{
 					this._statusBar.width = super._bounds.x - 

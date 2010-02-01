@@ -79,6 +79,7 @@
 	<class>mx.utils.UIDUtil</class>
 	<class>mx.utils.ObjectProxy</class>
 	<class>mx.utils.NameUtil</class>
+	<class>mx.utils.XMLUtil</class>
 	
   </include-classes>
 </flex-config>

@@ -8,6 +8,7 @@
 	import mx.core.IMXMLObject;
 	import org.wvxvws.gui.Button;
 	import org.wvxvws.gui.containers.ChromeWindow;
+	import org.wvxvws.gui.layout.Invalides;
 	import org.wvxvws.gui.renderers.ILabel;
 	import org.wvxvws.gui.skins.TextFormatDefaults;
 	import org.wvxvws.managers.WindowManager;
@@ -26,7 +27,7 @@
 							actionHandler:Function = null, submit:Boolean = true) 
 		{
 			super();
-			_userActionHandler = actionHandler;
+			this._userActionHandler = actionHandler;
 			var tb:ChromeBar = new ChromeBar();
 			tb.label = "Prompt";
 			tb.height = 24;
@@ -34,57 +35,54 @@
 			tb.backgroundColor = TextFormatDefaults.defaultChromeBack;
 			tb.initialized(this, "titleBar");
 			super.titleBar = tb;
-			_contentPane.padding = new Rectangle(10, 10, 0, 0);
+			super._contentPane.padding = new Rectangle(10, 10, 0, 0);
 			var i:int;
 			var j:int;
 			var label:ILabel;
-			_contentPane.performLayout = true;
-			_contentPane.direction = false;
-			_contentPane.distribute = 1;
-			_contentPane.gutterV = 4;
+			super._contentPane.performLayout = true;
+			super._contentPane.direction = false;
+			super._contentPane.distribute = 1;
+			super._contentPane.gutterV = 4;
 			if (inputs)
 			{
 				j = inputs.length;
 				while (i < j)
 				{
 					label = inputs[i];
-					if (_fields.indexOf(label) < 0) _fields.push(label);
+					if (this._fields.indexOf(label) < 0) this._fields.push(label);
 					if (label is IMXMLObject)
 					{
-						(label as IMXMLObject).initialized(_contentPane, "label" + i);
+						(label as IMXMLObject).initialized(super._contentPane, "label" + i);
 					}
-					else
-					{
-						_contentPane.addChild(label as DisplayObject);
-					}
+					else super._contentPane.addChild(label as DisplayObject);
 					i++;
 				}
 			}
 			if (submit)
 			{
-				_submitBTN = new Button("Submit");
-				_submitBTN.width = 60;
-				_submitBTN.height = 24;
-				_submitBTN.initialized(_contentPane, "submit");
-				_submitBTN.addEventListener(
-					MouseEvent.CLICK, submit_clickHandler, false, 0, true);
+				this._submitBTN = new Button("Submit");
+				this._submitBTN.width = 60;
+				this._submitBTN.height = 24;
+				this._submitBTN.initialized(_contentPane, "submit");
+				this._submitBTN.addEventListener(
+					MouseEvent.CLICK, this.submit_clickHandler, false, 0, true);
 			}
 			super.backgroundAlpha = 1;
 		}
 		
 		protected function submit_clickHandler(event:MouseEvent):void
 		{
-			if (_userActionHandler !== null)
+			if (this._userActionHandler !== null)
 			{
 				var v:Vector.<String> = new <String>[];
 				var i:int;
-				var j:int = _fields.length;
+				var j:int = this._fields.length;
 				while (i < j)
 				{
 					v.push(_fields[i].text);
 					i++;
 				}
-				_userActionHandler(v);
+				this._userActionHandler(v);
 			}
 		}
 		
@@ -109,20 +107,20 @@
 			var i:int;
 			var j:int;
 			var label:ILabel;
-			var sizeChanged:Boolean = ("_bounds" in properties);
+			var sizeChanged:Boolean = (Invalides.BOUNDS in properties);
 			super.validate(properties);
 			if (sizeChanged)
 			{
-				j = _fields.length;
+				j = this._fields.length;
 				while (i < j)
 				{
-					label = _fields[i];
-					(label as DisplayObject).width = _contentPane.width - 
-						(_contentPane.padding.left + _contentPane.padding.right);
+					label = this._fields[i];
+					(label as DisplayObject).width = super._contentPane.width - 
+						(super._contentPane.padding.left + super._contentPane.padding.right);
 					i++;
 				}
-				_contentPane.constrain();
-				_submitBTN.validate(_submitBTN.invalidProperties);
+				super._contentPane.constrain();
+				this._submitBTN.validate(this._submitBTN.invalidProperties);
 			}
 		}
 		
