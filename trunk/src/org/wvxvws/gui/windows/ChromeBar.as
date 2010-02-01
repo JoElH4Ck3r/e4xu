@@ -169,7 +169,10 @@ package org.wvxvws.gui.windows
 			if (iconClassChanged)
 			{
 				if (this._iconProducer)
+				{
 					this._icon = this._iconProducer.produce(this) as DisplayObject;
+					this.drawIcon();
+				}
 				else if (this._icon)
 				{
 					this._icon.removeEventListener(
@@ -178,7 +181,6 @@ package org.wvxvws.gui.windows
 						super.removeChild(this._icon);
 					this._icon = null;
 				}
-				this.drawIcon();
 			}
 			if (labelChanged) this.drawLabel();
 		}
