@@ -43,6 +43,11 @@
 				while (i < j)
 				{
 					opt = value[i];
+					if (!opt) 
+					{
+						i++;
+						continue;
+					}
 					if (this._options.indexOf(opt) < 0)
 					{
 						this._options.push(opt);

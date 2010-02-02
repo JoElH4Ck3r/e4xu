@@ -49,48 +49,48 @@ package org.wvxvws.tools
 		//
 		//--------------------------------------------------------------------------
 		
-		public function get ratio():uint { return _ratio; }
+		public function get ratio():uint { return this._ratio; }
 		
 		public function set ratio(value:uint):void
 		{
 			var temp:Number = Math.max(1, value);
-			if (temp === _ratio) return;
+			if (temp === this._ratio) return;
 			super.invalidate(Invalides.STYLE, false);
-			_ratio = temp;
+			this._ratio = temp;
 			if (super.hasEventListener(EventGenerator.getEventType("ratio")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
-		public function get step():uint { return _step; }
+		public function get step():uint { return this._step; }
 		
 		public function set step(value:uint):void 
 		{
 			var temp:Number = Math.max(2, value);
-			if (temp === _step) return;
+			if (temp === this._step) return;
 			super.invalidate(Invalides.STYLE, false);
-			_step = value;
+			this._step = value;
 			if (super.hasEventListener(EventGenerator.getEventType("step")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
-		public function get position():int { return _position; }
+		public function get position():int { return this._position; }
 		
 		public function set position(value:int):void 
 		{
-			if (_position === value) return;
+			if (this._position === value) return;
 			super.invalidate(Invalides.STYLE, false);
-			_position = value;
+			this._position = value;
 			if (super.hasEventListener(EventGenerator.getEventType("position")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
 		
-		public function get direction():Boolean { return _direction; }
+		public function get direction():Boolean { return this._direction; }
 		
 		public function set direction(value:Boolean):void 
 		{
-			if (_direction === value) return;
+			if (this._direction === value) return;
 			super.invalidate(Invalides.DIRECTION, false);
-			_direction = value;
+			this._direction = value;
 			if (super.hasEventListener(EventGenerator.getEventType("direction")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -99,9 +99,9 @@ package org.wvxvws.tools
 		
 		public function set zoom(value:Number):void 
 		{
-			if (_zoom === value) return;
+			if (this._zoom === value) return;
 			super.invalidate(Invalides.STYLE, false);
-			_zoom = value;
+			this._zoom = value;
 			if (super.hasEventListener(EventGenerator.getEventType("zoom")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -135,13 +135,11 @@ package org.wvxvws.tools
 		public override function validate(properties:Dictionary):void 
 		{
 			var ratioChanged:Boolean = 
-							("_ratio" in properties) || ("_zoom" in properties) ||
-							("_step" in properties) || ("_ratio" in properties) || 
-							("_backgroundColor" in properties) || 
-							("_backgroundAlpha" in properties) || 
-							("_direction" in properties) || !_bitmapData;
-			var needRedraw:Boolean = ratioChanged || ("_position" in properties) ||
-							("_transformMatrix" in properties) || ("_bounds" in properties);
+				(Invalides.STYLE in properties) || 
+				(Invalides.DIRECTION in properties) || !_bitmapData;
+			var needRedraw:Boolean = 
+				ratioChanged || (Invalides.TRANSFORM in properties) || 
+				(Invalides.BOUNDS in properties);
 			super.validate(properties);
 			var g:Graphics = super.graphics;
 			var m:Matrix = new Matrix();
