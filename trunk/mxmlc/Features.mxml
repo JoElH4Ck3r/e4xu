@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:UIComponent	xmlns:mx="mx.core.*"
+								xmlns:e4xu="http://e4xu.googlecode.com/mxml"
+								xmlns:text="flash.text.*"
+								xmlns:geom="flash.geom.*" addedToStage="trace('property handler')">
+	<e4xu:Script>
+		<![CDATA[
+			public static const MY_CONST : String = "mySuperConst";
+		]]>
+	</e4xu:Script>
+	
+	<!-- Multiple event handlers (1 per line) -->
+	<mx:addedToStage>
+		<![CDATA[
+			trace(mySuperObject.myVar); // mySuperConst
+		]]>
+	</mx:addedToStage>
+	<mx:addedToStage>
+		<![CDATA[
+			trace("secondHandler");
+		]]>
+	</mx:addedToStage>
+	
+	<e4xu:Declarations>
+		<!-- value of field not a string or number, but anything (constant, object declarations e.g.) -->
+		<e4xu:Object id="mySuperObject" myVar="Features.MY_CONST" mySecondVar="'someText'" myNumber="123.2" mySprite="new Sprite()" />
+	</e4xu:Declarations>
+	
+	<text:TextField text="'Some text with default text format'" width="300">
+		<text:scrollRect>
+			<!-- use "new" magic property for constructor params -->
+			<geom:Rectangle new="0, 0, 100, 10" />
+		</text:scrollRect>
+	</text:TextField>
+</mx:UIComponent>
