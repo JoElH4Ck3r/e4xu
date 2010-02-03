@@ -79,7 +79,7 @@
 				var j:int = this._fields.length;
 				while (i < j)
 				{
-					v.push(_fields[i].text);
+					v.push(this._fields[i].text);
 					i++;
 				}
 				this._userActionHandler(v);
@@ -107,7 +107,8 @@
 			var i:int;
 			var j:int;
 			var label:ILabel;
-			var sizeChanged:Boolean = (Invalides.BOUNDS in properties);
+			var sizeChanged:Boolean = (Invalides.BOUNDS in properties) || 
+				(Invalides.TRANSFORM in properties);
 			super.validate(properties);
 			if (sizeChanged)
 			{
@@ -115,15 +116,15 @@
 				while (i < j)
 				{
 					label = this._fields[i];
-					(label as DisplayObject).width = super._contentPane.width - 
-						(super._contentPane.padding.left + super._contentPane.padding.right);
+					(label as DisplayObject).width = 
+						super._contentPane.width - 
+						(super._contentPane.padding.left + 
+						super._contentPane.padding.right);
 					i++;
 				}
 				super._contentPane.constrain();
 				this._submitBTN.validate(this._submitBTN.invalidProperties);
 			}
 		}
-		
 	}
-
 }
