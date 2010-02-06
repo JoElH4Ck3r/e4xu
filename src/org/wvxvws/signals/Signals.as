@@ -59,7 +59,7 @@
 			var sig:Vector.<Class>;
 			var target:Dictionary;
 			var alter:Dictionary;
-			if (!this._semaphore.signalTypes().indexOf(type))
+			if (this._semaphore.signalTypes().indexOf(type) < 0)
 				throw SignalError.NO_TYPE;
 			sig = this._semaphore.callbackSignature(type);
 			for (var i:int; ; i++)
