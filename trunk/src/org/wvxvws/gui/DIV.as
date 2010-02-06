@@ -22,6 +22,7 @@
 package org.wvxvws.gui 
 {
 	//{imports
+	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Graphics;
 	import flash.display.Sprite;
@@ -249,7 +250,7 @@ package org.wvxvws.gui
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>backgroundColorChanged</code> event.
 		*/
-		public function get backgroundColor():uint { return _backgroundColor; }
+		public function get backgroundColor():uint { return this._backgroundColor; }
 		
 		public function set backgroundColor(value:uint):void 
 		{
@@ -271,7 +272,7 @@ package org.wvxvws.gui
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>backgroundAlphaChanged</code> event.
 		*/
-		public function get backgroundAlpha():Number { return _backgroundAlpha; }
+		public function get backgroundAlpha():Number { return this._backgroundAlpha; }
 		
 		public function set backgroundAlpha(value:Number):void 
 		{
@@ -374,43 +375,11 @@ package org.wvxvws.gui
 			super.addEventListener(Event.ADDED_TO_STAGE, this.adtsHandler);
 		}
 		
-		protected function adtsHandler(event:Event):void 
-		{
-			var dispatchInit:Boolean;
-			if (!this._validator)
-			{
-				if (super.parent is ILayoutClient)
-				{
-					this._validator = (super.parent as ILayoutClient).validator;
-				}
-			}
-			if (super.parent && !_document)
-			{
-				this._document = super.parent;
-				dispatchInit = true;
-			}
-			if (this._hasPendingValidation) this.validate(this._invalidProperties);
-			if (dispatchInit) 
-			{
-				this._initialized = true;
-				super.dispatchEvent(GUIEvent.INITIALIZED);
-			}
-		}
-		
-		protected function removedHandler(event:Event):void 
-		{
-			if (this._validator) this._validator.exclude(this);
-		}
-		
-		private function deferredInitialize(event:Event):void 
-		{
-			super.removeEventListener(Event.ENTER_FRAME, this.deferredInitialize);
-			if (!this._initialized)
-			{
-				this._initialized = true;
-				super.dispatchEvent(GUIEvent.INITIALIZED);
-			}
-		}
+		//--------------------------------------------------------------------------
+		//
+		//  Public methods
+		//
+		//--------------------------------------------------------------------------
 		
 		/* INTERFACE mx.core.IMXMLObject */
 		
@@ -432,7 +401,7 @@ package org.wvxvws.gui
 					(document as DisplayObjectContainer).addChild(this);
 				}
 			}
-			_id = id;
+			this._id = id;
 			if (this._hasPendingValidation) this.validate(this._invalidProperties);
 			if (dispatchInit && !this._initialized)
 			{
@@ -441,11 +410,19 @@ package org.wvxvws.gui
 			}
 		}
 		
-		//--------------------------------------------------------------------------
-		//
-		//  Public methods
-		//
-		//--------------------------------------------------------------------------
+		public function dispose():void
+		{
+			super.removeEventListener(Event.ENTER_FRAME, this.deferredInitialize);
+			super.removeEventListener(Event.REMOVED_FROM_STAGE, this.removedHandler);
+			super.removeEventListener(Event.ADDED_TO_STAGE, this.adtsHandler);
+			var i:int = super.numChildren;
+			var c:DisplayObject;
+			while (i--)
+			{
+				c = super.getChildAt(i);
+				if (c is IMXMLObject) (c as IMXMLObject).dispose();
+			}
+		}
 		
 		public function validate(properties:Dictionary):void
 		{
@@ -485,14 +462,6 @@ package org.wvxvws.gui
 			super.dispatchEvent(GUIEvent.VALIDATED);
 		}
 		
-		protected function drawBackground():void
-		{
-			this._background.clear();
-			this._background.beginFill(this._backgroundColor, this._backgroundAlpha);
-			this._background.drawRect(0, 0, this._bounds.x, this._bounds.y);
-			this._background.endFill();
-		}
-		
 		public function invalidate(property:Invalides, 
 									validateParent:Boolean):void
 		{
@@ -514,6 +483,42 @@ package org.wvxvws.gui
 		//
 		//--------------------------------------------------------------------------
 		
+		protected function adtsHandler(event:Event):void 
+		{
+			var dispatchInit:Boolean;
+			if (!this._validator)
+			{
+				if (super.parent is ILayoutClient)
+				{
+					this._validator = (super.parent as ILayoutClient).validator;
+				}
+			}
+			if (super.parent && !_document)
+			{
+				this._document = super.parent;
+				dispatchInit = true;
+			}
+			if (this._hasPendingValidation) this.validate(this._invalidProperties);
+			if (dispatchInit) 
+			{
+				this._initialized = true;
+				super.dispatchEvent(GUIEvent.INITIALIZED);
+			}
+		}
+		
+		protected function removedHandler(event:Event):void 
+		{
+			if (this._validator) this._validator.exclude(this);
+		}
+		
+		protected function drawBackground():void
+		{
+			this._background.clear();
+			this._background.beginFill(this._backgroundColor, this._backgroundAlpha);
+			this._background.drawRect(0, 0, this._bounds.x, this._bounds.y);
+			this._background.endFill();
+		}
+		
 		protected function initStyles():void
 		{
 			var styleParser:Object;
@@ -532,6 +537,16 @@ package org.wvxvws.gui
 		//  Private methods
 		//
 		//--------------------------------------------------------------------------
+		
+		private function deferredInitialize(event:Event):void 
+		{
+			super.removeEventListener(Event.ENTER_FRAME, this.deferredInitialize);
+			if (!this._initialized)
+			{
+				this._initialized = true;
+				super.dispatchEvent(GUIEvent.INITIALIZED);
+			}
+		}
+		
 	}
-	
 }
