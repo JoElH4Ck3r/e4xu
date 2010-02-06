@@ -68,6 +68,7 @@
 				if (!sig || !params || 
 					sig.length !== params.length)
 				{
+					trace(sig, params);
 					throw SignalError.WRONG_SIGNATURE;
 					break;
 				}
@@ -98,7 +99,8 @@
 		
 		public function rem(type:SygnalType, slot:Function):Function
 		{
-			
+			// TODO:
+			return null;
 		}
 		
 		public function call(type:SygnalType, ...params):void
@@ -134,12 +136,14 @@
 		
 		public function all(weak:Boolean = false):Dictionary
 		{
-			
+			// TODO:
+			return null;
 		}
 		
 		public function has(slot:Function):Boolean
 		{
-			
+			// TODO:
+			return false;
 		}
 		
 		//--------------------------------------------------------------------------
