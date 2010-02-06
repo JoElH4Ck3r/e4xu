@@ -36,7 +36,7 @@
     <option linkReport="" />
     <option loadExterns="" />
     <option additional="-compiler.namespaces.namespace http://e4xu.googlecode.com c:\www\projects\xmlhelpers\run\manifest.xml&#xA;-keep&#xA;-link-report C:\www\projects\xmlhelpers\run\dependencies.xml&#xA;-dump-config C:\www\projects\xmlhelpers\run\config.xml" />
-    <option customSDK="C:\off-trunk" />
+    <option customSDK="C:\Flex_sdk_Gumbo_beta_2" />
   </build>
   <!-- SWC Include Libraries -->
   <includeLibraries>
@@ -66,7 +66,7 @@
   </library>
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>
-    <compile path="src\tests\TestArrayElementType.mxml" />
+    <compile path="src\tests\TestAsteriskNamespace.as" />
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>

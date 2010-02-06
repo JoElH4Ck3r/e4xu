@@ -48,6 +48,8 @@ public interface IMXMLObject
      *  @productversion Flex 3
      */
     function initialized(document:Object, id:String):void;
+	
+	function dispose():void;
 }
 
 }
