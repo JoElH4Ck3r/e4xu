@@ -1,8 +1,7 @@
 ﻿package org.wvxvws.signals 
 {
-	import flash.utils.Dictionary;
 	//{ imports
-		
+	import flash.utils.Dictionary;
 	//}
 	
 	/**
@@ -31,12 +30,6 @@
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Private properties
-		//
-		//--------------------------------------------------------------------------
-		
-		//--------------------------------------------------------------------------
-		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
@@ -59,6 +52,7 @@
 			var sig:Vector.<Class>;
 			var target:Dictionary;
 			var alter:Dictionary;
+			
 			if (this._semaphore.signalTypes().indexOf(type) < 0)
 				throw SignalError.NO_TYPE;
 			sig = this._semaphore.callbackSignature(type);
@@ -97,10 +91,12 @@
 			target[slot] = priority;
 		}
 		
-		public function rem(type:SygnalType, slot:Function):Function
+		public function rem(type:SygnalType, slot:Function):void
 		{
-			// TODO:
-			return null;
+			var d:Dictionary = this._allStrong[type];
+			
+			if (!d) d = this._allWeak[type];
+			if (d) delete d[slot];
 		}
 		
 		public function call(type:SygnalType, ...params):void
@@ -109,6 +105,7 @@
 			var o:Object;
 			var strong:Dictionary = this._allStrong[type];
 			var weak:Dictionary = this._allWeak[type];
+			
 			// Vector requires callback for sorting
 			var indices:Array/*int*/ = [];
 			if (strong === weak)
@@ -134,27 +131,134 @@
 			}
 		}
 		
-		public function all(weak:Boolean = false):Dictionary
+		public function all(type:SygnalType = null, 
+			weak:Boolean = false, strong:Boolean = true):Dictionary
 		{
-			// TODO:
-			return null;
+			var d:Dictionary;
+			var td:Dictionary;
+			var o:Object;
+			var to:Object;
+			
+			if (strong)
+			{
+				if (type)
+				{
+					td = this._allStrong[type];
+					if (td)
+					{
+						for (to in td)
+						{
+							if (!d) d = new Dictionary();
+							d[to] = td[to];
+						}
+					}
+				}
+				else
+				{
+					for (o in this._allStrong)
+					{
+						td = o as Dictionary;
+						for (to in td)
+						{
+							if (!d) d = new Dictionary();
+							d[to] = td[to];
+						}
+					}
+				}
+			}
+			if (weak)
+			{
+				if (type)
+				{
+					td = this._allWeak[type];
+					if (td)
+					{
+						for (to in td)
+						{
+							if (!d) d = new Dictionary();
+							d[to] = td[to];
+						}
+					}
+				}
+				else
+				{
+					for (o in this._allWeak)
+					{
+						td = o as Dictionary;
+						for (to in td)
+						{
+							if (!d) d = new Dictionary();
+							d[to] = td[to];
+						}
+					}
+				}
+			}
+			return d;
 		}
 		
-		public function has(slot:Function):Boolean
+		public function has(slot:Function, type:SygnalType = null,
+			weak:Boolean = true, strong:Boolean = true):Boolean
 		{
-			// TODO:
+			var td:Dictionary;
+			var o:Object;
+			var to:Object;
+			
+			if (strong)
+			{
+				if (type)
+				{
+					td = this._allStrong[type];
+					if (td)
+					{
+						for (to in td)
+						{
+							if (slot === to) return true;
+						}
+					}
+				}
+				else
+				{
+					for (o in this._allStrong)
+					{
+						td = o as Dictionary;
+						for (to in td)
+						{
+							if (slot === to) return true;
+						}
+					}
+				}
+			}
+			if (weak)
+			{
+				if (type)
+				{
+					td = this._allWeak[type];
+					if (td)
+					{
+						for (to in td)
+						{
+							if (slot === to) return true;
+						}
+					}
+				}
+				else
+				{
+					for (o in this._allWeak)
+					{
+						td = o as Dictionary;
+						for (to in td)
+						{
+							if (slot === to) return true;
+						}
+					}
+				}
+			}
 			return false;
 		}
 		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
-		//
-		//--------------------------------------------------------------------------
-		
-		//--------------------------------------------------------------------------
-		//
-		//  Private methods
 		//
 		//--------------------------------------------------------------------------
 	}
