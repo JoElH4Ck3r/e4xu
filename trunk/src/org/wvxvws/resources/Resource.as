@@ -48,28 +48,28 @@ package org.wvxvws.resources
 		//  Public property embed
 		//------------------------------------
 		
-		public function get embed():Class { return _embed; }
+		public function get embed():Class { return this._embed; }
 		
 		public function set embed(value:Class):void 
 		{
-			if (_embed === value) return;
-			_embed = value;
+			if (this._embed === value) return;
+			this._embed = value;
 			if (ApplicationDomain.currentDomain.hasDefinition(
-				"org.wvxvws.managers::ResourceManager") && _id !== null)
+				"org.wvxvws.managers::ResourceManager") && this._id !== null)
 			{
 				var rm:Object = ApplicationDomain.currentDomain.getDefinition(
 					"org.wvxvws.managers::ResourceManager");
-				if (rm) rm.registerResource(value, _id);
+				if (rm) rm.registerResource(value, this._id);
 			}
 			if (_document)
 			{
-				_dispatchLater = false;
+				this._dispatchLater = false;
 				super.dispatchEvent(new Event("embedded"));
 			}
-			else _dispatchLater = true;
+			else this._dispatchLater = true;
 		}
 		
-		public function get id():String { return _id; }
+		public function get id():String { return this._id; }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -84,53 +84,38 @@ package org.wvxvws.resources
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Private properties
-		//
-		//--------------------------------------------------------------------------
-		
-		//--------------------------------------------------------------------------
-		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
+		
 		public function Resource(){ super(); }
 		
-		/* INTERFACE mx.core.IMXMLObject */
-		
-		public function initialized(document:Object, id:String):void
-		{
-			_document = document;
-			_id = id;
-			if (_embed && ApplicationDomain.currentDomain.hasDefinition(
-				"org.wvxvws.managers::ResourceManager"))
-			{
-				var rm:Object = ApplicationDomain.currentDomain.getDefinition(
-					"org.wvxvws.managers::ResourceManager");
-				if (rm) rm.registerResource(_embed, _id);
-			}
-			if (_dispatchLater)
-			{
-				_dispatchLater = false;
-				super.dispatchEvent(new Event("embedded"));
-			}
-		}
 		//--------------------------------------------------------------------------
 		//
 		//  Public methods
 		//
 		//--------------------------------------------------------------------------
 		
-		//--------------------------------------------------------------------------
-		//
-		//  Protected methods
-		//
-		//--------------------------------------------------------------------------
+		/* INTERFACE mx.core.IMXMLObject */
 		
-		//--------------------------------------------------------------------------
-		//
-		//  Private methods
-		//
-		//--------------------------------------------------------------------------
+		public function initialized(document:Object, id:String):void
+		{
+			this._document = document;
+			this._id = id;
+			if (this._embed && ApplicationDomain.currentDomain.hasDefinition(
+				"org.wvxvws.managers::ResourceManager"))
+			{
+				var rm:Object = ApplicationDomain.currentDomain.getDefinition(
+					"org.wvxvws.managers::ResourceManager");
+				if (rm) rm.registerResource(this._embed, this._id);
+			}
+			if (this._dispatchLater)
+			{
+				this._dispatchLater = false;
+				super.dispatchEvent(new Event("embedded"));
+			}
+		}
+		
+		public function dispose():void { }
 	}
-	
 }

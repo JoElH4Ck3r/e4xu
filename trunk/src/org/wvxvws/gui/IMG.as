@@ -157,6 +157,8 @@ package org.wvxvws.gui
 			this._id = id;
 		}
 		
+		public function dispose():void { }
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods

@@ -51,12 +51,12 @@ package org.wvxvws.tools
 		//
 		//--------------------------------------------------------------------------
 		
-		public function get target():DisplayObjectContainer { return _target; }
+		public function get target():DisplayObjectContainer { return this._target; }
 		
 		public function set target(value:DisplayObjectContainer):void 
 		{
-			if (_target === value) return;
-			_target = value;
+			if (this._target === value) return;
+			this._target = value;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -92,34 +92,39 @@ package org.wvxvws.tools
 		
 		public function initialized(document:Object, id:String):void
 		{
-			_document = document;
-			_id = id;
-			if (_document is DisplayObjectContainer)
-				_target = _document as DisplayObjectContainer;
+			this._document = document;
+			this._id = id;
+			if (this._document is DisplayObjectContainer)
+				this._target = this._document as DisplayObjectContainer;
+		}
+		
+		public function dispose():void
+		{
+			
 		}
 		
 		public function start(point:Point):void
 		{
-			if (!_target.stage) return;
-			var s:Stage = _target.stage;
-			var r:DisplayObjectContainer = _target.root as DisplayObjectContainer;
+			if (!this._target.stage) return;
+			var s:Stage = this._target.stage;
+			var r:DisplayObjectContainer = this._target.root as DisplayObjectContainer;
 			if (!s) return;
-			_downLocation = _target.localToGlobal(point);
+			this._downLocation = this._target.localToGlobal(point);
 			if (parent !== r)
 			{
 				if (super.parent) super.parent.removeChild(this);
 				r.addChild(this);
 			}
 			super.graphics.clear();
-			var targBounds:Rectangle = _target.getBounds(this);
+			var targBounds:Rectangle = this._target.getBounds(this);
 			var topLeft:Point = new Point(targBounds.left, targBounds.top);
 			var bottomRight:Point = new Point(targBounds.right, targBounds.bottom);
 			topLeft = _target.localToGlobal(topLeft);
 			bottomRight = _target.localToGlobal(bottomRight);
-			_visibleBounds.left = topLeft.x;
-			_visibleBounds.top = topLeft.y;
-			_visibleBounds.right = bottomRight.x;
-			_visibleBounds.bottom = bottomRight.y;
+			this._visibleBounds.left = topLeft.x;
+			this._visibleBounds.top = topLeft.y;
+			this._visibleBounds.right = bottomRight.x;
+			this._visibleBounds.bottom = bottomRight.y;
 			s.addEventListener(MouseEvent.MOUSE_MOVE, this.moveHandler, false, 0, true);
 			s.addEventListener(MouseEvent.MOUSE_UP, this.upHandler, false, 0, true);
 			s.addEventListener(Event.MOUSE_LEAVE, this.leaveHandler, false, 0, true);
@@ -165,51 +170,51 @@ package org.wvxvws.tools
 		private function moveHandler(event:MouseEvent):void 
 		{
 			var g:Graphics = super.graphics;
-			if (!_lineMatrixH)
+			if (!this._lineMatrixH)
 			{
-				_lineMatrixH = new Matrix();
-				_lineMatrixH.createGradientBox(10, 10, 0, 0, 0);
-				_lineMatrixV = new Matrix();
-				_lineMatrixV.createGradientBox(10, 10, Math.PI * 0.25, 0, 0);
+				this._lineMatrixH = new Matrix();
+				this._lineMatrixH.createGradientBox(10, 10, 0, 0, 0);
+				this._lineMatrixV = new Matrix();
+				this._lineMatrixV.createGradientBox(10, 10, Math.PI * 0.25, 0, 0);
 			}
 			var realX:Number;
 			var realY:Number;
-			if (_downLocation.x < event.stageX)
+			if (this._downLocation.x < event.stageX)
 			{
-				realX = Math.min(_visibleBounds.right, event.stageX);
+				realX = Math.min(this._visibleBounds.right, event.stageX);
 			}
 			else
 			{
-				realX = Math.max(_visibleBounds.left, event.stageX);
+				realX = Math.max(this._visibleBounds.left, event.stageX);
 			}
 			if (_downLocation.y < event.stageY)
 			{
-				realY = Math.min(_visibleBounds.bottom, event.stageY);
+				realY = Math.min(this._visibleBounds.bottom, event.stageY);
 			}
 			else
 			{
-				realY = Math.max(_visibleBounds.top, event.stageY);
+				realY = Math.max(this._visibleBounds.top, event.stageY);
 			}
 			g.clear();
 			g.lineStyle(1, 0, 1, true);
 			g.lineGradientStyle(GradientType.LINEAR, 
 				[0, 0, 0, 0], [1, 1, 0, 0], [0, 127, 128, 255], 
-				_lineMatrixH, SpreadMethod.REPEAT);
+				this._lineMatrixH, SpreadMethod.REPEAT);
 			g.beginFill(0, 0);
-			g.moveTo(_downLocation.x, _downLocation.y)
+			g.moveTo(this._downLocation.x, this._downLocation.y)
 			g.lineTo(realX, _downLocation.y);
 			g.lineGradientStyle(GradientType.LINEAR, 
 				[0, 0, 0, 0], [1, 1, 0, 0], [0, 127, 128, 255], 
-				_lineMatrixV, SpreadMethod.REPEAT);
+				this._lineMatrixV, SpreadMethod.REPEAT);
 			g.lineTo(realX, realY);
 			g.lineGradientStyle(GradientType.LINEAR, 
 				[0, 0, 0, 0], [1, 1, 0, 0], [0, 127, 128, 255], 
-				_lineMatrixH, SpreadMethod.REPEAT);
-			g.lineTo(_downLocation.x, realY);
+				this._lineMatrixH, SpreadMethod.REPEAT);
+			g.lineTo(this._downLocation.x, realY);
 			g.lineGradientStyle(GradientType.LINEAR, 
 				[0, 0, 0, 0], [1, 1, 0, 0], [0, 127, 128, 255], 
-				_lineMatrixV, SpreadMethod.REPEAT);
-			g.lineTo(_downLocation.x, _downLocation.y);
+				this._lineMatrixV, SpreadMethod.REPEAT);
+			g.lineTo(this._downLocation.x, this._downLocation.y);
 			g.endFill();
 			super.blendMode = BlendMode.INVERT;
 		}
@@ -239,12 +244,12 @@ package org.wvxvws.tools
 		{
 			if (!_target) return null;
 			var v:Vector.<DisplayObject> = new <DisplayObject>[];
-			var i:int = _target.numChildren;
+			var i:int = this._target.numChildren;
 			var b:Rectangle = super.getBounds(this);
 			var d:DisplayObject;
 			while (i--)
 			{
-				d = _target.getChildAt(i);
+				d = this._target.getChildAt(i);
 				if (d.getBounds(this).intersects(b))
 				{
 					v.push(d);
@@ -281,7 +286,5 @@ package org.wvxvws.tools
 				}
 			}
 		}
-		
 	}
-	
 }

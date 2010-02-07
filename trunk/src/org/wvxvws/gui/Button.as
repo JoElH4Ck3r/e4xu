@@ -374,12 +374,6 @@
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Private properties
-		//
-		//--------------------------------------------------------------------------
-		
-		//--------------------------------------------------------------------------
-		//
 		//  Cunstructor
 		//
 		//--------------------------------------------------------------------------
@@ -428,6 +422,8 @@
 			if (!this._skin) this.skin = SkinManager.getSkin(this);
 			if (validatorChanged) this.invalidate(Invalides.NULL, false);
 		}
+		
+		public function dispose():void { }
 		
 		public function validate(properties:Dictionary):void
 		{

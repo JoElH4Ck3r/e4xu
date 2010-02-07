@@ -101,12 +101,6 @@ package org.wvxvws.net
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Private properties
-		//
-		//--------------------------------------------------------------------------
-		
-		//--------------------------------------------------------------------------
-		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
@@ -117,9 +111,11 @@ package org.wvxvws.net
 		
 		public function initialized(document:Object, id:String):void
 		{
-			_document = document as IService;
-			if (_id === "" || _id === null) _id = id;
+			this._document = document as IService;
+			if (this._id === "" || this._id === null) this._id = id;
 		}
+		
+		public function dispose():void { }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -130,21 +126,8 @@ package org.wvxvws.net
 		public function send(parameters:ServiceArguments = null):void
 		{
 			if (!_document) return;
-			if (parameters) _document.send(_name, parameters);
-			else _document.send(_name, _parameters);
+			if (parameters) this._document.send(this._name, parameters);
+			else this._document.send(this._name, this._parameters);
 		}
-		
-		//--------------------------------------------------------------------------
-		//
-		//  Protected methods
-		//
-		//--------------------------------------------------------------------------
-		
-		//--------------------------------------------------------------------------
-		//
-		//  Private methods
-		//
-		//--------------------------------------------------------------------------
 	}
-	
 }

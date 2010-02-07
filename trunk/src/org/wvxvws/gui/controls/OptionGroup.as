@@ -88,6 +88,8 @@
 			if (this._document) this.reparentOptions();
 		}
 		
+		public function dispose():void { }
+		
 		protected function reparentOptions():void
 		{
 			for each (var opt:Option in _options)

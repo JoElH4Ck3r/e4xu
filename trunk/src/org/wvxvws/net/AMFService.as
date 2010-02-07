@@ -258,9 +258,11 @@ package org.wvxvws.net
 		
 		public function initialized(document:Object, id:String):void
 		{
-			_document = document;
-			_id = id;
+			this._document = document;
+			this._id = id;
 		}
+		
+		public function dispose():void { }
 		
 		/* INTERFACE org.wvxvws.net.IService */
 		

@@ -248,6 +248,8 @@ package org.wvxvws.gui
 			this._id = id;
 		}
 		
+		public function dispose():void { }
+		
 		public function show(text:String = null):DisplayObject
 		{
 			if (!this._target) return null;

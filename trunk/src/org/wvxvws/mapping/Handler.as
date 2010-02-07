@@ -38,8 +38,8 @@
 		
 		public function set type(value:String):void 
 		{
-			if (_type === value) return;
-			_type = value;
+			if (this._type === value) return;
+			this._type = value;
 			if (super.hasEventListener(EventGenerator.getEventType("type")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -55,17 +55,20 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>handlersChanged</code> event.
 		*/
-		public function get handlers():Vector.<Function> { return _handlers.concat(); }
+		public function get handlers():Vector.<Function>
+		{
+			return this._handlers.concat();
+		}
 		
 		public function set handlers(value:Vector.<Function>):void 
 		{
-			if (_handlers === value) return;
-			_handlers.length = 0;
+			if (this._handlers === value) return;
+			this._handlers.length = 0;
 			for each (var f:Function in value)
 			{
-				if (_handlers.indexOf(f) < 0) _handlers.push(f);
+				if (this._handlers.indexOf(f) < 0) this._handlers.push(f);
 			}
-			_handlers = value;
+			this._handlers = value;
 			if (super.hasEventListener(EventGenerator.getEventType("handlers")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
@@ -82,21 +85,11 @@
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Private properties
-		//
-		//--------------------------------------------------------------------------
-		
-		//--------------------------------------------------------------------------
-		//
 		//  Cunstructor
 		//
 		//--------------------------------------------------------------------------
 		
 		public function Handler() { super(); }
-		
-		/* INTERFACE mx.core.IMXMLObject */
-		
-		public function initialized(document:Object, id:String):void { _id = id; }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -104,17 +97,10 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		//--------------------------------------------------------------------------
-		//
-		//  Protected methods
-		//
-		//--------------------------------------------------------------------------
+		/* INTERFACE mx.core.IMXMLObject */
 		
-		//--------------------------------------------------------------------------
-		//
-		//  Private methods
-		//
-		//--------------------------------------------------------------------------
+		public function initialized(document:Object, id:String):void { this._id = id; }
+		
+		public function dispose():void { }
 	}
-	
 }

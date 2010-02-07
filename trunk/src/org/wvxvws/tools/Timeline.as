@@ -244,13 +244,18 @@ package org.wvxvws.tools
 		
 		public function initialized(document:Object, id:String):void
 		{
-			_document = document;
-			_id = id;
-			if (_document is DisplayObjectContainer)
+			this._document = document;
+			this._id = id;
+			if (this._document is DisplayObjectContainer)
 			{
-				(_document as DisplayObjectContainer).addChild(this);
+				(this._document as DisplayObjectContainer).addChild(this);
 			}
 			super.dispatchEvent(GUIEvent.INITIALIZED);
+		}
+		
+		public function dispose():void
+		{
+			
 		}
 		
 		//--------------------------------------------------------------------------
@@ -267,22 +272,23 @@ package org.wvxvws.tools
 		protected override function renderHandler(event:Event):void 
 		{
 			var i:int = super.numChildren;
-			if (!_bgData)
+			if (!this._bgData)
 			{
-				_bgData = new BitmapData(1, 
-					Math.max(1, _slideHeight + _gutter), false, 0xD0D0D0);
-				_bgData.setPixel(0, 0, 0x909090);
-				_bgData.setPixel(0, _slideHeight + _gutter, 0x909090);
+				this._bgData = new BitmapData(1, 
+					Math.max(1, this._slideHeight + this._gutter), false, 0xD0D0D0);
+				this._bgData.setPixel(0, 0, 0x909090);
+				this._bgData.setPixel(0, this._slideHeight + this._gutter, 0x909090);
 			}
 			var m:Matrix = new Matrix();
-			m.ty = ((_bounds.y + _offset.y) % (_slideHeight + _gutter)) - (_gutter >> 1);
+			m.ty = ((super._bounds.y + this._offset.y) % 
+				(this._slideHeight + this._gutter)) - (this._gutter >> 1);
 			graphics.clear();
-			graphics.beginBitmapFill(_bgData, m);
-			graphics.drawRect(_bounds.x,
-							_bounds.y,
-							_bounds.width, _bounds.height);
+			graphics.beginBitmapFill(this._bgData, m);
+			graphics.drawRect(super._bounds.x,
+							super._bounds.y,
+							super._bounds.width, super._bounds.height);
 			graphics.endFill();
-			while (i--) super.getChildAt(i).dispatchEvent(_updater);
+			while (i--) super.getChildAt(i).dispatchEvent(super._updater);
 			super.invalidLayout = false;
 			this.createSlides();
 		}
@@ -290,8 +296,8 @@ package org.wvxvws.tools
 		protected function createSlides():void
 		{
 			var list:XMLList;
-			if (_dataProvider) 
-				list = _dataProvider..*.(nodeKind() !== "text" || _useText);
+			if (this._dataProvider) 
+				list = this._dataProvider..*.(nodeKind() !== "text" || this._useText);
 			else list = new XMLList();
 			var slideWidth:int;
 			var slidePosition:int;
@@ -303,7 +309,7 @@ package org.wvxvws.tools
 			var slidesCopy:Vector.<Slide> = new <Slide>[];
 			var cumulativeHeight:int;
 			var master:Slide;
-			if (_slideEditor) (_slideEditor as IEditor).hide();
+			if (this._slideEditor) (_slideEditor as IEditor).hide();
 			while (i < j)
 			{
 				currentNode = list[i];
@@ -317,35 +323,35 @@ package org.wvxvws.tools
 					if (!(slide is SlaveSlide))
 					{
 						slide.addEventListener(
-							MouseEvent.MOUSE_DOWN, slide_mouseDownHandler);
+							MouseEvent.MOUSE_DOWN, this.slide_mouseDownHandler);
 					}
-					_slides.push(slide);
+					this._slides.push(slide);
 				}
-				if (_slideWidthFactory !== null)
-					slide.width = _slideWidthFactory(currentNode);
-				if (_slidePositionFactory !== null)
-					slide.x = _slidePositionFactory(currentNode);
-				slide.y = cumulativeHeight + _offset.y;
-				slide.height = _slideHeight;
+				if (this._slideWidthFactory !== null)
+					slide.width = this._slideWidthFactory(currentNode);
+				if (this._slidePositionFactory !== null)
+					slide.x = this._slidePositionFactory(currentNode);
+				slide.y = cumulativeHeight + this._offset.y;
+				slide.height = this._slideHeight;
 				slidesCopy.push(slide);
-				if (_slideVisible !== null)
+				if (this._slideVisible !== null)
 				{
-					if (_slideVisible(currentNode))
+					if (this._slideVisible(currentNode))
 					{
 						if (!super.contains(slide)) super.addChild(slide);
-						cumulativeHeight += _slideHeight + _gutter;
+						cumulativeHeight += this._slideHeight + this._gutter;
 					}
 					else if (super.contains(slide)) super.removeChild(slide);
 				}
 				i++;
 			}
-			i = _slides.length;
+			i = this._slides.length;
 			while (i--)
 			{
-				slide = _slides[i];
+				slide = this._slides[i];
 				if (slidesCopy.indexOf(slide) < 0)
 				{
-					_slides.splice(i, 1);
+					this._slides.splice(i, 1);
 					if (super.contains(slide)) super.removeChild(slide);
 				}
 			}
@@ -356,10 +362,10 @@ package org.wvxvws.tools
 			var n:XML = xml.parent() as XML;
 			var list:XMLList = xml.elements();
 			var b:Boolean;
-			if (!n || n === _dataProvider) return null;
-			if (_slideIsSlave !== null)
+			if (!n || n === this._dataProvider) return null;
+			if (this._slideIsSlave !== null)
 			{
-				n = _slideIsSlave(xml);
+				n = this._slideIsSlave(xml);
 				if (n) return this.slideForNode(n);
 			}
 			if (list.length()) return null;
@@ -388,7 +394,8 @@ package org.wvxvws.tools
 							(targetCurrent as XML).*.(nodeList.push(valueOf()));
 							for each (var node:XML in nodeList)
 							{
-								if (nodeList.indexOf(node) != nodeList.lastIndexOf(node))
+								if (nodeList.indexOf(node) != 
+									nodeList.lastIndexOf(node))
 								{
 									firstIndex = nodeList.indexOf(node);
 									lastIndex = nodeList.lastIndexOf(node);
@@ -398,23 +405,26 @@ package org.wvxvws.tools
 							}
 							if (needReplace)
 							{
-								if (_dataProvider.*[firstIndex].contains(_dataProviderCopy.*[firstIndex]))
+								if (_dataProvider.*[firstIndex].contains(
+									this._dataProviderCopy.*[firstIndex]))
 								{
 									nodeList.splice(firstIndex, 1);
-									_dataProvider.setChildren("");
-									_dataProvider.normalize();
+									this._dataProvider.setChildren("");
+									this._dataProvider.normalize();
 									while (nodeList.length)
 									{
-										_dataProvider.appendChild(nodeList.shift());
+										this._dataProvider.appendChild(
+											nodeList.shift());
 									}
-									_dataProviderCopy = _dataProvider.copy();
+									this._dataProviderCopy = 
+										this._dataProvider.copy();
 									return;
 								}
 								else
 								{
 									nodeList.splice(lastIndex, 1);
-									_dataProvider.setChildren("");
-									_dataProvider.normalize();
+									this._dataProvider.setChildren("");
+									this._dataProvider.normalize();
 									while (nodeList.length)
 									{
 										_dataProvider.appendChild(nodeList.shift());
@@ -442,7 +452,7 @@ package org.wvxvws.tools
 						
 						break;
 			}
-			_dataProviderCopy = _dataProvider.copy();
+			this._dataProviderCopy = this._dataProvider.copy();
 			super.dispatchEvent(GUIEvent.DATA_CHANGED);
 		}
 		
@@ -454,15 +464,15 @@ package org.wvxvws.tools
 		
 		private function slide_mouseDownHandler(event:MouseEvent):void 
 		{
-			_selectedSlide = event.target as Slide;
+			super._selectedSlide = event.target as Slide;
 			super.stage.addEventListener(
 				MouseEvent.MOUSE_MOVE, this.mouseMoveHandler, false, 0, true);
 			super.stage.addEventListener(
 				MouseEvent.MOUSE_UP, this.mouseUpHandler, false, 0, true);
-			if (_slideEditor)
+			if (this._slideEditor)
 			{
-				(_slideEditor as IEditor).target = _selectedSlide;
-				(_slideEditor as IEditor).show();
+				(this._slideEditor as IEditor).target = this._selectedSlide;
+				(this._slideEditor as IEditor).show();
 			}
 		}
 		

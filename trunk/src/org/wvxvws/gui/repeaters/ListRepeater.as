@@ -45,6 +45,8 @@
 			this._id = id;
 		}
 		
+		public function dispose():void { }
+		
 		public function begin(at:int):void
 		{
 			this._index = at - 1;
