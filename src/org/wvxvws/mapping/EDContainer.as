@@ -132,9 +132,11 @@
 		
 		public function initialized(document:Object, id:String):void
 		{
-			if (!_parent) _parent = document as IEventDispatcher;
-			_id = id;
+			if (!this._parent) this._parent = document as IEventDispatcher;
+			this._id = id;
 		}
+		
+		public function dispose():void { }
 		
 		//--------------------------------------------------------------------------
 		//

@@ -64,8 +64,8 @@ package org.wvxvws.gui.repeaters
 		
 		public function set factory(value:Class):void 
 		{
-			if (_factory == value) return;
-			_factory = value;
+			if (this._factory === value) return;
+			this._factory = value;
 			super.dispatchEvent(new Event("factoryChanged"));
 		}
 		
@@ -80,12 +80,12 @@ package org.wvxvws.gui.repeaters
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>cellWidthChanged</code> event.
 		*/
-		public function get cellWidth():int { return _cellWidth; }
+		public function get cellWidth():int { return this._cellWidth; }
 		
 		public function set cellWidth(value:int):void 
 		{
-			if (_cellWidth == value) return;
-			_cellWidth = value;
+			if (this._cellWidth === value) return;
+			this._cellWidth = value;
 			super.dispatchEvent(new Event("cellWidthChanged"));
 		}
 		
@@ -100,12 +100,12 @@ package org.wvxvws.gui.repeaters
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>cellHeightChanged</code> event.
 		*/
-		public function get cellHeight():int { return _cellHeight; }
+		public function get cellHeight():int { return this._cellHeight; }
 		
 		public function set cellHeight(value:int):void 
 		{
-			if (_cellHeight == value) return;
-			_cellHeight = value;
+			if (this._cellHeight === value) return;
+			this._cellHeight = value;
 			super.dispatchEvent(new Event("cellHeightChanged"));
 		}
 		
@@ -120,12 +120,12 @@ package org.wvxvws.gui.repeaters
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>hSpaceChanged</code> event.
 		*/
-		public function get hSpace():int { return _hSpace; }
+		public function get hSpace():int { return this._hSpace; }
 		
 		public function set hSpace(value:int):void 
 		{
-			if (_hSpace == value) return;
-			_hSpace = value;
+			if (_hSpace === value) return;
+			this._hSpace = value;
 			super.dispatchEvent(new Event("hSpaceChanged"));
 		}
 		
@@ -140,12 +140,12 @@ package org.wvxvws.gui.repeaters
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>vSpaceChanged</code> event.
 		*/
-		public function get vSpace():int { return _vSpace; }
+		public function get vSpace():int { return this._vSpace; }
 		
 		public function set vSpace(value:int):void 
 		{
-			if (_vSpace == value) return;
-			_vSpace = value;
+			if (this._vSpace === value) return;
+			this._vSpace = value;
 			super.dispatchEvent(new Event("vSpaceChanged"));
 		}
 		
@@ -160,12 +160,12 @@ package org.wvxvws.gui.repeaters
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>paddingChanged</code> event.
 		*/
-		public function get padding():Rectangle { return _padding; }
+		public function get padding():Rectangle { return this._padding; }
 		
 		public function set padding(value:Rectangle):void 
 		{
-			if (_padding == value) return;
-			_padding = value;
+			if (this._padding === value) return;
+			this._padding = value;
 			super.dispatchEvent(new Event("paddingChanged"));
 		}
 		
@@ -180,18 +180,18 @@ package org.wvxvws.gui.repeaters
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>boundsChanged</code> event.
 		*/
-		public function get bounds():Point { return _bounds; }
+		public function get bounds():Point { return this._bounds; }
 		
 		public function set bounds(value:Point):void 
 		{
-			if (_bounds == value) return;
-			_bounds = value;
+			if (this._bounds === value) return;
+			this._bounds = value;
 			super.dispatchEvent(new Event("boundsChanged"));
 		}
 		
-		public function get index():int { return _index; }
+		public function get index():int { return this._index; }
 		
-		public function get id():String { return _id; }
+		public function get id():String { return this._id; }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -229,7 +229,7 @@ package org.wvxvws.gui.repeaters
 		{
 			super();
 			if (host) _creationCallback = host.repeatCallback;
-			_timer.addEventListener(TimerEvent.TIMER, timerHandler);
+			this._timer.addEventListener(TimerEvent.TIMER, this.timerHandler);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -240,7 +240,7 @@ package org.wvxvws.gui.repeaters
 		
 		public function begin():void
 		{
-			_index = 0;
+			this._index = 0;
 			this.createImage();
 		}
 		
@@ -250,10 +250,12 @@ package org.wvxvws.gui.repeaters
 		{
 			if (!(document is IRepeaterHost))
 				throw new ArgumentError(document + " cannot host repeater.");
-			_host = host as IRepeaterHost;
-			_creationCallback = _host.repeatCallback;
-			_id = id;
+			this._host = host as IRepeaterHost;
+			this._creationCallback = this._host.repeatCallback;
+			this._id = id;
 		}
+		
+		public function dispose():void { }
 		
 		//--------------------------------------------------------------------------
 		//
@@ -263,24 +265,30 @@ package org.wvxvws.gui.repeaters
 		
 		protected function createImage():void
 		{
-			var image:DisplayObject = new _factory() as DisplayObject;
-			image.width = _cellWidth;
-			image.height = _cellHeight;
-			var totalWidth:int = _bounds.x - (_padding.left + _padding.right);
-			var cellsH:int = (totalWidth + _hSpace) / (_cellWidth + _hSpace);
+			var image:DisplayObject = new this._factory() as DisplayObject;
+			image.width = this._cellWidth;
+			image.height = this._cellHeight;
+			var totalWidth:int = 
+				this._bounds.x - (this._padding.left + this._padding.right);
+			var cellsH:int = 
+				(totalWidth + this._hSpace) / (this._cellWidth + this._hSpace);
 			
-			image.x = _padding.left + (_index % cellsH) * (_cellWidth + _hSpace)
-			image.y = _padding.top + ((_index / cellsH) >> 0) * (_cellHeight + _vSpace);
-			(_host as DisplayObjectContainer).addChild(image);
-			_index++;
-			if (_index % 0xFF)
+			image.x = 
+				this._padding.left + (this._index % cellsH) * 
+				(this._cellWidth + this._hSpace)
+			image.y = 
+				this._padding.top + ((this._index / cellsH) >> 0) * 
+				(this._cellHeight + this._vSpace);
+			(this._host as DisplayObjectContainer).addChild(image);
+			this._index++;
+			if (this._index % 0xFF)
 			{
-				if (_creationCallback(image, _index)) this.createImage();
+				if (this._creationCallback(image, this._index)) this.createImage();
 			}
 			else 
 			{
-				_timer.reset();
-				_timer.start();
+				this._timer.reset();
+				this._timer.start();
 			}
 		}
 		

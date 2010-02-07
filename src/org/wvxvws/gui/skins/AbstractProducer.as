@@ -10,12 +10,12 @@
 	public class AbstractProducer implements IMXMLObject, ISkin
 	{
 		
-		public function get host():ISkinnable { return _host; }
+		public function get host():ISkinnable { return this._host; }
 		
 		public function set host(value:ISkinnable):void
 		{
-			if (_host === value) return;
-			_host = value;
+			if (this._host === value) return;
+			this._host = value;
 		}
 		
 		public function get id():String { return _id; }
@@ -27,7 +27,9 @@
 		
 		/* INTERFACE mx.core.IMXMLObject */
 		
-		public function initialized(document:Object, id:String):void { _id = id; }
+		public function initialized(document:Object, id:String):void { this._id = id; }
+		
+		public function dispose():void { }
 		
 		/* INTERFACE org.wvxvws.gui.skins.ISkin */
 		

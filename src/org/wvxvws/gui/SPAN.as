@@ -423,6 +423,8 @@ package org.wvxvws.gui
 			super.dispatchEvent(GUIEvent.INITIALIZED);
 		}
 		
+		public function dispose():void { }
+		
 		public function validate(properties:Dictionary):void
 		{
 			if (!this._document) this._validator = new LayoutValidator();

@@ -150,6 +150,8 @@
 			this._id = id;
 		}
 		
+		public function dispose():void { }
+		
 		/* INTERFACE org.wvxvws.data.Iterable */
 		
 		public function getIterator():IIterator

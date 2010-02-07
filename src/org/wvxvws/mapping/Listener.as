@@ -51,12 +51,12 @@ package org.wvxvws.mapping
 		 * This property can be used as the source for data binding. 
 		 * When this property is modified, it dispatches the <code>eventTypeChanged</code> event.
 		 */
-		public function get eventType():String { return _eventType; }
+		public function get eventType():String { return this._eventType; }
 		
 		public function set eventType(value:String):void 
 		{
-			if (_eventType == value) return;
-			_eventType = value;
+			if (this._eventType === value) return;
+			this._eventType = value;
 			super.dispatchEvent(new Event("eventTypeChanged"));
 		}
 		
@@ -73,12 +73,12 @@ package org.wvxvws.mapping
 		 * This property can be used as the source for data binding. 
 		 * When this property is modified, it dispatches the <code>listenerChanged</code> event.
 		 */
-		public function get listener():Function { return _listener; }
+		public function get listener():Function { return this._listener; }
 		
 		public function set listener(value:Function):void 
 		{
-			if (_listener == value) return;
-			_listener = value;
+			if (this._listener == value) return;
+			this._listener = value;
 			super.dispatchEvent(new Event("listenerChanged"));
 		}
 		
@@ -95,12 +95,12 @@ package org.wvxvws.mapping
 		 * This property can be used as the source for data binding. 
 		 * When this property is modified, it dispatches the <code>priorityChanged</code> event.
 		 */
-		public function get priority():int { return _priority; }
+		public function get priority():int { return this._priority; }
 		
 		public function set priority(value:int):void 
 		{
-			if (_priority == value) return;
-			_priority = value;
+			if (this._priority == value) return;
+			this._priority = value;
 			super.dispatchEvent(new Event("priorityChanged"));
 		}
 		
@@ -117,12 +117,15 @@ package org.wvxvws.mapping
 		 * This property can be used as the source for data binding. 
 		 * When this property is modified, it dispatches the <code>useWeakReferenceChanged</code> event.
 		 */
-		public function get useWeakReference():Boolean { return _useWeakReference; }
+		public function get useWeakReference():Boolean
+		{
+			return this._useWeakReference;
+		}
 		
 		public function set useWeakReference(value:Boolean):void 
 		{
-			if (_useWeakReference == value) return;
-			_useWeakReference = value;
+			if (this._useWeakReference == value) return;
+			this._useWeakReference = value;
 			super.dispatchEvent(new Event("useWeakReferenceChanged"));
 		}
 		
@@ -151,31 +154,27 @@ package org.wvxvws.mapping
 																	priority:int = 0) 
 		{
 			super();
-			_eventType = eventType;
-			_listener = listener;
-			_priority = priority;
+			this._eventType = eventType;
+			this._listener = listener;
+			this._priority = priority;
 		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Public methods
 		//
 		//--------------------------------------------------------------------------
+		
 		public function initialized(document:Object, id:String):void
 		{
-			_document = document;
-			_id = id;
+			this._document = document;
+			this._id = id;
 		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods
 		//
 		//--------------------------------------------------------------------------
-		
-		//--------------------------------------------------------------------------
-		//
-		//  Private methods
-		//
-		//--------------------------------------------------------------------------
 	}
-	
 }

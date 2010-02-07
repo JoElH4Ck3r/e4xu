@@ -42,11 +42,27 @@ package org.wvxvws.gui.styles
 		//
 		//--------------------------------------------------------------------------
 		
-		//--------------------------------------------------------------------------
-		//
-		//  Protected properties
-		//
-		//--------------------------------------------------------------------------
+		public function get id():String { return _id; }
+		
+		public function set source(value:Object):void 
+		{
+			if (this._source) throw new Error("Already set.");
+			switch (true)
+			{
+				case (value is String):
+					this._source = value as String;
+					break;
+				case (value is Class):
+					this._source = new (value as Class)().toString();
+					break;
+				case (value is ByteArray):
+					this._source = (value as ByteArray).readUTF();
+					break;
+				default:
+					throw new Error("Wrong source type.");
+			}
+			CSSParser.parse(this._source);
+		}
 		
 		//--------------------------------------------------------------------------
 		//
@@ -64,52 +80,20 @@ package org.wvxvws.gui.styles
 		//--------------------------------------------------------------------------
 		public function STYLE() { super(); }
 		
-		/* INTERFACE mx.core.IMXMLObject */
-		
-		public function initialized(document:Object, id:String):void
-		{
-			_id = id;
-			_document = document;
-		}
-		
-		public function get id():String { return _id; }
-		
-		public function set source(value:Object):void 
-		{
-			if (_source) throw new Error("Already set.");
-			switch (true)
-			{
-				case (value is String):
-					_source = value as String;
-					break;
-				case (value is Class):
-					_source = new (value as Class)().toString();
-					break;
-				case (value is ByteArray):
-					_source = (value as ByteArray).readUTF();
-					break;
-				default:
-					throw new Error("Wrong source type.");
-			}
-			CSSParser.parse(_source);
-		}
 		//--------------------------------------------------------------------------
 		//
 		//  Public methods
 		//
 		//--------------------------------------------------------------------------
 		
-		//--------------------------------------------------------------------------
-		//
-		//  Protected methods
-		//
-		//--------------------------------------------------------------------------
+		/* INTERFACE mx.core.IMXMLObject */
 		
-		//--------------------------------------------------------------------------
-		//
-		//  Private methods
-		//
-		//--------------------------------------------------------------------------
+		public function initialized(document:Object, id:String):void
+		{
+			this._id = id;
+			this._document = document;
+		}
+		
+		public function dispose():void { }
 	}
-	
 }

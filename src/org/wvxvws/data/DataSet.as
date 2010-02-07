@@ -300,6 +300,8 @@ package org.wvxvws.data
 			this._id = id;
 		}
 		
+		public function dispose():void { }
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods

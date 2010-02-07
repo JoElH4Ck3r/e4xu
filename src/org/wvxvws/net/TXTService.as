@@ -183,10 +183,10 @@ package org.wvxvws.net
 									faultCallBack:Function = null)
 		{
 			super();
-			_resultCallBack = resultCallBack;
-			_faultCallBack = faultCallBack;
+			this._resultCallBack = resultCallBack;
+			this._faultCallBack = faultCallBack;
 			dataFormat = URLLoaderDataFormat.TEXT;
-			_synchronizer = Synchronizer.getInstance();
+			this._synchronizer = Synchronizer.getInstance();
 			addEventListener(Event.COMPLETE, completeHandler, false, 0, true);
 			addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler, false, 0, true);
 			addEventListener(SecurityErrorEvent.SECURITY_ERROR, 
@@ -197,9 +197,12 @@ package org.wvxvws.net
 		
 		public function initialized(document:Object, id:String):void
 		{
-			_document = document;
-			_id = id;
+			this._document = document;
+			this._id = id;
 		}
+		
+		public function dispose():void { }
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Public methods
@@ -215,10 +218,10 @@ package org.wvxvws.net
 		
 		public function send(method:String = null, parameters:ServiceArguments = null):void
 		{
-			var id:int = _synchronizer.putOnQueve(this, method);
+			var id:int = this._synchronizer.putOnQueve(this, method);
 			if (!parameters) parameters = _parameters;
 			var operation:Operation = new Operation(id, methodForName(method), parameters);
-			_operations[id] = operation;
+			this._operations[id] = operation;
 		}
 		
 		public function cancel(method:String = null):void
@@ -248,18 +251,18 @@ package org.wvxvws.net
 		
 		protected function securityErrorHandler(event:SecurityErrorEvent):void 
 		{
-			_faultCallBack();
+			this._faultCallBack();
 		}
 		
 		protected function ioErrorHandler(event:IOErrorEvent):void 
 		{
-			_faultCallBack();
+			this._faultCallBack();
 		}
 		
 		protected function completeHandler(event:Event):void 
 		{
-			_synchronizer.acknowledge(_currentID);
-			_resultCallBack();
+			this._synchronizer.acknowledge(_currentID);
+			this._resultCallBack();
 		}
 		
 		//--------------------------------------------------------------------------
@@ -270,8 +273,8 @@ package org.wvxvws.net
 		
 		net_internal function internalSend(id:int):void
 		{
-			_sending = true;
-			_currentID = id;
+			this._sending = true;
+			this._currentID = id;
 			var operation:Operation = _operations[id];
 			var postData:String = "";
 			if (operation.method) postData += operation.method.id;
@@ -282,7 +285,7 @@ package org.wvxvws.net
 					operation.parameters.toArgumentString() : "") + 
 					(postData ? "\"" : "");
 			}
-			var request:URLRequest = new URLRequest(_baseURL + (postData ? "?" + postData : ""));
+			var request:URLRequest = new URLRequest(this._baseURL + (postData ? "?" + postData : ""));
 			request.method = URLRequestMethod.GET;
 			super.load(request);
 		}

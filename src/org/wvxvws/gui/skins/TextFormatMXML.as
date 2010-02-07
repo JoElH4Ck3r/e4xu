@@ -11,7 +11,7 @@
 	 */
 	public class TextFormatMXML extends TextFormat implements IMXMLObject
 	{
-		public function get id():String { return _id; }
+		public function get id():String { return this._id; }
 		
 		protected var _id:String;
 		
@@ -32,6 +32,6 @@
 		
 		public function initialized(document:Object, id:String):void { _id = id; }
 		
+		public function dispose():void { }
 	}
-
 }

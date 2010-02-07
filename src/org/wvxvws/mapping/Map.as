@@ -48,7 +48,7 @@ package org.wvxvws.mapping
 		
 		public function get eventTypes():Vector.<String>
 		{
-			return _eventTypes.concat();
+			return this._eventTypes.concat();
 		}
 		
 		//public function get links():Vector.<Link> { return _links.concat(); }
@@ -57,8 +57,8 @@ package org.wvxvws.mapping
 		{
 			for each (var l:Link in value)
 			{
-				_links[l.id] = l;
-				if (_eventTypes.indexOf(l.id) < 0) _eventTypes.push(l.id);
+				this._links[l.id] = l;
+				if (this._eventTypes.indexOf(l.id) < 0) this._eventTypes.push(l.id);
 			}
 		}
 		//------------------------------------
@@ -72,7 +72,10 @@ package org.wvxvws.mapping
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>dispatchersChanged</code> event.
 		*/
-		public function get dispatchers():Vector.<IEventDispatcher> { return _dispatchers; }
+		public function get dispatchers():Vector.<IEventDispatcher>
+		{
+			return this._dispatchers;
+		}
 		
 		public function set dispatchers(value:Vector.<IEventDispatcher>):void 
 		{
@@ -133,13 +136,15 @@ package org.wvxvws.mapping
 			if (i > -1) instances.splice(i, 1);
 		}
 		
-		public function getLink(eventType:String):Link { return _links[eventType]; }
+		public function getLink(eventType:String):Link { return this._links[eventType]; }
 		
 		public function initialized(document:Object, id:String):void
 		{
-			_document = document;
-			_id = id;
+			this._document = document;
+			this._id = id;
 		}
+		
+		public function dispose():void { }
 		
 		//--------------------------------------------------------------------------
 		//

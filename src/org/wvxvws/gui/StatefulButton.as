@@ -83,7 +83,7 @@
 				(this._document is DisplayObjectContainer))
 			{
 				super.parent.removeChild(this);
-				(_document as DisplayObjectContainer).addChild(this);
+				(this._document as DisplayObjectContainer).addChild(this);
 			}
 			else if (!super.parent && 
 				(this._document is DisplayObjectContainer))
@@ -92,5 +92,7 @@
 			}
 			this._id = id;
 		}
+		
+		public function dispose():void { }
 	}
 }

@@ -71,9 +71,12 @@ package org.wvxvws.geometry
 		
 		public function initialized(document:Object, id:String):void
 		{
-			_id = id;
-			_document = document;
+			this._id = id;
+			this._document = document;
 		}
+		
+		public function dispose():void { }
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Public methods

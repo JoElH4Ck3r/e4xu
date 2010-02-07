@@ -373,6 +373,8 @@ package org.wvxvws.gui.renderers
 			super.dispatchEvent(GUIEvent.INITIALIZED);
 		}
 		
+		public function dispose():void { }
+		
 		public function unselectRecursively(selection:DisplayObject):Boolean
 		{
 			var ret:Boolean;

@@ -27,15 +27,15 @@
 		
 		public override function set width(value:Number):void 
 		{
-			if (_width === value) return;
-			_width = value;
+			if (this._width === value) return;
+			this._width = value;
 			this.init();
 		}
 		
 		public override function set height(value:Number):void 
 		{
-			if (_height === value) return;
-			_height = value;
+			if (this._height === value) return;
+			this._height = value;
 			this.init();
 		}
 		
@@ -44,47 +44,47 @@
 		public function set percent(value:int):void
 		{
 			value = Math.max(Math.min(100, value), 0);
-			if (_percent === value) return;
-			_percent = value;
+			if (this._percent === value) return;
+			this._percent = value;
 			this.drawStep();
 		}
 		
-		public function get percent():int { return _percent; }
+		public function get percent():int { return this._percent; }
 		
 		/* INTERFACE org.wvxvws.gui.skins.ISkin */
 		
-		public function get host():ISkinnable { return _preloader as ISkinnable; }
+		public function get host():ISkinnable { return this._preloader as ISkinnable; }
 		
 		public function set host(value:ISkinnable):void
 		{
-			if (value === _preloader) return;
-			_preloader = value as IPreloader;
+			if (value === this._preloader) return;
+			this._preloader = value as IPreloader;
 		}
 		
-		public function get radius():int { return _radius; }
+		public function get radius():int { return this._radius; }
 		
 		public function set radius(value:int):void 
 		{
-			if (_radius === value) return;
-			_radius = value;
+			if (this._radius === value) return;
+			this._radius = value;
 			this.init();
 		}
 		
-		public function get circleRadius():int { return _circleRadius; }
+		public function get circleRadius():int { return this._circleRadius; }
 		
 		public function set circleRadius(value:int):void 
 		{
-			if (_circleRadius === value) return;
-			_circleRadius = value;
+			if (this._circleRadius === value) return;
+			this._circleRadius = value;
 			this.init();
 		}
 		
-		public function get circleColor():uint { return _circleColor; }
+		public function get circleColor():uint { return this._circleColor; }
 		
 		public function set circleColor(value:uint):void 
 		{
-			if (_circleColor === value) return;
-			_circleColor = value;
+			if (this._circleColor === value) return;
+			this._circleColor = value;
 			this.init();
 		}
 		
@@ -133,10 +133,15 @@
 		{
 			if (document is IPreloader)
 			{
-				_preloader = document as IPreloader;
+				this._preloader = document as IPreloader;
 				(document as DisplayObjectContainer).addChild(this);
 			}
-			if (!_cTransform) this.init();
+			if (!this._cTransform) this.init();
+		}
+		
+		public function dispose():void
+		{
+			
 		}
 		
 		//--------------------------------------------------------------------------
@@ -148,38 +153,39 @@
 		protected function init(numCircles:int = 12):void
 		{
 			var step:int = numCircles * 0.5;
-			if (_container && contains(_container)) super.removeChild(_container);
-			_container = new Sprite();
+			if (this._container && contains(this._container))
+				super.removeChild(this._container);
+			this._container = new Sprite();
 			while (numCircles--)
 			{
-				_container.addChild(this.drawCircle(
-					new Point(Math.cos(Math.PI * numCircles / step) * _radius,
-					Math.sin(Math.PI * numCircles / step) * _radius)));
+				this._container.addChild(this.drawCircle(
+					new Point(Math.cos(Math.PI * numCircles / step) * this._radius,
+					Math.sin(Math.PI * numCircles / step) * this._radius)));
 			}
-			_container.x = _preTX = _width >> 1;
-			_container.y = _preTY = _height >> 1;
-			_cTransform = new Transform(_container);
-			super.addChild(_container);
+			this._container.x = this._preTX = this._width >> 1;
+			this._container.y = this._preTY = this._height >> 1;
+			this._cTransform = new Transform(this._container);
+			super.addChild(this._container);
 		}
 		
 		protected function drawCircle(where:Point):Shape
 		{
 			var s:Shape = new Shape();
-			s.graphics.beginFill(_circleColor);
-			s.graphics.drawCircle(where.x, where.y, _circleRadius);
+			s.graphics.beginFill(this._circleColor);
+			s.graphics.drawCircle(where.x, where.y, this._circleRadius);
 			s.graphics.endFill();
-			return _container.addChild(s) as Shape;
+			return this._container.addChild(s) as Shape;
 		}
 		
 		protected function drawStep():void
 		{
-			if (!_cTransform) this.init();
-			_cRotation++;
-			_cRotation = _cRotation % 360;
-			_cMatrix = new Matrix();
-			_cMatrix.rotate(_cRotation * Math.PI / 180);
-			_cMatrix.translate(_preTX, _preTY);
-			_cTransform.matrix = _cMatrix;
+			if (!this._cTransform) this.init();
+			this._cRotation++;
+			this._cRotation = this._cRotation % 360;
+			this._cMatrix = new Matrix();
+			this._cMatrix.rotate(this._cRotation * Math.PI / 180);
+			this._cMatrix.translate(this._preTX, this._preTY);
+			this._cTransform.matrix = this._cMatrix;
 		}
 	}
 }
