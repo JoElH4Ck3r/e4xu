@@ -19,7 +19,7 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public var rule:Function;
+		public var rule:Function/*Null<Object>->Null<Object>->Boolean*/;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -43,8 +43,8 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public function DataBinTree(type:Class, 
-			head:BinTreeCell, rule:Function/*Object->Object->Boolean*/ = null) 
+		public function DataBinTree(type:Class, head:BinTreeCell, 
+			rule:Function/*Null<Object>->Null<Object>->Boolean*/ = null) 
 		{
 			super();
 			this._type = type;
@@ -70,8 +70,10 @@
 		{
 			var leaf:BinTreeCell;
 			var o:Object;
+			var l:BinTreeCell;
+			var r:BinTreeCell;
 			
-			if (this.rule is Function)
+			if (this.rule is Function) // sorted
 			{
 				for (o in this._leafs)
 				{
@@ -82,26 +84,57 @@
 							leaf = o;
 					}
 				}
+				l = leaf.left;
+				r = leaf.right;
+				if (l == r) // both are null, add to left
+				{
+					leaf.left = new BinTreeCell(item);
+					this._leafs[leaf] = false;
+				}
+				else if (!l)
+				{
+					if (this.rule(null, item))
+						leaf.left = new BinTreeCell(item);
+					else
+					{
+						o = leaf.right;
+						leaf.right = new BinTreeCell(item);
+						leaf.left = o;
+					}
+					delete this._leafs[leaf];
+				}
+				else
+				{
+					if (this.rule(item, null))
+						leaf.right = new BinTreeCell(item);
+					else
+					{
+						o = leaf.left;
+						leaf.left = new BinTreeCell(item);
+						leaf.right = o;
+					}
+					delete this._leafs[leaf];
+				}
 			}
-			else
+			else // unsorted
 			{
 				for (o in this._leafs)
 				{
 					leaf = o as BinTreeCell;
 					break;
 				}
-			}
-			if (this._leafs[leaf]) // left
-			{
-				leaf.left = new BinTreeCell(item);
-				this._leafs[leaf.left] = true;
-				this._leafs[leaf] = false;
-			}
-			else // right
-			{
-				leaf.right = new BinTreeCell(item);
-				this._leafs[leaf.right] = true;
-				delete this._leafs[leaf];
+				if (this._leafs[leaf]) // left
+				{
+					leaf.left = new BinTreeCell(item);
+					this._leafs[leaf.left] = true;
+					this._leafs[leaf] = false;
+				}
+				else // right
+				{
+					leaf.right = new BinTreeCell(item);
+					this._leafs[leaf.right] = true;
+					delete this._leafs[leaf];
+				}
 			}
 		}
 		
