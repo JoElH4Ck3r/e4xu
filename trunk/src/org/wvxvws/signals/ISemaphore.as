@@ -22,7 +22,7 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		function signalTypes():Vector.<SygnalType>;
-		function callbackSignature(type:SygnalType):Vector.<Class>;
+		function signalTypes():Vector.<SignalType>;
+		function callbackSignature(type:SignalType):Vector.<Class>;
 	}
 }

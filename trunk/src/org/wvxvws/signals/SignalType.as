@@ -2,12 +2,12 @@
 {
 	import flash.utils.Dictionary;
 	/**
-	 * SygnalType class.
+	 * SignalType class.
 	 * @author wvxvw
 	 * @langVersion 3.0
 	 * @playerVersion 10.0.32
 	 */
-	public class SygnalType
+	public class SignalType
 	{
 		//--------------------------------------------------------------------------
 		//
@@ -24,12 +24,12 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public function SygnalType(kind:int) 
+		public function SignalType(kind:int) 
 		{
 			super();
 			var d:Dictionary;
 			this._kind = kind;
-			if ((this as Object).constructor === SygnalType)
+			if ((this as Object).constructor === SignalType)
 				throw SignalError.ABSTRACT_CLASS;
 			if (!KINDS[(this as Object).constructor])
 				KINDS[(this as Object).constructor] = new Dictionary();
