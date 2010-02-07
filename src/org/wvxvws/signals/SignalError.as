@@ -20,7 +20,9 @@
 			new SignalError("Signal type not found.");
 		public static const WRONG_SIGNATURE:SignalError = 
 			new SignalError("Attempting to register callback with wrong signature.");
-		
+		public static const KIND_REGISTERED:SignalError = 
+			new SignalError("This kind has already been used.");
+			
 		//--------------------------------------------------------------------------
 		//
 		//  Private properties

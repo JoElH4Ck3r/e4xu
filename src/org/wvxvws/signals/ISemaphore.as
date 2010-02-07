@@ -1,6 +1,5 @@
 ﻿package org.wvxvws.signals 
 {
-	
 	/**
 	 * ISemaphore interface.
 	 * @author wvxvw
@@ -15,13 +14,15 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		function signalTypes():Vector.<SygnalType>;
-		function callbackSignature(type:SygnalType):Vector.<Class>;
+		function get signals():Signals;
 		
 		//--------------------------------------------------------------------------
 		//
 		//  Methods
 		//
 		//--------------------------------------------------------------------------
+		
+		function signalTypes():Vector.<SygnalType>;
+		function callbackSignature(type:SygnalType):Vector.<Class>;
 	}
 }
