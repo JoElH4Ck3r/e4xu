@@ -36,6 +36,7 @@
 			d = KINDS[(this as Object).constructor];
 			if (d[kind] !== undefined)
 				throw SignalError.KIND_REGISTERED;
+			d[kind] = true;
 		}
 		
 		//--------------------------------------------------------------------------
