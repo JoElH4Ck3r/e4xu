@@ -4,7 +4,7 @@
 	import flash.display.Sprite;
 	import org.wvxvws.signals.ISemaphore;
 	import org.wvxvws.signals.Signals;
-	import org.wvxvws.signals.SygnalType;
+	import org.wvxvws.signals.SignalType;
 	//}
 	
 	/**
@@ -45,12 +45,12 @@
 		
 		/* INTERFACE org.wvxvws.signals.ISemaphore */
 		
-		public function signalTypes():Vector.<SygnalType>
+		public function signalTypes():Vector.<SignalType>
 		{
-			return new <SygnalType>[TestGignalType.FOO];
+			return new <SignalType>[TestGignalType.FOO];
 		}
 		
-		public function callbackSignature(type:SygnalType):Vector.<Class>
+		public function callbackSignature(type:SignalType):Vector.<Class>
 		{
 			switch (type)
 			{
@@ -72,8 +72,8 @@
 		}
 	}
 }
-import org.wvxvws.signals.SygnalType;
-internal final class TestGignalType extends SygnalType
+import org.wvxvws.signals.SignalType;
+internal final class TestGignalType extends SignalType
 {
 	public static const FOO:TestGignalType = new TestGignalType();
 	public function TestGignalType() { super(0); }

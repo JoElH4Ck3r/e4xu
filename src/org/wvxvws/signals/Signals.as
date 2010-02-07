@@ -46,7 +46,7 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		public function add(type:SygnalType, slot:Function, priority:int = -1, 
+		public function add(type:SignalType, slot:Function, priority:int = -1, 
 			params:Vector.<Class> = null, weak:Boolean = false):void
 		{
 			var sig:Vector.<Class>;
@@ -91,7 +91,7 @@
 			target[slot] = priority;
 		}
 		
-		public function rem(type:SygnalType, slot:Function):void
+		public function rem(type:SignalType, slot:Function):void
 		{
 			var d:Dictionary = this._allStrong[type];
 			
@@ -99,7 +99,7 @@
 			if (d) delete d[slot];
 		}
 		
-		public function call(type:SygnalType, ...params):void
+		public function call(type:SignalType, ...params):void
 		{
 			var temp:Dictionary = new Dictionary();
 			var o:Object;
@@ -131,7 +131,7 @@
 			}
 		}
 		
-		public function all(type:SygnalType = null, 
+		public function all(type:SignalType = null, 
 			weak:Boolean = false, strong:Boolean = true):Dictionary
 		{
 			var d:Dictionary;
@@ -196,7 +196,7 @@
 			return d;
 		}
 		
-		public function has(slot:Function, type:SygnalType = null,
+		public function has(slot:Function, type:SignalType = null,
 			weak:Boolean = true, strong:Boolean = true):Boolean
 		{
 			var td:Dictionary;
