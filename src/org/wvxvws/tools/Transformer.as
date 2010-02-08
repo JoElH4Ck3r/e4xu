@@ -57,13 +57,13 @@ package org.wvxvws.tools
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>targetChange</code> event.
 		*/
-		public function get target():Object { return _target; }
+		public function get target():Object { return this._target; }
 		
 		public function set target(value:Object):void 
 		{
-			if (_target === value || !(value is DisplayObject)) return;
-			_target = value as DisplayObject;
-			_savedBounds = _target.getBounds(_target);
+			if (this._target === value || !(value is DisplayObject)) return;
+			this._target = value as DisplayObject;
+			this._savedBounds = this._target.getBounds(this._target);
 			this.draw();
 			super.dispatchEvent(new Event("targetChange"));
 		}
@@ -106,11 +106,11 @@ package org.wvxvws.tools
 		public function Transformer(target:DisplayObject = null) 
 		{
 			super();
-			super.addEventListener(Event.ADDED_TO_STAGE, adtsHandler);
-			super.addEventListener(Event.REMOVED_FROM_STAGE, removedHandler);
-			_target = target;
-			if (_target) _savedBounds = _target.getBounds(_target);
-			if (target) draw();
+			super.addEventListener(Event.ADDED_TO_STAGE, this.adtsHandler);
+			super.addEventListener(Event.REMOVED_FROM_STAGE, this.removedHandler);
+			this._target = target;
+			if (this._target) this._savedBounds = this._target.getBounds(this._target);
+			if (target) this.draw();
 		}
 		
 		//--------------------------------------------------------------------------
@@ -121,43 +121,48 @@ package org.wvxvws.tools
 		
 		protected function draw():void
 		{
-			if (!_target)
+			if (!this._target)
 			{
-				if (_document is DisplayObjectContainer)
-					(_document as DisplayObjectContainer).removeChild(this);
+				if (this._document is DisplayObjectContainer)
+					(this._document as DisplayObjectContainer).removeChild(this);
 				return;
 			}
 			var i:int;
 			var j:int = 9;
-			if (_document is DisplayObjectContainer)
-				(_document as DisplayObjectContainer).addChild(this);
+			if (this._document is DisplayObjectContainer)
+				(this._document as DisplayObjectContainer).addChild(this);
 			//if (!_edges) _edges = super.addChild(new Shape()) as Shape;
-			if (!_receiver)
-				_receiver = new Sprite();
-			if (!_receiverHandles)
+			if (!this._receiver) this._receiver = new Sprite();
+			if (!this._receiverHandles)
 			{
-				_receiverHandles = 
-				new <Sprite>[drawHandle(0, _receiver), drawHandle(1, _receiver),
-							drawHandle(2, _receiver), drawHandle(3, _receiver), 
-							drawHandle(4, _receiver), drawHandle(5, _receiver),
-							drawHandle(6, _receiver), drawHandle(7, _receiver), 
-							drawHandle(8, _receiver)];
+				this._receiverHandles = 
+				new <Sprite>[this.drawHandle(0, this._receiver), 
+							this.drawHandle(1, this._receiver),
+							this.drawHandle(2, this._receiver), 
+							this.drawHandle(3, this._receiver), 
+							this.drawHandle(4, this._receiver), 
+							this.drawHandle(5, this._receiver),
+							this.drawHandle(6, this._receiver), 
+							this.drawHandle(7, this._receiver), 
+							this.drawHandle(8, this._receiver)];
 			}
-			_receiver.transform.matrix = _target.transform.matrix.clone();
+			this._receiver.transform.matrix = this._target.transform.matrix.clone();
 			//_edges.graphics.clear();
 			//var bounds:Rectangle = _target.getBounds(_target);
 			//_edges.graphics.lineStyle(1, 0, 1, true);
 			//_edges.graphics.drawRect(0, 0, bounds.width, bounds.height);
 			
-			if (!_handles) _handles = 
-				new <Sprite>[drawHandle(0, this), drawHandle(1, this),drawHandle(2, this),
-							drawHandle(3, this), drawHandle(4, this), drawHandle(5, this),
-							drawHandle(6, this), drawHandle(7, this), drawHandle(8, this)];
+			if (!this._handles) this._handles = 
+				new <Sprite>[this.drawHandle(0, this), this.drawHandle(1, this), 
+							this.drawHandle(2, this), this.drawHandle(3, this), 
+							this.drawHandle(4, this), this.drawHandle(5, this),
+							this.drawHandle(6, this), this.drawHandle(7, this), 
+							this.drawHandle(8, this)];
 			else
 			{
 				while (i < j)
 				{
-					positionHandles(i);
+					this.positionHandles(i);
 					i++;
 				}
 			}
@@ -166,9 +171,9 @@ package org.wvxvws.tools
 		protected function positionHandles(index:int):void
 		{
 			var p:Point = this.globalToLocal(
-						_receiverHandles[index].localToGlobal(new Point()));
-			_handles[index].x = p.x;
-			_handles[index].y = p.y;
+						this._receiverHandles[index].localToGlobal(new Point()));
+			this._handles[index].x = p.x;
+			this._handles[index].y = p.y;
 		}
 		
 		protected function drawHandle(index:int, where:Sprite):Sprite
@@ -178,11 +183,12 @@ package org.wvxvws.tools
 			g.beginFill(0);
 			g.drawRect( -5, -5, 10, 10);
 			g.endFill();
-			s.addEventListener(MouseEvent.MOUSE_DOWN, handle_downHandler);
+			s.addEventListener(MouseEvent.MOUSE_DOWN, this.handle_downHandler);
 			var p:Point;
 			if (where === this)
 			{
-				p = this.globalToLocal(_receiverHandles[index].localToGlobal(new Point()));
+				p = this.globalToLocal(
+					this._receiverHandles[index].localToGlobal(new Point()));
 				s.x = p.x;
 				s.y = p.y;
 			}
@@ -193,32 +199,32 @@ package org.wvxvws.tools
 					case 0:
 						break;
 					case 1:
-						s.x = _savedBounds.width * 0.5;
+						s.x = this._savedBounds.width * 0.5;
 						break;
 					case 2:
-						s.x = _savedBounds.width;
+						s.x = this._savedBounds.width;
 						break;
 					case 3:
-						s.y = _savedBounds.height * 0.5;
+						s.y = this._savedBounds.height * 0.5;
 						break;
 					case 4:
-						s.x = _savedBounds.width * 0.5;
-						s.y = _savedBounds.height * 0.5;
+						s.x = this._savedBounds.width * 0.5;
+						s.y = this._savedBounds.height * 0.5;
 						break;
 					case 5:
-						s.x = _savedBounds.width;
-						s.y = _savedBounds.height * 0.5;
+						s.x = this._savedBounds.width;
+						s.y = this._savedBounds.height * 0.5;
 						break;
 					case 6:
-						s.y = _savedBounds.height;
+						s.y = this._savedBounds.height;
 						break;
 					case 7:
-						s.x = _savedBounds.width * 0.5;
-						s.y = _savedBounds.height;
+						s.x = this._savedBounds.width * 0.5;
+						s.y = this._savedBounds.height;
 						break;
 					case 8:
-						s.x = _savedBounds.width;
-						s.y = _savedBounds.height;
+						s.x = this._savedBounds.width;
+						s.y = this._savedBounds.height;
 						break;
 					default:
 						throw new RangeError("\"index\" is out of range.");
@@ -237,81 +243,85 @@ package org.wvxvws.tools
 		
 		private function handle_downHandler(event:MouseEvent):void 
 		{
-			_activeHandle = event.target as Sprite;
-			_startX = _activeHandle.x;
-			_startY = _activeHandle.y;
-			super.addEventListener(Event.ENTER_FRAME, enterFrameHandler);
-			_savedMatrix = _target.transform.matrix.clone();
-			_registrationPoint = new Point(_activeHandle.x, _activeHandle.y);
+			this._activeHandle = event.target as Sprite;
+			this._startX = this._activeHandle.x;
+			this._startY = this._activeHandle.y;
+			super.addEventListener(Event.ENTER_FRAME, this.enterFrameHandler);
+			this._savedMatrix = this._target.transform.matrix.clone();
+			this._registrationPoint = 
+				new Point(this._activeHandle.x, this._activeHandle.y);
 		}
 		
 		private function enterFrameHandler(event:Event):void 
 		{
-			_change = new Point(_startX, _startY).subtract(
+			this._change = new Point(this._startX, this._startY).subtract(
 						new Point(super.mouseX, super.mouseY));
-			_angle = Math.atan2(_change.x, _change.y);
-			_activeMatrix = _savedMatrix.clone();
-			switch (_activeHandle)
+			this._angle = Math.atan2(this._change.x, this._change.y);
+			this._activeMatrix = this._savedMatrix.clone();
+			switch (this._activeHandle)
 			{
-				case _handles[0]: // a, d
-					_activeMatrix.tx -= _change.x;
-					_activeMatrix.ty -= _change.y;
-					_activeMatrix.a += _change.x / _savedBounds.width;
-					_activeMatrix.d += _change.y / _savedBounds.height;
+				case this._handles[0]: // a, d
+					this._activeMatrix.tx -= this._change.x;
+					this._activeMatrix.ty -= this._change.y;
+					this._activeMatrix.a += this._change.x / this._savedBounds.width;
+					this._activeMatrix.d += this._change.y / this._savedBounds.height;
 					break;
-				case _handles[1]:
-					_activeMatrix.ty -= _change.y;
-					_activeMatrix.d += _change.y / _savedBounds.height;
+				case this._handles[1]:
+					this._activeMatrix.ty -= this._change.y;
+					this._activeMatrix.d += this._change.y / this._savedBounds.height;
 					break;
-				case _handles[2]: // a, d
-					_activeMatrix.ty -= _change.y;
-					_activeMatrix.d += _change.y / _savedBounds.height;
-					_activeMatrix.a -= _change.x / _savedBounds.width;
+				case this._handles[2]: // a, d
+					this._activeMatrix.ty -= this._change.y;
+					this._activeMatrix.d += this._change.y / this._savedBounds.height;
+					this._activeMatrix.a -= this._change.x / this._savedBounds.width;
 					break;
-				case _handles[3]:
-					_activeMatrix.tx -= _change.x;
-					_activeMatrix.a += _change.x / _savedBounds.width;
+				case this._handles[3]:
+					this._activeMatrix.tx -= this._change.x;
+					this._activeMatrix.a += this._change.x / this._savedBounds.width;
 					break;
-				case _handles[4]: // rotate
-					var point:Point = _registrationPoint.clone();
+				case this._handles[4]: // rotate
+					var point:Point = this._registrationPoint.clone();
 					//trace("point", point);
 					//point = _activeMatrix.transformPoint(point);
-					_activeMatrix.tx -= point.x;
-					_activeMatrix.ty -= point.y;
-					_activeMatrix.rotate(_angle * -1);
-					_activeMatrix.tx += point.x;
-					_activeMatrix.ty += point.y;
+					this._activeMatrix.tx -= point.x;
+					this._activeMatrix.ty -= point.y;
+					this._activeMatrix.rotate(this._angle * -1);
+					this._activeMatrix.tx += point.x;
+					this._activeMatrix.ty += point.y;
 					break;
-				case _handles[5]:
-					_activeMatrix.a -= _change.x / _savedBounds.width;
+				case this._handles[5]:
+					this._activeMatrix.a -= this._change.x / this._savedBounds.width;
 					break;
-				case _handles[6]: // a, d
-					_activeMatrix.d -= _change.y / _savedBounds.height;
-					_activeMatrix.tx -= _change.x;
-					_activeMatrix.a += _change.x / _savedBounds.width;
+				case this._handles[6]: // a, d
+					this._activeMatrix.d -= this._change.y / this._savedBounds.height;
+					this._activeMatrix.tx -= this._change.x;
+					this._activeMatrix.a += this._change.x / this._savedBounds.width;
 					break;
-				case _handles[7]:
-					_activeMatrix.d -= _change.y / _savedBounds.height;
+				case this._handles[7]:
+					this._activeMatrix.d -= this._change.y / this._savedBounds.height;
 					break;
-				case _handles[8]: // a, d
-					_activeMatrix.a -= _change.x / _savedBounds.width;
-					_activeMatrix.d -= _change.y / _savedBounds.height;
+				case this._handles[8]: // a, d
+					this._activeMatrix.a -= this._change.x / this._savedBounds.width;
+					this._activeMatrix.d -= this._change.y / this._savedBounds.height;
 					break;
 			}
-			_target.transform.matrix = _activeMatrix;
-			draw();
+			this._target.transform.matrix = this._activeMatrix;
+			this.draw();
 		}
 		
 		private function removedHandler(event:Event):void 
 		{
-			stage.removeEventListener(MouseEvent.MOUSE_UP, mouseUpHandler);
-			stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoveHandler);
-			super.removeEventListener(Event.ENTER_FRAME, enterFrameHandler);
+			super.stage.removeEventListener(
+				MouseEvent.MOUSE_UP, this.mouseUpHandler);
+			super.stage.removeEventListener(
+				MouseEvent.MOUSE_MOVE, this.mouseMoveHandler);
+			super.removeEventListener(Event.ENTER_FRAME, this.enterFrameHandler);
 		}
 		
 		private function adtsHandler(event:Event):void 
 		{
-			stage.addEventListener(MouseEvent.MOUSE_UP, mouseUpHandler, false, 0, true);
+			super.stage.addEventListener(
+				MouseEvent.MOUSE_UP, this.mouseUpHandler, false, 0, true);
 		}
 		
 		private function mouseMoveHandler(event:MouseEvent):void 
@@ -321,8 +331,8 @@ package org.wvxvws.tools
 		
 		private function mouseUpHandler(event:MouseEvent):void 
 		{
-			_activeHandle = null;
-			super.removeEventListener(Event.ENTER_FRAME, enterFrameHandler);
+			this._activeHandle = null;
+			super.removeEventListener(Event.ENTER_FRAME, this.enterFrameHandler);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -335,21 +345,24 @@ package org.wvxvws.tools
 		
 		public function initialized(document:Object, id:String):void
 		{
-			_document = document;
-			_id = id;
+			this._document = document;
+			this._id = id;
+		}
+		
+		public function dispose():void
+		{
+			
 		}
 		
 		/* INTERFACE org.wvxvws.tools.IEditor */
 		
-		public function show():void { draw(); }
+		public function show():void { this.draw(); }
 		
 		public function hide():void
 		{
 			if (super.parent) super.parent.removeChild(this);
 		}
 		
-		public function update():void { draw(); }
-		
+		public function update():void { this.draw(); }
 	}
-	
 }

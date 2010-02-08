@@ -146,6 +146,11 @@ package org.wvxvws.gui.renderers
 			this._id = id;
 		}
 		
+		public function dispose():void
+		{
+			
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Protected methods

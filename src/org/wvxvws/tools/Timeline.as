@@ -464,7 +464,7 @@ package org.wvxvws.tools
 		
 		private function slide_mouseDownHandler(event:MouseEvent):void 
 		{
-			super._selectedSlide = event.target as Slide;
+			this._selectedSlide = event.target as Slide;
 			super.stage.addEventListener(
 				MouseEvent.MOUSE_MOVE, this.mouseMoveHandler, false, 0, true);
 			super.stage.addEventListener(

@@ -52,13 +52,13 @@ package org.wvxvws.net
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>parametersChange</code> event.
 		*/
-		public function get parameters():Array { return _parameters; }
+		public function get parameters():Array { return this._parameters; }
 		
 		public function set parameters(value:Array):void 
 		{
-		   if (_parameters == value) return;
-		   _parameters = value;
-		   dispatchEvent(new Event("parametersChange"));
+			if (this._parameters === value) return;
+			this._parameters = value;
+			super.dispatchEvent(new Event("parametersChange"));
 		}
 		
 		//--------------------------------------------------------------------------
@@ -73,24 +73,25 @@ package org.wvxvws.net
 		
 		//--------------------------------------------------------------------------
 		//
-		//  Private properties
-		//
-		//--------------------------------------------------------------------------
-		
-		//--------------------------------------------------------------------------
-		//
 		//  Constructor
 		//
 		//--------------------------------------------------------------------------
+		
 		public function ServiceArguments() { super(); }
 		
 		/* INTERFACE mx.core.IMXMLObject */
 		
 		public function initialized(document:Object, id:String):void
 		{
-			_document = document;
-			_id = id;
+			this._document = document;
+			this._id = id;
 		}
+		
+		public function dispose():void
+		{
+			
+		}
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Public methods
@@ -101,33 +102,20 @@ package org.wvxvws.net
 		{
 			//trace(_parameters.length);
 			var temp:String = "";
-			for (var p:String in _parameters)
+			for (var p:String in this._parameters)
 			{
-				if (_parameters[p] !== undefined && _parameters[p] !== null && 
-					_parameters[p].hasOwnProperty("id"))
+				if (this._parameters[p] !== undefined && this._parameters[p] !== null && 
+					this._parameters[p].hasOwnProperty("id"))
 				{
 					temp += (temp ? "&" : "") + 
-							_parameters[p].id + "=" + _parameters[p];
+							this._parameters[p].id + "=" + this._parameters[p];
 				}
 				else
 				{
-					temp += (temp ? "&" : "") + "p" + p + "=" + _parameters[p];
+					temp += (temp ? "&" : "") + "p" + p + "=" + this._parameters[p];
 				}
 			}
 			return temp;
 		}
-		
-		//--------------------------------------------------------------------------
-		//
-		//  Protected methods
-		//
-		//--------------------------------------------------------------------------
-		
-		//--------------------------------------------------------------------------
-		//
-		//  Private methods
-		//
-		//--------------------------------------------------------------------------
 	}
-	
 }

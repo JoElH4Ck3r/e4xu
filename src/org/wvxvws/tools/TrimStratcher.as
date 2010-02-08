@@ -45,56 +45,57 @@ package org.wvxvws.tools
 		//
 		//--------------------------------------------------------------------------
 		
-		public function get leftOut():InteractiveObject { return _leftOut; }
+		public function get leftOut():InteractiveObject { return this._leftOut; }
 		
 		public function set leftOut(value:InteractiveObject):void 
 		{
-			if (_leftOut === value) return;
-			if (_leftOut && super.contains(_leftOut))
-				super.removeChild(_leftOut);
-			_leftOut = value;
-			render();
+			if (this._leftOut === value) return;
+			if (this._leftOut && super.contains(this._leftOut))
+				super.removeChild(this._leftOut);
+			this._leftOut = value;
+			this.render();
 		}
 		
-		public function get leftIn():InteractiveObject { return _leftIn; }
+		public function get leftIn():InteractiveObject { return this._leftIn; }
 		
 		public function set leftIn(value:InteractiveObject):void 
 		{
-			if (_leftIn === value) return;
-			if (_leftIn && super.contains(_leftIn))
-				super.removeChild(_leftIn);
-			_leftIn = value;
-			render();
+			if (this._leftIn === value) return;
+			if (this._leftIn && super.contains(this._leftIn))
+				super.removeChild(this._leftIn);
+			this._leftIn = value;
+			this.render();
 		}
 		
-		public function get rightIn():InteractiveObject { return _rightIn; }
+		public function get rightIn():InteractiveObject { return this._rightIn; }
 		
 		public function set rightIn(value:InteractiveObject):void 
 		{
-			if (_rightIn === value) return;
-			if (_rightIn && super.contains(_rightIn))
-				super.removeChild(_rightIn);
-			_rightIn = value;
-			render();
+			if (this._rightIn === value) return;
+			if (this._rightIn && super.contains(this._rightIn))
+				super.removeChild(this._rightIn);
+			this._rightIn = value;
+			this.render();
 		}
 		
-		public function get rightOut():InteractiveObject { return _rightOut; }
+		public function get rightOut():InteractiveObject { return this._rightOut; }
 		
 		public function set rightOut(value:InteractiveObject):void 
 		{
-			if (_rightOut === value) return;
-			if (_rightOut && super.contains(_rightOut))
-				super.removeChild(_rightOut);
-			_rightOut = value;
-			render();
+			if (this._rightOut === value) return;
+			if (this._rightOut && super.contains(this._rightOut))
+				super.removeChild(this._rightOut);
+			this._rightOut = value;
+			this.render();
 		}
 		
-		public function get target():Object { return _target; }
+		public function get target():Object { return this._target; }
 		
 		public function set target(value:Object):void 
 		{
-			_target = value as ITrimable;
-			if (_target is DisplayObject && (_target as DisplayObject).stage)
+			this._target = value as ITrimable;
+			if (this._target is DisplayObject && 
+				(this._target as DisplayObject).stage)
 			{
 				if (super.parent && super.parent !== super.root)
 				{
@@ -104,12 +105,13 @@ package org.wvxvws.tools
 				}
 				else if (_target is DisplayObjectContainer)
 				{
-					((_target as DisplayObject).root as DisplayObjectContainer).addChildAt(
-						this, ((_target as DisplayObjectContainer).root as 
-							DisplayObjectContainer).numChildren);
+					((this._target as DisplayObject).root as 
+						DisplayObjectContainer).addChildAt(
+						this, ((this._target as DisplayObjectContainer).root as 
+						DisplayObjectContainer).numChildren);
 				}
 			}
-			if (_target) render();
+			if (this._target) this.render();
 		}
 		
 		//--------------------------------------------------------------------------
@@ -142,11 +144,11 @@ package org.wvxvws.tools
 		public function TrimStratcher()
 		{
 			super();
-			super.addEventListener(Event.REMOVED_FROM_STAGE, removedHandler);
-			_leftOut = drawHandle(false);
-			_leftIn = drawHandle(true);
-			_rightIn = drawHandle(false);
-			_rightOut = drawHandle(true);
+			super.addEventListener(Event.REMOVED_FROM_STAGE, this.removedHandler);
+			this._leftOut = this.drawHandle(false);
+			this._leftIn = this.drawHandle(true);
+			this._rightIn = this.drawHandle(false);
+			this._rightOut = this.drawHandle(true);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -157,8 +159,10 @@ package org.wvxvws.tools
 		
 		protected function removedHandler(event:Event):void 
 		{
-			stage.removeEventListener(MouseEvent.MOUSE_MOVE, stage_mouseMoveHandler);
-			stage.removeEventListener(MouseEvent.MOUSE_UP, stage_mouseUpHandler);
+			super.stage.removeEventListener(
+				MouseEvent.MOUSE_MOVE, this.stage_mouseMoveHandler);
+			super.stage.removeEventListener(
+				MouseEvent.MOUSE_UP, this.stage_mouseUpHandler);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -169,47 +173,58 @@ package org.wvxvws.tools
 		
 		protected function mouseDownHandler(event:MouseEvent):void 
 		{
-			_currentTarget = event.target as InteractiveObject;
-			_clickLocation = _currentTarget.x;
-			stage.addEventListener(MouseEvent.MOUSE_MOVE, 
-									stage_mouseMoveHandler, false, 0, true);
-			stage.addEventListener(MouseEvent.MOUSE_UP, 
-									stage_mouseUpHandler, false, 0, true);
+			this._currentTarget = event.target as InteractiveObject;
+			this._clickLocation = this._currentTarget.x;
+			super.stage.addEventListener(
+				MouseEvent.MOUSE_MOVE, this.stage_mouseMoveHandler, false, 0, true);
+			super.stage.addEventListener(
+				MouseEvent.MOUSE_UP, this.stage_mouseUpHandler, false, 0, true);
 		}
 		
 		protected function stage_mouseUpHandler(event:MouseEvent):void 
 		{
-			stage.removeEventListener(MouseEvent.MOUSE_MOVE, stage_mouseMoveHandler);
+			super.stage.removeEventListener(
+				MouseEvent.MOUSE_MOVE, this.stage_mouseMoveHandler);
 		}
 		
 		protected function stage_mouseMoveHandler(event:MouseEvent):void 
 		{
-			var shift:int = super.mouseX - _clickLocation;
-			switch (_currentTarget)
+			var shift:int = super.mouseX - this._clickLocation;
+			switch (this._currentTarget)
 			{
-				case _leftOut:
-					_leftOut.x = Math.min(_leftIn.x, super.mouseX);
+				case this._leftOut:
+					this._leftOut.x = Math.min(this._leftIn.x, super.mouseX);
 					break;
-				case _leftIn:
-					_leftIn.x = Math.max(Math.min(_rightIn.x, super.mouseX), _leftOut.x);
+				case this._leftIn:
+					this._leftIn.x = 
+						Math.max(Math.min(this._rightIn.x, super.mouseX), 
+						this._leftOut.x);
 					break;
-				case _rightIn:
-					_rightIn.x = Math.max(Math.min(_rightOut.x, super.mouseX), _leftIn.x);
+				case this._rightIn:
+					this._rightIn.x = 
+						Math.max(Math.min(_rightOut.x, super.mouseX), _leftIn.x);
 					break;
-				case _rightOut:
-					_rightOut.x = Math.max(_rightIn.x, super.mouseX);
+				case this._rightOut:
+					this._rightOut.x = Math.max(this._rightIn.x, super.mouseX);
 					break;
 			}
 			var p:Point;
-			_globalPoints[0] = _target.globalToLocal(new Point(_leftOut.x, 0));
-			_globalPoints[1] = _target.globalToLocal(new Point(_leftIn.x, 0));
-			_globalPoints[2] = _target.globalToLocal(new Point(_rightIn.x, 0));
-			_globalPoints[3] = _target.globalToLocal(new Point(_rightOut.x, 0));
-			_target.x = _globalPoints[0].x;
-			_target.trimLeft = _globalPoints[1].x - _globalPoints[0].x;
-			_target.trimRight = _globalPoints[3].x - _globalPoints[2].x;
-			_target.width = _globalPoints[3].x - _globalPoints[0].x;
-			super.dispatchEvent(new ToolEvent(ToolEvent.RESIZED, false, false, _target));
+			this._globalPoints[0] = 
+				this._target.globalToLocal(new Point(this._leftOut.x, 0));
+			this._globalPoints[1] = 
+				this._target.globalToLocal(new Point(this._leftIn.x, 0));
+			this._globalPoints[2] = 
+				this._target.globalToLocal(new Point(this._rightIn.x, 0));
+			this._globalPoints[3] = 
+				this._target.globalToLocal(new Point(this._rightOut.x, 0));
+			this._target.x = this._globalPoints[0].x;
+			this._target.trimLeft = 
+				this._globalPoints[1].x - this._globalPoints[0].x;
+			this._target.trimRight = 
+				this._globalPoints[3].x - this._globalPoints[2].x;
+			this._target.width = this._globalPoints[3].x - this._globalPoints[0].x;
+			super.dispatchEvent(
+				new ToolEvent(ToolEvent.RESIZED, false, false, this._target));
 		}
 		
 		//--------------------------------------------------------------------------
@@ -220,60 +235,70 @@ package org.wvxvws.tools
 		
 		public function render():void
 		{
-			if (!_target) return;
+			if (!this._target) return;
 			if (!super.root) return;
-			if (_leftOut && !super.contains(_leftOut))
+			if (this._leftOut && !super.contains(this._leftOut))
 			{
-				_leftOut.addEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler);
-				super.addChild(_leftOut);
+				this._leftOut.addEventListener(
+					MouseEvent.MOUSE_DOWN, this.mouseDownHandler);
+				super.addChild(this._leftOut);
 			}
-			if (_leftIn && !super.contains(_leftIn))
+			if (this._leftIn && !super.contains(this._leftIn))
 			{
-				_leftIn.addEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler);
-				super.addChild(_leftIn);
+				this._leftIn.addEventListener(
+					MouseEvent.MOUSE_DOWN, this.mouseDownHandler);
+				super.addChild(this._leftIn);
 			}
-			if (_rightIn && !super.contains(_rightIn))
+			if (this._rightIn && !super.contains(this._rightIn))
 			{
-				_rightIn.addEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler);
-				super.addChild(_rightIn);
+				this._rightIn.addEventListener(
+					MouseEvent.MOUSE_DOWN, this.mouseDownHandler);
+				super.addChild(this._rightIn);
 			}
-			if (_rightOut && !super.contains(_rightOut))
+			if (this._rightOut && !super.contains(this._rightOut))
 			{
-				_rightOut.addEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler);
-				super.addChild(_rightOut);
+				this._rightOut.addEventListener(
+					MouseEvent.MOUSE_DOWN, this.mouseDownHandler);
+				super.addChild(this._rightOut);
 			}
 			if (super.parent && super.parent !== super.root)
 			{
 				super.parent.removeChild(this);
-				((_target as DisplayObject).root as DisplayObjectContainer).addChildAt(
-					this, ((_target as DisplayObject).root as 
-						DisplayObjectContainer).numChildren);
+				((this._target as DisplayObject).root as 
+					DisplayObjectContainer).addChildAt(
+					this, ((this._target as DisplayObject).root as 
+					DisplayObjectContainer).numChildren);
 			}
-			update();
+			this.update();
 		}
 		
 		/* INTERFACE mx.core.IMXMLObject */
 		
 		public function initialized(document:Object, id:String):void
 		{
-			_document = document;
-			_id = id;
+			this._document = document;
+			this._id = id;
+		}
+		
+		public function dispose():void
+		{
+			
 		}
 		
 		/* INTERFACE org.wvxvws.tools.IEditor */
 		
-		public function show():void { render(); }
+		public function show():void { this.render(); }
 		
-		public function hide():void { if (stage) parent.removeChild(this); }
+		public function hide():void { if (super.stage) super.parent.removeChild(this); }
 		
 		public function update():void
 		{
-			if (!_target) return;
-			var bounds:Rectangle = _target.getBounds(super.root);
-			_leftOut.x = bounds.left;
-			_leftIn.x = bounds.left + _target.trimLeft;
-			_rightIn.x = bounds.right - _target.trimRight;
-			_rightOut.x = bounds.right;
+			if (!this._target) return;
+			var bounds:Rectangle = this._target.getBounds(super.root);
+			this._leftOut.x = bounds.left;
+			this._leftIn.x = bounds.left + this._target.trimLeft;
+			this._rightIn.x = bounds.right - this._target.trimRight;
+			this._rightOut.x = bounds.right;
 			super.y = bounds.y;
 		}
 		
@@ -297,7 +322,5 @@ package org.wvxvws.tools
 			s.buttonMode = true;
 			return s;
 		}
-		
 	}
-
 }

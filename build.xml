@@ -65,8 +65,13 @@
 			debug="${DEBUGGING}">
 	        <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
 	        <load-config filename="${CONFIG_DIR}/build-e4xu.xml"/>
-	        <source-path path-element="${FLEX_HOME}/frameworks"/>
 	        <source-path path-element="${SRC_DIR}"/>
+			<external-library-path dir="${LIBS_DIR}">
+				<include name="framework.swc"/>
+			</external-library-path>
+			<external-library-path dir="${FLEX_HOME}/frameworks/libs/player/10.0">
+				<include name="playerglobal.swc"/>
+			</external-library-path>
 			<keep-as3-metadata name="Skin"/>
 		</compc>
 	</target>
