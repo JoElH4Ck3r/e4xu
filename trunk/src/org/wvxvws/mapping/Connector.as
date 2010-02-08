@@ -81,7 +81,7 @@
 			return null;
 		}
 		
-		public function get id():String { return _id; }
+		public function get id():String { return this._id; }
 		
 		//--------------------------------------------------------------------------
 		//
