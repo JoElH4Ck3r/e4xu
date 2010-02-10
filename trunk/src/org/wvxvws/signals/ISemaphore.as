@@ -23,6 +23,5 @@
 		//--------------------------------------------------------------------------
 		
 		function signalTypes():Vector.<SignalType>;
-		function callbackSignature(type:SignalType):Vector.<Class>;
 	}
 }

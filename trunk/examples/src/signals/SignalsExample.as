@@ -1,8 +1,9 @@
-﻿package tests 
+﻿package signals 
 {
 	//{ imports
 	import flash.display.Sprite;
 	import org.wvxvws.signals.ISemaphore;
+	import org.wvxvws.signals.SignalError;
 	import org.wvxvws.signals.Signals;
 	import org.wvxvws.signals.SignalType;
 	//}
@@ -17,11 +18,28 @@
 	{
 		//--------------------------------------------------------------------------
 		//
+		//  Public properties
+		//
+		//--------------------------------------------------------------------------
+		
+		public function get signals():Signals { return this._signals; }
+		
+		//--------------------------------------------------------------------------
+		//
 		//  Protected properties
 		//
 		//--------------------------------------------------------------------------
 		
 		protected var _signals:Signals;
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Private properties
+		//
+		//--------------------------------------------------------------------------
+		
+		private const SIGNAL_TYPES:Vector.<SignalType> = 
+			new <SignalType>[TestGignalType.FOO, TestGignalType.BAR];
 		
 		//--------------------------------------------------------------------------
 		//
@@ -33,8 +51,19 @@
 		{
 			super();
 			this._signals = new Signals(this);
-			this._signals.add(TestGignalType.FOO, slotTest, -1, new <Class>[String, int]);
+			this._signals.add(TestGignalType.FOO, this.slotTest);
+			this._signals.add(TestGignalType.FOO, this.slotTest2);
+			this._signals.add(TestGignalType.BAR, this.slotTest);
 			this._signals.call(TestGignalType.FOO, "Foo", 100);
+			try
+			{
+				this._signals.call(TestGignalType.BAR, "Foo", 100);
+			}
+			catch (error:SignalError)
+			{
+				// Attempting to call slot with wrong signature.
+				trace(error.message);
+			}
 		}
 		
 		//--------------------------------------------------------------------------
@@ -47,34 +76,42 @@
 		
 		public function signalTypes():Vector.<SignalType>
 		{
-			return new <SignalType>[TestGignalType.FOO];
+			return SIGNAL_TYPES;
 		}
 		
-		public function callbackSignature(type:SignalType):Vector.<Class>
+		private function slotTest(par0:String, par1:int):void
 		{
-			switch (type)
-			{
-				case TestGignalType.FOO:
-					return new <Class>[String, int];
-			}
-			return null;
+			trace("slotTest called", par0, par1);
 		}
+		
+		private function slotTest2(par0:String, par1:int):void
+		{
+			trace("slotTest2 called", par0, par1);
+		}
+		
+		//--------------------------------------------------------------------------
+		//
+		//  Protected methods
+		//
+		//--------------------------------------------------------------------------
 		
 		//--------------------------------------------------------------------------
 		//
 		//  Private methods
 		//
 		//--------------------------------------------------------------------------
-		
-		private function slotTest(par0:String, par1:int):void
-		{
-			trace("slotTest called", par0, par1);
-		}
 	}
 }
 import org.wvxvws.signals.SignalType;
 internal final class TestGignalType extends SignalType
 {
-	public static const FOO:TestGignalType = new TestGignalType();
-	public function TestGignalType() { super(0); }
+	public static const FOO:TestGignalType = 
+		new TestGignalType(0, new <Class>[String, int]);
+	public static const BAR:TestGignalType = 
+		new TestGignalType(1, new <Class>[int, String]);
+	
+	public function TestGignalType(kind:int, types:Vector.<Class>)
+	{
+		super(kind, types);
+	}
 }
