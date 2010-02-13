@@ -2,7 +2,6 @@
  * ...
  * @author wvxvw
  */
-
 package org.wvxvws.protobuf;
 
 enum PBException

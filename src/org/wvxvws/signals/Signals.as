@@ -18,8 +18,8 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		protected var _allStrong:Dictionary = new Dictionary();
-		protected var _allWeak:Dictionary = new Dictionary(true);
+		protected var _allStrong:Dictionary/*Vector.<Class>*/ = new Dictionary();
+		protected var _allWeak:Dictionary/*Vector.<Class>*/ = new Dictionary(true);
 		protected var _semaphore:ISemaphore;
 		
 		//--------------------------------------------------------------------------
@@ -79,7 +79,7 @@
 		 * 
 		 * @throws <code>SignalError.NO_TYPE</code>
 		 */
-		public function add(type:SignalType, slot:Function, priority:int = -1, 
+		public function add(type:Vector.<Class>, slot:Function, priority:int = -1, 
 			weak:Boolean = false):void
 		{
 			var sig:Vector.<Class>;
@@ -137,25 +137,24 @@
 		 * @throws <code>SignalError.NO_TYPE</code>
 		 * @throws <code>SignalError.WRONG_SIGNATURE</code>
 		 */
-		public function call(type:SignalType, ...params):void
+		public function call(types:Vector.<Class>, ...params):void
 		{
 			var temp:Dictionary = new Dictionary();
 			var o:Object;
-			var strong:Dictionary = this._allStrong[type];
-			var weak:Dictionary = this._allWeak[type];
-			var args:Vector.<Class> = type.types();
+			var strong:Dictionary = this._allStrong[types];
+			var weak:Dictionary = this._allWeak[types];
 			var c:Class;
 			var len:int;
-			if ((params as Object) !== (args as Object))
+			if ((params as Object) !== (types as Object))
 			{
-				if (!params || !args || params.length !== args.length)
+				if (!params || !types || params.length !== types.length)
 					throw SignalError.WRONG_SIGNATURE;
 				else
 				{
-					len = args.length;
+					len = types.length;
 					for (var i:int; i < len; i++)
 					{
-						c = args[i];
+						c = types[i];
 						if (!(params[i] is c))
 						{
 							throw SignalError.WRONG_SIGNATURE;
@@ -166,11 +165,7 @@
 			}
 			// Vector requires callback for sorting
 			var indices:Array/*int*/ = [];
-			if (strong === weak)
-			{
-				throw SignalError.NO_TYPE;
-				return;
-			}
+			if (strong === weak) return;
 			for (o in strong) indices.push(temp[o] = strong[o]);
 			for (o in weak) indices.push(temp[o] = weak[o]);
 			indices.sort();
@@ -207,14 +202,14 @@
 		 * @return	The dictionary containing references to all the slots 
 		 * of the following structure:
 		 * <pre>
-		 * { SignalType.Type0 =>
+		 * { Vector.<Class> =>
 		 * 		{ Dictionary 
 		 * 			{ Key = Slot0, Value = Priority }
 		 * 			{ Key = Slot1, Value = Priority }
 		 * 			. . .
 		 * 			{ Key = SlotN, Value = Priority }
 		 * 		},
-		 *   SignalType.Type1 =>
+		 *   Vector.<Class> =>
 		 * 		{ Dictionary 
 		 * 			{ Key = Slot0, Value = Priority }
 		 * 			{ Key = Slot1, Value = Priority }
@@ -223,7 +218,7 @@
 		 * 		}
 		 * }</pre>
 		 */
-		public function all(type:SignalType = null, 
+		public function all(type:Vector.<Class> = null, 
 			weak:Boolean = false, strong:Boolean = true):Dictionary
 		{
 			var d:Dictionary;
@@ -309,7 +304,7 @@
 		 * 
 		 * @return	<code>true</code> if the slot was registered.
 		 */
-		public function has(slot:Function, type:SignalType = null,
+		public function has(slot:Function, type:Vector.<Class> = null,
 			weak:Boolean = true, strong:Boolean = true):Boolean
 		{
 			var td:Dictionary;
