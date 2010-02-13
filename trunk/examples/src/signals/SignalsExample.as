@@ -5,7 +5,6 @@
 	import org.wvxvws.signals.ISemaphore;
 	import org.wvxvws.signals.SignalError;
 	import org.wvxvws.signals.Signals;
-	import org.wvxvws.signals.SignalType;
 	//}
 	
 	/**
