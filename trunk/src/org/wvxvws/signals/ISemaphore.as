@@ -22,6 +22,6 @@
 		//
 		//--------------------------------------------------------------------------
 		
-		function signalTypes():Vector.<SignalType>;
+		function signalTypes():Vector.<Vector.<Class>>;
 	}
 }

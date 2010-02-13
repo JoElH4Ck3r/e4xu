@@ -37,7 +37,7 @@
 		 */
 		public static const KIND_REGISTERED:SignalError = 
 			new SignalError("This kind has already been used.");
-			
+		
 		//--------------------------------------------------------------------------
 		//
 		//  Private properties
