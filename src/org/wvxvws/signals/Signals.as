@@ -2,6 +2,7 @@
 {
 	//{ imports
 	import flash.utils.Dictionary;
+	import flash.utils.getTimer;
 	//}
 	
 	/**
@@ -21,6 +22,7 @@
 		protected var _allStrong:Dictionary/*Vector.<Class>*/ = new Dictionary();
 		protected var _allWeak:Dictionary/*Vector.<Class>*/ = new Dictionary(true);
 		protected var _semaphore:ISemaphore;
+		protected var _strongs:int;
 		
 		//--------------------------------------------------------------------------
 		//
@@ -85,6 +87,7 @@
 			var sig:Vector.<Class>;
 			var target:Dictionary;
 			var alter:Dictionary;
+			var p:Pair = new Pair();
 			
 			if (this._semaphore.signalTypes().indexOf(type) < 0)
 				throw SignalError.NO_TYPE;
@@ -101,7 +104,9 @@
 				alter = this._allWeak[type] as Dictionary;
 			}
 			if (alter) delete alter[slot];
-			target[slot] = priority;
+			p.f = slot;
+			p.p = priority;
+			target[slot] = p;
 		}
 		
 		/**
@@ -113,7 +118,7 @@
 		 * 
 		 * @param	slot	The handler you want to unregister.
 		 */
-		public function rem(type:SignalType, slot:Function):void
+		public function rem(type:Vector.<Class>, slot:Function):void
 		{
 			var d:Dictionary = this._allStrong[type];
 			
@@ -145,6 +150,9 @@
 			var weak:Dictionary = this._allWeak[types];
 			var c:Class;
 			var len:int;
+			var p:Pair;
+			var indices:Array/*Pair*/;
+			
 			if ((params as Object) !== (types as Object))
 			{
 				if (!params || !types || params.length !== types.length)
@@ -163,24 +171,18 @@
 					}
 				}
 			}
-			// Vector requires callback for sorting
-			var indices:Array/*int*/ = [];
+			
+			indices = [];
 			if (strong === weak) return;
-			for (o in strong) indices.push(temp[o] = strong[o]);
-			for (o in weak) indices.push(temp[o] = weak[o]);
-			indices.sort();
+			for (o in strong) indices.push(strong[o]);
+			for (o in weak) indices.push(weak[o]);
+			indices.sortOn("p");
+			
 			len = indices.length;
 			for (i = 0; i < len; i++)
 			{
-				for (o in temp)
-				{
-					if (temp[o] === indices[i])
-					{
-						(o as Function).apply(null, params.concat());
-						break;
-					}
-				}
-				delete temp[o];
+				p = indices[i] as Pair;
+				p.f.apply(null, params);
 			}
 		}
 		
@@ -370,4 +372,11 @@
 		//
 		//--------------------------------------------------------------------------
 	}
+}
+internal final class Pair
+{
+	public var f:Function;
+	public var p:int;
+	
+	public function Pair() { super(); }
 }
