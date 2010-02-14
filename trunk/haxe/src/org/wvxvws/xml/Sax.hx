@@ -11,6 +11,29 @@ enum SaxError
 	Comment(char:UInt, line:UInt);
 }
 
+class SaxIter
+{
+    private var _sax:Sax;
+
+    public function new(sax:Sax) { this._sax = sax; }
+
+    public function hasNext():Bool
+	{
+        return this._sax.position() < this._sax.length();
+    }
+
+    public function next():SaxEntity { return this._sax.nextEntity(); }
+}
+
+typedef SaxEntity =
+{
+	var name:String;
+	var value:String;
+	var nsURI:String;
+	var nsPrefix:String;
+	var type:Xml.XmlType;
+}
+
 class Sax 
 {
 	public var removeWhite:Bool;
@@ -25,6 +48,10 @@ class Sax
 	private var _lineStarted:UInt;
 	private var _name:String;
 	private var _value:String;
+	private var _curentEntity:SaxEntity;
+	private var _nsURI:String;
+	private var _nsPrefix:String;
+	private var _type:Xml.XmlType;
 	
 	public function new(source:String) 
 	{
@@ -33,9 +60,19 @@ class Sax
 		this._line = 0;
 		this._length = source.length;
 		this._xml = Xml.createDocument();
+		this._curentEntity = cast
+		{ 
+			name: "",
+			value: "",
+			nsURI: "",
+			nsPrefix: "",
+			type: Xml.Document
+		};
 	}
 	
 	public function position():UInt { return this._postion; }
+	
+	public function length():UInt { return this._length; }
 	
 	public function xml():Xml { return this._xml; }
 	
@@ -46,6 +83,21 @@ class Sax
 	public function currentName():String { return this._name; }
 	
 	public function currentValue():String { return this._value; }
+	
+	public function iterator():SaxIter { return new SaxIter(this); }
+	
+	public function nextEntity():SaxEntity
+	{
+		
+		return cast
+		{ 
+			name: this._name,
+			value: this._value,
+			nsURI: this._nsURI,
+			nsPrefix: this._nsPrefix,
+			type: this._type
+		};
+	}
 	
 	//{ reading
 	public function read():Bool
@@ -205,6 +257,7 @@ class Sax
 		var valueWord:StringBuf = new StringBuf();
 		var word:StringBuf = nameWord;
 		var success:Bool = false;
+		var ent:SaxEntity = null;
 		
 		while (this.readChar())
 		{
@@ -224,12 +277,17 @@ class Sax
 			switch (this._char)
 			{
 				case "=":
+					if (!nameStarted)
+						throw SaxError.Attribute(
+							this._postion - this._lineStarted, this._line);
 					if (name)
 						throw SaxError.Attribute(
 							this._postion - this._lineStarted, this._line);
 					else
 					{
 						name = true;
+						this._name = word.toString();
+						ent.name = this._name;
 						word = valueWord;
 					}
 					continue;
@@ -300,14 +358,26 @@ class Sax
 						throw SaxError.Attribute(
 							this._postion - this._lineStarted, this._line);
 					nameStarted = true;
+					if (this._curentEntity != ent)
+					{
+						ent = cast
+						{
+							name: this._name,
+							value: this._value,
+							nsURI: this._nsURI,
+							nsPrefix: this._nsPrefix,
+							type: this._type
+						};
+						this._curentEntity = ent;
+					}
 					word.addChar(chr);
 				}
 			}
 		}
 		if (!success)
 			throw SaxError.Attribute(this._postion - this._lineStarted, this._line);
-		this._name = nameWord.toString();
 		this._value = valueWord.toString();
+		ent.value = valueWord.toString();
 		this._current.set(this._name, this._value);
 		return this._postion <= this._length;
 	}
@@ -315,11 +385,19 @@ class Sax
 	public function readText():Bool
 	{
 		var word:StringBuf = new StringBuf();
-		
+		this._type = Xml.PCData;
+		this._curentEntity = cast
+		{
+			name: null,
+			value: "",
+			nsURI: null,
+			nsPrefix: null,
+			type: this._type
+		};
 		while (this.readChar())
 		{
 			if (this._char == "<") break;
-			word.add(this._char.charCodeAt(0));
+			word.addChar(this._char.charCodeAt(0));
 		}
 		if (removeWhite)
 		{
@@ -344,11 +422,13 @@ class Sax
 			}
 			if (spaced.charAt(spaced.length - 1) == " ") buf.addChar(32);
 			this._value = buf.toString();
+			this._curentEntity.value = this._value;
 			this._current.addChild(Xml.createPCData(this._value));
 		}
 		else
 		{
 			this._value = word.toString();
+			this._curentEntity.value = this._value;
 			this._current.addChild(Xml.createPCData(this._value));
 		}
 		return this._postion <= this._length;
