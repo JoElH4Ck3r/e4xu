@@ -112,6 +112,8 @@ namespace ExportHTML
         private static int _fakeNameCounter;
         private static int _fakeAttributeCounter;
 
+        private static int _codeHeight;
+
         private static bool _init;
 
         private static string[] _curlyBrackets;
@@ -184,6 +186,7 @@ namespace ExportHTML
             html = html.Replace("%BuiltInColor%", ToSixPlacesHex(settings.BuiltInColor));
             html = html.Replace("%JdockKeywordColor%", ToSixPlacesHex(settings.JdockKeywordColor));
             html = html.Replace("%Code%", input);
+            html = html.Replace("%height%", (_codeHeight * 15).ToString());
                 
             return html;
         }
@@ -230,6 +233,7 @@ namespace ExportHTML
 
             _lines = newLine.Split(_text);
             l = _lines.Length;
+            _codeHeight = l + 2;
             try
             {
                 while (i < l)
