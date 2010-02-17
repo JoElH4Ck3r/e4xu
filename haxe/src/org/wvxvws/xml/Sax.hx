@@ -164,7 +164,7 @@ class Sax
 		if (excl)
 		{
 			this.readChar();
-			switch (this._char)
+			switch (this._char.toLowerCase())
 			{
 				case "-": // comment
 					this.readChar();
@@ -172,13 +172,57 @@ class Sax
 						throw SaxError.Tag(
 							this._postion - this._lineStarted, this._line);
 					this.readComment();
-				case "C": // CDATA
+				case "[": // CDATA
+					this.readChar();
+					if (this._char.toLowerCase() != "c")
+						throw SaxError.Tag(
+							this._postion - this._lineStarted, this._line);
+					this.readChar();
+					if (this._char.toLowerCase() != "d")
+						throw SaxError.Tag(
+							this._postion - this._lineStarted, this._line);
+					this.readChar();
+					if (this._char.toLowerCase() != "a")
+						throw SaxError.Tag(
+							this._postion - this._lineStarted, this._line);
+					this.readChar();
+					if (this._char.toLowerCase() != "t")
+						throw SaxError.Tag(
+							this._postion - this._lineStarted, this._line);
+					this.readChar();
+					if (this._char.toLowerCase() != "a")
+						throw SaxError.Tag(
+							this._postion - this._lineStarted, this._line);
+					this.readChar();
+					if (this._char.toLowerCase() != "[")
+						throw SaxError.Tag(
+							this._postion - this._lineStarted, this._line);
 					this.readCData();
-				case "c": // CDATA
-					this.readCData();
-				case "D": // DOCTYPE
-					this.readDocType();
 				case "d": // DOCTYPE
+					this.readChar();
+					if (this._char.toLowerCase() != "o")
+						throw SaxError.Tag(
+							this._postion - this._lineStarted, this._line);
+					this.readChar();
+					if (this._char.toLowerCase() != "c")
+						throw SaxError.Tag(
+							this._postion - this._lineStarted, this._line);
+					this.readChar();
+					if (this._char.toLowerCase() != "t")
+						throw SaxError.Tag(
+							this._postion - this._lineStarted, this._line);
+					this.readChar();
+					if (this._char.toLowerCase() != "y")
+						throw SaxError.Tag(
+							this._postion - this._lineStarted, this._line);
+					this.readChar();
+					if (this._char.toLowerCase() != "p")
+						throw SaxError.Tag(
+							this._postion - this._lineStarted, this._line);
+					this.readChar();
+					if (this._char.toLowerCase() != "e")
+						throw SaxError.Tag(
+							this._postion - this._lineStarted, this._line);
 					this.readDocType();
 				default:
 					throw SaxError.Tag(
@@ -234,12 +278,54 @@ class Sax
 	
 	public function readDocType():Void
 	{
+		var buf:StringBuf = new StringBuf();
 		
+		this._name = null;
+		this._curentEntity = cast
+		{
+			name: null,
+			value: "",
+			nsURI: null,
+			nsPrefix: null,
+			type: Xml.DocType
+		};
+		while (this.readChar())
+		{
+			if (this._char == ">")
+			{
+				this._value = buf.toString();
+				this._curentEntity.value = this._value;
+				break;
+			}
+			else buf.addChar(this._char.charCodeAt(0));
+		}
 	}
 	
 	public function readPI():Void
 	{
+		var wasQestion:Bool = false;
+		var buf:StringBuf = new StringBuf();
 		
+		this._curentEntity = cast
+		{
+			name: null,
+			value: "",
+			nsURI: null,
+			nsPrefix: null,
+			type: Xml.Prolog
+		};
+		this._name = null;
+		while (this.readChar())
+		{
+			if (wasQestion && this._char == ">")
+			{
+				this._value = buf.toString();
+				this._curentEntity.value = this._value;
+				break;
+			}
+			else if (this._char == "?") wasQestion = true;
+			buf.addChar(this._char.charCodeAt(0));
+		}
 	}
 	
 	public function readAttribute():Bool
