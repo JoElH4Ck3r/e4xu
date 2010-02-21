@@ -15,6 +15,7 @@
   <classpaths>
     <class path="haxe\src" />
     <class path="..\protobuf\as3-lib\src" />
+    <class path="..\..\..\Program Files\FlashDevelop\Library\HAXE\classes" />
   </classpaths>
   <!-- Build options -->
   <build>
@@ -49,6 +50,6 @@
   <!-- Other project options -->
   <options>
     <option showHiddenPaths="False" />
-    <option testMovie="Default" />
+    <option testMovie="NewWindow" />
   </options>
 </project>
