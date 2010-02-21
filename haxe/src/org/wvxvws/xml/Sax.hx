@@ -9,6 +9,7 @@ enum SaxError
 	Attribute(char:UInt, line:UInt);
 	Tag(char:UInt, line:UInt);
 	Comment(char:UInt, line:UInt);
+	NodeName(char:UInt, line:UInt);
 }
 
 class SaxIter
@@ -36,6 +37,12 @@ typedef SaxEntity =
 
 class Sax 
 {
+	private static var LETTERS:String = 
+		"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_$";
+	private static var DIGITS:String = "0123456789";
+	private static var ALLOWED:String = ".:-";
+	private static var WHITE:String = "\t\r\n ";
+	
 	public var removeWhite:Bool;
 	
 	private var _source:String;
@@ -48,10 +55,11 @@ class Sax
 	private var _lineStarted:UInt;
 	private var _name:String;
 	private var _value:String;
-	private var _curentEntity:SaxEntity;
+	private var _currentEntity:SaxEntity;
 	private var _nsURI:String;
 	private var _nsPrefix:String;
 	private var _type:Xml.XmlType;
+	private var _openCount:Int;
 	
 	public function new(source:String) 
 	{
@@ -60,7 +68,9 @@ class Sax
 		this._line = 0;
 		this._length = source.length;
 		this._xml = Xml.createDocument();
-		this._curentEntity = cast
+		this._current = this._xml;
+		this._openCount = 0;
+		this._currentEntity = cast
 		{ 
 			name: "",
 			value: "",
@@ -88,31 +98,59 @@ class Sax
 	
 	public function nextEntity():SaxEntity
 	{
-		
-		return cast
-		{ 
-			name: this._name,
-			value: this._value,
-			nsURI: this._nsURI,
-			nsPrefix: this._nsPrefix,
-			type: this._type
-		};
+		if (this.read()) return this._currentEntity;
+		return null;
 	}
 	
 	//{ reading
 	public function read():Bool
 	{
-		if (this._current == null)
+		var hasNext:Bool;
+		
+		if (this._openCount < 1)
 		{
-			// TODO: figure the type first
-			this._current = Xml.createElement("$");
-			this._xml.addChild(this._current);
+			this.readChar();
+			if (this._char == "<")
+			{
+				if (this.readTag()) this._openCount++;
+			}
+			else
+			{
+				this._postion--;
+				this.readText();
+			}
+		}
+		else
+		{
+			hasNext = this.readChar();
+			if (this._char == "<")
+			{
+				if (hasNext)
+				{
+					this.readChar();
+					if (this._char == "/")
+					{
+						this.readCloseTag();
+						//return this.read();
+					}
+					else if (this.readTag()) this._openCount++;
+				}
+			}
+			else
+			{
+				if (hasNext)
+				{
+					this._postion--;
+					this.readText();
+				}
+			}
 		}
 		return this._postion <= this._length;
 	}
 	
 	public function readChar():Bool
 	{
+		// TODO: Verify non-printable characters
 		this._char = this._source.charAt(this._postion);
 		this._postion++;
 		if (this._char == "\r" || this._char == "\n")
@@ -231,7 +269,119 @@ class Sax
 			}
 			
 		}
+		else if (pi) this.readPI();
+		else
+		{
+			this._postion--;
+			this.readNodeName();
+			while (this.readChar())
+			{
+				if (WHITE.indexOf(this._char) < 0)
+				{
+					this._postion--;
+					break;
+				}
+			}
+			while (this.readAttribute()) { };
+			if (this._char == ">") open = true;
+			else if (this._char == "/")
+			{
+				while (this._char != ">")
+				{
+					this.readChar();
+					if (WHITE.indexOf(this._char) < 0)
+						throw SaxError.Tag(
+							this._postion - this._lineStarted, this._line);
+				}
+			}
+			if (!open) this._current = this._current.parent;
+		}
 		return open;
+	}
+	
+	public function readNodeName():Void
+	{
+		var word:StringBuf = new StringBuf();
+		var newCurrent:Xml;
+		
+		this._currentEntity = cast
+		{
+			name: null,
+			value: "",
+			nsURI: null,
+			nsPrefix: null,
+			type: Xml.Element
+		};
+		this.readChar();
+		if (LETTERS.indexOf(this._char) < 0)
+			throw SaxError.NodeName(
+					this._postion - this._lineStarted, this._line);
+		word.addChar(this._char.charCodeAt(0));
+		while (this.readChar())
+		{
+			if (this._char == "<")
+				throw SaxError.NodeName(
+					this._postion - this._lineStarted, this._line);
+			if (LETTERS.indexOf(this._char) > -1 || DIGITS.indexOf(this._char) > -1)
+			{
+				word.addChar(this._char.charCodeAt(0));
+			}
+			else if (ALLOWED.indexOf(this._char) > -1)
+			{
+				if (this._char == ":")
+				{
+					// TODO: handle namespaces here
+				}
+				word.addChar(this._char.charCodeAt(0));
+			}
+			else if (WHITE.indexOf(this._char) > -1)
+			{
+				this._currentEntity.name = word.toString();
+				newCurrent = Xml.createElement(this._currentEntity.name);
+				this._current.addChild(newCurrent);
+				this._current = newCurrent;
+				break;
+			}
+			else 
+			{
+				throw SaxError.NodeName(
+					this._postion - this._lineStarted, this._line);
+			}
+		}
+	}
+	
+	public function readCloseTag():Void
+	{
+		var name:String = this._current.nodeName;
+		var i:Int = 0;
+		var len:Int = name.length;
+		
+		while (this.readChar())
+		{
+			if (i < len)
+			{
+				if (this._char != name.charAt(i))
+					throw SaxError.NodeName(
+						this._postion - this._lineStarted, this._line);
+				i++;
+			}
+			else
+			{
+				this._postion--;
+				break;
+			}
+		}
+		while (this.readChar())
+		{
+			if (WHITE.indexOf(this._char) < 0)
+			{
+				if (this._char != ">")
+					throw SaxError.NodeName(
+						this._postion - this._lineStarted, this._line);
+				else break;
+			}
+		}
+		this._openCount--;
 	}
 	
 	public function readComment():Void
@@ -273,7 +423,56 @@ class Sax
 	
 	public function readCData():Void
 	{
+		var buf:StringBuf = new StringBuf();
+		var firstBracket:Bool = false;
+		var secondBracket:Bool = false;
 		
+		// TODO: Add verification for nested CDATA
+		this._name = null;
+		this._currentEntity = cast
+		{
+			name: null,
+			value: "",
+			nsURI: null,
+			nsPrefix: null,
+			type: Xml.CData
+		};
+		while (this.readChar())
+		{
+			if (this._char == "]")
+			{
+				if (firstBracket)
+				{
+					if (secondBracket)
+						buf.addChar(this._char.charCodeAt(0));
+					secondBracket = true;
+				}
+				else firstBracket = true;
+			}
+			else if (firstBracket && secondBracket && this._char == ">")
+			{
+				this._value = buf.toString();
+				this._currentEntity.value = this._value;
+				this._current.addChild(
+						Xml.createCData(this._value));
+				break;
+			}
+			else
+			{
+				if (secondBracket)
+				{
+					buf.add("]]");
+					secondBracket = false;
+					firstBracket = false;
+				}
+				else if (firstBracket)
+				{
+					buf.addChar(93); //]
+					firstBracket = false;
+				}
+				buf.addChar(this._char.charCodeAt(0));
+			}
+		}
 	}
 	
 	public function readDocType():Void
@@ -281,7 +480,7 @@ class Sax
 		var buf:StringBuf = new StringBuf();
 		
 		this._name = null;
-		this._curentEntity = cast
+		this._currentEntity = cast
 		{
 			name: null,
 			value: "",
@@ -294,7 +493,9 @@ class Sax
 			if (this._char == ">")
 			{
 				this._value = buf.toString();
-				this._curentEntity.value = this._value;
+				this._currentEntity.value = this._value;
+				this._current.addChild(
+						Xml.createDocType(this._value));
 				break;
 			}
 			else buf.addChar(this._char.charCodeAt(0));
@@ -306,7 +507,7 @@ class Sax
 		var wasQestion:Bool = false;
 		var buf:StringBuf = new StringBuf();
 		
-		this._curentEntity = cast
+		this._currentEntity = cast
 		{
 			name: null,
 			value: "",
@@ -320,7 +521,9 @@ class Sax
 			if (wasQestion && this._char == ">")
 			{
 				this._value = buf.toString();
-				this._curentEntity.value = this._value;
+				this._currentEntity.value = this._value;
+				this._current.addChild(
+					Xml.createProlog("<?" + this._value + ">"));
 				break;
 			}
 			else if (this._char == "?") wasQestion = true;
@@ -345,6 +548,8 @@ class Sax
 		var success:Bool = false;
 		var ent:SaxEntity = null;
 		
+		// TODO: Add verification for >, &
+		// TODO: add entity type - attribute
 		while (this.readChar())
 		{
 			if (!nameStarted && this._char == ">")
@@ -353,8 +558,7 @@ class Sax
 				startsWithSlash = true;
 			else if (!nameStarted && this._char == ">" && startsWithSlash)
 				return false;
-			if (this._char == " " || this._char == "\t" || 
-				this._char == "\r" || this._char == "\n")
+			if (WHITE.indexOf(this._char) > -1)
 			{
 				if (nameStarted) nameHasSpace = true;
 				if (!found) continue;
@@ -373,7 +577,7 @@ class Sax
 					{
 						name = true;
 						this._name = word.toString();
-						ent.name = this._name;
+						//ent.name = this._name;
 						word = valueWord;
 					}
 					continue;
@@ -416,11 +620,11 @@ class Sax
 			if (name) word.addChar(chr);
 			else
 			{
-				if (chr < 48 || (chr > 58 && chr < 65) || 
-					(chr > 90 && chr < 95) || chr == 96 || chr > 122)
+				if ((!nameStarted && LETTERS.indexOf(this._char) < 0) ||
+					nameStarted && (LETTERS.indexOf(this._char) < 0 && 
+					DIGITS.indexOf(this._char) < 0 && ALLOWED.indexOf(this._char) < 0)) 
 				{
-					if (this._char == " " || this._char == "\t" || 
-						this._char == "\r" || this._char == "\n")
+					if (WHITE.indexOf(this._char) > -1)
 					{
 						if (!nameEnded) nameEnded = true;
 						else SaxError.Attribute(
@@ -432,8 +636,10 @@ class Sax
 						continue;
 					}
 					if (!nameEnded)
+					{
 						throw SaxError.Attribute(
 							this._postion - this._lineStarted, this._line);
+					}
 				}
 				else
 				{
@@ -444,18 +650,18 @@ class Sax
 						throw SaxError.Attribute(
 							this._postion - this._lineStarted, this._line);
 					nameStarted = true;
-					if (this._curentEntity != ent)
-					{
-						ent = cast
-						{
-							name: this._name,
-							value: this._value,
-							nsURI: this._nsURI,
-							nsPrefix: this._nsPrefix,
-							type: this._type
-						};
-						this._curentEntity = ent;
-					}
+					//if (this._currentEntity != ent)
+					//{
+						//ent = cast
+						//{
+							//name: this._name,
+							//value: this._value,
+							//nsURI: this._nsURI,
+							//nsPrefix: this._nsPrefix,
+							//type: this._type
+						//};
+						//this._currentEntity = ent;
+					//}
 					word.addChar(chr);
 				}
 			}
@@ -463,7 +669,7 @@ class Sax
 		if (!success)
 			throw SaxError.Attribute(this._postion - this._lineStarted, this._line);
 		this._value = valueWord.toString();
-		ent.value = valueWord.toString();
+		//ent.value = valueWord.toString();
 		this._current.set(this._name, this._value);
 		return this._postion <= this._length;
 	}
@@ -472,7 +678,7 @@ class Sax
 	{
 		var word:StringBuf = new StringBuf();
 		this._type = Xml.PCData;
-		this._curentEntity = cast
+		this._currentEntity = cast
 		{
 			name: null,
 			value: "",
@@ -482,7 +688,11 @@ class Sax
 		};
 		while (this.readChar())
 		{
-			if (this._char == "<") break;
+			if (this._char == "<")
+			{
+				this._postion--;
+				break;
+			}
 			word.addChar(this._char.charCodeAt(0));
 		}
 		if (removeWhite)
@@ -508,13 +718,13 @@ class Sax
 			}
 			if (spaced.charAt(spaced.length - 1) == " ") buf.addChar(32);
 			this._value = buf.toString();
-			this._curentEntity.value = this._value;
+			this._currentEntity.value = this._value;
 			this._current.addChild(Xml.createPCData(this._value));
 		}
 		else
 		{
 			this._value = word.toString();
-			this._curentEntity.value = this._value;
+			this._currentEntity.value = this._value;
 			this._current.addChild(Xml.createPCData(this._value));
 		}
 		return this._postion <= this._length;
