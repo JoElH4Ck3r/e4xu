@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<my:DIV 
+	xmlns:mx="http://e4xu.googlecode.com/mxml"
+	xmlns:my="http://e4xu.googlecode.com"
+	xmlns:s="gui.skinnedButton.*"
+	backgroundColor="0xC0C0C0"
+	backgroundAlpha="1"
+	initialized="init()"
+	>
+	<mx:Script>
+		<![CDATA[
+			import gui.skinnedButton.ExampleButtonSkin;
+			import org.wvxvws.gui.skins.ISkin;
+			import flash.text.TextFormat;
+			
+			private function init():void
+			{
+				this.exampleButton.initialized(this, "exampleButton");
+			}
+		]]>
+	</mx:Script>
+	<mx:Declarations>
+		<my:Button id="exampleButton"
+			width="300" height="25"
+			label="'Test button'"
+			labelFormat="new TextFormat('_sans', 11, 0xFFFFFF, true)"
+			>
+			<my:skin>
+				<mx:Vector type="ISkin">
+					<s:ExampleButtonSkin/>
+				</mx:Vector>
+			</my:skin>
+		</my:Button>
+	</mx:Declarations>
+	
+</my:DIV>

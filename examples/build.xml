@@ -1,4 +1,4 @@
-﻿<project name="E4XU build and test" default="NestGridExample">
+﻿<project name="E4XU build and test" default="SkinnedButtonExample">
 	
 	<!-- load properties file -->
 	<property file="${basedir}/examples/build.properties" />
@@ -50,6 +50,19 @@
 				use-network="true">
 	        <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
 	        <load-config filename="${EXAMPLES_CONFIG_DIR}/build-NestGridExample.xml"/>
+		</mxmlc>
+	</target>
+	
+	<!-- Build SkinnedButtonExample --><!-- debug="${DEBUGGING}" -->
+	<target name="SkinnedButtonExample" depends="NestGridExample">
+		<mxmlc file="${EXAMPLES_SRC_DIR}/gui/skinnedButton/SkinnedButtonExample.mxml" 
+				output="${EXAMPLES_DEPLOY_DIR}/SkinnedButtonExample-${TODAY}.swf"
+				static-link-runtime-shared-libraries="true"
+				debug="false"
+				keep-generated-actionscript="true"
+				use-network="true">
+	        <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
+	        <load-config filename="${EXAMPLES_CONFIG_DIR}/build-SkinnedButtonExample.xml"/>
 		</mxmlc>
 	</target>
 	
