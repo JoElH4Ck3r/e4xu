@@ -131,9 +131,12 @@ class Sax
 					if (this._char == "/")
 					{
 						this.readCloseTag();
-						//return this.read();
 					}
-					else if (this.readTag()) this._openCount++;
+					else
+					{
+						this._postion--;
+						if (this.readTag()) this._openCount++;
+					}
 				}
 			}
 			else
@@ -175,6 +178,7 @@ class Sax
 		var elem:Bool = false;
 		var firstChar:UInt = 0;
 		var chr:String = "";
+		var hasAtts:Bool = false;
 		
 		this.readChar();
 		firstChar = this._char.charCodeAt(0);
@@ -273,36 +277,70 @@ class Sax
 		else
 		{
 			this._postion--;
-			this.readNodeName();
-			while (this.readChar())
+			hasAtts = this.readNodeName();
+			if (!hasAtts)
 			{
-				if (WHITE.indexOf(this._char) < 0)
+				while (this.readChar())
 				{
-					this._postion--;
-					break;
+					if (WHITE.indexOf(this._char) < 0)
+					{
+						this._postion--;
+						break;
+					}
 				}
-			}
-			while (this.readAttribute()) { };
-			if (this._char == ">") open = true;
-			else if (this._char == "/")
-			{
-				while (this._char != ">")
+				while (this.readAttribute())
 				{
 					this.readChar();
-					if (WHITE.indexOf(this._char) < 0)
+					if (this._char == "/")
+					{
+						this.readChar();
+						while (this._char != ">")
+						{
+							if (WHITE.indexOf(this._char) < 0)
+								throw SaxError.Tag(
+									this._postion - this._lineStarted, this._line);
+							this.readChar();
+						}
+						this._current = this._current.parent;
+						return false;
+					}
+					else if (this._char == ">")
+					{
+						//this._current = this._current.parent;
+						return true;
+					}
+					else if (WHITE.indexOf(this._char) < -1)
+					{
 						throw SaxError.Tag(
-							this._postion - this._lineStarted, this._line);
+								this._postion - this._lineStarted, this._line);
+					}
 				}
+			}
+			else
+			{
+				if (this._char == "/")
+				{
+					while (this._char != ">")
+					{
+						this.readChar();
+						if (WHITE.indexOf(this._char) < 0)
+							throw SaxError.Tag(
+								this._postion - this._lineStarted, this._line);
+					}
+					this._current = this._current.parent;
+				}
+				else if (this._char == ">") open = true;
 			}
 			if (!open) this._current = this._current.parent;
 		}
 		return open;
 	}
 	
-	public function readNodeName():Void
+	public function readNodeName():Bool
 	{
 		var word:StringBuf = new StringBuf();
 		var newCurrent:Xml;
+		var ended:Bool = false;
 		
 		this._currentEntity = cast
 		{
@@ -342,12 +380,22 @@ class Sax
 				this._current = newCurrent;
 				break;
 			}
+			else if (this._char == ">" || this._char == "/")
+			{
+				ended = true;
+				this._currentEntity.name = word.toString();
+				newCurrent = Xml.createElement(this._currentEntity.name);
+				this._current.addChild(newCurrent);
+				this._current = newCurrent;
+				break;
+			}
 			else 
 			{
 				throw SaxError.NodeName(
 					this._postion - this._lineStarted, this._line);
 			}
 		}
+		return ended;
 	}
 	
 	public function readCloseTag():Void
@@ -381,6 +429,7 @@ class Sax
 				else break;
 			}
 		}
+		this._current = this._current.parent;
 		this._openCount--;
 	}
 	
@@ -389,6 +438,7 @@ class Sax
 		var wasDash:Bool = false;
 		var was2Dash:Bool = false;
 		var word:StringBuf = new StringBuf();
+		
 		while (this.readChar())
 		{
 			if (this._char == "-")
@@ -409,6 +459,14 @@ class Sax
 					this._value = word.toString();
 					this._current.addChild(
 						Xml.createComment("<!--" + this._value + "-->"));
+					this._currentEntity = cast
+					{
+						name: null,
+						value: this._value,
+						nsURI: null,
+						nsPrefix: null,
+						type: Xml.Comment
+					}
 					return;
 				}
 				if (was2Dash)
