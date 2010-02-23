@@ -60,7 +60,8 @@
 				static-link-runtime-shared-libraries="true"
 				debug="false"
 				keep-generated-actionscript="true"
-				use-network="true">
+				use-network="true"
+				link-report="${EXAMPLES_DEPLOY_DIR}/report.xml">
 	        <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
 	        <load-config filename="${EXAMPLES_CONFIG_DIR}/build-SkinnedButtonExample.xml"/>
 		</mxmlc>
