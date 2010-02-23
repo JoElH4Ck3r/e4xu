@@ -298,7 +298,7 @@
 		* This property can be used as the source for data binding.
 		* When this property is modified, it dispatches the <code>labelChanged</code> event.
 		*/
-		public function get label():String { return _label.text; }
+		public function get label():String { return this._label.text; }
 		
 		public function set label(value:String):void 
 		{
@@ -310,7 +310,27 @@
 			if (super.hasEventListener(EventGenerator.getEventType("label")))
 				super.dispatchEvent(EventGenerator.getEvent());
 		}
+		//------------------------------------
+		//  Public property labelFormat
+		//------------------------------------
 		
+		[Bindable("labelFormatChanged")]
+		
+		/**
+		* ...
+		* This property can be used as the source for data binding.
+		* When this property is modified, it dispatches the <code>labelFormatChanged</code> event.
+		*/
+		public function get labelFormat():TextFormat { return this._labelFormat; }
+		
+		public function set labelFormat(value:TextFormat):void 
+		{
+			if (this._labelFormat === value) return;
+			this._labelFormat = value;
+			this.invalidate(Invalides.TEXT, false);
+			if (super.hasEventListener(EventGenerator.getEventType("labelFormat")))
+				super.dispatchEvent(EventGenerator.getEvent());
+		}
 		/* INTERFACE org.wvxvws.gui.layout.ILayoutClient */
 		
 		public function get validator():LayoutValidator { return this._validator; }
@@ -391,7 +411,7 @@
 			this._label.defaultTextFormat = this._labelFormat;
 			this._label.selectable = false;
 			this._label.tabEnabled = false;
-			this._labelSprite.addChild(_label);
+			this._labelSprite.addChild(this._label);
 			if (label) this.label = label;
 		}
 		
@@ -450,6 +470,10 @@
 			}
 			if (!this._validator) this._validator = new LayoutValidator();
 			this._validator.append(this, this._layoutParent);
+			if (Invalides.TEXT in properties)
+			{
+				this._label.setTextFormat(this._labelFormat);
+			}
 			if (Invalides.BOUNDS in properties) this.drawHitState();
 			if (Invalides.TRANSFORM in properties)
 			{
@@ -525,7 +549,6 @@
 					}
 					break;
 			}
-			
 		}
 		
 		//--------------------------------------------------------------------------
