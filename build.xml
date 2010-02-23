@@ -43,7 +43,7 @@
 			<replacefilter token="@swf@" value="index${TODAY}"/>
 		</replace>
 		<condition property="EXAMPLES">
-			<matches string="${COMPILE_EXAMPLES}" pattern="1"/>
+			<matches string="${COMPILE_EXAMPLES}" pattern="0"/>
 		</condition>
 	</target>
 	
