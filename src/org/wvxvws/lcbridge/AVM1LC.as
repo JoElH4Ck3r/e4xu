@@ -53,22 +53,22 @@ package org.wvxvws.lcbridge
 		/**
 		 * The name of the connection, where this LocalConnection listens.
 		 */
-		public function get receivingConnection():String { return _receivingConnection; }
+		public function get receivingConnection():String { return this._receivingConnection; }
 		
 		/**
 		 * The name of the connection, where this LocalConnection sends data.
 		 */
-		public function get sendingConnection():String { return _sendingConnection; }
+		public function get sendingConnection():String { return this._sendingConnection; }
 		
 		/**
 		 * Set this property to the function which should be invoken 
 		 * on each connection operation.
 		 */
-		public function get defaultCallBack():Function { return _defaultCallBack; }
+		public function get defaultCallBack():Function { return this._defaultCallBack; }
 		public function set defaultCallBack(value:Function):void
 		{
-			if (value == null) return;
-			_defaultCallBack = value;
+			if (!(value is Function)) return;
+			this._defaultCallBack = value;
 		}
 		
 		//--------------------------------------------------------------------------
@@ -82,8 +82,7 @@ package org.wvxvws.lcbridge
 		
 		private var _bytesLoader:AVM1Loader;
 		
-		[Embed(source='../../../../assets/bridge.swf', mimeType='application/octet-stream')]
-		private static var _avm1SWF:Class;
+		private static const _avm1SWF:AVM1SWF = new AVM1SWF();
 		
 		internal var errorID:int;
 		
@@ -113,14 +112,16 @@ package org.wvxvws.lcbridge
 		public function AVM1LC(loader:AVM1Loader)
 		{
 			super();
-			_bytesLoader = loader;
-			_bytesLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, 
-										loadHandler, false, int.MAX_VALUE);
-			client = this;
-			super.addEventListener(StatusEvent.STATUS, statusHandler);
-			super.addEventListener(AsyncErrorEvent.ASYNC_ERROR, errorHandler);
-			super.addEventListener(SecurityErrorEvent.SECURITY_ERROR, errorHandler);
-			_bytesLoader.loadBytes(new _avm1SWF() as ByteArray);
+			this._bytesLoader = loader;
+			this._bytesLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, 
+										this.loadHandler, false, int.MAX_VALUE);
+			super.client = this;
+			super.addEventListener(StatusEvent.STATUS, this.statusHandler);
+			super.addEventListener(AsyncErrorEvent.ASYNC_ERROR, this.errorHandler);
+			super.addEventListener(
+				SecurityErrorEvent.SECURITY_ERROR, this.errorHandler);
+			_avm1SWF.position = 0;
+			this._bytesLoader.loadBytes(_avm1SWF);
 		}
 		
 		//--------------------------------------------------------------------------
@@ -138,7 +139,7 @@ package org.wvxvws.lcbridge
 		public override function send(connectionName:String, 
 										methodName:String, ...args):void 
 		{
-			_sending = true;
+			this._sending = true;
 			super.send.apply(super, [connectionName, methodName].concat(args));
 		}
 		
@@ -213,7 +214,7 @@ package org.wvxvws.lcbridge
 				cmd.methodArguments = params;
 			}
 			if (receiver !== null) cmd.addEventListener(Event.COMPLETE, receiver);
-			sendCommand(cmd);
+			this.sendCommand(cmd);
 		}
 		
 		/**
@@ -243,7 +244,7 @@ package org.wvxvws.lcbridge
 									value:*, receiver:Function = null):void
 		{
 			var cmd:AVM1Command;
-			for (var obj:Object in _commandsPool)
+			for (var obj:Object in this._commandsPool)
 			{
 				if ((obj as AVM1Command).type == AVM1Command.SET_PROPERTY)
 				{
@@ -251,7 +252,11 @@ package org.wvxvws.lcbridge
 					break;
 				}
 			}
-			if (!cmd) cmd = new AVM1Command(AVM1Command.SET_PROPERTY, scope, null, property, value);
+			if (!cmd)
+			{
+				cmd = new AVM1Command(
+					AVM1Command.SET_PROPERTY, scope, null, property, value);
+			}
 			else
 			{
 				cmd.property = property;
@@ -276,10 +281,10 @@ package org.wvxvws.lcbridge
 		public function sendCommand(command:AVM1Command, 
 									recicle:Boolean = true):void
 		{
-			_commands[command] = recicle;
-			if (!_sending)
+			this._commands[command] = recicle;
+			if (!this._sending)
 			{
-				_queved = command;
+				this._queved = command;
 				this.send(_receivingConnection, "as2recieve", command.toAMF0Object());
 			}
 		}
@@ -297,11 +302,11 @@ package org.wvxvws.lcbridge
 		private function loadHandler(event:Event):void
 		{
 			event.stopImmediatePropagation();
-			_receivingConnection = LC_RECEIVE_NAME + new Date().time;
-			_sendingConnection = LC_SEND_NAME + new Date().time;
+			this._receivingConnection = LC_RECEIVE_NAME + new Date().time;
+			this._sendingConnection = LC_SEND_NAME + new Date().time;
 			var command:AVM1Command = new AVM1Command(AVM1Command.CALL_METHOD, 
-							AVM1Protocol.THIS, "reconnect", null, null, 
-							[_receivingConnection + "|" + _sendingConnection]);
+				AVM1Protocol.THIS, "reconnect", null, null, 
+				[this._receivingConnection + "|" + this._sendingConnection]);
 			try
 			{
 				super.close();
@@ -313,7 +318,7 @@ package org.wvxvws.lcbridge
 					throw error;
 				}
 			}
-			this.connect(_sendingConnection);
+			this.connect(this._sendingConnection);
 			this.send(LC_NAME, "as2recieve", command.toAMF0Object());
 		}
 		
@@ -335,7 +340,7 @@ package org.wvxvws.lcbridge
 		 */
 		public function as3recieve(message:Object):void
 		{
-			_sending = false;
+			this._sending = false;
 			var rec:AVM1Command = AVM1Command.parseFromAMF0(message);
 			var com:Object;
 			var command:AVM1Command;
@@ -369,30 +374,30 @@ package org.wvxvws.lcbridge
 					for (com in _commands)
 					{
 						command = com as AVM1Command;
-						if (_queved === command) finished = command;
+						if (this._queved === command) finished = command;
 						else next = command;
 						if (next && finished) break;
 					}
 					if (finished)
 					{
 						finished.operationResult = rec.operationResult;
-						if (_commands[finished])
+						if (this._commands[finished])
 						{
-							_commandsPool[finished] = true;
+							this._commandsPool[finished] = true;
 						}
-						delete _commands[finished];
+						delete this._commands[finished];
 						finished.dispatchEvent(new Event(Event.COMPLETE));
 					}
-					if (next) sendCommand(next, _commands[next]);
-					_loading = false;
+					if (next) sendCommand(next, this._commands[next]);
+					this._loading = false;
 					break;
 				case AVM1Command.ERROR:
 					if (_loading) errorID = 1;
 					else errorID = 0;
 				default:
-					dispatchEvent(new AVM1Event(AVM1Event.LC_ERROR, rec));
+					super.dispatchEvent(new AVM1Event(AVM1Event.LC_ERROR, rec));
 			}
-			dispatchEvent(new AVM1Event(AVM1Event.LC_RECEIVED, rec));
+			super.dispatchEvent(new AVM1Event(AVM1Event.LC_RECEIVED, rec));
 		}
 		
 		/**
@@ -401,13 +406,11 @@ package org.wvxvws.lcbridge
 		 */
 		internal function loadAVM1Movie(request:URLRequest):void
 		{
-			if (_loading) return;
-			_loading = true;
+			if (this._loading) return;
+			this._loading = true;
 			var command:AVM1Command = new AVM1Command(AVM1Command.LOAD_CONTENT, 
 							AVM1Protocol.THIS, null, null, null, null, request.url);
-			this.send(_receivingConnection, "as2recieve", command.toAMF0Object());
+			this.send(this._receivingConnection, "as2recieve", command.toAMF0Object());
 		}
-		
 	}
-	
 }
