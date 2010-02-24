@@ -1,6 +1,5 @@
 ﻿package  
 {
-	
 	/**
 	 * ...
 	 * @author wvxvw
@@ -13,6 +12,6 @@
 		function childClients():Vector.<ICSSClient>;
 		function getStyle(name:String):Object;
 		function addStyle(name:String, style:Object):void;
+		function pseudoClasses():Vector.<String>;
 	}
-	
 }
