@@ -1,25 +1,25 @@
-﻿package  
+﻿package org.wvxvws.css
 {
 	import flash.utils.getQualifiedClassName;
+	
 	/**
 	 * ...
 	 * @author wvxvw
 	 */
-	public class TopLevelCSS implements ICSSClient
+	public class CSSGlobal implements ICSSClient
 	{
-		public static const global:TopLevelCSS = new TopLevelCSS();
-		
 		private var _className:String;
 		private var _styles:Object;
 		private var _children:Vector.<ICSSClient>;
+		private var _pseudoClasses:Vector.<String>;
 		
-		public function TopLevelCSS()
+		public function CSSGlobal()
 		{
 			super();
 			this._className = getQualifiedClassName(this);
 		}
 		
-		/* INTERFACE ICSSClient */
+		/* INTERFACE org.wvxvws.css.ICSSClient */
 		
 		public function className():String { return this._className; }
 		
@@ -49,6 +49,11 @@
 		public function addStyle(name:String, style:Object):void
 		{
 			this._styles[name] = style;
+		}
+		
+		public function pseudoClasses():Vector.<String>
+		{
+			return this._pseudoClasses;
 		}
 	}
 }
