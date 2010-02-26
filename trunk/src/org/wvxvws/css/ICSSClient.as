@@ -1,4 +1,4 @@
-﻿package  
+﻿package org.wvxvws.css
 {
 	/**
 	 * ...

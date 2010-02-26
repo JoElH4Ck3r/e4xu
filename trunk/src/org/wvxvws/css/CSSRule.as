@@ -1,4 +1,4 @@
-﻿package  
+﻿package org.wvxvws.css
 {
 	/**
 	 * ...
@@ -96,6 +96,7 @@
 						return false;
 				}
 			}
+			return true;
 		}
 		
 		public function equails(to:CSSRule):Boolean
