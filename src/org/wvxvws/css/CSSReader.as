@@ -19,7 +19,7 @@
 		protected static const PAREN_R:String = ")";
 		protected static const SQARE_L:String = "[";
 		protected static const SQARE_R:String = "]";
-		protected static const ASTERIX:String = "*";
+		protected static const ASTERISK:String = "*";
 		protected static const SHARP:String = "#";
 		protected static const TILDA:String = "~";
 		protected static const DOLLAR:String = "$";
@@ -63,6 +63,7 @@
 			// TEST
 			this.readImports();
 			trace(this._importedDefinitions.join("\r"));
+			trace(this._position, this._length);
 		}
 		
 		public function table():CSSTable { return this._table; }
@@ -115,7 +116,11 @@
 			{
 				if (WHITE.indexOf(this._char) > -1)
 					this.readWhite();
-				if (this._char !== AT && state < 0) break main;
+				if (this._char !== AT && (state < 0 || state == 2))
+				{
+					this._position--;
+					break main;
+				}
 				state++;
 				state %= 3;
 				switch (state)
@@ -126,6 +131,11 @@
 						for (i = 0; i < 6; i++)
 						{
 							if (this.readChar()) buf.push(this._char);
+							else
+							{
+								this._position -= i;
+								break main;
+							}
 						}
 						word = buf.join("");
 						if (word !== "import")
@@ -233,9 +243,19 @@
 			var buf:Vector.<String>;
 			
 			if (!this.readChar()) return false;
-			if (LETTER.indexOf(this._char) < 0)
+			if (LETTER.indexOf(this._char) < 0 && 
+				this._char !== ASTERISK && 
+				this._char !== DOT && 
+				this._char !== SHARP)
 			{
 				throw CSSError.INVALID_NAME;
+			}
+			if (this._char !== ASTERISK || 
+				this._char !== DOT || 
+				this._char !== SHARP)
+			{
+				this._currentName = ASTERISK;
+				return this._length >= this._position;
 			}
 			buf = new <String>[this._char];
 			readLoop: while (this.readChar())
