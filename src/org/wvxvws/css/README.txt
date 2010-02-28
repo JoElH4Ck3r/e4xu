@@ -20,7 +20,6 @@ Note:
 @else TBD.
 @end TBD.
 @define <name> <value> TBD.
-@const <name> <value> TBD.
 
 PROPERTY VALUES:
 
