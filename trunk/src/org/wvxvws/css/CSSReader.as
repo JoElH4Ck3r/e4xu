@@ -31,6 +31,16 @@
 		protected static const SPACE:String = " ";
 		protected static const HYPHEN:String = "-";
 		protected static const AT:String = "@";
+		protected static const AMPERSAND:String = "&";
+		protected static const EXCLAIM:String = "!";
+		protected static const QUESTION:String = "?";
+		protected static const QUOTE:String = "\"";
+		protected static const ESCAPE:String = "\\";
+		
+		protected static const UNDEFINED:String = "undefined";
+		protected static const NULL:String = "null";
+		protected static const TRUE:String = "true";
+		protected static const FALSE:String = "false";
 		
 		protected var _source:String;
 		protected var _position:int;
@@ -39,6 +49,7 @@
 		protected var _table:CSSTable;
 		protected var _global:CSSGlobal;
 		protected var _importedDefinitions:Vector.<Namespace>;
+		protected var _definitions:Object;
 		
 		protected var _currentRule:CSSRule;
 		protected var _currentName:String;
@@ -46,6 +57,8 @@
 		protected var _currentProperty:String;
 		protected var _currentId:uint;
 		protected var _currentStyle:String;
+		protected var _currentDefinition:Object;
+		protected var _currentValue:*;
 		
 		public function CSSReader(source:String = null) 
 		{
@@ -61,8 +74,13 @@
 			this._global = new CSSGlobal();
 			this._table = new CSSTable(this._global);
 			// TEST
+			this.readWhite();
 			this.readImports();
+			this.readDefine();
 			trace(this._importedDefinitions.join("\r"));
+			this._definitions
+			for (var i:String in this._definitions)
+				trace("key : " + i + ", value : " + this._definitions[i]);
 			trace(this._position, this._length);
 		}
 		
@@ -116,16 +134,20 @@
 			{
 				if (WHITE.indexOf(this._char) > -1)
 					this.readWhite();
-				if (this._char !== AT && (state < 0 || state == 2))
+				if (this._char !== AT && (state < 0 || state === 2))
 				{
 					this._position--;
 					break main;
+				}
+				else if (this._char === AT && state === 2)
+				{
+					this._position++;
 				}
 				state++;
 				state %= 3;
 				switch (state)
 				{
-					case 0: // import
+					case 0: // @import
 					{
 						buf.length = 0;
 						for (i = 0; i < 6; i++)
@@ -133,14 +155,14 @@
 							if (this.readChar()) buf.push(this._char);
 							else
 							{
-								this._position -= i;
+								this._position -= (i + 1);
 								break main;
 							}
 						}
 						word = buf.join("");
 						if (word !== "import")
 						{
-							this._position -= 6;
+							this._position -= 7;
 							break main;
 						}
 						else continue main;
@@ -225,16 +247,383 @@
 			return this._length >= this._position;
 		}
 		
+		protected function readDefine():Boolean
+		{
+			var buf:Vector.<String> = new <String>[];
+			var state:int = -1;
+			var name:String;
+			var i:int;
+			var word:String;
+			
+			this._definitions = {};
+			
+			main: while (this.readChar())
+			{
+				if (WHITE.indexOf(this._char) > -1)
+					this.readWhite();
+				if (this._char !== AT && (state < 0 || state == 2))
+				{
+					this._position--;
+					break main;
+				}
+				else if (this._char === AT && state === 2)
+				{
+					this._position++;
+				}
+				state++;
+				state %= 3;
+				switch (state)
+				{
+					case 0: // @define
+					{
+						buf.length = 0;
+						for (i = 0; i < 6; i++)
+						{
+							if (this.readChar()) buf.push(this._char);
+							else
+							{
+								this._position -= (i + 1);
+								break main;
+							}
+						}
+						word = buf.join("");
+						if (word !== "define")
+						{
+							this._position -= 6;
+							break main;
+						}
+						else continue main;
+					}
+					break;
+					case 1: // name
+					{
+						buf.length = 0;
+						i = this._importedDefinitions.length;
+						if (this.readChar())
+						{
+							if (LETTER.indexOf(this._char) > -1)
+								buf.push(this._char);
+							while (this.readChar())
+							{
+								if (LETTER.indexOf(this._char) > -1 ||
+									DIGIT.indexOf(this._char) > -1)
+								{
+									buf.push(this._char);
+								}
+								else if (WHITE.indexOf(this._char) > -1)
+								{
+									name = buf.join("");
+									continue main;
+								}
+								else
+								{
+									throw CSSError.INVALID_DEFINE;
+									break main;
+								}
+							}
+						}
+						if (i === this._importedDefinitions.length && buf.length)
+						{
+							name = buf.join("");
+						}
+					}
+					break;
+					case 2: // value
+					{
+						this._position--;
+						this.readValue();
+						this._definitions[name] = this._currentValue;
+					}
+					break;
+				}
+			}
+			return this._length >= this._position;
+		}
+		
 		protected function readDefinition():Boolean
 		{
 			
 			return this._length >= this._position;
 		}
 		
-		protected function readNameValue():Boolean
+		protected function readValue():Boolean
 		{
+			var isNew:Boolean;
+			var isByRef:Boolean;
+			var isDef:Boolean;
+			var isThis:Boolean;
+			var isString:Boolean;
+			var isNumber:Boolean;
+			var isInt:Boolean;
+			var isNegative:Boolean;
 			
+			var state:int = -1;
+			var i:int;
+			var buf:Vector.<String> = new <String>[];
+			var word:String;
+			
+			main: while (this.readChar())
+			{
+				if (WHITE.indexOf(this._char) > -1)
+					this.readWhite();
+				state++;
+				state %= 3;
+				trace("state", state, this._char);
+				switch (state)
+				{
+					case 0: // new
+					{
+						if (this._char == TILDA)
+						{
+							isNew = true;
+						}
+						else
+						{
+							this._position--;
+						}
+						//state++;
+					}
+					break;
+					case 1: // reference / value
+					{
+						switch (this._char)
+						{
+							case AMPERSAND: // by reference
+								isByRef = true;
+								break;
+							case CIRCUMFLEX: // by value
+							default:
+								if (this._char === EXCLAIM) // this
+									isThis = true;
+								else if (this._char === QUESTION) // defined
+									isDef = true;
+								else if (this._char === QUOTE) // string
+								{
+									isString = true;
+								}
+								else if (this._char === SHARP) // int (base 16)
+								{
+									isNegative = false;
+									isInt = true;
+								}
+								else if (DIGIT.indexOf(this._char) > -1) // Number
+								{
+									isNegative = false;
+									isNumber = true;
+								}
+								else if (this._char === HYPHEN)
+								{
+									this.readChar();
+									if (DIGIT.indexOf(this._char) > -1)
+									{
+										isNumber = true;
+										this._position--;
+									}
+									else if (this._char === SHARP)
+									{
+										isInt = true;
+									}
+									else throw CSSError.INVALID_DEFINE;
+									isNegative = true;
+								}
+								else if (LETTER.indexOf(this._char) > -1)
+								{
+									i = 0;
+									buf.length = 0;
+									while (this.readChar() && i < 9)
+									{
+										if (LETTER.indexOf(this._char) > -1)
+										{
+											i++;
+											buf.push(this._char);
+										}
+										else break;
+									}
+									word = buf.join("");
+									switch (word)
+									{
+										case UNDEFINED:
+											this._currentValue = undefined;
+											break main;
+										case NULL:
+											this._currentValue = null;
+											break main;
+										case TRUE:
+											this._currentValue = true;
+											break main;
+										case FALSE:
+											this._currentValue = false;
+											break main;
+										default:
+											this._position -= i;
+									}
+								}
+								else throw CSSError.INVALID_DEFINE;
+								isByRef = false;
+						}
+						//state++;
+					}
+					break;
+					case 2: // namespace
+					{
+						if (isInt)
+						{
+							this._position--;
+							this.readInt(isNegative);
+							break main;
+						}
+						else if (isNumber)
+						{
+							this._position -= 2;
+							this.readNumber();
+							break main;
+						}
+						else if (isString)
+						{
+							this._position--;
+							this.readString();
+							break main;
+						}
+						switch (this._char)
+						{
+							case ASTERISK: // global
+							{
+								this.readChar();
+								if (this._char !== PIPE)
+									throw CSSError.INVALID_DEFINE;
+								else state++;
+							}
+							break;
+							case EXCLAIM: // this
+							case QUESTION: // defined
+						}
+					}
+				}
+				
+			}
 			return this._length >= this._position;
+		}
+		
+		protected function readString():void
+		{
+			var escaped:Boolean;
+			var buf:Vector.<String> = new <String>[];
+			var subBuf:Vector.<String> = new <String>[];
+			var i:int;
+			
+			while (this.readChar())
+			{
+				if (this._char === ESCAPE)
+				{
+					escaped = true;
+					continue;
+				}
+				else if (escaped)
+				{
+					switch (this._char.toLocaleLowerCase())
+					{
+						case QUOTE:
+						case ESCAPE:
+							buf.push(this._char);
+							break;
+						case "n":
+							buf.push("\n");
+							break;
+						case "r":
+							buf.push("\r");
+							break;
+						case "t":
+							buf.push("\t");
+							break;
+						case "x":
+						{
+							subBuf.length = 0;
+							i = 2;
+							while (i--)
+							{
+								this.readChar();
+								subBuf.push(this._char);
+							}
+							buf.push(String.fromCharCode(
+								parseInt(subBuf.join(""), 16)));
+						}
+						break;
+						case "u":
+						{
+							subBuf.length = 0;
+							i = 4;
+							while (i--)
+							{
+								this.readChar();
+								subBuf.push(this._char);
+							}
+							buf.push(String.fromCharCode(
+								parseInt(subBuf.join(""), 16)));
+						}
+						break;
+					}
+					escaped = false;
+				}
+				else if (this._char === QUOTE)
+				{
+					this._currentValue = buf.join("");
+					break;
+				}
+				else buf.push(this._char);
+			}
+		}
+		
+		protected function readNumber():void
+		{
+			var buf:Vector.<String> = new <String>[];
+			var hasDot:Boolean;
+			var hasMinus:Boolean;
+			
+			while (this.readChar())
+			{
+				if (DIGIT.indexOf(this._char) > -1)
+				{
+					buf.push(this._char);
+				}
+				else if (this._char === DOT && !hasDot)
+				{
+					hasDot = true;
+					buf.push(this._char);
+				}
+				else if (this._char === HYPHEN && !hasMinus && !buf.length)
+				{
+					hasMinus = true;
+					buf.push(this._char);
+				}
+				else 
+				{
+					this._currentValue = parseFloat(buf.join(""));
+					this._position--;
+					break;
+				}
+			}
+		}
+		
+		protected function readInt(negaitve:Boolean = false):void
+		{
+			var buf:Vector.<String> = new <String>[];
+			var hasMinus:Boolean;
+			const hex:String = "ABCDEFabcdef";
+			
+			while (this.readChar())
+			{
+				if (DIGIT.indexOf(this._char) > -1 || hex.indexOf(this._char) > -1)
+				{
+					buf.push(this._char);
+				}
+				else 
+				{
+					this._currentValue = parseInt(buf.join(""), 16);
+					if (negaitve) this._currentValue *= -1;
+					this._position--;
+					break;
+				}
+			}
 		}
 		
 		protected function readName():Boolean
@@ -381,12 +770,6 @@
 				else if (WHITE.indexOf(this._char) > -1) break;
 				else throw CSSError.INVALID_NAME;
 			}
-			return this._length >= this._position;
-		}
-		
-		protected function readValue():Boolean
-		{
-			
 			return this._length >= this._position;
 		}
 	}
