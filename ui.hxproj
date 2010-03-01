@@ -21,7 +21,7 @@
   <build>
     <option directives="" />
     <option flashStrict="False" />
-    <option mainClass="tests.Test" />
+    <option mainClass="org.wvxvws.TestSax" />
     <option override="False" />
     <option verbose="False" />
     <option additional="" />
@@ -34,6 +34,7 @@
   <compileTargets>
     <compile path="src\org\wvxvws\Main.hx" />
     <compile path="haxe\src\tests\Test.hx" />
+    <compile path="haxe\src\org\wvxvws\TestSax.hx" />
   </compileTargets>
   <!-- Assets to embed into the output SWF -->
   <library>

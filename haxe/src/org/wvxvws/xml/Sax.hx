@@ -98,8 +98,8 @@ class Sax
 	
 	public function nextEntity():SaxEntity
 	{
-		if (this.read()) return this._currentEntity;
-		return null;
+		this.read();
+		return this._currentEntity;
 	}
 	
 	//{ reading
@@ -320,18 +320,23 @@ class Sax
 			{
 				if (this._char == "/")
 				{
+					this.readChar();
 					while (this._char != ">")
 					{
-						this.readChar();
 						if (WHITE.indexOf(this._char) < 0)
+						{
 							throw SaxError.Tag(
 								this._postion - this._lineStarted, this._line);
+						}
+						this.readChar();
 					}
-					this._current = this._current.parent;
 				}
 				else if (this._char == ">") open = true;
 			}
-			if (!open) this._current = this._current.parent;
+			if (!open)
+			{
+				this._current = this._current.parent;
+			}
 		}
 		return open;
 	}
