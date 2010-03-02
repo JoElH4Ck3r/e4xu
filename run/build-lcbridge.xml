@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+	COMPILE: 
+	compc -load-config=build-lcbridge.xml
+-->
+<flex-config>
+	<compiler>
+		<source-path append="true">
+			<path-element>../src</path-element>
+		</source-path>
+		<namespaces>
+			<namespace>
+				<uri>http://code.google.com/p/e4xu/</uri>
+				<manifest>lcbridge-manifest.xml</manifest>
+			</namespace>
+		</namespaces>
+		<external-library-path>
+			<!-- 
+				NOTE: 
+				You will have to replace this with the location of your playerglobal.swc 
+			-->
+			<path-element>C:\flex_sdk_3_2\frameworks\libs\player\9\playerglobal.swc</path-element>
+		</external-library-path>
+		<debug>true</debug>
+	</compiler>
+	<include-classes>
+		<class>org.wvxvws.lcbridge.AVM1Command</class>
+		<!--class>org.wvxvws.lcbridge.AVM1EILoader</class-->
+		<class>org.wvxvws.lcbridge.AVM1ErrorEvent</class>
+		<class>org.wvxvws.lcbridge.AVM1Event</class>
+		<class>org.wvxvws.lcbridge.AVM1LC</class>
+		<class>org.wvxvws.lcbridge.AVM1Loader</class>
+		<class>org.wvxvws.lcbridge.AVM1Protocol</class>
+		<class>org.wvxvws.lcbridge.AVM1SWF</class>
+		<!--class>org.wvxvws.lcbridge.EIBridge</class-->
+		<class>org.wvxvws.lcbridge.FlashCompatibleComponent</class>
+	</include-classes>
+	<output>../bin/lcbridge.swc</output>
+	<raw-metadata>wvxvw</raw-metadata>
+	<target-player>9</target-player>
+	<benchmark>false</benchmark>
+	<compute-digest>false</compute-digest>
+</flex-config>

@@ -19,7 +19,30 @@ Note:
 @elif TBD.
 @else TBD.
 @end TBD.
-@define <name> <value> TBD.
+
+@define <name> <value> 
+	- Defines a varible with the <name> name and the <value>, where name can use 
+	letters and digits and the value syntax is identical to the style property value.
+	You can later use defined variable by prefixing them with ?.
+Example:
+	@import mc flash.display
+	@define foo 12345
+	@define bar ~mc|MovieClip()
+	@define foobar ~abc|SomeClass/someStaticProperty.someMethod("foo", true)
+	Foo { prop1: ?foo; prop2: ?bar; prop3: ?foobar }
+
+@resource <name> <type> <class> { <embed option 1>, <embed option 2>, ...<embed option N> }
+	- Instructs to embed a resource where <name> is the alias similar to @define.
+	<class> is optional, if specified will link the resource to a custom class provided.
+	<type> may be one of the following:
+		* bin - binary data (symbol class must inherit from flash.utils::ByteArray)
+		* img - image data (symbol class must inherit from flash.display::Bitmap)
+		* snd - sound data (symbol class must inherit from flash.media::Sound)
+		* fnt - font data (symbol class must inherit from flash.text::Font)
+		* flv - video data (symbol class must inherit from flash.display::MovieClip)
+
+COMMENTS:
+// - is the line comment. There aren't block comments.
 
 PROPERTY VALUES:
 

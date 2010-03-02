@@ -6,58 +6,69 @@
 	 */
 	public class CSSReader
 	{
-		protected static const WHITE:String = " \r\n\t";
-		protected static const DIGIT:String = "0123456789";
-		protected static const LETTER:String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_$";
-		protected static const DOT:String = ".";
-		protected static const COMMA:String = ",";
-		protected static const COLON:String = ":";
-		protected static const SEMICOLON:String = ";";
+		protected static const AMPERSAND:String = "&";
+		protected static const ASTERISK:String = "*";
+		protected static const AT:String = "@";
 		protected static const BRACKET_L:String = "{";
 		protected static const BRACKET_R:String = "}";
+		protected static const CIRCUMFLEX:String = "^";
+		protected static const COMMA:String = ",";
+		protected static const COLON:String = ":";
+		protected static const DIGIT:String = "0123456789";
+		protected static const DOLLAR:String = "$";
+		protected static const DOT:String = ".";
+		protected static const EQUALS:String = "=";
+		protected static const ESCAPE:String = "\\";
+		protected static const EXCLAIM:String = "!";
+		protected static const GT:String = ">";
+		protected static const HYPHEN:String = "-";
+		protected static const LETTER:String = 
+			"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_$";
 		protected static const PAREN_L:String = "(";
 		protected static const PAREN_R:String = ")";
-		protected static const SQARE_L:String = "[";
-		protected static const SQARE_R:String = "]";
-		protected static const ASTERISK:String = "*";
-		protected static const SHARP:String = "#";
-		protected static const TILDA:String = "~";
-		protected static const DOLLAR:String = "$";
-		protected static const EQUALS:String = "=";
-		protected static const CIRCUMFLEX:String = "^";
-		protected static const PIPE:String = "|";
-		protected static const PLUS:String = "+";
-		protected static const GT:String = ">";
-		protected static const SPACE:String = " ";
-		protected static const HYPHEN:String = "-";
-		protected static const AT:String = "@";
-		protected static const AMPERSAND:String = "&";
-		protected static const EXCLAIM:String = "!";
 		protected static const QUESTION:String = "?";
 		protected static const QUOTE:String = "\"";
-		protected static const ESCAPE:String = "\\";
+		protected static const PIPE:String = "|";
+		protected static const PLUS:String = "+";
+		protected static const SEMICOLON:String = ";";
+		protected static const SHARP:String = "#";
+		protected static const SQARE_L:String = "[";
+		protected static const SQARE_R:String = "]";
+		protected static const SPACE:String = " ";
+		protected static const SLASH:String = "/";
+		protected static const TILDA:String = "~";
+		protected static const WHITE:String = " \r\n\t";
 		
-		protected static const UNDEFINED:String = "undefined";
+		protected static const FALSE:String = "false";
 		protected static const NULL:String = "null";
 		protected static const TRUE:String = "true";
-		protected static const FALSE:String = "false";
+		protected static const UNDEFINED:String = "undefined";
 		
-		protected var _source:String;
-		protected var _position:int;
-		protected var _length:int;
+		protected static const KEWORD_DEFINE:String = "define";
+		protected static const KEWORD_ELIF:String = "elif";
+		protected static const KEWORD_ELSE:String = "else";
+		protected static const KEWORD_END:String = "end";
+		protected static const KEWORD_IF:String = "if";
+		protected static const KEWORD_IMPORT:String = "import";
+		protected static const KEWORD_RESOURCE:String = "resource";
+		
 		protected var _char:String;
-		protected var _table:CSSTable;
+		protected var _definitions:Object;
 		protected var _global:CSSGlobal;
 		protected var _importedDefinitions:Vector.<Namespace>;
-		protected var _definitions:Object;
+		protected var _length:int;
+		protected var _position:int;
+		protected var _source:String;
+		protected var _table:CSSTable;
 		
-		protected var _currentRule:CSSRule;
+		protected var _currentDefinition:Object;
+		protected var _currentId:uint;
+		protected var _currentKeyword:String;
 		protected var _currentName:String;
 		protected var _currentOperator:String;
 		protected var _currentProperty:String;
-		protected var _currentId:uint;
+		protected var _currentRule:CSSRule;
 		protected var _currentStyle:String;
-		protected var _currentDefinition:Object;
 		protected var _currentValue:*;
 		
 		public function CSSReader(source:String = null) 
@@ -88,7 +99,20 @@
 		
 		protected function readChar():Boolean
 		{
+			var irc:uint;
+			var inc:uint;
+			
 			this._char = this._source.charAt(this._position);
+			if (this._char === SLASH)
+			{
+				if (this._source.charAt(this._position + 1) === SLASH)
+				{
+					irc = this._source.indexOf("\r", this._position + 1);
+					inc = this._source.indexOf("\n", this._position + 1);
+					this._position = Math.min(irc, inc) + 1;
+					this._char = this._source.charAt(this._position);
+				}
+			}
 			this._position++;
 			return this._length >= this._position;
 		}
@@ -361,13 +385,17 @@
 			var i:int;
 			var buf:Vector.<String> = new <String>[];
 			var word:String;
+			var prefix:String;
+			var cns:Namespace;
+			var scope:Object;
+			var evalScope:String;
 			
 			main: while (this.readChar())
 			{
 				if (WHITE.indexOf(this._char) > -1)
 					this.readWhite();
 				state++;
-				state %= 3;
+				state %= 4;
 				trace("state", state, this._char);
 				switch (state)
 				{
@@ -430,6 +458,7 @@
 								{
 									i = 0;
 									buf.length = 0;
+									buf.push(this._char);
 									while (this.readChar() && i < 9)
 									{
 										if (LETTER.indexOf(this._char) > -1)
@@ -455,7 +484,10 @@
 											this._currentValue = false;
 											break main;
 										default:
-											this._position -= i;
+										{
+											this._position -= (i + 2);
+										}
+										break;
 									}
 								}
 								else throw CSSError.INVALID_DEFINE;
@@ -496,6 +528,69 @@
 							break;
 							case EXCLAIM: // this
 							case QUESTION: // defined
+							{
+								
+							}
+							break;
+							default:
+							{
+								buf.length = 0;
+								buf.push(this._char);
+								while (this.readChar())
+								{
+									if (LETTER.indexOf(this._char) > -1 ||
+										DIGIT.indexOf(this._char) > -1)
+									{
+										buf.push(this._char);
+									}
+									else if(this._char === PIPE)
+									{
+										prefix = buf.join("");
+										break;
+									}
+								}
+							}
+							break;
+						}
+					}
+					case 3: // resolve value in namespcase (prefix)
+					{
+						cns = null;
+						for each (var ns:Namespace in this._importedDefinitions)
+						{
+							trace(ns.prefix, prefix);
+							if (ns.prefix === prefix)
+							{
+								cns = ns;
+								break;
+							}
+						}
+						if (!cns)
+						{
+							throw CSSError.INVALID_DEFINE;
+							break;
+						}
+						buf.length = 0;
+						scope = cns;
+						while (this.readChar())
+						{
+							if (LETTER.indexOf(this._char) > -1 ||
+								DIGIT.indexOf(this._char) > -1)
+							{
+								buf.push(this._char);
+							}
+							else if (this._char === PAREN_L)
+							{
+								// TODO: Not completed - test
+								evalScope = buf.join("");
+								if (scope is Namespace) scope = scope::[evalScope];
+								else scope = scope[evalScope];
+								if (isNew)
+								{
+									this._currentValue = new (scope as Class)();
+									break main;
+								}
+							}
 						}
 					}
 				}
@@ -680,6 +775,36 @@
 						break readLoop;
 					default: throw CSSError.INVALID_NAME;
 				}
+			}
+			return this._length >= this._position;
+		}
+		
+		protected function readKeyword():Boolean
+		{
+			var buf:Vector.<String> = new <String>[];
+			var word:String;
+			
+			while (this.readChar())
+			{
+				if (LETTER.indexOf(this._char) < 0)
+				{
+					word = buf.join("");
+					switch (word)
+					{
+						case KEWORD_DEFINE:
+						case KEWORD_ELIF:
+						case KEWORD_ELSE:
+						case KEWORD_END:
+						case KEWORD_IF:
+						case KEWORD_IMPORT:
+						case KEWORD_RESOURCE:
+							this._currentKeyword = word;
+						default:
+							throw CSSError.INVALID_KEYWORD;
+					}
+					break;
+				}
+				else buf.push(this._char);
 			}
 			return this._length >= this._position;
 		}
