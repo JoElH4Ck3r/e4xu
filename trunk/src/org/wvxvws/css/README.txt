@@ -31,9 +31,9 @@ Example:
 	@define foobar ~abc|SomeClass/someStaticProperty.someMethod("foo", true)
 	Foo { prop1: ?foo; prop2: ?bar; prop3: ?foobar }
 
-@resource <name> <type> <class> { <embed option 1>, <embed option 2>, ...<embed option N> }
+@resource <name> <type> [class] { [embed option 1], [embed option 2], ...[embed option N] }
 	- Instructs to embed a resource where <name> is the alias similar to @define.
-	<class> is optional, if specified will link the resource to a custom class provided.
+	[class] is optional, if specified will link the resource to a custom class provided.
 	<type> may be one of the following:
 		* bin - binary data (symbol class must inherit from flash.utils::ByteArray)
 		* img - image data (symbol class must inherit from flash.display::Bitmap)
