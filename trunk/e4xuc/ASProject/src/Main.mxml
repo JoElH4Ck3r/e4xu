@@ -1,10 +1,12 @@
 <display:Sprite xmlns:flash="flash.*"
 								xmlns:display="flash.display.*"
-								xmlns:local="*"
-								xmlns:mx="mx"
-								width="150" display:height="100" local:qwe="123">
-  <local:Array id="someVar" />
-  <flash:geom.Rectangle mx:new="10, 10, 100, 100"/>
-  <local:Object e="'someVar'" q="1" w="2" es="3"/>
-  <local:Array id="myVar" y="someVar" mx:new="1,3,4,5" />
+								xmlns:mx="mx">
+					
+  <Array id="someVar" />
+  <Array id="myVar" y="someVar" mx:new="1,3,4,5,6" />
+  <Object e="'someVar'" q="1" w="2" es="3" />
+  
+  <flash.geom.Rectangle mx:new="10, 10, 100, 100" />
+  <TextField xmlns="flash.text.*" />
+  <flash:display.Sprite width="100" height="300" />
 </display:Sprite>

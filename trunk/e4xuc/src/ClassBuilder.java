@@ -23,6 +23,13 @@ import uk.co.badgersinfoil.metaas.dom.Visibility;
 
 public class ClassBuilder extends DefaultHandler
 {
+	public ActionScriptFactory						fact;
+	public ActionScriptProject						proj;
+	public ASCompilationUnit							unit;
+	public ASClassType										clazz;
+	public int														depth			= 0;
+	public File														file;
+	public String													className;
 	public ActionScriptFactory fact;
 	public ActionScriptProject proj;
 	public ASCompilationUnit unit;
@@ -44,13 +51,15 @@ public class ClassBuilder extends DefaultHandler
 	public void startDocument()
 	{
 		fact = new ActionScriptFactory();
-		proj = fact.newEmptyASProject(this.directory.getAbsolutePath() + "/design");
+		proj = fact.newEmptyASProject(this.directory.getAbsolutePath() + "/src");
 	}
 
 	public void startElement(String namespaceURI, String localName, String rawName, Attributes attrs)
 	{
 		ArrayList<String> packageParts = new ArrayList<String>(Arrays.asList(localName.split("\\.")));
 		String varName = packageParts.remove(packageParts.size() - 1);
+		
+		namespaceURI = namespaceURI.length() > 0 ? namespaceURI : "*";
 
 		for (String part : packageParts)
 		{
@@ -60,13 +69,11 @@ public class ClassBuilder extends DefaultHandler
 		if (depth == 0)
 		{
 			unit = proj.newClass(className);
-
+			
 			clazz = (ASClassType) unit.getType();
-
 			clazz.setSuperclass(varName);
 
 			ASMethod constructor = clazz.newMethod(className, Visibility.PUBLIC, null);
-
 			constructor.newSuper(new ArrayList<String>());
 
 			if (attrs != null)
@@ -74,9 +81,10 @@ public class ClassBuilder extends DefaultHandler
 				int len = attrs.getLength();
 				for (int i = 0; i < len; i++)
 				{
-					if(attrs.getURI(i) != namespaceURI && attrs.getURI(i) != "") continue;
+					if (attrs.getURI(i) != namespaceURI && attrs.getURI(i).length() > 0) continue;
 					constructor.newExprStmt(fact.newAssignExpression(fact.newFieldAccessExpression(
-							fact.newExpression("this"), attrs.getLocalName(i)), fact.newExpression(attrs.getValue(i))));
+							fact.newExpression("this"), attrs.getLocalName(i)),
+							fact.newExpression(attrs.getValue(i))));
 				}
 			}
 		} else
@@ -85,10 +93,10 @@ public class ClassBuilder extends DefaultHandler
 			ASField field = clazz.newField(attrs.getValue("id") == null ? varName
 					+ nameCache.get(localName) : attrs.getValue("id"), Visibility.PROTECTED, varName);
 
-			if (localName == "Object")
+			if (localName.equals("Object"))
 			{
 				field.setInitializer(generateObjectInitializer(attrs));
-			} else if (localName == "Array")
+			} else if (localName.equals("Array"))
 			{
 				field.setInitializer(generateArrayInitializer(attrs));
 			} else
@@ -98,7 +106,7 @@ public class ClassBuilder extends DefaultHandler
 
 		}
 
-		if (namespaceURI != "*" && !unit.getPackage().findImports().contains(namespaceURI))
+		if (namespaceURI.length() > 0 && !namespaceURI.equals("*") && !unit.getPackage().findImports().contains(namespaceURI))
 		{
 			unit.getPackage().addImport(namespaceURI);
 		}
@@ -109,7 +117,7 @@ public class ClassBuilder extends DefaultHandler
 	protected Expression generateInitializer(String localName, Attributes attrs)
 	{
 		ArrayList<Expression> constructorParams = new ArrayList<Expression>();
-		if (attrs.getValue("mx", "new") != null && attrs.getValue("mx", "new") != "")
+		if (attrs.getValue("mx", "new") != null && attrs.getValue("mx", "new").length() > 0)
 		{
 			for (String param : attrs.getValue("mx", "new").split(","))
 			{
@@ -130,6 +138,7 @@ public class ClassBuilder extends DefaultHandler
 		{
 			obj.newField(attrs.getQName(i), fact.newExpression(attrs.getValue(i).trim()));
 		}
+
 		return obj;
 	}
 
@@ -137,7 +146,7 @@ public class ClassBuilder extends DefaultHandler
 	{
 		ASArrayLiteral arr = fact.newArrayLiteral();
 
-		if (attrs.getValue("mx", "new") != null && attrs.getValue("mx", "new") != "")
+		if (attrs.getValue("mx", "new") != null && attrs.getValue("mx", "new").length() > 0)
 		{
 			for (String param : attrs.getValue("mx", "new").split(","))
 			{
@@ -162,6 +171,7 @@ public class ClassBuilder extends DefaultHandler
 	{
 		try
 		{
+			proj.performAutoImport();
 			proj.writeAll();
 			Application app = new Application(this.file);
 			app.setOutput(new File(this.directory.getAbsolutePath() + 
@@ -169,7 +179,7 @@ public class ClassBuilder extends DefaultHandler
 			Configuration conf = app.getDefaultConfiguration();
 			conf.setDefaultSize(400, 300);
 			app.setConfiguration(conf);
-			app.build(true);
+			app.build(false);
 		} catch (Exception e)
 		{
 			System.out.print(e.getMessage());
