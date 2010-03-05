@@ -11,9 +11,11 @@ public class Main extends DefaultHandler
 		SAXParserFactory spf = SAXParserFactory.newInstance();
 		spf.setNamespaceAware(true);
 		SAXParser sp = spf.newSAXParser();
-		try {
+		try
+		{
 			sp.parse("ASProject/src/Main.mxml", new ClassBuilder());
-		} catch (SAXException e) {
+		} catch (SAXException e)
+		{
 			System.out.print(e.getMessage());
 		}
 	}
