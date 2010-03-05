@@ -1,3 +1,5 @@
+import java.io.File;
+
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -11,9 +13,11 @@ public class Main extends DefaultHandler
 		SAXParserFactory spf = SAXParserFactory.newInstance();
 		spf.setNamespaceAware(true);
 		SAXParser sp = spf.newSAXParser();
+		
 		try
 		{
-			sp.parse("ASProject/src/Main.mxml", new ClassBuilder());
+			File src = new File("ASProject/src/Main.mxml");
+			sp.parse(src, new ClassBuilder(src));
 		} catch (SAXException e)
 		{
 			System.out.print(e.getMessage());

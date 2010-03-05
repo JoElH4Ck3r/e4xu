@@ -1,10 +1,7 @@
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
-import java.util.List;
-import java.util.Stack;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
@@ -31,8 +28,17 @@ public class ClassBuilder extends DefaultHandler
 	public ASCompilationUnit							unit;
 	public ASClassType										clazz;
 	public int														depth			= 0;
+	public File														file;
+	public String													className;
 
 	protected Hashtable<String, Integer>	nameCache	= new Hashtable<String, Integer>();
+
+	public ClassBuilder(File file)
+	{
+		this.file = file;
+
+		className = file.getName().substring(0, file.getName().lastIndexOf("."));
+	}
 
 	public void startDocument()
 	{
@@ -52,13 +58,13 @@ public class ClassBuilder extends DefaultHandler
 
 		if (depth == 0)
 		{
-			unit = proj.newClass("Main");
+			unit = proj.newClass(className);
 
 			clazz = (ASClassType) unit.getType();
 
 			clazz.setSuperclass(varName);
 
-			ASMethod constructor = clazz.newMethod("Main", Visibility.PUBLIC, null);
+			ASMethod constructor = clazz.newMethod(className, Visibility.PUBLIC, null);
 
 			constructor.newSuper(new ArrayList<String>());
 
@@ -102,17 +108,17 @@ public class ClassBuilder extends DefaultHandler
 	protected Expression generateInitializer(String localName, Attributes attrs)
 	{
 		ArrayList<Expression> constructorParams = new ArrayList<Expression>();
-		if (attrs.getValue("mx", "new") != null)
+		if (attrs.getValue("mx", "new") != null && attrs.getValue("mx", "new") != "")
 		{
 			for (String param : attrs.getValue("mx", "new").split(","))
 			{
 				constructorParams.add(fact.newExpression(param.trim()));
 			}
 		}
-		
+
 		ASNewExpression newExp = fact.newNewExpression(fact.newExpression(localName), null);
 		newExp.setArguments(constructorParams);
-		
+
 		return newExp;
 	}
 
@@ -130,14 +136,14 @@ public class ClassBuilder extends DefaultHandler
 	{
 		ASArrayLiteral arr = fact.newArrayLiteral();
 
-		if (attrs.getValue("mx", "new") != null)
+		if (attrs.getValue("mx", "new") != null && attrs.getValue("mx", "new") != "")
 		{
 			for (String param : attrs.getValue("mx", "new").split(","))
 			{
 				arr.add(fact.newExpression(param.trim()));
 			}
 		}
-		
+
 		return arr;
 	}
 
