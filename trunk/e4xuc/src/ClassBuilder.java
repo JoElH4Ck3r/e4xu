@@ -23,27 +23,28 @@ import uk.co.badgersinfoil.metaas.dom.Visibility;
 
 public class ClassBuilder extends DefaultHandler
 {
-	public ActionScriptFactory						fact;
-	public ActionScriptProject						proj;
-	public ASCompilationUnit							unit;
-	public ASClassType										clazz;
-	public int														depth			= 0;
-	public File														file;
-	public String													className;
+	public ActionScriptFactory fact;
+	public ActionScriptProject proj;
+	public ASCompilationUnit unit;
+	public ASClassType clazz;
+	public int depth = 0;
+	public File file;
+	public String className;
+	public File directory;
 
 	protected Hashtable<String, Integer>	nameCache	= new Hashtable<String, Integer>();
 
 	public ClassBuilder(File file)
 	{
 		this.file = file;
-
+		this.directory = new File(file.getParent());
 		className = file.getName().substring(0, file.getName().lastIndexOf("."));
 	}
 
 	public void startDocument()
 	{
 		fact = new ActionScriptFactory();
-		proj = fact.newEmptyASProject("./ASProject/src");
+		proj = fact.newEmptyASProject(this.directory.getAbsolutePath() + "/design");
 	}
 
 	public void startElement(String namespaceURI, String localName, String rawName, Attributes attrs)
@@ -162,8 +163,9 @@ public class ClassBuilder extends DefaultHandler
 		try
 		{
 			proj.writeAll();
-			Application app = new Application(new File("./ASProject/src/Main.as"));
-			app.setOutput(new File("./ASProject/bin/Main.swf"));
+			Application app = new Application(this.file);
+			app.setOutput(new File(this.directory.getAbsolutePath() + 
+					"/bin/" + className + ".swf"));
 			Configuration conf = app.getDefaultConfiguration();
 			conf.setDefaultSize(400, 300);
 			app.setConfiguration(conf);
