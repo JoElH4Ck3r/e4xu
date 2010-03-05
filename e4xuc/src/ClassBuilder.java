@@ -30,14 +30,7 @@ public class ClassBuilder extends DefaultHandler
 	public int														depth			= 0;
 	public File														file;
 	public String													className;
-	public ActionScriptFactory fact;
-	public ActionScriptProject proj;
-	public ASCompilationUnit unit;
-	public ASClassType clazz;
-	public int depth = 0;
-	public File file;
-	public String className;
-	public File directory;
+	public File														directory;
 
 	protected Hashtable<String, Integer>	nameCache	= new Hashtable<String, Integer>();
 
@@ -58,7 +51,7 @@ public class ClassBuilder extends DefaultHandler
 	{
 		ArrayList<String> packageParts = new ArrayList<String>(Arrays.asList(localName.split("\\.")));
 		String varName = packageParts.remove(packageParts.size() - 1);
-		
+
 		namespaceURI = namespaceURI.length() > 0 ? namespaceURI : "*";
 
 		for (String part : packageParts)
@@ -69,7 +62,7 @@ public class ClassBuilder extends DefaultHandler
 		if (depth == 0)
 		{
 			unit = proj.newClass(className);
-			
+
 			clazz = (ASClassType) unit.getType();
 			clazz.setSuperclass(varName);
 
@@ -106,7 +99,8 @@ public class ClassBuilder extends DefaultHandler
 
 		}
 
-		if (namespaceURI.length() > 0 && !namespaceURI.equals("*") && !unit.getPackage().findImports().contains(namespaceURI))
+		if (namespaceURI.length() > 0 && !namespaceURI.equals("*")
+				&& !unit.getPackage().findImports().contains(namespaceURI))
 		{
 			unit.getPackage().addImport(namespaceURI);
 		}
@@ -174,8 +168,7 @@ public class ClassBuilder extends DefaultHandler
 			proj.performAutoImport();
 			proj.writeAll();
 			Application app = new Application(this.file);
-			app.setOutput(new File(this.directory.getAbsolutePath() + 
-					"/bin/" + className + ".swf"));
+			app.setOutput(new File(this.directory.getAbsolutePath() + "/bin/" + className + ".swf"));
 			Configuration conf = app.getDefaultConfiguration();
 			conf.setDefaultSize(400, 300);
 			app.setConfiguration(conf);
