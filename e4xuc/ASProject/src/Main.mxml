@@ -1,9 +1,10 @@
-<mx:Sprite width="150" height="100" xmlns:mx="flash.display.*" xmlns:local="*">
+<display:Sprite xmlns:flash="flash.*"
+								xmlns:display="flash.display.*"
+								xmlns:local="*"
+								xmlns:mx="mx"
+								width="150" display:height="100" local:qwe="123">
   <local:Array id="someVar" />
-  <local:Array q="someVar" />
-  <local:Array w="someVar" />
+  <flash:geom.Rectangle mx:new="10, 10, 100, 100"/>
   <local:Object e="'someVar'" q="1" w="2" es="3"/>
-  <local:Array r="someVar" />
-  <local:Array t="someVar" />
-  <local:Array y="someVar" new="3,4,5,6,6"/>
-</mx:Sprite>
+  <local:Array id="someVar" y="someVar" mx:new="3,4,5,6" />
+</display:Sprite>

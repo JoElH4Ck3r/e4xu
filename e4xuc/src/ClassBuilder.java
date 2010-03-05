@@ -1,20 +1,25 @@
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Stack;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
 import flex2.tools.oem.Application;
+import flex2.tools.oem.Configuration;
 
 import uk.co.badgersinfoil.metaas.ActionScriptFactory;
 import uk.co.badgersinfoil.metaas.ActionScriptProject;
 import uk.co.badgersinfoil.metaas.dom.ASArrayLiteral;
-import uk.co.badgersinfoil.metaas.dom.ASAssignmentExpression;
 import uk.co.badgersinfoil.metaas.dom.ASClassType;
 import uk.co.badgersinfoil.metaas.dom.ASCompilationUnit;
 import uk.co.badgersinfoil.metaas.dom.ASField;
 import uk.co.badgersinfoil.metaas.dom.ASMethod;
+import uk.co.badgersinfoil.metaas.dom.ASNewExpression;
 import uk.co.badgersinfoil.metaas.dom.ASObjectLiteral;
 import uk.co.badgersinfoil.metaas.dom.Expression;
 import uk.co.badgersinfoil.metaas.dom.Visibility;
@@ -37,13 +42,21 @@ public class ClassBuilder extends DefaultHandler
 
 	public void startElement(String namespaceURI, String localName, String rawName, Attributes attrs)
 	{
+		ArrayList<String> packageParts = new ArrayList<String>(Arrays.asList(localName.split("\\.")));
+		String varName = packageParts.remove(packageParts.size() - 1);
+
+		for (String part : packageParts)
+		{
+			namespaceURI = namespaceURI.replace("*", part + ".*");
+		}
+
 		if (depth == 0)
 		{
 			unit = proj.newClass("Main");
 
 			clazz = (ASClassType) unit.getType();
 
-			clazz.setSuperclass(localName);
+			clazz.setSuperclass(varName);
 
 			ASMethod constructor = clazz.newMethod("Main", Visibility.PUBLIC, null);
 
@@ -54,15 +67,16 @@ public class ClassBuilder extends DefaultHandler
 				int len = attrs.getLength();
 				for (int i = 0; i < len; i++)
 				{
-					constructor.newExprStmt(fact.newAssignExpression(fact.newFieldAccessExpression(fact
-							.newExpression("this"), attrs.getQName(i)), fact.newExpression(attrs.getValue(i))));
+					if(attrs.getURI(i) != namespaceURI && attrs.getURI(i) != "") continue;
+					constructor.newExprStmt(fact.newAssignExpression(fact.newFieldAccessExpression(
+							fact.newExpression("this"), attrs.getLocalName(i)), fact.newExpression(attrs.getValue(i))));
 				}
 			}
 		} else
 		{
 			addName(localName);
-			ASField field = clazz.newField(attrs.getValue("id") == null ? localName
-					+ nameCache.get(localName) : attrs.getValue("id"), Visibility.PROTECTED, localName);
+			ASField field = clazz.newField(attrs.getValue("id") == null ? varName
+					+ nameCache.get(localName) : attrs.getValue("id"), Visibility.PROTECTED, varName);
 
 			if (localName == "Object")
 			{
@@ -72,12 +86,15 @@ public class ClassBuilder extends DefaultHandler
 				field.setInitializer(generateArrayInitializer(attrs));
 			} else
 			{
-				field.setInitializer(generateInitializer(localName, attrs));
+				field.setInitializer(generateInitializer(varName, attrs));
 			}
 
 		}
 
-		if (namespaceURI != "*") unit.getPackage().addImport(namespaceURI);
+		if (namespaceURI != "*" && !unit.getPackage().findImports().contains(namespaceURI))
+		{
+			unit.getPackage().addImport(namespaceURI);
+		}
 
 		depth++;
 	}
@@ -85,17 +102,18 @@ public class ClassBuilder extends DefaultHandler
 	protected Expression generateInitializer(String localName, Attributes attrs)
 	{
 		ArrayList<Expression> constructorParams = new ArrayList<Expression>();
-		if (attrs.getValue("new") != null)
+		if (attrs.getValue("mx", "new") != null)
 		{
-			for (String param : attrs.getValue("new").split(","))
+			for (String param : attrs.getValue("mx", "new").split(","))
 			{
-				constructorParams.add(fact.newExpression(param));
+				constructorParams.add(fact.newExpression(param.trim()));
 			}
 		}
-
-		return fact
-				.newNewExpression(fact.newExpression(localName), attrs.getValue("new") != null ? constructorParams
-						: null);
+		
+		ASNewExpression newExp = fact.newNewExpression(fact.newExpression(localName), null);
+		newExp.setArguments(constructorParams);
+		
+		return newExp;
 	}
 
 	protected Expression generateObjectInitializer(Attributes attrs)
@@ -103,7 +121,7 @@ public class ClassBuilder extends DefaultHandler
 		ASObjectLiteral obj = fact.newObjectLiteral();
 		for (int i = 0; i < attrs.getLength(); i++)
 		{
-			obj.newField(attrs.getQName(i), fact.newExpression(attrs.getValue(i)));
+			obj.newField(attrs.getQName(i), fact.newExpression(attrs.getValue(i).trim()));
 		}
 		return obj;
 	}
@@ -112,14 +130,14 @@ public class ClassBuilder extends DefaultHandler
 	{
 		ASArrayLiteral arr = fact.newArrayLiteral();
 
-		if (attrs.getValue("new") != null)
+		if (attrs.getValue("mx", "new") != null)
 		{
-			for (String param : attrs.getValue("new").split(","))
+			for (String param : attrs.getValue("mx", "new").split(","))
 			{
-				arr.add(fact.newExpression(param));
+				arr.add(fact.newExpression(param.trim()));
 			}
 		}
-
+		
 		return arr;
 	}
 
@@ -140,6 +158,9 @@ public class ClassBuilder extends DefaultHandler
 			proj.writeAll();
 			Application app = new Application(new File("./ASProject/src/Main.as"));
 			app.setOutput(new File("./ASProject/bin/Main.swf"));
+			Configuration conf = app.getDefaultConfiguration();
+			conf.setDefaultSize(400, 300);
+			app.setConfiguration(conf);
 			app.build(true);
 		} catch (Exception e)
 		{
