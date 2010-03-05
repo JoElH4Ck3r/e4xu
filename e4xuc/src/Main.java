@@ -1,34 +1,20 @@
-import uk.co.badgersinfoil.metaas.ActionScriptFactory;
-import uk.co.badgersinfoil.metaas.ActionScriptProject;
-import uk.co.badgersinfoil.metaas.dom.ASClassType;
-import uk.co.badgersinfoil.metaas.dom.ASCompilationUnit;
-import uk.co.badgersinfoil.metaas.dom.ASField;
-import uk.co.badgersinfoil.metaas.dom.ASMethod;
-import uk.co.badgersinfoil.metaas.dom.Visibility;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
-public class Main
+public class Main extends DefaultHandler
 {
 	public static void main(String[] args) throws Exception
 	{
-		ActionScriptFactory fact = new ActionScriptFactory();
-		ActionScriptProject proj = fact.newEmptyASProject("./generatedAS");
-		ASCompilationUnit unit = proj.newClass("TestClass");
-		
-		ASClassType clazz = (ASClassType) unit.getType();
-		
-		clazz.setSuperclass("flash.display.Sprite");
-		
-		ASField testVar = clazz.newField("testVar", Visibility.PROTECTED, "flash.display.Sprite");
-		testVar.setInitializer("new Sprite()");
-		
-		
-		ASMethod meth = clazz.newMethod(clazz.getName(), Visibility.PUBLIC, null);
-		meth.addStmt("trace('yo!')");
-
-		proj.performAutoImport();
-		proj.writeAll();
-
+		SAXParserFactory spf = SAXParserFactory.newInstance();
+		spf.setNamespaceAware(true);
+		SAXParser sp = spf.newSAXParser();
+		try {
+			sp.parse("ASProject/src/Main.mxml", new ClassBuilder());
+		} catch (SAXException e) {
+			System.out.print(e.getMessage());
+		}
 	}
-
 }
