@@ -1,0 +1,8 @@
+C:\www\sharp\fd\FD3\External\Plugins\NFXContext\obj\Debug\ResolveAssemblyReference.cache
+C:\www\sharp\fd\FD3\External\Plugins\NFXContext\obj\Debug\NFXContext.PluginUI.resources
+C:\www\sharp\fd\FD3\External\Plugins\NFXContext\obj\Debug\NFXContext.Resources.en_US.resources
+C:\www\sharp\fd\FD3\External\Plugins\NFXContext\obj\Debug\NFXContext.csproj.GenerateResource.Cache
+C:\www\sharp\fd\FD3\FlashDevelop\Bin\Debug\Plugins\NFXContext.dll
+C:\www\sharp\fd\FD3\FlashDevelop\Bin\Debug\Plugins\NFXContext.pdb
+C:\www\sharp\fd\FD3\External\Plugins\NFXContext\obj\Debug\NFXContext.dll
+C:\www\sharp\fd\FD3\External\Plugins\NFXContext\obj\Debug\NFXContext.pdb

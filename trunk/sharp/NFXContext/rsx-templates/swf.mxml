@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- %PN%.%FN%.mxml -->
+<fl:Sprite xmlns:fl="flash.display.*" xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Metadata>
+		[Embed(source="%embed%")]
+	</mx:Metadata>
+</fl:Sprite>
