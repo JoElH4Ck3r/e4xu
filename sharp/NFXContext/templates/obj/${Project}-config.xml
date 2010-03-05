@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<flex-config>
+  <compiler>
+    <source-path append="true">
+      <path-element>${Project}\rsx</path-element>
+      <path-element>${FlashDevelop}\Library\AS3\classes</path-element>
+    </source-path>
+	  <library-path append="true">
+      <!-- <path-element>${SWC}</path-element> -->
+    </library-path>
+    <external-library-path append="true">
+      <path-element>${SDK}\frameworks\libs</path-element>
+    </external-library-path>
+  </compiler>
+  <compute-digest>false</compute-digest>
+  <load-externs>${Externs}</load-externs>
+  <include-classes>
+	  <class>${Specs}</class>
+  </include-classes>
+</flex-config>
