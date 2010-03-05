@@ -1,0 +1,9 @@
+<mx:Sprite width="150" height="100" xmlns:mx="flash.display.*" xmlns:local="*">
+  <local:Array id="someVar" />
+  <local:Array q="someVar" />
+  <local:Array w="someVar" />
+  <local:Object e="'someVar'" q="1" w="2" es="3"/>
+  <local:Array r="someVar" />
+  <local:Array t="someVar" />
+  <local:Array y="someVar" new="3,4,5,6,6"/>
+</mx:Sprite>

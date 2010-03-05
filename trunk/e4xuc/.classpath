@@ -13,5 +13,6 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/e4xuc/lib/metaas-0.8-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/home/-=Coding=-/-=Java=-/FlexSDK/lib/flex-compiler-oem.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
