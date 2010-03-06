@@ -15,10 +15,11 @@ public class Main extends DefaultHandler
 	{
 		SOURCE, OUTPUT, ONLY_BUILD, EMPTY;
 	}
+	
+	public static CompilerConfiguration conf = new CompilerConfiguration();
 
 	public static void main(String[] args) throws Exception
 	{
-		CompilerConfiguration conf = new CompilerConfiguration();
 		ArrayList<String> arguments = new ArrayList<String>(Arrays.asList(args));
 		for (ListIterator<String> iter = arguments.listIterator(); iter.hasNext();)
 		{
@@ -29,9 +30,19 @@ public class Main extends DefaultHandler
 				{
 					case SOURCE:
 						conf.sourcePath = new File(getArgsRValue(iter));
+						if(!conf.sourcePath.exists())
+						{
+							System.err.println("Source file doesn't exist!");
+							System.exit(4);
+						}
 						break;
 					case OUTPUT:
 						conf.outputFile = new File(getArgsRValue(iter));
+						if(!conf.outputFile.exists())
+						{
+							System.err.println("Output file doesn't exist!");
+							System.exit(4);
+						}
 						break;
 					case ONLY_BUILD:
 						conf.buildOnly = true;
@@ -48,7 +59,7 @@ public class Main extends DefaultHandler
 			SAXParserFactory spf = SAXParserFactory.newInstance();
 			spf.setNamespaceAware(true);
 			SAXParser sp = spf.newSAXParser();
-			sp.parse(conf.sourcePath, new ClassBuilder(conf));
+			sp.parse(conf.sourcePath, new ClassBuilder());
 		} catch (SAXException e)
 		{
 			System.out.print(e.getMessage());
