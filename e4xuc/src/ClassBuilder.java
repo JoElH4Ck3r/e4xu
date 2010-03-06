@@ -30,21 +30,19 @@ public class ClassBuilder extends DefaultHandler
 	public int														depth			= 0;
 	public File														file;
 	public String													className;
-	public File														directory;
 
 	protected Hashtable<String, Integer>	nameCache	= new Hashtable<String, Integer>();
 
 	public ClassBuilder(File file)
 	{
 		this.file = file;
-		this.directory = new File(file.getParent());
 		className = file.getName().substring(0, file.getName().lastIndexOf("."));
 	}
 
 	public void startDocument()
 	{
 		fact = new ActionScriptFactory();
-		proj = fact.newEmptyASProject(this.directory.getAbsolutePath() + "/src");
+		proj = fact.newEmptyASProject(file.getParent());
 	}
 
 	public void startElement(String namespaceURI, String localName, String rawName, Attributes attrs)
@@ -74,33 +72,33 @@ public class ClassBuilder extends DefaultHandler
 				int len = attrs.getLength();
 				for (int i = 0; i < len; i++)
 				{
-					if (attrs.getURI(i) != namespaceURI && attrs.getURI(i).length() > 0) continue;
-					constructor.newExprStmt(fact.newAssignExpression(fact.newFieldAccessExpression(
-							fact.newExpression("this"), attrs.getLocalName(i)),
-							fact.newExpression(attrs.getValue(i))));
+					if (attrs.getURI(i) != namespaceURI && attrs.getURI(i).length() > 0)
+						continue;
+					constructor.newExprStmt(fact.newAssignExpression(fact.newFieldAccessExpression(fact.newExpression("this"), attrs.getLocalName(i)), fact.newExpression(attrs.getValue(i))));
 				}
 			}
-		} else
+		}
+		else
 		{
 			addName(localName);
-			ASField field = clazz.newField(attrs.getValue("id") == null ? varName
-					+ nameCache.get(localName) : attrs.getValue("id"), Visibility.PROTECTED, varName);
+			ASField field = clazz.newField(attrs.getValue("id") == null ? varName + nameCache.get(localName) : attrs.getValue("id"), Visibility.PROTECTED, varName);
 
 			if (localName.equals("Object"))
 			{
 				field.setInitializer(generateObjectInitializer(attrs));
-			} else if (localName.equals("Array"))
+			}
+			else if (localName.equals("Array"))
 			{
 				field.setInitializer(generateArrayInitializer(attrs));
-			} else
+			}
+			else
 			{
 				field.setInitializer(generateInitializer(varName, attrs));
 			}
 
 		}
 
-		if (namespaceURI.length() > 0 && !namespaceURI.equals("*")
-				&& !unit.getPackage().findImports().contains(namespaceURI))
+		if (namespaceURI.length() > 0 && !namespaceURI.equals("*") && !unit.getPackage().findImports().contains(namespaceURI))
 		{
 			unit.getPackage().addImport(namespaceURI);
 		}
@@ -167,11 +165,8 @@ public class ClassBuilder extends DefaultHandler
 		{
 			proj.performAutoImport();
 			proj.writeAll();
-			Application app = new Application(this.file);
-			app.setOutput(new File(this.directory.getAbsolutePath() + "/bin/" + className + ".swf"));
-			Configuration conf = app.getDefaultConfiguration();
-			conf.setDefaultSize(400, 300);
-			app.setConfiguration(conf);
+			Application app = new Application(new File(file.getParent() + "/" + className + ".as"));
+			app.setOutput(new File(file.getParentFile().getParent() + "/bin/" + className + ".swf"));
 			app.build(false);
 		} catch (Exception e)
 		{
