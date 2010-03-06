@@ -15,7 +15,7 @@ public class Main extends DefaultHandler
 {
 	public enum ARGUMENTS
 	{
-		SOURCE, OUTPUTDIR, ONLYBUILD, EMPTY;
+		SOURCE, OUTPUT_DIR, ONLY_BUILD, EMPTY;
 	}
 
 	public static File	sourcePath	= new File("ASProject/src/Main.mxml");
@@ -33,15 +33,15 @@ public class Main extends DefaultHandler
 			String QName = getArgsQName(iter);
 			try
 			{
-				switch (ARGUMENTS.valueOf(QName.toUpperCase()))
+				switch (ARGUMENTS.valueOf(QName.toUpperCase().replace('-', '_')))
 				{
 					case SOURCE:
 						sourcePath = new File(getArgsRValue(iter));
 						break;
-					case OUTPUTDIR:
+					case OUTPUT_DIR:
 						outputDir = new File(getArgsRValue(iter));
 						break;
-					case ONLYBUILD:
+					case ONLY_BUILD:
 						System.out.println("Only Build");
 						break;
 				}
