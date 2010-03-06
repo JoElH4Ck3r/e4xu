@@ -7,7 +7,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
 import flex2.tools.oem.Application;
-import flex2.tools.oem.Configuration;
 
 import uk.co.badgersinfoil.metaas.ActionScriptFactory;
 import uk.co.badgersinfoil.metaas.ActionScriptProject;
@@ -28,21 +27,21 @@ public class ClassBuilder extends DefaultHandler
 	public ASCompilationUnit							unit;
 	public ASClassType										clazz;
 	public int														depth			= 0;
-	public File														file;
 	public String													className;
+	public CompilerConfiguration					conf;
 
 	protected Hashtable<String, Integer>	nameCache	= new Hashtable<String, Integer>();
 
-	public ClassBuilder(File file)
+	public ClassBuilder(CompilerConfiguration conf)
 	{
-		this.file = file;
-		className = file.getName().substring(0, file.getName().lastIndexOf("."));
+		this.conf = conf;
+		className = conf.sourcePath.getName().substring(0, conf.sourcePath.getName().lastIndexOf("."));
 	}
 
 	public void startDocument()
 	{
 		fact = new ActionScriptFactory();
-		proj = fact.newEmptyASProject(file.getParent());
+		proj = fact.newEmptyASProject(conf.sourcePath.getParent());
 	}
 
 	public void startElement(String namespaceURI, String localName, String rawName, Attributes attrs)
@@ -165,8 +164,8 @@ public class ClassBuilder extends DefaultHandler
 		{
 			proj.performAutoImport();
 			proj.writeAll();
-			Application app = new Application(new File(file.getParent() + "/" + className + ".as"));
-			app.setOutput(new File(file.getParentFile().getParent() + "/bin/" + className + ".swf"));
+			Application app = new Application(new File(conf.sourcePath.getParent() + "/" + className + ".as"));
+			app.setOutput(conf.outputFile);
 			app.build(false);
 		} catch (Exception e)
 		{
