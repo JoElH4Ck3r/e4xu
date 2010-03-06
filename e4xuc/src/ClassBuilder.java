@@ -164,9 +164,13 @@ public class ClassBuilder extends DefaultHandler
 		{
 			proj.performAutoImport();
 			proj.writeAll();
-			Application app = new Application(new File(conf.sourcePath.getParent() + "/" + className + ".as"));
-			app.setOutput(conf.outputFile);
-			app.build(false);
+			
+			if (!conf.buildOnly)
+			{
+				Application app = new Application(new File(conf.sourcePath.getParent() + "/" + className + ".as"));
+				app.setOutput(conf.outputFile);
+				app.build(false);
+			}
 		} catch (Exception e)
 		{
 			System.out.print(e.getMessage());
