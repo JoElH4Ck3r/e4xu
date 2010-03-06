@@ -25,9 +25,9 @@ namespace NFXContext.TemplateShell
             proc.StartInfo.StandardErrorEncoding = Encoding.Default;
             proc.StartInfo.CreateNoWindow = true;
             proc.StartInfo.FileName = @jdk;
+            proc.StartInfo.WorkingDirectory = template.Directory.FullName;
             //
             //proc.StartInfo.Arguments = jvmarg;
-            //proc.StartInfo.WorkingDirectory = workingDir;
             //
             output = new StringBuilder("");
             if (args != null)
@@ -43,15 +43,18 @@ namespace NFXContext.TemplateShell
             try
             {
                 proc.Start();
-                StreamReader sr = proc.StandardOutput;
-                while (!sr.EndOfStream)
+                while (!proc.StandardOutput.EndOfStream)
                 {
-                    output.Append(Environment.NewLine + sr.ReadLine());
+                    PluginCore.Managers.TraceManager.Add(
+                        proc.StandardOutput.ReadLine().Trim(),
+                        (Int32)PluginCore.TraceType.Info);
                 }
                 while (!proc.StandardError.EndOfStream)
                 {
                     String line = proc.StandardError.ReadLine().Trim();
-                    output.Append(Environment.NewLine + line);
+                    PluginCore.Managers.TraceManager.Add(
+                        proc.StandardError.ReadLine().Trim(),
+                        (Int32)PluginCore.TraceType.Error);
                 }
                 proc.Close();
                 return output.ToString();
