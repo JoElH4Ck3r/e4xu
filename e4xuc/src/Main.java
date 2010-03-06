@@ -74,11 +74,20 @@ public class Main extends DefaultHandler
 	{
 		String[] equalParts = ((String) i.previous()).split("\\=", 2);
 		i.next();
-		if (equalParts.length == 1 && !i.hasNext()) { throw new IllegalArgumentException("where is value for \"" + getArgsQName(equalParts[0]) + "\"?\n"); }
-
+		
 		String value = equalParts.length == 1 ? i.next() : equalParts[1];
 
-		if (value.startsWith("-")) { throw new IllegalArgumentException("where is value for \"" + getArgsQName(equalParts[0]) + "\"?\n"); }
+		if (equalParts.length == 2)
+		{
+			value = equalParts[1];
+		}
+		else
+		{
+			if (!i.hasNext()) { throw new IllegalArgumentException("where is value for \"" + getArgsQName(equalParts[0]) + "\"?\n"); }
+			value = i.next();
+			if (value.startsWith("-")) { throw new IllegalArgumentException("where is value for \"" + getArgsQName(equalParts[0]) + "\"?\n"); }
+		}
+
 		return value;
 	}
 }
