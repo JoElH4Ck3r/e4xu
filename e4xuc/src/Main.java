@@ -32,7 +32,7 @@ public class Main extends DefaultHandler
 						conf.sourcePath = new File(getArgsRValue(iter));
 						if(!conf.sourcePath.exists())
 						{
-							System.err.println("Source file doesn't exist!");
+							System.err.println("Source file + \"" + conf.sourcePath.getAbsolutePath() + "\" doesn't exist!");
 							System.exit(4);
 						}
 						break;
@@ -40,7 +40,7 @@ public class Main extends DefaultHandler
 						conf.outputFile = new File(getArgsRValue(iter));
 						if(!conf.outputFile.exists())
 						{
-							System.err.println("Output file doesn't exist!");
+							System.err.println("Output file + \"" + conf.outputFile.getAbsolutePath() + "\" doesn't exist!");
 							System.exit(4);
 						}
 						break;
