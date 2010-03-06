@@ -16,6 +16,9 @@ using ProjectManager;
 using ProjectManager.Helpers;
 using NFXContext.Enums;
 using Associations;
+using NFXContext.TemplateShell;
+using System.Collections;
+using NFXContext.Mapping;
 
 namespace NFXContext
 {
@@ -29,9 +32,11 @@ namespace NFXContext
 
         private String settingFilename;
         private Settings settingObject;
-        private String projectRoot;
-        private String nsxRoot;
+        //private String projectRoot;
+        //private String nsxRoot;
+        private ASCompletion.Context.IASContext context;
         private String preprocessorLocation;
+        private ProjectManager.PluginMain projectManager;
 
         private DockContent pluginPanel;
         private PluginUI pluginUI;
@@ -39,6 +44,7 @@ namespace NFXContext
 
         private ToolStripMenuItem projectToolMenuItem;
         private NFXProject project;
+        private ProjectManager.Projects.Project asproject;
 
 	    #region Required Properties
 
@@ -115,42 +121,214 @@ namespace NFXContext
 		{
             this.SaveSettings();
 		}
-		
-		/// <summary>
-		/// Handles the incoming events
-		/// </summary>
-		public void HandleEvent(Object sender, NotifyEvent e, HandlingPriority prority)
-		{
-            //string docName = PluginBase.MainForm.CurrentDocument.ToString();
-            //if (!isASDocument.IsMatch(docName)) saveHTML.Enabled = false;
-            //else saveHTML.Enabled = true;
-            //TabbedDocument document = (TabbedDocument)PluginBase.MainForm.CurrentDocument;
-            //if (PluginBase.MainForm.EditorMenu == null) return;
-            //if (this.copyHTMLItem == null)
+
+        /// <summary>
+        /// Handles the incoming events
+        /// </summary>
+        public void HandleEvent(object sender, NotifyEvent e, HandlingPriority priority)
+        {
+            TextEvent te = e as TextEvent;
+            DataEvent de = e as DataEvent;
+            ITabbedDocument document = PluginBase.MainForm.CurrentDocument;
+            //BxmlDesigner designer = document != null && designers.ContainsKey(document) ? designers[document] : null;
+
+            //if (e.Type == EventType.Command && de.Action == ProjectManagerEvents.FileMapping)
             //{
-            //    this.copyHTMLItem = new ToolStripMenuItem("Copy as HTML", 
-            //                               null, 
-            //                               new EventHandler(this.CopyAsHTML),
-            //                               this.settingObject.CopyHTMLShortcut);
-            //    PluginBase.MainForm.EditorMenu.Items.Add(this.copyHTMLItem);
-            //    PluginBase.MainForm.IgnoredKeys.Add(this.settingObject.CopyHTMLShortcut);
+            //    ProjectFileMapper.Map((FileMappingRequest)de.Data);
+            //    return;
             //}
-            //switch (e.Type)
-            //{
-            //    case EventType.FileClose:
-            //        break;
-            //    case EventType.FileNew:
-            //        break;
-            //    case EventType.FileOpen:
-            //        break;
-            //    case EventType.FileSwitch:
-            //        break;
-            //}
-		}
+
+            // our first priority is getting a non-null Project, otherwise
+            // we can't do anything
+            
+            if (e.Type == EventType.Command && de.Action == ProjectManagerEvents.Project)
+            {
+                // the projectexplorer plugin is telling us what project we're working with
+                this.asproject = de.Data as ProjectManager.Projects.Project;
+                Console.WriteLine("We found a project " + this.asproject + " : " + de.Data + " : " + (de.Data is ProjectManager.Projects.Project));
+                //return;
+            }
+            
+            // we need a project and context to handle these events
+            if (e.Type == EventType.FileOpen)
+            {
+                if (this.IsNfxMxml(document))
+                {
+                    Console.WriteLine("MXML file opened");
+                //    PluginBase.MainForm.CallCommand("ChangeSyntax", "xml");
+
+                //    var timer = new Timer { Interval = 1, Enabled = true };
+                //    timer.Tick += (o, evt) =>
+                //    {
+                //        timer.Enabled = false;
+
+                // create the design surface
+                //if (GetProjectAndContext())
+                //{
+                //    if (project.AbsoluteClasspaths.GetClosestParent(document.FileName) != null)
+                //    {
+                //        designer = new BxmlDesigner(document, project, GetDesignerSwfPath());
+                //        designers.Add(document, designer);
+                //        //Compile(document, designer);
+                //    }
+                //    else
+                //        SendErrorToResults(document.FileName, "Cannot design this file because the classpath could not be determined.");
+                //}
+                //else SendErrorToResults(document.FileName, "Could not start up the Bent Designer - no project loaded or AS3 completion plugin not loaded.");
+                //    };
+                }
+            }
+            else if (e.Type == EventType.FileClose)
+            {
+                Console.WriteLine("MXML file closed");
+                // TODO: Recompile code behind here
+                //if (designers.ContainsKey(document))
+                //    designers.Remove(document);
+            }
+            else if (e.Type == EventType.Command)
+            {
+                switch (de.Action)
+                {
+                    case ProjectManagerEvents.BuildComplete:
+
+                        // TODO: Not sure we need this
+                        //if (!GetProjectAndContext()) return;
+                        //if (!File.Exists(project.OutputPathAbsolute)) return;
+                        //if (!CheckIsBentApplication()) return;
+
+                        //BuildDesignerSwf();
+
+                        //foreach (BxmlDesigner d in designers.Values)
+                        //    d.SwfOutdated = true;
+
+                        //if (designer != null)
+                        //    designer.ReloadSwf();
+
+                        break;
+
+                    case "XMLCompletion.Element":
+
+                        // TODO: Not yet...
+                        //if (!IsBxml(document) || !GetProjectAndContext()) return;
+                        //if (designer == null) return;
+
+                        ////DateTime started = DateTime.Now;
+                        //completion.HandleElement(designer, (XMLContextTag)de.Data);
+                        //TraceManager.Add("Took " + (DateTime.Now - started).TotalMilliseconds + "ms.");
+                        //e.Handled = true;
+                        break;
+
+                    case "XMLCompletion.CloseElement":
+
+                        // TODO: We would try to rely on FD own autocompletion better...
+                        //if (!IsBxml(document) || !GetProjectAndContext()) return;
+                        //if (designer == null) return;
+
+                        //string ending = completion.HandleCloseElement(designer, (XMLContextTag)de.Data);
+                        //if (ending != null)
+                        //{
+                        //    if (ending != ">")
+                        //    {
+                        //        ScintillaNet.ScintillaControl sci = document.SciControl;
+                        //        int position = sci.CurrentPos;
+                        //        sci.SetSel(position - 1, position);
+                        //        sci.ReplaceSel(ending);
+                        //        sci.SetSel(position + 1, position + 1);
+                        //    }
+                        //    e.Handled = true;
+                        //}
+
+                        break;
+
+                    case "XMLCompletion.Attribute":
+
+                        // TODO: We would try to rely on FD own autocompletion better...
+                        //if (!IsBxml(document) || !GetProjectAndContext()) return;
+                        //if (designer == null) return;
+
+                        //object[] o = de.Data as object[];
+                        ////started = DateTime.Now;
+                        //completion.HandleAttribute(designer, (XMLContextTag)o[0], o[1] as string);
+                        ////TraceManager.Add("Took " + (DateTime.Now - started).TotalMilliseconds + "ms.");
+                        //e.Handled = true;
+                        break;
+                }
+            }
+            else if (e.Type == EventType.FileSave)
+            {
+                Console.WriteLine("MXML file saved " + document.FileName);
+                if (String.IsNullOrEmpty(this.preprocessorLocation))
+                {
+                    OpenFileDialog dialog = new OpenFileDialog();
+                    dialog.CheckFileExists = true;
+                    dialog.Filter = "JAR files (*.jar)|*.jar";
+                    DialogResult dr = dialog.ShowDialog();
+                    if (dr == DialogResult.OK)
+                    {
+                        this.preprocessorLocation =
+                            this.settingObject.ParserPath = dialog.FileNames[0];
+                    }
+                    else return;
+                }
+                Hashtable ht = new Hashtable();
+                ht.Add("-source", document.FileName);
+                ht.Add("-output", document.FileName.Replace(".mxml", ".swf"));
+                PluginCore.Managers.EventManager.DispatchEvent(
+                    this, new DataEvent(EventType.Command, "ResultsPanel.ClearResults", null));
+                NFXShell.Run(new FileInfo(document.FileName), this.preprocessorLocation, null, ht);
+                this.context = ASCompletion.Context.ASContext.GetLanguageContext("as3");
+                // TODO: we should only handle our projects
+                // TODO: not really sure this will be needed as those files should be picked up by ASCompletion anyway.
+                //string classpath = this.project.AbsoluteClasspaths.GetClosestParent(document.FileName);
+                string classpath = this.asproject.AbsoluteClasspaths.GetClosestParent(document.FileName);
+                Console.WriteLine("Our classpath: " + classpath);
+                ASCompletion.Model.PathModel pathModel = 
+                    context.Classpath.Find(pm => pm.Path == classpath);
+                this.TellASCompletionAbout(document.FileName, pathModel);
+            }
+            else if (e.Type == EventType.FileSwitch)
+            {
+                // TODO: think we don't need this
+                //if (!GetProjectAndContext()) return;
+
+                //// if this flash is marked as "dirty" we'll need to reload it
+                //if (designer != null && designer.SwfOutdated)
+                //    designer.ReloadSwf();
+            }
+            else if (e.Type == EventType.UIStarted)
+            {
+                // TODO: Not sure what this does... we'll see later
+                this.projectManager =
+                        (ProjectManager.PluginMain)PluginBase.MainForm.FindPlugin(
+                        "30018864-fadd-1122-b2a5-779832cbbf23");
+                System.Reflection.MethodInfo mi = typeof(NFXNode).GetMethod("Create");
+                ProjectManager.Controls.TreeView.FileNode.FileAssociations.Add(".nxml", mi);
+                //Timer timer = new Timer();
+                //timer.Interval = 100;
+                //timer.Tick += delegate { GetProjectAndContext(); timer.Stop(); };
+                //timer.Start();
+            }
+        }
 
 		#endregion
 
         #region Custom Methods
+
+        private void TellASCompletionAbout(string compiledFile, ASCompletion.Model.PathModel pathModel)
+        {
+            if (!pathModel.HasFile(compiledFile))
+            {
+                // force ASCompletion to parse this file and add it to the classpath's model
+                pathModel.AddFile(this.context.GetFileModel(compiledFile));
+            }
+            else
+            {
+                // force ASCompletion to recheck this file it already knows about
+                ASCompletion.Model.FileModel fileModel = pathModel.GetFile(compiledFile);
+                fileModel.OutOfDate = true;
+                fileModel.Check();
+            }
+        }
 
         /// <summary>
         /// Initializes important variables
@@ -190,10 +368,12 @@ namespace NFXContext
         public void AddEventHandlers()
         {
             // Set events you want to listen (combine as flags)
-            EventManager.AddEventHandler(this, EventType.FileClose | 
-                                                EventType.FileNew | 
-                                                EventType.FileOpen |
-                                                EventType.FileSwitch);
+            EventManager.AddEventHandler(this, EventType.FileOpen
+                                            | EventType.FileSwitch
+                                            | EventType.Command
+                                            | EventType.FileSave
+                                            | EventType.FileClose
+                                            | EventType.UIStarted);
         }
 
         /// <summary>
@@ -286,10 +466,15 @@ namespace NFXContext
                         //fs.Close();
                     //}
                     project = new NFXProject(di.FullName);
-                    ProjectManager.PluginMain pm = (ProjectManager.PluginMain)PluginBase.MainForm.FindPlugin("30018864-fadd-1122-b2a5-779832cbbf23");
-                    //ProjectManager.Projects.AS3.AS3Project
                 }
             }
+        }
+
+        public Boolean IsNfxMxml(ITabbedDocument document)
+        {
+            string path = document.FileName;
+            // TODO: I think we should use a different extension...
+            return (path != null && Path.GetExtension(path).ToLower() == ".mxml");
         }
 
         public void AddFiles(string[] files, AssetTypes ofType)
@@ -348,14 +533,15 @@ namespace NFXContext
                 object obj = ObjectSerializer.Deserialize(this.settingFilename, this.settingObject);
                 this.settingObject = (Settings)obj;
             }
-            String dataPath = Path.Combine(PathHelper.UserAppDir, this.settingObject.ParserPath);
-            if (!Directory.Exists(dataPath)) Directory.CreateDirectory(dataPath);
-            this.projectRoot = dataPath;
-            dataPath = Path.Combine(PathHelper.TemplateDir, "rsx-templates");
-            //if (!Directory.Exists(dataPath)) this.InstallTemplates(dataPath);
-            this.preprocessorLocation = dataPath;
-            this.nsxRoot = Path.Combine(PathHelper.UserAppDir, "lib");
-            if (!Directory.Exists(dataPath)) Directory.CreateDirectory(dataPath);
+            this.preprocessorLocation = this.settingObject.ParserPath;
+            //String dataPath = Path.Combine(PathHelper.UserAppDir, this.settingObject.ParserPath);
+            //if (!Directory.Exists(dataPath)) Directory.CreateDirectory(dataPath);
+            //this.projectRoot = dataPath;
+            //dataPath = Path.Combine(PathHelper.TemplateDir, "rsx-templates");
+            ////if (!Directory.Exists(dataPath)) this.InstallTemplates(dataPath);
+            //this.preprocessorLocation = dataPath;
+            //this.nsxRoot = Path.Combine(PathHelper.UserAppDir, "lib");
+            //if (!Directory.Exists(dataPath)) Directory.CreateDirectory(dataPath);
         }
 
         /// <summary>

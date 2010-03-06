@@ -74,6 +74,8 @@
     <Compile Include="COMPCOptions.cs" />
     <Compile Include="Embeds\Embeds.cs" />
     <Compile Include="Enums\Utils.cs" />
+    <Compile Include="Mapping\NFXNode.cs" />
+    <Compile Include="Mapping\ProjectFileMapper.cs" />
     <Compile Include="NFXMovieOptions.cs" />
     <Compile Include="NFXOptions.cs" />
     <Compile Include="NFXProject.cs" />
@@ -112,6 +114,18 @@
       <Project>{61885F70-B4DC-4B44-852D-5D6D03F2A734}</Project>
       <Name>PluginCore</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\AS3Context\AS3Context.csproj">
+      <Project>{0263E5F6-D5B2-4118-B12E-87F9A74DE8AF}</Project>
+      <Name>AS3Context</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ASCompletion\ASCompletion.csproj">
+      <Project>{4EBF2653-9654-4E40-880E-0046B3D6210E}</Project>
+      <Name>ASCompletion</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OutputPanel\OutputPanel.csproj">
+      <Project>{EF8EE44C-62B2-4744-85CB-278E1F37D418}</Project>
+      <Name>OutputPanel</Name>
     </ProjectReference>
     <ProjectReference Include="..\ProjectManager\ProjectManager.csproj">
       <Project>{78101C01-E186-4954-B1DD-DEBB7905FAD8}</Project>

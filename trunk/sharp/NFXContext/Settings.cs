@@ -1,21 +1,22 @@
 using System;
 using System.ComponentModel;
-using System.Collections.Generic;
-using System.Windows.Forms;
-using System.Text;
-using System.Drawing;
+using System.Drawing.Design;
+using System.Windows.Forms.Design;
 
 namespace NFXContext
 {
     [Serializable]
     public class Settings
     {
-        private String parserPath = "nfx.jar";
+        private String parserPath = "";
 
         /// <summary> 
-        /// Defines the color of line comments
+        /// Defines the templates generator location.
         /// </summary>
-        [Description("Defines the templates generator location."), DefaultValue("nfx.jar")]
+        [DisplayName("nfx.jar location.")]
+        [Description("Defines the templates generator location.")]
+        [DefaultValue("")]
+        [Editor(typeof(FolderNameEditor), typeof(UITypeEditor))]
         public String ParserPath
         {
             get { return this.parserPath; }

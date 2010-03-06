@@ -28,8 +28,9 @@ namespace NFXContext
         private Button browseForNFX;
         private TextBox jdkLocation;
         private Button browseJDK;
-        private GroupBox statusBox;
-        private TextBox statusLabel;
+        private TextBox outputSWF;
+        private Label label1;
+        private Button browseForOutput;
 
         public NFXProject Project
         {
@@ -70,9 +71,9 @@ namespace NFXContext
             this.browseForNFX = new System.Windows.Forms.Button();
             this.jdkLocation = new System.Windows.Forms.TextBox();
             this.browseJDK = new System.Windows.Forms.Button();
-            this.statusBox = new System.Windows.Forms.GroupBox();
-            this.statusLabel = new System.Windows.Forms.TextBox();
-            this.statusBox.SuspendLayout();
+            this.outputSWF = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.browseForOutput = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // browseForFile
@@ -103,7 +104,7 @@ namespace NFXContext
             // 
             // generate
             // 
-            this.generate.Location = new System.Drawing.Point(6, 56);
+            this.generate.Location = new System.Drawing.Point(6, 104);
             this.generate.Name = "generate";
             this.generate.Size = new System.Drawing.Size(675, 23);
             this.generate.TabIndex = 4;
@@ -113,7 +114,7 @@ namespace NFXContext
             // 
             // nfxLocation
             // 
-            this.nfxLocation.Location = new System.Drawing.Point(6, 85);
+            this.nfxLocation.Location = new System.Drawing.Point(6, 133);
             this.nfxLocation.Name = "nfxLocation";
             this.nfxLocation.Size = new System.Drawing.Size(593, 20);
             this.nfxLocation.TabIndex = 5;
@@ -121,7 +122,7 @@ namespace NFXContext
             // 
             // browseForNFX
             // 
-            this.browseForNFX.Location = new System.Drawing.Point(606, 83);
+            this.browseForNFX.Location = new System.Drawing.Point(606, 131);
             this.browseForNFX.Name = "browseForNFX";
             this.browseForNFX.Size = new System.Drawing.Size(75, 23);
             this.browseForNFX.TabIndex = 6;
@@ -131,7 +132,7 @@ namespace NFXContext
             // 
             // jdkLocation
             // 
-            this.jdkLocation.Location = new System.Drawing.Point(6, 111);
+            this.jdkLocation.Location = new System.Drawing.Point(6, 159);
             this.jdkLocation.Name = "jdkLocation";
             this.jdkLocation.Size = new System.Drawing.Size(593, 20);
             this.jdkLocation.TabIndex = 8;
@@ -139,7 +140,7 @@ namespace NFXContext
             // 
             // browseJDK
             // 
-            this.browseJDK.Location = new System.Drawing.Point(606, 111);
+            this.browseJDK.Location = new System.Drawing.Point(606, 159);
             this.browseJDK.Name = "browseJDK";
             this.browseJDK.Size = new System.Drawing.Size(75, 23);
             this.browseJDK.TabIndex = 9;
@@ -147,27 +148,37 @@ namespace NFXContext
             this.browseJDK.UseVisualStyleBackColor = true;
             this.browseJDK.Click += new System.EventHandler(this.browseJDK_Click);
             // 
-            // statusBox
+            // outputSWF
             // 
-            this.statusBox.Controls.Add(this.statusLabel);
-            this.statusBox.Location = new System.Drawing.Point(9, 137);
-            this.statusBox.Name = "statusBox";
-            this.statusBox.Size = new System.Drawing.Size(672, 277);
-            this.statusBox.TabIndex = 10;
-            this.statusBox.TabStop = false;
-            this.statusBox.Text = "Status";
+            this.outputSWF.Location = new System.Drawing.Point(6, 74);
+            this.outputSWF.Name = "outputSWF";
+            this.outputSWF.Size = new System.Drawing.Size(593, 20);
+            this.outputSWF.TabIndex = 10;
             // 
-            // statusLabel
+            // label1
             // 
-            this.statusLabel.Location = new System.Drawing.Point(6, 19);
-            this.statusLabel.Multiline = true;
-            this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(660, 252);
-            this.statusLabel.TabIndex = 8;
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 55);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(54, 13);
+            this.label1.TabIndex = 11;
+            this.label1.Text = "Output to:";
+            // 
+            // browseForOutput
+            // 
+            this.browseForOutput.Location = new System.Drawing.Point(606, 74);
+            this.browseForOutput.Name = "browseForOutput";
+            this.browseForOutput.Size = new System.Drawing.Size(75, 23);
+            this.browseForOutput.TabIndex = 12;
+            this.browseForOutput.Text = "Browse";
+            this.browseForOutput.UseVisualStyleBackColor = true;
+            this.browseForOutput.Click += new System.EventHandler(this.browseForOutput_Click);
             // 
             // PluginUI
             // 
-            this.Controls.Add(this.statusBox);
+            this.Controls.Add(this.browseForOutput);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.outputSWF);
             this.Controls.Add(this.browseJDK);
             this.Controls.Add(this.jdkLocation);
             this.Controls.Add(this.browseForNFX);
@@ -177,9 +188,7 @@ namespace NFXContext
             this.Controls.Add(this.label2);
             this.Controls.Add(this.browseForFile);
             this.Name = "PluginUI";
-            this.Size = new System.Drawing.Size(800, 450);
-            this.statusBox.ResumeLayout(false);
-            this.statusBox.PerformLayout();
+            this.Size = new System.Drawing.Size(700, 206);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -196,11 +205,33 @@ namespace NFXContext
             if (dr == DialogResult.OK)
             {
                 this.browseForFile.Text = dialog.FileNames[0];
+                if (String.IsNullOrEmpty(this.outputSWF.Text))
+                {
+                    this.outputSWF.Text = dialog.FileNames[0].Replace(".mxml", ".swf");
+                }
             }
         }
 
         private void generate_Click(object sender, EventArgs e)
         {
+            /*OutputPanel.PluginMain op = 
+                (OutputPanel.PluginMain)PluginBase.MainForm.FindPlugin(
+                "54749f71-694b-47e0-9b05-e9417f39f20d");
+            ControlCollection cc = op.PluginPanel.Controls;
+            IEnumerator iter = cc.GetEnumerator();
+            Control c = null;
+            while (iter.MoveNext())
+            {
+                c = (Control)iter.Current;
+                if (c is OutputPanel.PluginUI)
+                {
+                    (c as OutputPanel.PluginUI).ClearOutput(null, null);
+                    break;
+                }
+            }*/
+            PluginCore.Managers.EventManager.DispatchEvent(
+                this, new DataEvent(EventType.Command, "ResultsPanel.ClearResults", null));
+            
             if (!String.IsNullOrEmpty(this.browseForFile.Text)
                 && !String.IsNullOrEmpty(this.nfxLocation.Text)
                 && this.nfxLocation.Text != "nfx.jar location")
@@ -208,40 +239,57 @@ namespace NFXContext
                 FileInfo fi = new FileInfo(this.browseForFile.Text);
                 FileInfo fij = new FileInfo(this.nfxLocation.Text);
                 FileInfo jc = new FileInfo(this.jdkLocation.Text);
-                
+
+                if (String.IsNullOrEmpty(this.outputSWF.Text))
+                {
+                    this.outputSWF.Text = this.browseForFile.Text.Replace(".mxml", ".swf");
+                }
+
                 if (fi.Exists && fij.Exists)
                 {
                     Hashtable ht = new Hashtable();
                     ht.Add("-source", this.browseForFile.Text);
+                    ht.Add("-output", this.outputSWF.Text);
                     if (jc.Exists)
                     {
-                        this.statusLabel.Text += @NFXShell.Run(fi, this.nfxLocation.Text, this.jdkLocation.Text, ht);
+                        NFXShell.Run(fi, this.nfxLocation.Text, this.jdkLocation.Text, ht);
                     }
                     else
                     {
-                        this.statusLabel.Text += @NFXShell.Run(fi, this.nfxLocation.Text, null, ht);
+                        NFXShell.Run(fi, this.nfxLocation.Text, null, ht);
                     }
                 }
-                else if (!fi.Exists)
+                if (!fi.Exists)
                 {
-                    this.statusLabel.Text += Environment.NewLine + "Cannot find MXML template.";
+                    PluginCore.Managers.TraceManager.Add(
+                        "Cannot find MXML template.",
+                        (Int32)PluginCore.TraceType.Fatal);
                 }
-                else if (!fij.Exists)
+                if (!fij.Exists)
                 {
-                    this.statusLabel.Text += Environment.NewLine + "Cannot find nfx.jar.";
+                    PluginCore.Managers.TraceManager.Add(
+                        "Cannot find nfx.jar.",
+                        (Int32)PluginCore.TraceType.Fatal);
                 }
                 if (!jc.Exists)
                 {
-                    this.statusLabel.Text += Environment.NewLine + "Cannot find java.exe. Default java.exe will be used";
+                    PluginCore.Managers.TraceManager.Add(
+                        "Cannot find java.exe. Default java.exe will be used.",
+                        (Int32)PluginCore.TraceType.Info);
                 }
             }
-            else if (String.IsNullOrEmpty(this.browseForFile.Text))
+            if (String.IsNullOrEmpty(this.browseForFile.Text))
             {
-                this.statusLabel.Text += Environment.NewLine + "You must select MXML file.";
+                PluginCore.Managers.TraceManager.Add(
+                        "You must select MXML file.",
+                        (Int32)PluginCore.TraceType.Fatal);
             }
-            else if (String.IsNullOrEmpty(this.nfxLocation.Text) || this.nfxLocation.Text == "nfx.jar location")
+            if (String.IsNullOrEmpty(this.nfxLocation.Text) || 
+                this.nfxLocation.Text == "nfx.jar location")
             {
-                this.statusLabel.Text += Environment.NewLine + "Locate nfx.jar";
+                PluginCore.Managers.TraceManager.Add(
+                        "Locate nfx.jar",
+                        (Int32)PluginCore.TraceType.Fatal);
             }
         }
 
@@ -261,11 +309,23 @@ namespace NFXContext
         {
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.CheckFileExists = true;
-            dialog.Filter = "Javac compiler (*.exe)|*.exe";
+            dialog.Filter = "Java runtime launcher (*.exe)|*.exe";
             DialogResult dr = dialog.ShowDialog();
             if (dr == DialogResult.OK)
             {
                 this.jdkLocation.Text = dialog.FileNames[0];
+            }
+        }
+
+        private void browseForOutput_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog dialog = new SaveFileDialog();
+            dialog.CheckFileExists = true;
+            dialog.Filter = "SWF ShockWave Flash (*.swf)|*.swf";
+            DialogResult dr = dialog.ShowDialog();
+            if (dr == DialogResult.OK)
+            {
+                this.outputSWF.Text = dialog.FileNames[0];
             }
         }		
  	}

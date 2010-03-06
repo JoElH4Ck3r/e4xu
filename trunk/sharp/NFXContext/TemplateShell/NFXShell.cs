@@ -9,12 +9,11 @@ namespace NFXContext.TemplateShell
 {
     class NFXShell
     {
-        protected static StringBuilder output = null;
-
-        public static String Run(FileInfo template, String preprocessor, String jdk, Hashtable args)
+        public static void Run(FileInfo template, String preprocessor, String jdk, Hashtable args)
         {
             //String inputText = "";
             if (String.IsNullOrEmpty(jdk)) jdk = "java.exe";
+            Boolean wasError = false;
             Process proc = new Process();
             proc.EnableRaisingEvents = false;
             proc.StartInfo.UseShellExecute = false;
@@ -29,41 +28,49 @@ namespace NFXContext.TemplateShell
             //
             //proc.StartInfo.Arguments = jvmarg;
             //
-            output = new StringBuilder("");
+            String ppcArgs = "";
             if (args != null)
             {
-                proc.StartInfo.Arguments = "-jar " + @preprocessor + @formatArguments(args);
+                ppcArgs = "-jar " + @preprocessor + @formatArguments(args);
             }
             else
             {
-                proc.StartInfo.FileName = "-jar " + @preprocessor;
+                ppcArgs = "-jar " + @preprocessor;
             }
-
-            Console.WriteLine("Running: " + proc.StartInfo.FileName);
+            proc.StartInfo.Arguments = ppcArgs;
+            PluginCore.Managers.TraceManager.Add(
+                "Running: " + proc.StartInfo.FileName + " " + ppcArgs, 
+                (Int32)PluginCore.TraceType.ProcessStart);
             try
             {
+                // TODO: Have to switch to ProcessHelper.StartAsync()
                 proc.Start();
+                Console.WriteLine("proc.StandardOutput.EndOfStream " + proc.StandardOutput.EndOfStream);
                 while (!proc.StandardOutput.EndOfStream)
                 {
-                    PluginCore.Managers.TraceManager.Add(
+                    PluginCore.Managers.TraceManager.AddAsync(
                         proc.StandardOutput.ReadLine().Trim(),
                         (Int32)PluginCore.TraceType.Info);
                 }
                 while (!proc.StandardError.EndOfStream)
                 {
-                    String line = proc.StandardError.ReadLine().Trim();
-                    PluginCore.Managers.TraceManager.Add(
+                    wasError = true;
+                    PluginCore.Managers.TraceManager.AddAsync(
                         proc.StandardError.ReadLine().Trim(),
-                        (Int32)PluginCore.TraceType.Error);
+                        (Int32)PluginCore.TraceType.ProcessError);
+                }
+                if (wasError)
+                {
+                    PluginCore.Managers.TraceManager.AddAsync(
+                        "Exit code: " + proc.ExitCode,
+                        (Int32)PluginCore.TraceType.ProcessEnd);
                 }
                 proc.Close();
-                return output.ToString();
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 proc.Close();
-                return ex.Message;
             }
         }
 
