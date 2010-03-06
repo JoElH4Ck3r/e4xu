@@ -1,48 +1,84 @@
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.ListIterator;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.apache.commons.collections.primitives.IntIterator;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class Main extends DefaultHandler
 {
+	public enum ARGUMENTS
+	{
+		SOURCE, OUTPUTDIR, ONLYBUILD, EMPTY;
+	}
+
+	public static File	sourcePath	= new File("ASProject/src/Main.mxml");
+	public static File	outputDir		= new File("ASProject/bin");
+
 	public static void main(String[] args) throws Exception
 	{
+		ArrayList<String> arguments = new ArrayList<String>(Arrays.asList(args));
 		SAXParserFactory spf = SAXParserFactory.newInstance();
 		spf.setNamespaceAware(true);
 		SAXParser sp = spf.newSAXParser();
-		String sourcePath = "ASProject/src/Main.mxml";
-		
-		System.out.print("args.length " + args.length);
-		
-		switch (args.length)
+
+		for (ListIterator<String> iter = arguments.listIterator(); iter.hasNext();)
 		{
-			case 0:
-				break;
-			case 1:
-				sourcePath = args[0];
-				if (sourcePath.indexOf((int)'=') > -1)
+			String QName = getArgsQName(iter);
+			try
+			{
+				switch (ARGUMENTS.valueOf(QName.toUpperCase()))
 				{
-					String[] parts = sourcePath.split("\\=");
-					System.out.print("has = " + (parts[0] == "-source") + " " + parts[0]);
-					if (parts[0].equals("-source"))
-						sourcePath = parts[1];
+					case SOURCE:
+						sourcePath = new File(getArgsRValue(iter));
+						break;
+					case OUTPUTDIR:
+						outputDir = new File(getArgsRValue(iter));
+						break;
+					case ONLYBUILD:
+						System.out.println("Only Build");
+						break;
 				}
-				break;
-			case 2:
-				if (args[0] == "-source")
-					sourcePath = args[1];
-				break;
+			} catch (IllegalArgumentException e)
+			{
+				System.err.println(e.getMessage());
+				System.exit(4);
+			}
 		}
 		try
 		{
-			File src = new File(sourcePath);
-			sp.parse(src, new ClassBuilder(src));
+			sp.parse(sourcePath, new ClassBuilder(sourcePath));
 		} catch (SAXException e)
 		{
 			System.out.print(e.getMessage());
 		}
+	}
+
+	public static String getArgsQName(ListIterator<String> i)
+	{
+		return getArgsQName(i.next());
+	}
+
+	public static String getArgsQName(String value)
+	{
+		return value.substring(1).split("\\=", 2)[0].trim();
+	}
+
+	public static String getArgsRValue(ListIterator<String> i)
+	{
+		String[] equalParts = ((String) i.previous()).split("\\=", 2);
+		i.next();
+		if (equalParts.length == 1 && !i.hasNext()) { throw new IllegalArgumentException("where is value for \"" + getArgsQName(equalParts[0]) + "\"?\n"); }
+
+		String value = equalParts.length == 1 ? i.next() : equalParts[1];
+
+		if (value.startsWith("-")) { throw new IllegalArgumentException("where is value for \"" + getArgsQName(equalParts[0]) + "\"?\n"); }
+		return value;
 	}
 }
