@@ -38,11 +38,6 @@ public class Main extends DefaultHandler
 						break;
 					case OUTPUT:
 						conf.outputFile = new File(getArgsRValue(iter));
-						if(!conf.outputFile.exists())
-						{
-							System.err.println("Output file + \"" + conf.outputFile.getAbsolutePath() + "\" doesn't exist!");
-							System.exit(4);
-						}
 						break;
 					case ONLY_BUILD:
 						conf.buildOnly = true;
