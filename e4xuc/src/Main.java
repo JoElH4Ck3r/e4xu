@@ -1,13 +1,11 @@
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.ListIterator;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.apache.commons.collections.primitives.IntIterator;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -15,19 +13,13 @@ public class Main extends DefaultHandler
 {
 	public enum ARGUMENTS
 	{
-		SOURCE, OUTPUT_DIR, ONLY_BUILD, EMPTY;
+		SOURCE, OUTPUT, ONLY_BUILD, EMPTY;
 	}
-
-	public static File	sourcePath	= new File("ASProject/src/Main.mxml");
-	public static File	outputDir		= new File("ASProject/bin");
 
 	public static void main(String[] args) throws Exception
 	{
+		CompilerConfiguration conf = new CompilerConfiguration();
 		ArrayList<String> arguments = new ArrayList<String>(Arrays.asList(args));
-		SAXParserFactory spf = SAXParserFactory.newInstance();
-		spf.setNamespaceAware(true);
-		SAXParser sp = spf.newSAXParser();
-
 		for (ListIterator<String> iter = arguments.listIterator(); iter.hasNext();)
 		{
 			String QName = getArgsQName(iter);
@@ -36,10 +28,10 @@ public class Main extends DefaultHandler
 				switch (ARGUMENTS.valueOf(QName.toUpperCase().replace('-', '_')))
 				{
 					case SOURCE:
-						sourcePath = new File(getArgsRValue(iter));
+						conf.sourcePath = new File(getArgsRValue(iter));
 						break;
-					case OUTPUT_DIR:
-						outputDir = new File(getArgsRValue(iter));
+					case OUTPUT:
+						conf.outputFile = new File(getArgsRValue(iter));
 						break;
 					case ONLY_BUILD:
 						System.out.println("Only Build");
@@ -53,7 +45,10 @@ public class Main extends DefaultHandler
 		}
 		try
 		{
-			sp.parse(sourcePath, new ClassBuilder(sourcePath));
+			SAXParserFactory spf = SAXParserFactory.newInstance();
+			spf.setNamespaceAware(true);
+			SAXParser sp = spf.newSAXParser();
+			sp.parse(conf.sourcePath, new ClassBuilder(conf));
 		} catch (SAXException e)
 		{
 			System.out.print(e.getMessage());
@@ -72,10 +67,9 @@ public class Main extends DefaultHandler
 
 	public static String getArgsRValue(ListIterator<String> i)
 	{
+		String value;
 		String[] equalParts = ((String) i.previous()).split("\\=", 2);
 		i.next();
-		
-		String value = equalParts.length == 1 ? i.next() : equalParts[1];
 
 		if (equalParts.length == 2)
 		{
@@ -85,7 +79,7 @@ public class Main extends DefaultHandler
 		{
 			if (!i.hasNext()) { throw new IllegalArgumentException("where is value for \"" + getArgsQName(equalParts[0]) + "\"?\n"); }
 			value = i.next();
-			if (value.startsWith("-")) { throw new IllegalArgumentException("where is value for \"" + getArgsQName(equalParts[0]) + "\"?\n"); }
+			if (value.startsWith("-")) { throw new IllegalArgumentException("where is value for \"" + getArgsQName(equalParts[0]) + "\"?!\n"); }
 		}
 
 		return value;
