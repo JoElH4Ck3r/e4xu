@@ -7,9 +7,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
 import flex2.tools.oem.Application;
-import flex2.tools.oem.Configuration;
-import flex2.tools.oem.internal.OEMUtil;
-import flex2.tools.oem.internal.OEMConfiguration;
 
 import uk.co.badgersinfoil.metaas.ActionScriptFactory;
 import uk.co.badgersinfoil.metaas.ActionScriptProject;
@@ -35,14 +32,10 @@ public class ClassBuilder extends DefaultHandler
 
 	protected Hashtable<String, Integer>	nameCache	= new Hashtable<String, Integer>();
 
-	public ClassBuilder(CompilerConfiguration conf)
-	{
-		this.conf = conf;
-		className = conf.sourcePath.getName().substring(0, conf.sourcePath.getName().lastIndexOf("."));
-	}
-
 	public void startDocument()
 	{
+		this.conf = Main.conf;
+		className = conf.sourcePath.getName().substring(0, conf.sourcePath.getName().lastIndexOf("."));
 		fact = new ActionScriptFactory();
 		proj = fact.newEmptyASProject(conf.sourcePath.getParent());
 	}
@@ -167,7 +160,7 @@ public class ClassBuilder extends DefaultHandler
 		{
 			proj.performAutoImport();
 			proj.writeAll();
-			
+
 			if (!conf.buildOnly)
 			{
 				Application app = new Application(new File(conf.sourcePath.getParent() + "/" + className + ".as"));
