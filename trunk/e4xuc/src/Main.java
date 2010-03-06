@@ -34,7 +34,7 @@ public class Main extends DefaultHandler
 						conf.outputFile = new File(getArgsRValue(iter));
 						break;
 					case ONLY_BUILD:
-						System.out.println("Only Build");
+						conf.buildOnly = true;
 						break;
 				}
 			} catch (IllegalArgumentException e)
