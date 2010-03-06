@@ -7,6 +7,9 @@ import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
 import flex2.tools.oem.Application;
+import flex2.tools.oem.Configuration;
+import flex2.tools.oem.internal.OEMUtil;
+import flex2.tools.oem.internal.OEMConfiguration;
 
 import uk.co.badgersinfoil.metaas.ActionScriptFactory;
 import uk.co.badgersinfoil.metaas.ActionScriptProject;
@@ -168,12 +171,13 @@ public class ClassBuilder extends DefaultHandler
 			if (!conf.buildOnly)
 			{
 				Application app = new Application(new File(conf.sourcePath.getParent() + "/" + className + ".as"));
+				app.setConfiguration(app.getDefaultConfiguration());
 				app.setOutput(conf.outputFile);
 				app.build(false);
 			}
 		} catch (Exception e)
 		{
-			System.out.print(e.getMessage());
+			System.err.print(e.getMessage());
 		}
 	}
 }
