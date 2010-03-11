@@ -11,12 +11,12 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class Main extends DefaultHandler
 {
+	public static CompilerConfiguration	conf	= new CompilerConfiguration();
+
 	public enum ARGUMENTS
 	{
-		SOURCE, OUTPUT, ONLY_BUILD, EMPTY;
+		SOURCE, OUTPUT, EMPTY;
 	}
-	
-	public static CompilerConfiguration conf = new CompilerConfiguration();
 
 	public static void main(String[] args) throws Exception
 	{
@@ -29,18 +29,15 @@ public class Main extends DefaultHandler
 				switch (ARGUMENTS.valueOf(QName.toUpperCase().replace('-', '_')))
 				{
 					case SOURCE:
-						conf.sourcePath = new File(getArgsRValue(iter));
-						if(!conf.sourcePath.exists())
+						Main.conf.sourcePath = new File(getArgsRValue(iter));
+						if (!Main.conf.sourcePath.exists())
 						{
-							System.err.println("Source file + \"" + conf.sourcePath.getAbsolutePath() + "\" doesn't exist!");
+							System.err.println("Source file + \"" + Main.conf.sourcePath.getAbsolutePath() + "\" doesn't exist!");
 							System.exit(4);
 						}
 						break;
 					case OUTPUT:
-						conf.outputFile = new File(getArgsRValue(iter));
-						break;
-					case ONLY_BUILD:
-						conf.buildOnly = true;
+						Main.conf.outputFile = new File(getArgsRValue(iter));
 						break;
 				}
 			} catch (IllegalArgumentException e)
@@ -54,11 +51,17 @@ public class Main extends DefaultHandler
 			SAXParserFactory spf = SAXParserFactory.newInstance();
 			spf.setNamespaceAware(true);
 			SAXParser sp = spf.newSAXParser();
-			sp.parse(conf.sourcePath, new ClassBuilder());
+			sp.parse(Main.conf.sourcePath, new MXMLWalker());
 		} catch (SAXException e)
 		{
-			System.out.print(e.getMessage());
+			System.err.print(e.getMessage());
 		}
+	}
+
+	public static void error(int code, String text)
+	{
+		System.err.println(code + ": " + text);
+		System.exit(code);
 	}
 
 	public static String getArgsQName(ListIterator<String> i)

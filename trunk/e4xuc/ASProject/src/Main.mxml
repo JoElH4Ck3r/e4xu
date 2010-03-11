@@ -1,12 +1,17 @@
 <display:Sprite xmlns:flash="flash.*"
 								xmlns:display="flash.display.*"
-								xmlns:mx="mx">
+								xmlns:mx="http://e4xu.googlecode.com/mxml"
+								xmlns:e4xu.events="http://e4xu.googlecode.com/mxml/events">
 					
-  <Array id="someVar" />
-  <Array id="myVar" y="someVar" mx:new="1,3,4,5,6,7" />
-  <Object e="'someVar'" q="1" w="2" es="3" />
+  <mx:Array id="someVar1" />
+  <mx:Array id="myVar" y="someVar" mx:new="1" />
+  <mx:Object e="'someVar'" q="1" w="2" es="3" />
   
-  <flash.geom.Rectangle mx:new="10, 10, 100, 200" />
-  <TextField xmlns="flash.text.*" />
-  <flash:display.Sprite width="100" height="400" />
+  <flash.text.TextField />
+  
+  <flash.geom.Rectangle mx:new="10, 10, 100, 100" />
+  <flash.display.MovieClip />
+  <flash:display.Sprite width="100" height="400" e4xu.events:mouseDown="@Handler(someHandler, false, 0, true)" />
+  <display:Sprite />
+  
 </display:Sprite>
