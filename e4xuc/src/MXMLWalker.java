@@ -100,18 +100,26 @@ public class MXMLWalker extends DefaultHandler
 				}
 			}
 
-			Boolean founded = false;
-			for (ListIterator<ASTASExpressionStatement> i = type.getMethod(className).getStatementList().listIterator(); i.hasNext();)
+			if (type.getMethod(className) == null)
 			{
-				if (i.next().getExpressionString().equals("init()"))
-				{
-					founded = true;
-					break;
-				}
+				ASMethod constructor = type.newMethod(className, Visibility.PUBLIC, null);
+				constructor.newExprStmt("init()");
 			}
-			if (!founded)
+			else
 			{
-				type.getMethod(className).newExprStmt("init()");
+				Boolean founded = false;
+				for (ListIterator<ASTASExpressionStatement> i = type.getMethod(className).getStatementList().listIterator(); i.hasNext();)
+				{
+					if (i.next().getExpressionString().equals("init()"))
+					{
+						founded = true;
+						break;
+					}
+				}
+				if (!founded)
+				{
+					type.getMethod(className).newExprStmt("init()");
+				}
 			}
 
 		} catch (FileNotFoundException e)
