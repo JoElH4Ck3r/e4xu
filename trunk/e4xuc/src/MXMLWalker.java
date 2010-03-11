@@ -89,6 +89,8 @@ public class MXMLWalker extends DefaultHandler
 
 							String[] options = value.substring(value.indexOf('(') + 1, value.length() - 1).split("\\,");
 
+							addEventListenerParams.add(fact.newStringLiteral(paramLName));
+							
 							for (int j = 0; j < options.length; j++)
 							{
 								addEventListenerParams.add(fact.newExpression(options[j].trim()));

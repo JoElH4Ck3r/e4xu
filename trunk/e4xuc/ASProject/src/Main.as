@@ -7,7 +7,7 @@ package  {
 		public function Main()
 		{
 			super();
-			addEventListener(someHandler, false, 0, true);
+			addEventListener("mouseDown", someHandler, false, 0, true);
 			addEventListener(mouseUp_SpriteHandler);
 		}
 		protected function mouseUp_SpriteHandler(): void
