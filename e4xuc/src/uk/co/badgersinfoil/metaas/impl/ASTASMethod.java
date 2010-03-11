@@ -306,7 +306,7 @@ public class ASTASMethod extends ASTASMember implements ASMethod {
 		}
 	}
 
-	public ASTStatementList stmtList() {
+	private ASTStatementList stmtList() {
 		if (stmtList == null) {
 			throw new SyntaxException("Interface methods don't have a body");
 		}
