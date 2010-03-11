@@ -1,10 +1,16 @@
+import java.beans.Statement;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 
+import org.antlr.runtime.tree.Tree;
+import org.asdt.core.internal.antlr.AS3Parser;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
+
+import com.sun.xml.internal.bind.v2.runtime.reflect.ListIterator;
 
 import uk.co.badgersinfoil.metaas.ActionScriptFactory;
 import uk.co.badgersinfoil.metaas.ActionScriptParser;
@@ -18,14 +24,22 @@ import uk.co.badgersinfoil.metaas.dom.ASNewExpression;
 import uk.co.badgersinfoil.metaas.dom.ASObjectLiteral;
 import uk.co.badgersinfoil.metaas.dom.Expression;
 import uk.co.badgersinfoil.metaas.dom.Visibility;
+import uk.co.badgersinfoil.metaas.impl.AS3FragmentParser;
 import uk.co.badgersinfoil.metaas.impl.ASQName;
+import uk.co.badgersinfoil.metaas.impl.ASTASClassType;
+import uk.co.badgersinfoil.metaas.impl.ASTASMember;
+import uk.co.badgersinfoil.metaas.impl.ASTASMethod;
+import uk.co.badgersinfoil.metaas.impl.ASTBuilder;
+import uk.co.badgersinfoil.metaas.impl.ASTUtils;
+import uk.co.badgersinfoil.metaas.impl.TokenBuilder;
+import uk.co.badgersinfoil.metaas.impl.antlr.LinkedListTree;
 
 public class MXMLWalker extends DefaultHandler
 {
 	public ActionScriptFactory						fact;
 	public ActionScriptProject						proj;
 	public ASCompilationUnit							unit;
-	public ASClassType										clazz;
+	public ASTASClassType										clazz;
 	public int														depth			= 0;
 	public String													className;
 
@@ -49,7 +63,7 @@ public class MXMLWalker extends DefaultHandler
 		{
 			unit = proj.newClass(className);
 
-			clazz = (ASClassType) unit.getType();
+			clazz = (ASTASClassType) unit.getType();
 			clazz.setSuperclass(qName.toString());
 
 			ASMethod constructor = clazz.newMethod(className, Visibility.PUBLIC, null);
@@ -60,9 +74,42 @@ public class MXMLWalker extends DefaultHandler
 				int len = attrs.getLength();
 				for (int i = 0; i < len; i++)
 				{
-					if (attrs.getURI(i) != namespaceURI && attrs.getURI(i).length() > 0)
-						continue;
-					constructor.newExprStmt(fact.newAssignExpression(fact.newFieldAccessExpression(fact.newExpression("this"), attrs.getLocalName(i)), fact.newExpression(attrs.getValue(i))));
+					String paramLName = attrs.getLocalName(i);
+					String value = attrs.getValue(i);
+					String paramNamespace = attrs.getURI(i);
+					if (paramNamespace == Main.conf.eventsNamespace.uri)
+					{
+						ArrayList<Expression> addEventListenerParams = new ArrayList<Expression>();
+						if (value.startsWith("@Handler"))
+						{
+
+							String[] options = value.substring(value.indexOf('(') + 1, value.length() - 1).split("\\,");
+
+							for (int j = 0; j < options.length; j++)
+							{
+								addEventListenerParams.add(fact.newExpression(options[j].trim()));
+							}
+							constructor.newExprStmt(fact.newInvocationExpression(fact.newExpression("addEventListener"), addEventListenerParams));
+						}
+						else
+						{
+							ASTASMethod handler = (ASTASMethod) clazz.newMethod(paramLName + "_" + typeName + "Handler", Visibility.PROTECTED, "void");
+							LinkedListTree block = (LinkedListTree) handler.getAST().getFirstChildWithType(AS3Parser.BLOCK);
+							block.appendToken(TokenBuilder.newNewline());
+							block.appendToken(TokenBuilder.newToken(0, value));
+							/*Tree functionBlock = AS3FragmentParser.parseStatement("function () {" + value + "}").getChild(0).getChild(1);
+							for (int j = 0; j < functionBlock.getChildCount(); j++)
+							{
+								System.out.println(functionBlock.getChild(j).getChild(0));
+								handler.stmtList().getAST().token.setText(value);
+							}*/
+							constructor.newExprStmt(fact.newInvocationExpression(fact.newExpression("addEventListener"), Arrays.asList(new Expression[] {fact.newExpression(handler.getName())})));
+						}
+					}
+					else if (paramNamespace == namespaceURI || paramNamespace.length() == 0)
+					{
+						constructor.newExprStmt(fact.newAssignExpression(fact.newFieldAccessExpression(fact.newExpression("this"), paramLName), fact.newExpression(value)));
+					}
 				}
 			}
 		}
@@ -133,7 +180,7 @@ public class MXMLWalker extends DefaultHandler
 				arr.add(fact.newExpression(param.trim()));
 			}
 		}
-		
+
 		return arr;
 	}
 
