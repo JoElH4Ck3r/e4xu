@@ -2,9 +2,9 @@ package  {
 	import flash.display.*;
 	import flash.text.*;
 	import flash.geom.*;
-	public class Main extends flash.display.Sprite 
+	public class Main extends Sprite 
 	{
-		public function Sprite()
+		public function Main()
 		{
 			super();
 		}

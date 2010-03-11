@@ -29,11 +29,15 @@ public class Main extends DefaultHandler
 				switch (ARGUMENTS.valueOf(QName.toUpperCase().replace('-', '_')))
 				{
 					case SOURCE:
-						Main.conf.sourcePath = new File(getArgsRValue(iter));
-						if (!Main.conf.sourcePath.exists())
+						Main.conf.sourceFile = new File(getArgsRValue(iter));
+						if (!Main.conf.sourceFile.exists())
 						{
-							System.err.println("Source file + \"" + Main.conf.sourcePath.getAbsolutePath() + "\" doesn't exist!");
+							System.err.println("Source file + \"" + Main.conf.sourceFile.getAbsolutePath() + "\" doesn't exist!");
 							System.exit(4);
+						}
+						if(!Main.conf.sourceFile.getAbsolutePath().endsWith(".nxml"))
+						{
+							System.exit(0);
 						}
 						break;
 					case OUTPUT:
@@ -51,7 +55,7 @@ public class Main extends DefaultHandler
 			SAXParserFactory spf = SAXParserFactory.newInstance();
 			spf.setNamespaceAware(true);
 			SAXParser sp = spf.newSAXParser();
-			sp.parse(Main.conf.sourcePath, new MXMLWalker());
+			sp.parse(Main.conf.sourceFile, new MXMLWalker());
 		} catch (SAXException e)
 		{
 			System.err.print(e.getMessage());
