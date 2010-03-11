@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
-using PluginCore;
-using ProjectManager;
-using ProjectManager.Projects;
 using System.IO;
-using System.Windows;
 using System.Windows.Forms;
 using NFXContext.Enums;
+using PluginCore;
+using ProjectManager.Projects;
 
 namespace NFXContext
 {
@@ -204,8 +200,9 @@ namespace NFXContext
             try
             {
                 pr = reader.ReadProject() as NFXProject;
+                // TODO: this is just silly...
                 NFXContext.PluginMain pl =
-                    (NFXContext.PluginMain)PluginBase.MainForm.FindPlugin("8e2e47fb-eb2f-4544-9aa2-efee0fb13393");
+                    (NFXContext.PluginMain)PluginBase.MainForm.FindPlugin("5ecb91e0-3e1e-4998-aaee-a46a270e5df8");
                 pl.EnableProjectView(pr);
                 return pr;
             }

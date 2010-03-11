@@ -61,7 +61,7 @@ namespace NFXContext.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Creates resource project.
+        ///   Looks up a localized string similar to Not Another Flex Project.
         /// </summary>
         public static string Info_Description {
             get {
@@ -70,7 +70,7 @@ namespace NFXContext.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &amp;Resource Project.
+        ///   Looks up a localized string similar to &amp;Not Another Flex Project.
         /// </summary>
         public static string Label_FileMenuItem {
             get {
@@ -86,7 +86,7 @@ namespace NFXContext.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Resource Project.
+        ///   Looks up a localized string similar to Not Another Flex Project.
         /// </summary>
         public static string Title_PluginPanel {
             get {

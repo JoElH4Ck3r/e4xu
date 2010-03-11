@@ -1,24 +1,23 @@
 using System;
-using System.IO;
-using System.Drawing;
-using System.Windows.Forms;
-using System.Text;
-using System.ComponentModel;
-using WeifenLuo.WinFormsUI.Docking;
-using NFXContext.Resources;
-using PluginCore.Localization;
-using PluginCore.Utilities;
-using PluginCore.Managers;
-using PluginCore.Helpers;
-using PluginCore;
-using System.Text.RegularExpressions;
-using ProjectManager;
-using ProjectManager.Helpers;
-using NFXContext.Enums;
-using Associations;
-using NFXContext.TemplateShell;
 using System.Collections;
+using System.ComponentModel;
+using System.Drawing;
+using System.IO;
+using System.Windows.Forms;
+using Associations;
+using NFXContext.Enums;
 using NFXContext.Mapping;
+using NFXContext.Resources;
+using NFXContext.TemplateShell;
+using PluginCore;
+using PluginCore.Helpers;
+using PluginCore.Localization;
+using PluginCore.Managers;
+using PluginCore.Utilities;
+using ProjectManager;
+using ProjectManager.Controls.TreeView;
+using ProjectManager.Helpers;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace NFXContext
 {
@@ -40,6 +39,9 @@ namespace NFXContext
 
         private DockContent pluginPanel;
         private PluginUI pluginUI;
+        private ScintillaNet.ScintillaControl tempRemovedSci;
+        private Timer restoreDesigner;
+        private String lastDesignerFileName;
         //private Image pluginImage;
 
         private ToolStripMenuItem projectToolMenuItem;
@@ -132,11 +134,20 @@ namespace NFXContext
             ITabbedDocument document = PluginBase.MainForm.CurrentDocument;
             //BxmlDesigner designer = document != null && designers.ContainsKey(document) ? designers[document] : null;
 
-            //if (e.Type == EventType.Command && de.Action == ProjectManagerEvents.FileMapping)
-            //{
-            //    ProjectFileMapper.Map((FileMappingRequest)de.Data);
-            //    return;
-            //}
+            // TODO: we need to handle these too:
+            //ProjectManagerEvents.BuildComplete;
+            //ProjectManagerEvents.BuildFailed;
+            //ProjectManagerEvents.BuildProject;
+            //ProjectManagerEvents.CreateProject;
+            //ProjectManagerEvents.FileMoved;
+            //ProjectManagerEvents.FilePasted;
+            //ProjectManagerEvents.OpenVirtualFile;
+            //ProjectManagerEvents.ProjectCreated;
+            if (e.Type == EventType.Command && de.Action == ProjectManagerEvents.FileMapping)
+            {
+                ProjectFileMapper.Map((FileMappingRequest)de.Data);
+                return;
+            }
 
             // our first priority is getting a non-null Project, otherwise
             // we can't do anything
@@ -155,7 +166,7 @@ namespace NFXContext
                 if (this.IsNfxMxml(document))
                 {
                     Console.WriteLine("MXML file opened");
-                //    PluginBase.MainForm.CallCommand("ChangeSyntax", "xml");
+                    PluginBase.MainForm.CallCommand("ChangeSyntax", "xml");
 
                 //    var timer = new Timer { Interval = 1, Enabled = true };
                 //    timer.Tick += (o, evt) =>
@@ -254,7 +265,7 @@ namespace NFXContext
                         break;
                 }
             }
-            else if (e.Type == EventType.FileSave)
+            else if (e.Type == EventType.FileSave && this.IsNfxMxml(document))
             {
                 Console.WriteLine("MXML file saved " + document.FileName);
                 if (String.IsNullOrEmpty(this.preprocessorLocation))
@@ -270,20 +281,54 @@ namespace NFXContext
                     }
                     else return;
                 }
+
+                this.context = ASCompletion.Context.ASContext.GetLanguageContext("as3");
+                string classpath = this.asproject.AbsoluteClasspaths.GetClosestParent(document.FileName);
+                Console.WriteLine("Our classpath: " + classpath);
+                ASCompletion.Model.PathModel pathModel =
+                    context.Classpath.Find(pm => pm.Path == classpath);
                 Hashtable ht = new Hashtable();
                 ht.Add("-source", document.FileName);
-                ht.Add("-output", document.FileName.Replace(".mxml", ".swf"));
+                ht.Add("-source-dir", classpath);
+                NotifyEvent ne = new NotifyEvent(EventType.ProcessStart);
+                EventManager.DispatchEvent(this, ne);
                 PluginCore.Managers.EventManager.DispatchEvent(
                     this, new DataEvent(EventType.Command, "ResultsPanel.ClearResults", null));
+
+                // TEST: trying to remove sci from our generated AS file so we won't get an update message
+                ITabbedDocument[] documents = FlashDevelop.Globals.MainForm.Documents;
+                ITabbedDocument current = FlashDevelop.Globals.MainForm.CurrentDocument;
+                Boolean designerOpen = false;
+                Char[] splitter = new Char[] { '.' };
+                foreach (ITabbedDocument doc in documents)
+                {
+                    Console.WriteLine("doc.FileName " + doc.FileName + " document " + document.FileName);
+                    if (doc.FileName.Split(splitter)[0] ==
+                        document.FileName.Split(splitter)[0])
+                    {
+                        // Our designer AS file is open now
+                        designerOpen = true;
+                        this.lastDesignerFileName = doc.FileName;
+                        this.tempRemovedSci = doc.SciControl;
+                        //((Form)doc).Controls.Remove(doc.SciControl);
+                        break;
+                    }
+                }
+                if (designerOpen)
+                {
+                    if (this.restoreDesigner == null)
+                    {
+                        this.restoreDesigner = new Timer();
+                        this.restoreDesigner.Interval = 50;
+                        this.restoreDesigner.Tick += new EventHandler(restoreDesigner_Tick);
+                    }
+                    this.restoreDesigner.Enabled = true;
+                }
                 NFXShell.Run(new FileInfo(document.FileName), this.preprocessorLocation, null, ht);
-                this.context = ASCompletion.Context.ASContext.GetLanguageContext("as3");
                 // TODO: we should only handle our projects
                 // TODO: not really sure this will be needed as those files should be picked up by ASCompletion anyway.
                 //string classpath = this.project.AbsoluteClasspaths.GetClosestParent(document.FileName);
-                string classpath = this.asproject.AbsoluteClasspaths.GetClosestParent(document.FileName);
-                Console.WriteLine("Our classpath: " + classpath);
-                ASCompletion.Model.PathModel pathModel = 
-                    context.Classpath.Find(pm => pm.Path == classpath);
+                
                 this.TellASCompletionAbout(document.FileName, pathModel);
             }
             else if (e.Type == EventType.FileSwitch)
@@ -301,13 +346,29 @@ namespace NFXContext
                 this.projectManager =
                         (ProjectManager.PluginMain)PluginBase.MainForm.FindPlugin(
                         "30018864-fadd-1122-b2a5-779832cbbf23");
-                System.Reflection.MethodInfo mi = typeof(NFXNode).GetMethod("Create");
-                ProjectManager.Controls.TreeView.FileNode.FileAssociations.Add(".nxml", mi);
+                //ProjectManager.Controls.TreeView.FileNode.FileAssociations.Add(".nxml", NFXNode.Create);
                 //Timer timer = new Timer();
                 //timer.Interval = 100;
                 //timer.Tick += delegate { GetProjectAndContext(); timer.Stop(); };
                 //timer.Start();
             }
+        }
+
+        void restoreDesigner_Tick(object sender, EventArgs e)
+        {
+            ITabbedDocument[] documents = FlashDevelop.Globals.MainForm.Documents;
+            ITabbedDocument current = FlashDevelop.Globals.MainForm.CurrentDocument;
+            Char[] splitter = new Char[] { '.' };
+            foreach (ITabbedDocument doc in documents)
+            {
+                if (doc.FileName.Split(splitter)[0] == this.lastDesignerFileName)
+                {
+                    // We are still open
+                    this.lastDesignerFileName = "";
+                    doc.Reload(false);
+                }
+            }
+            this.restoreDesigner.Enabled = false;
         }
 
 		#endregion
@@ -338,7 +399,8 @@ namespace NFXContext
             String dataPath = Path.Combine(PathHelper.DataDir, "NFXContext");
             if (!Directory.Exists(dataPath)) Directory.CreateDirectory(dataPath);
             this.settingFilename = Path.Combine(dataPath, "Settings.fdb");
-            ProjectCreator.AppendProjectType("project.as3nfx", typeof(NFXProject));
+            // TODO: We will need this later.
+            //ProjectCreator.AppendProjectType("project.as3nfx", typeof(NFXProject));
         }
 
         public void CreateAssociation()
@@ -474,7 +536,7 @@ namespace NFXContext
         {
             string path = document.FileName;
             // TODO: I think we should use a different extension...
-            return (path != null && Path.GetExtension(path).ToLower() == ".mxml");
+            return (path != null && Path.GetExtension(path).ToLower() == ".nxml");
         }
 
         public void AddFiles(string[] files, AssetTypes ofType)

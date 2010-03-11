@@ -17,12 +17,12 @@ namespace NFXContext.Mapping
                 string name = Path.GetFileNameWithoutExtension(file);
                 string extension = Path.GetExtension(file);
 
-                if (extension == ".mxml")
+                if (extension == ".nxml")
                 {
-                    string designerAS = Path.Combine(directory, name + "Design.as");
+                    //string designerAS = Path.Combine(directory, name + "Design.as");
                     string codeBehindAS = Path.Combine(directory, name + ".as");
 
-                    request.Mapping.Map(designerAS, file);
+                    //request.Mapping.Map(designerAS, file);
                     request.Mapping.Map(codeBehindAS, file);
                 }
             }
