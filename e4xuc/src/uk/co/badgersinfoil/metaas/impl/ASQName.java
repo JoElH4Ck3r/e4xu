@@ -18,7 +18,7 @@
 
 package uk.co.badgersinfoil.metaas.impl;
 
-class ASQName {
+public class ASQName {
 	private String packagePrefix;
 	private String localName;
 
