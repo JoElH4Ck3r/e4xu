@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar">
+    <target name="create_run_jar">
+        <jar destfile="lib/nfx.jar">
+            <manifest>
+                <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
+                <attribute name="Rsrc-Main-Class" value="Main"/>
+                <attribute name="Class-Path" value="."/>
+                <attribute name="Rsrc-Class-Path" value="./ antlr-runtime-3.0.1.jar stringtemplate-3.1-b1.jar metaas-0.8.jar"/>
+            </manifest>
+            <!-- <zipfileset src="jar-in-jar-loader.zip"/> -->
+            <fileset dir="bin"/>
+        </jar>
+    </target>
+</project>
