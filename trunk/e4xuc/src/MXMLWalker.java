@@ -62,7 +62,7 @@ public class MXMLWalker extends DefaultHandler
 	{
 		className = Main.conf.sourceFile.getName().substring(0, Main.conf.sourceFile.getName().lastIndexOf("."));
 		fact = new ActionScriptFactory();
-		proj = fact.newEmptyASProject(Main.conf.sourceFile.getParent());
+		proj = fact.newEmptyASProject(Main.conf.sourceDir.getAbsolutePath());
 		proj.addClasspathEntry(Main.conf.playerGlobalPath.getAbsolutePath());
 		try
 		{
@@ -124,7 +124,7 @@ public class MXMLWalker extends DefaultHandler
 
 		} catch (FileNotFoundException e)
 		{
-			unit = proj.newClass(className);
+			unit = proj.newClass(Main.conf.sourceFile.getAbsolutePath().substring(Main.conf.sourceDir.getAbsolutePath().length() + 1).split("\\.")[0].replace(File.separatorChar, '.'));
 			ASTASMethod constructor = (ASTASMethod) unit.getType().newMethod(className, Visibility.PUBLIC, null);
 			constructor.newExprStmt("init()");
 		}
@@ -142,7 +142,7 @@ public class MXMLWalker extends DefaultHandler
 			clazz.setSuperclass(qName.toString());
 
 			ASMethod initializer = clazz.newMethod("init", Visibility.PROTECTED, "void");
-			initializer.setDocComment("@Generated");
+			initializer.setDocComment("@Generated ");
 
 			if (attrs != null)
 			{
@@ -171,7 +171,7 @@ public class MXMLWalker extends DefaultHandler
 						else
 						{
 							ASTASMethod handler = (ASTASMethod) clazz.newMethod(paramLName + "_" + typeName + "Handler", Visibility.PROTECTED, "void");
-							handler.setDocComment("@Generated");
+							handler.setDocComment("@Generated ");
 							handler.addParam("event", "flash.events.Event");
 							handler.newExprStmt(ExpressionBuilder.build(ASTUtils.newAST(AS3Parser.METHOD_CALL, value)));
 
@@ -189,7 +189,7 @@ public class MXMLWalker extends DefaultHandler
 		{
 			addName(typeName);
 			ASField field = clazz.newField(attrs.getValue("id") == null ? typeName.substring(0, 1).toLowerCase() + typeName.substring(1) + nameCache.get(typeName) : attrs.getValue("id"), Visibility.PROTECTED, typeName);
-			field.setDocComment("@Generated");
+			field.setDocComment("@Generated ");
 			if (typeName.equals("Object"))
 			{
 				field.setInitializer(generateObjectInitializer(typeName, attrs));
@@ -300,7 +300,6 @@ public class MXMLWalker extends DefaultHandler
 		try
 		{
 			// intrinsicScan(new File("frameworks/intrinsic/FP10"));
-
 			proj.performAutoImport();
 			proj.writeAll();
 		} catch (Exception e)

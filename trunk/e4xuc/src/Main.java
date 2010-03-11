@@ -15,7 +15,7 @@ public class Main extends DefaultHandler
 
 	public enum ARGUMENTS
 	{
-		SOURCE, OUTPUT, EMPTY;
+		SOURCE, SOURCE_DIR, EMPTY;
 	}
 
 	public static void main(String[] args) throws Exception
@@ -36,7 +36,13 @@ public class Main extends DefaultHandler
 							System.exit(4);
 						}
 						break;
-					case OUTPUT:
+					case SOURCE_DIR:
+						Main.conf.sourceDir = new File(getArgsRValue(iter));
+						if (!Main.conf.sourceDir.exists())
+						{
+							System.err.println("Source folder + \"" + Main.conf.sourceDir.getAbsolutePath() + "\" doesn't exist!");
+							System.exit(4);
+						}
 						break;
 				}
 			} catch (IllegalArgumentException e)
