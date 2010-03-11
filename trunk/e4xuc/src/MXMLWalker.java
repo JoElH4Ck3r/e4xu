@@ -20,6 +20,7 @@ import uk.co.badgersinfoil.metaas.ActionScriptFactory;
 import uk.co.badgersinfoil.metaas.ActionScriptParser;
 import uk.co.badgersinfoil.metaas.ActionScriptProject;
 import uk.co.badgersinfoil.metaas.dom.ASArrayLiteral;
+import uk.co.badgersinfoil.metaas.dom.ASAssignmentExpression;
 import uk.co.badgersinfoil.metaas.dom.ASClassType;
 import uk.co.badgersinfoil.metaas.dom.ASCompilationUnit;
 import uk.co.badgersinfoil.metaas.dom.ASField;
@@ -33,6 +34,7 @@ import uk.co.badgersinfoil.metaas.dom.Expression;
 import uk.co.badgersinfoil.metaas.dom.Visibility;
 import uk.co.badgersinfoil.metaas.impl.AS3FragmentParser;
 import uk.co.badgersinfoil.metaas.impl.ASQName;
+import uk.co.badgersinfoil.metaas.impl.ASTASAssignmentExpression;
 import uk.co.badgersinfoil.metaas.impl.ASTASClassType;
 import uk.co.badgersinfoil.metaas.impl.ASTASExpressionStatement;
 import uk.co.badgersinfoil.metaas.impl.ASTASField;
@@ -73,7 +75,7 @@ public class MXMLWalker extends DefaultHandler
 			for (ListIterator<ASTASMethod> i = type.getMethods().listIterator(); i.hasNext();)
 			{
 				ASTASMethod meth = i.next();
-				if (meth.getDocComment() != null && meth.getDocComment().equals("@Generated"))
+				if (meth.getDocComment() != null && meth.getDocComment().equals("@Generated "))
 				{
 					LinkedListToken docComentToken = DocCommentUtils.findDocCommentToken(meth.getAST());
 					docComentToken.getPrev().delete();
@@ -88,7 +90,7 @@ public class MXMLWalker extends DefaultHandler
 			for (ListIterator<ASTASField> i = type.getFields().listIterator(); i.hasNext();)
 			{
 				ASTASField field = i.next();
-				if (field.getDocComment() != null && field.getDocComment().equals("@Generated"))
+				if (field.getDocComment() != null && field.getDocComment().equals("@Generated "))
 				{
 					LinkedListToken docComentToken = DocCommentUtils.findDocCommentToken(field.getAST());
 					docComentToken.getPrev().delete();
@@ -143,6 +145,7 @@ public class MXMLWalker extends DefaultHandler
 
 			ASMethod initializer = clazz.newMethod("init", Visibility.PROTECTED, "void");
 			initializer.setDocComment("@Generated ");
+			//initializer.addStmt("var a = new Vector.<int>()");
 
 			if (attrs != null)
 			{
