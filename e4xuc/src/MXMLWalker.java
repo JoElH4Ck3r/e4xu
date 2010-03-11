@@ -33,10 +33,10 @@ public class MXMLWalker extends DefaultHandler
 
 	public void startDocument()
 	{
-		className = Main.conf.sourcePath.getName().substring(0, Main.conf.sourcePath.getName().lastIndexOf("."));
+		className = Main.conf.sourceFile.getName().substring(0, Main.conf.sourceFile.getName().lastIndexOf("."));
 		fact = new ActionScriptFactory();
-		proj = fact.newEmptyASProject(Main.conf.sourcePath.getParent());
-		//proj.addClasspathEntry(Main.conf.playerGlobalPath.getAbsolutePath());
+		proj = fact.newEmptyASProject(Main.conf.sourceFile.getParent());
+		proj.addClasspathEntry(Main.conf.playerGlobalPath.getAbsolutePath());
 	}
 
 	public void startElement(String namespaceURI, String localName, String rawName, Attributes attrs)
