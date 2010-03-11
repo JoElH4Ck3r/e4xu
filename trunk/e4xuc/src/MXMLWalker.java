@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Hashtable;
 
 import org.antlr.runtime.tree.Tree;
+import org.asdt.core.internal.antlr.AS3Lexer;
 import org.asdt.core.internal.antlr.AS3Parser;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
@@ -30,6 +31,7 @@ import uk.co.badgersinfoil.metaas.impl.ASTASClassType;
 import uk.co.badgersinfoil.metaas.impl.ASTASMember;
 import uk.co.badgersinfoil.metaas.impl.ASTASMethod;
 import uk.co.badgersinfoil.metaas.impl.ASTBuilder;
+import uk.co.badgersinfoil.metaas.impl.ASTScriptElement;
 import uk.co.badgersinfoil.metaas.impl.ASTUtils;
 import uk.co.badgersinfoil.metaas.impl.TokenBuilder;
 import uk.co.badgersinfoil.metaas.impl.antlr.LinkedListTree;
@@ -95,14 +97,10 @@ public class MXMLWalker extends DefaultHandler
 						{
 							ASTASMethod handler = (ASTASMethod) clazz.newMethod(paramLName + "_" + typeName + "Handler", Visibility.PROTECTED, "void");
 							LinkedListTree block = (LinkedListTree) handler.getAST().getFirstChildWithType(AS3Parser.BLOCK);
-							block.appendToken(TokenBuilder.newNewline());
+							
+							block.addToken(0, TokenBuilder.newNewline());
 							block.appendToken(TokenBuilder.newToken(0, value));
-							/*Tree functionBlock = AS3FragmentParser.parseStatement("function () {" + value + "}").getChild(0).getChild(1);
-							for (int j = 0; j < functionBlock.getChildCount(); j++)
-							{
-								System.out.println(functionBlock.getChild(j).getChild(0));
-								handler.stmtList().getAST().token.setText(value);
-							}*/
+							
 							constructor.newExprStmt(fact.newInvocationExpression(fact.newExpression("addEventListener"), Arrays.asList(new Expression[] {fact.newExpression(handler.getName())})));
 						}
 					}
