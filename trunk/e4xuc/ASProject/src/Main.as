@@ -12,7 +12,7 @@ package  {
 		}
 		protected function mouseUp_SpriteHandler(): void
 		{
-trace('yo'); trace('works');
+			trace('yo'); trace('works');;
 		}
 		protected var someVar1 : Array=[];
 		protected var myVar : Array=[1];

@@ -33,7 +33,9 @@ import uk.co.badgersinfoil.metaas.impl.ASTASMethod;
 import uk.co.badgersinfoil.metaas.impl.ASTBuilder;
 import uk.co.badgersinfoil.metaas.impl.ASTScriptElement;
 import uk.co.badgersinfoil.metaas.impl.ASTUtils;
+import uk.co.badgersinfoil.metaas.impl.ExpressionBuilder;
 import uk.co.badgersinfoil.metaas.impl.TokenBuilder;
+import uk.co.badgersinfoil.metaas.impl.antlr.LinkedListToken;
 import uk.co.badgersinfoil.metaas.impl.antlr.LinkedListTree;
 
 public class MXMLWalker extends DefaultHandler
@@ -96,10 +98,8 @@ public class MXMLWalker extends DefaultHandler
 						else
 						{
 							ASTASMethod handler = (ASTASMethod) clazz.newMethod(paramLName + "_" + typeName + "Handler", Visibility.PROTECTED, "void");
-							LinkedListTree block = (LinkedListTree) handler.getAST().getFirstChildWithType(AS3Parser.BLOCK);
 							
-							block.addToken(0, TokenBuilder.newNewline());
-							block.appendToken(TokenBuilder.newToken(0, value));
+							handler.newExprStmt(ExpressionBuilder.build(ASTUtils.newAST(AS3Parser.METHOD_CALL, value)));
 							
 							constructor.newExprStmt(fact.newInvocationExpression(fact.newExpression("addEventListener"), Arrays.asList(new Expression[] {fact.newExpression(handler.getName())})));
 						}
