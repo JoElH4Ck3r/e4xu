@@ -1,7 +1,9 @@
 <display:Sprite xmlns:flash="flash.*"
 								xmlns:display="flash.display.*"
 								xmlns:mx="http://e4xu.googlecode.com/mxml"
-								xmlns:e4xu.events="http://e4xu.googlecode.com/mxml/events">
+								xmlns:e4xu.events="http://e4xu.googlecode.com/mxml/events"
+								e4xu.events:mouseDown="@Handler(someHandler, false, 0, true)"
+								e4xu.events:mouseUp="trace('yo'); trace('works');">
 					
   <mx:Array id="someVar1" />
   <mx:Array id="myVar" y="someVar" mx:new="1" />
@@ -11,7 +13,7 @@
   
   <flash.geom.Rectangle mx:new="10, 10, 100, 100" />
   <flash.display.MovieClip />
-  <flash:display.Sprite width="100" height="400" e4xu.events:mouseDown="@Handler(someHandler, false, 0, true)" />
+  <flash:display.Sprite width="100" height.a="400" e4xu.events:mouseDown="@Handler(someHandler, false, 0, true)" />
   <display:Sprite />
   
 </display:Sprite>

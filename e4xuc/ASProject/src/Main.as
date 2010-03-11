@@ -7,6 +7,12 @@ package  {
 		public function Main()
 		{
 			super();
+			addEventListener(someHandler, false, 0, true);
+			addEventListener(mouseUp_SpriteHandler);
+		}
+		protected function mouseUp_SpriteHandler(): void
+		{
+trace('yo'); trace('works');
 		}
 		protected var someVar1 : Array=[];
 		protected var myVar : Array=[1];

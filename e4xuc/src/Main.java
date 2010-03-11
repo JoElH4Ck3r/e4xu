@@ -35,13 +35,8 @@ public class Main extends DefaultHandler
 							System.err.println("Source file + \"" + Main.conf.sourceFile.getAbsolutePath() + "\" doesn't exist!");
 							System.exit(4);
 						}
-						if(!Main.conf.sourceFile.getAbsolutePath().endsWith(".nxml"))
-						{
-							System.exit(0);
-						}
 						break;
 					case OUTPUT:
-						Main.conf.outputFile = new File(getArgsRValue(iter));
 						break;
 				}
 			} catch (IllegalArgumentException e)
