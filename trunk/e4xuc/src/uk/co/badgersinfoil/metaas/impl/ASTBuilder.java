@@ -154,7 +154,6 @@ public class ASTBuilder {
 		def.appendToken(TokenBuilder.newNewline());
 		LinkedListTree block = newBlock();
 		def.addChildWithTokens(block);
-
 		return new ASTASMethod(def);
 	}
 

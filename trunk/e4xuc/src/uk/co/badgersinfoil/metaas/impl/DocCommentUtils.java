@@ -42,7 +42,7 @@ import uk.co.badgersinfoil.metaas.impl.parser.javadoc.JavadocParser;
 /**
  * Helpers for dealing with documentation-comments.
  */
-class DocCommentUtils {
+public class DocCommentUtils {
 	private static final LinkedListTreeAdaptor TREE_ADAPTOR = new LinkedListTreeAdaptor();
 
 	private DocCommentUtils() { /* hide ctor */ }
