@@ -3,7 +3,7 @@
 								xmlns:mx="http://e4xu.googlecode.com/mxml"
 								xmlns:e4xu.events="http://e4xu.googlecode.com/mxml/events"
 								e4xu.events:mouseDown="@Handler(someHandler, false, 0, true)"
-								e4xu.events:mouseUp="trace('yo'); trace('works');">
+								e4xu.events:mouseUp="trace('yo'); trace('works!');">
 					
   <mx:Array id="someVar1" />
   <mx:Array id="myVar" y="someVar" mx:new="1" />
