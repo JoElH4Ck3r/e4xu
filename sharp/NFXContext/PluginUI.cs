@@ -1,12 +1,9 @@
 using System;
 using System.Collections;
-using System.Windows.Forms;
-using WeifenLuo.WinFormsUI;
-using PluginCore;
-using NFXContext.Embeds;
-using NFXContext.Enums;
 using System.IO;
+using System.Windows.Forms;
 using NFXContext.TemplateShell;
+using PluginCore;
 
 namespace NFXContext
 {

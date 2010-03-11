@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ProjectManager;
-using ProjectManager.Projects;
+﻿using ProjectManager.Projects;
 
 namespace NFXContext
 {
