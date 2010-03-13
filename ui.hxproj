@@ -21,7 +21,7 @@
   <build>
     <option directives="" />
     <option flashStrict="False" />
-    <option mainClass="org.wvxvws.TestSax" />
+    <option mainClass="tests.TestMap" />
     <option override="False" />
     <option verbose="False" />
     <option additional="" />
