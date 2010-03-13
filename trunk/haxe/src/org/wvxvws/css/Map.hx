@@ -5,6 +5,22 @@
 
 package org.wvxvws.css;
 
+class MapIter<T>
+{
+    private var _node:Node<T>;
+
+    public function new(node:Node<T>) { this._node = node; }
+
+    public function hasNext():Bool { return this._node != null; }
+
+    public function next():Node<T>
+	{
+		var ret:Node<T> = this._node;
+		this._node = this._node.next;
+		return ret;
+	}
+}
+
 class Map<T> extends Node<T>
 {
 	public var head:Node<T>;
@@ -15,6 +31,11 @@ class Map<T> extends Node<T>
 	{
 		super(value, parent, root);
 		this._uniqueKeys = uniqueKeys;
+	}
+	
+	public function iterator():MapIter<T>
+	{
+		return new MapIter<T>(this.head);
 	}
 	
 	public function add(name:String, value:T):Void
