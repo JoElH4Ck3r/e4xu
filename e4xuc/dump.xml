@@ -1,0 +1,649 @@
+<ProgramNode>
+  <pkgdefs>
+    <PackageDefinitionNode>
+      <name>
+        <PackageNameNode>
+          <id>
+            <PackageIdentifiersNode pkg_part="some.test.pkg" def_part="null" isDefinition="false">
+              <list>
+                <IdentifierNode name="some"/>
+                <IdentifierNode name="test"/>
+                <IdentifierNode name="pkg"/>
+              </list>
+            </PackageIdentifiersNode>
+          <id>
+        </PackageNameNode>
+      </name>
+      <statements/>
+    </PackageDefinitionNode>
+  </pkgdefs>
+  <statements>
+    <StatementListNode>
+      <items>
+        <ConfigNamespaceDefinitionNode>
+          <name>
+            <IdentifierNode name="CONFIG"/>
+          </name>
+        </ConfigNamespaceDefinitionNode>
+        <ImportDirectiveNode>
+          <name>
+            <PackageNameNode>
+              <id>
+                <PackageIdentifiersNode pkg_part="__AS3__.vec" def_part="Vector" isDefinition="true">
+                  <list>
+                    <IdentifierNode name="__AS3__"/>
+                    <IdentifierNode name="vec"/>
+                    <IdentifierNode name="Vector"/>
+                  </list>
+                </PackageIdentifiersNode>
+              <id>
+            </PackageNameNode>
+          </name>
+        </ImportDirectiveNode>
+        <PackageDefinitionNode>
+          <name>
+            <PackageNameNode>
+              <id>
+                <PackageIdentifiersNode pkg_part="some.test.pkg" def_part="null" isDefinition="false">
+                  <list>
+                    <IdentifierNode name="some"/>
+                    <IdentifierNode name="test"/>
+                    <IdentifierNode name="pkg"/>
+                  </list>
+                </PackageIdentifiersNode>
+              <id>
+            </PackageNameNode>
+          </name>
+          <statements/>
+        </PackageDefinitionNode>
+        <ImportDirectiveNode>
+          <name>
+            <PackageNameNode>
+              <id>
+                <PackageIdentifiersNode pkg_part="__AS3__.vec" def_part="Vector" isDefinition="true">
+                  <list>
+                    <IdentifierNode name="__AS3__"/>
+                    <IdentifierNode name="vec"/>
+                    <IdentifierNode name="Vector"/>
+                  </list>
+                </PackageIdentifiersNode>
+              <id>
+            </PackageNameNode>
+          </name>
+        </ImportDirectiveNode>
+        <ImportDirectiveNode>
+          <name>
+            <PackageNameNode>
+              <id>
+                <PackageIdentifiersNode pkg_part="flash.display" def_part="Sprite" isDefinition="true">
+                  <list>
+                    <IdentifierNode name="flash"/>
+                    <IdentifierNode name="display"/>
+                    <IdentifierNode name="Sprite"/>
+                  </list>
+                </PackageIdentifiersNode>
+              <id>
+            </PackageNameNode>
+          </name>
+        </ImportDirectiveNode>
+        <ClassDefinitionNode name="Main">
+          <attrs>
+            <AttributeListNode>
+              <MemberExpressionNode>
+                <selector>
+                  <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                    <IdentifierNode name="dynamic"/>
+                  </GetExpressionNode>
+                </selector>
+              </MemberExpressionNode>
+              <ListNode>
+                <MemberExpressionNode>
+                  <selector>
+                    <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                      <IdentifierNode name="public"/>
+                    </GetExpressionNode>
+                  </selector>
+                </MemberExpressionNode>
+              </ListNode>
+            </AttributeListNode>
+          </attrs>
+          <name>
+            <QualifiedIdentifierNode name="Main">
+              <AttributeListNode>
+                <MemberExpressionNode>
+                  <selector>
+                    <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                      <IdentifierNode name="dynamic"/>
+                    </GetExpressionNode>
+                  </selector>
+                </MemberExpressionNode>
+                <ListNode>
+                  <MemberExpressionNode>
+                    <selector>
+                      <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                        <IdentifierNode name="public"/>
+                      </GetExpressionNode>
+                    </selector>
+                  </MemberExpressionNode>
+                </ListNode>
+              </AttributeListNode>
+            </QualifiedIdentifierNode>
+          </name>
+          <baseclass>
+            <MemberExpressionNode>
+              <selector>
+                <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                  <IdentifierNode name="Sprite"/>
+                </GetExpressionNode>
+              </selector>
+            </MemberExpressionNode>
+          </baseclass>
+          <interfaces>
+            <ListNode>
+              <MemberExpressionNode>
+                <selector>
+                  <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                    <QualifiedIdentifierNode name="IBitmapDrawable">
+                      <LiteralStringNode value="flash.display"/>
+                    </QualifiedIdentifierNode>
+                  </GetExpressionNode>
+                </selector>
+              </MemberExpressionNode>
+              <MemberExpressionNode>
+                <selector>
+                  <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                    <IdentifierNode name="IShota"/>
+                  </GetExpressionNode>
+                </selector>
+              </MemberExpressionNode>
+            </ListNode>
+          </interfaces>
+          <clsdefs>
+          </clsdefs>
+          <statements>
+            <StatementListNode>
+              <items>
+                <VariableDefinitionNode>
+                  <attrs>
+                    <AttributeListNode>
+                      <MemberExpressionNode>
+                        <selector>
+                          <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                            <IdentifierNode name="static"/>
+                          </GetExpressionNode>
+                        </selector>
+                      </MemberExpressionNode>
+                      <ListNode>
+                        <MemberExpressionNode>
+                          <selector>
+                            <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                              <IdentifierNode name="public"/>
+                            </GetExpressionNode>
+                          </selector>
+                        </MemberExpressionNode>
+                      </ListNode>
+                    </AttributeListNode>
+                  </attrs>
+                  <list>
+                    <ListNode>
+                      <VariableBindingNode>
+                        <TypedIdentifierNode>
+                          <QualifiedIdentifierNode name="testVar">
+                            <AttributeListNode>
+                              <MemberExpressionNode>
+                                <selector>
+                                  <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                                    <IdentifierNode name="static"/>
+                                  </GetExpressionNode>
+                                </selector>
+                              </MemberExpressionNode>
+                              <ListNode>
+                                <MemberExpressionNode>
+                                  <selector>
+                                    <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                                      <IdentifierNode name="public"/>
+                                    </GetExpressionNode>
+                                  </selector>
+                                </MemberExpressionNode>
+                              </ListNode>
+                            </AttributeListNode>
+                          </QualifiedIdentifierNode>
+                          <TypeExpressionNode is_nullable="true" nullable_annotation="false">
+                            <MemberExpressionNode>
+                              <selector>
+                                <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                                  <IdentifierNode name="Object"/>
+                                </GetExpressionNode>
+                              </selector>
+                            </MemberExpressionNode>
+                          </TypeExpressionNode>
+                        </TypedIdentifierNode>
+                        <LiteralObjectNode>
+                          <ArgumentListNode>
+                            <LiteralFieldNode>
+                              <LiteralStringNode value="a"/>
+                              <LiteralXMLNode is_xmllist="true">
+                                <ListNode>
+                                  <ListNode>
+                                  </ListNode>
+                                </ListNode>
+                              </LiteralXMLNode>
+                            </LiteralFieldNode>
+                            <LiteralFieldNode>
+                              <LiteralStringNode value="b"/>
+                              <LiteralXMLNode is_xmllist="false">
+                                <ListNode>
+                                  <LiteralStringNode value="<q><a/></q>"/>
+                                </ListNode>
+                              </LiteralXMLNode>
+                            </LiteralFieldNode>
+                            <LiteralFieldNode>
+                              <LiteralStringNode value="c"/>
+                              <LiteralStringNode value="5"/>
+                            </LiteralFieldNode>
+                            <LiteralFieldNode>
+                              <IdentifierNode name="v"/>
+                              <MemberExpressionNode>
+                                <selector>
+                                  <CallExpressionNode is_new="true" is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                                    <IdentifierNode name="Sprite"/>
+                                    <ArgumentListNode>
+                                      <LiteralNumberNode value="1"/>
+                                      <LiteralNumberNode value="3"/>
+                                      <LiteralNumberNode value="4"/>
+                                    </ArgumentListNode>
+                                  </CallExpressionNode>
+                                </selector>
+                              </MemberExpressionNode>
+                            </LiteralFieldNode>
+                          </ArgumentListNode>
+                        </LiteralObjectNode>
+                      </VariableBindingNode>
+                    </ListNode>
+                  </list>
+                </VariableDefinitionNode>
+                <VariableDefinitionNode>
+                  <attrs>
+                    <AttributeListNode>
+                      <MemberExpressionNode>
+                        <selector>
+                          <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                            <IdentifierNode name="static"/>
+                          </GetExpressionNode>
+                        </selector>
+                      </MemberExpressionNode>
+                      <ListNode>
+                        <MemberExpressionNode>
+                          <selector>
+                            <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                              <IdentifierNode name="public"/>
+                            </GetExpressionNode>
+                          </selector>
+                        </MemberExpressionNode>
+                      </ListNode>
+                    </AttributeListNode>
+                  </attrs>
+                  <list>
+                    <ListNode>
+                      <VariableBindingNode>
+                        <TypedIdentifierNode>
+                          <QualifiedIdentifierNode name="testVar">
+                            <AttributeListNode>
+                              <MemberExpressionNode>
+                                <selector>
+                                  <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                                    <IdentifierNode name="static"/>
+                                  </GetExpressionNode>
+                                </selector>
+                              </MemberExpressionNode>
+                              <ListNode>
+                                <MemberExpressionNode>
+                                  <selector>
+                                    <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                                      <IdentifierNode name="public"/>
+                                    </GetExpressionNode>
+                                  </selector>
+                                </MemberExpressionNode>
+                              </ListNode>
+                            </AttributeListNode>
+                          </QualifiedIdentifierNode>
+                          <TypeExpressionNode is_nullable="true" nullable_annotation="false">
+                            <MemberExpressionNode>
+                              <selector>
+                                <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                                  <IdentifierNode name="Array"/>
+                                </GetExpressionNode>
+                              </selector>
+                            </MemberExpressionNode>
+                          </TypeExpressionNode>
+                        </TypedIdentifierNode>
+                        <LiteralArrayNode>
+                          <ArgumentListNode>
+                            <LiteralNumberNode value="1"/>
+                            <LiteralNumberNode value="2"/>
+                            <LiteralNumberNode value="3"/>
+                            <MemberExpressionNode>
+                              <selector>
+                                <CallExpressionNode is_new="true" is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                                  <IdentifierNode name="Object"/>
+                                </CallExpressionNode>
+                              </selector>
+                            </MemberExpressionNode>
+                            <LiteralObjectNode>
+                            </LiteralObjectNode>
+                            <LiteralArrayNode>
+                              <ArgumentListNode>
+                                <LiteralNumberNode value="3"/>
+                                <LiteralNumberNode value="4"/>
+                              </ArgumentListNode>
+                            </LiteralArrayNode>
+                          </ArgumentListNode>
+                        </LiteralArrayNode>
+                      </VariableBindingNode>
+                    </ListNode>
+                  </list>
+                </VariableDefinitionNode>
+                <FunctionDefinitionNode>
+                  <name>
+                    <FunctionNameNode kind="-133">
+                      <QualifiedIdentifierNode name="Main">
+                        <AttributeListNode>
+                          <ListNode>
+                            <MemberExpressionNode>
+                              <selector>
+                                <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                                  <IdentifierNode name="public"/>
+                                </GetExpressionNode>
+                              </selector>
+                            </MemberExpressionNode>
+                          </ListNode>
+                        </AttributeListNode>
+                      </QualifiedIdentifierNode>
+                    </FunctionNameNode>
+                  </name>
+                  <attrs>
+                    <AttributeListNode>
+                      <ListNode>
+                        <MemberExpressionNode>
+                          <selector>
+                            <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                              <IdentifierNode name="public"/>
+                            </GetExpressionNode>
+                          </selector>
+                        </MemberExpressionNode>
+                      </ListNode>
+                    </AttributeListNode>
+                  </attrs>
+                  <fexpr>
+                    <FunctionCommonNode>
+                      <QualifiedIdentifierNode name="Main">
+                        <AttributeListNode>
+                          <ListNode>
+                            <MemberExpressionNode>
+                              <selector>
+                                <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                                  <IdentifierNode name="public"/>
+                                </GetExpressionNode>
+                              </selector>
+                            </MemberExpressionNode>
+                          </ListNode>
+                        </AttributeListNode>
+                      </QualifiedIdentifierNode>
+                      <FunctionSignatureNode no_anno="true" void_anno="false">
+                      </FunctionSignatureNode>
+                      <StatementListNode>
+                        <items>
+                          <ExpressionStatementNode>
+                            <ListNode>
+                              <MemberExpressionNode>
+                                <selector>
+                                  <CallExpressionNode is_new="false" is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                                    <IdentifierNode name="trace"/>
+                                    <ArgumentListNode>
+                                      <LiteralStringNode value="yo1"/>
+                                    </ArgumentListNode>
+                                  </CallExpressionNode>
+                                </selector>
+                              </MemberExpressionNode>
+                            </ListNode>
+                          </ExpressionStatementNode>
+                          <ExpressionStatementNode>
+                            <ListNode>
+                              <MemberExpressionNode>
+                                <selector>
+                                  <CallExpressionNode is_new="false" is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                                    <IdentifierNode name="trace"/>
+                                    <ArgumentListNode>
+                                      <LiteralStringNode value="yo2"/>
+                                    </ArgumentListNode>
+                                  </CallExpressionNode>
+                                </selector>
+                              </MemberExpressionNode>
+                            </ListNode>
+                          </ExpressionStatementNode>
+                          <ExpressionStatementNode>
+                            <ListNode>
+                              <MemberExpressionNode>
+                                <selector>
+                                  <CallExpressionNode is_new="false" is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                                    <IdentifierNode name="trace"/>
+                                    <ArgumentListNode>
+                                      <LiteralStringNode value="yo3"/>
+                                    </ArgumentListNode>
+                                  </CallExpressionNode>
+                                </selector>
+                              </MemberExpressionNode>
+                            </ListNode>
+                          </ExpressionStatementNode>
+                          <ExpressionStatementNode>
+                            <ListNode>
+                              <MemberExpressionNode>
+                                <selector>
+                                  <CallExpressionNode is_new="false" is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                                    <IdentifierNode name="trace"/>
+                                    <ArgumentListNode>
+                                      <LiteralStringNode value="yo4"/>
+                                    </ArgumentListNode>
+                                  </CallExpressionNode>
+                                </selector>
+                              </MemberExpressionNode>
+                            </ListNode>
+                          </ExpressionStatementNode>
+                          <IfStatementNode>
+                            <ListNode>
+                              <BinaryExpressionNode>
+                                <LiteralNumberNode value="3"/>
+                                <LiteralNumberNode value="5"/>
+                              </BinaryExpressionNode>
+                            </ListNode>
+                            <StatementListNode>
+                              <items>
+                                <VariableDefinitionNode>
+                                  <list>
+                                    <ListNode>
+                                      <VariableBindingNode>
+                                        <TypedIdentifierNode>
+                                          <QualifiedIdentifierNode name="a"/>
+                                          <TypeExpressionNode is_nullable="true" nullable_annotation="false">
+                                            <MemberExpressionNode>
+                                              <selector>
+                                                <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                                                  <IdentifierNode name="int"/>
+                                                </GetExpressionNode>
+                                              </selector>
+                                            </MemberExpressionNode>
+                                          </TypeExpressionNode>
+                                        </TypedIdentifierNode>
+                                        <BinaryExpressionNode>
+                                          <LiteralNumberNode value="5"/>
+                                          <LiteralNumberNode value="3"/>
+                                        </BinaryExpressionNode>
+                                      </VariableBindingNode>
+                                    </ListNode>
+                                  </list>
+                                </VariableDefinitionNode>
+                              </items>
+                            </StatementListNode>
+                          </IfStatementNode>
+                          <ReturnStatementNode>
+                          </ReturnStatementNode>
+                        </items>
+                      </StatementListNode>
+                    </FunctionCommonNode>
+                  </fexpr>
+                </FunctionDefinitionNode>
+                <FunctionDefinitionNode>
+                  <name>
+                    <FunctionNameNode kind="-133">
+                      <QualifiedIdentifierNode name="test">
+                        <AttributeListNode>
+                          <IdentifierNode name="protected"/>
+                          <MemberExpressionNode>
+                            <selector>
+                              <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                                <IdentifierNode name="static"/>
+                              </GetExpressionNode>
+                            </selector>
+                          </MemberExpressionNode>
+                          <ListNode>
+                            <MemberExpressionNode>
+                              <selector>
+                                <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                                  <IdentifierNode name="override"/>
+                                </GetExpressionNode>
+                              </selector>
+                            </MemberExpressionNode>
+                          </ListNode>
+                        </AttributeListNode>
+                      </QualifiedIdentifierNode>
+                    </FunctionNameNode>
+                  </name>
+                  <attrs>
+                    <AttributeListNode>
+                      <IdentifierNode name="protected"/>
+                      <MemberExpressionNode>
+                        <selector>
+                          <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                            <IdentifierNode name="static"/>
+                          </GetExpressionNode>
+                        </selector>
+                      </MemberExpressionNode>
+                      <ListNode>
+                        <MemberExpressionNode>
+                          <selector>
+                            <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                              <IdentifierNode name="override"/>
+                            </GetExpressionNode>
+                          </selector>
+                        </MemberExpressionNode>
+                      </ListNode>
+                    </AttributeListNode>
+                  </attrs>
+                  <fexpr>
+                    <FunctionCommonNode>
+                      <QualifiedIdentifierNode name="test">
+                        <AttributeListNode>
+                          <IdentifierNode name="protected"/>
+                          <MemberExpressionNode>
+                            <selector>
+                              <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                                <IdentifierNode name="static"/>
+                              </GetExpressionNode>
+                            </selector>
+                          </MemberExpressionNode>
+                          <ListNode>
+                            <MemberExpressionNode>
+                              <selector>
+                                <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                                  <IdentifierNode name="override"/>
+                                </GetExpressionNode>
+                              </selector>
+                            </MemberExpressionNode>
+                          </ListNode>
+                        </AttributeListNode>
+                      </QualifiedIdentifierNode>
+                      <FunctionSignatureNode no_anno="false" void_anno="false">
+                        <ParameterListNode>
+                          <ParameterNode kind="-112">
+                            <identifier>
+                              <IdentifierNode name="a"/>
+                            </identifier>
+                            <type>
+                              <TypeExpressionNode is_nullable="true" nullable_annotation="false">
+                                <MemberExpressionNode>
+                                  <selector>
+                                    <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                                      <IdentifierNode name="String"/>
+                                    </GetExpressionNode>
+                                  </selector>
+                                </MemberExpressionNode>
+                              </TypeExpressionNode>
+                            </type>
+                          </ParameterNode>
+                          <ParameterNode kind="-112">
+                            <identifier>
+                              <IdentifierNode name="b"/>
+                            </identifier>
+                          </ParameterNode>
+                        </ParameterListNode>
+                        <TypeExpressionNode is_nullable="true" nullable_annotation="false">
+                          <MemberExpressionNode>
+                            <selector>
+                              <GetExpressionNode is_package="false" isRValue="false" isAttr="false" isSuper="false" isThis="false" isVoidResult="false" mode="lexical">
+                                <IdentifierNode name="Sprite"/>
+                              </GetExpressionNode>
+                            </selector>
+                          </MemberExpressionNode>
+                        </TypeExpressionNode>
+                      </FunctionSignatureNode>
+                      <StatementListNode>
+                        <items>
+                          <ReturnStatementNode>
+                          </ReturnStatementNode>
+                        </items>
+                      </StatementListNode>
+                    </FunctionCommonNode>
+                  </fexpr>
+                </FunctionDefinitionNode>
+              </items>
+            </StatementListNode>
+          </statements>
+          <pkgdef>
+            <PackageDefinitionNode>
+              <name>
+                <PackageNameNode>
+                  <id>
+                    <PackageIdentifiersNode pkg_part="some.test.pkg" def_part="null" isDefinition="false">
+                      <list>
+                        <IdentifierNode name="some"/>
+                        <IdentifierNode name="test"/>
+                        <IdentifierNode name="pkg"/>
+                      </list>
+                    </PackageIdentifiersNode>
+                  <id>
+                </PackageNameNode>
+              </name>
+              <statements/>
+            </PackageDefinitionNode>
+          </pkgdef>
+        </ClassDefinitionNode>
+        <PackageDefinitionNode>
+          <name>
+            <PackageNameNode>
+              <id>
+                <PackageIdentifiersNode pkg_part="some.test.pkg" def_part="null" isDefinition="false">
+                  <list>
+                    <IdentifierNode name="some"/>
+                    <IdentifierNode name="test"/>
+                    <IdentifierNode name="pkg"/>
+                  </list>
+                </PackageIdentifiersNode>
+              <id>
+            </PackageNameNode>
+          </name>
+          <statements/>
+        </PackageDefinitionNode>
+      </items>
+    </StatementListNode>
+  </statements>
+</ProgramNode>
