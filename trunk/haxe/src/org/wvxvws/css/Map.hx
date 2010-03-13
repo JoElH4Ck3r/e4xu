@@ -13,11 +13,96 @@ class MapIter<T>
 
     public function hasNext():Bool { return this._node != null; }
 
-    public function next():Node<T>
+    public function next():T
 	{
 		var ret:Node<T> = this._node;
 		this._node = this._node.next;
-		return ret;
+		return ret.value;
+	}
+}
+
+class MapFilerIter<T>
+{
+    private var _node:Node<T>;
+    private var _doStep:Bool;
+	private var _filter:String->T->Bool;
+
+    public function new(node:Node<T>, filter:String->T->Bool)
+	{
+		this._node = node;
+		this._doStep = false;
+		this._filter = filter;
+	}
+
+    public function hasNext():Bool
+	{
+		if (this._node == null) return false;
+		if (this._doStep)
+		{
+			this._node = this._node.next;
+			this._doStep = false;
+		}
+		while (true)
+		{
+			if (this._node == null) return false;
+			else if (!this._filter(this._node.name, this._node.value))
+			{
+				this._node = this._node.next;
+			}
+			else
+			{
+				this._doStep = true;
+				return true;
+			}
+		}
+		return false;
+	}
+
+    public function next():T { return this._node.value; }
+}
+
+// TODO: This does not work! :)
+class MapAllIter<T>
+{
+    private var _node:Node<T>;
+	private var _filter:String->T->Bool;
+	private var _headNext:Bool;
+	private var _walked:Array<Map<T>>;
+
+    public function new(node:Node<T>, filter:String->T->Bool)
+	{
+		this._node = node;
+		this._filter = filter;
+		this._walked = new Array<Map<T>>();
+	}
+
+    public function hasNext():Bool
+	{
+		return this._node != null && this._filter(this._node.name, this._node.value);
+	}
+
+    public function next():T
+	{
+		var ret:Node<T> = this._node;
+		var n:Node<T> = null;
+		
+		while (!this._filter(this._node.name, this._node.value))
+		{
+			ret = this._node;
+			if (Std.is(this._node, Map))
+			{
+				n = untyped this._node.head;
+				if (n == null) n = this._node.next;
+				if (n == null) n = this._node.parent;
+			}
+			else
+			{
+				n = this._node.next;
+				if (n == null) n = this._node.parent;
+			}
+			this._node = n;
+		}
+		return ret.value;
 	}
 }
 
@@ -36,6 +121,16 @@ class Map<T> extends Node<T>
 	public function iterator():MapIter<T>
 	{
 		return new MapIter<T>(this.head);
+	}
+	
+	public function filter(f:String->T->Bool):MapFilerIter<T>
+	{
+		return new MapFilerIter<T>(this.head, f);
+	}
+	
+	public function all(f:String->T->Bool):MapAllIter<T>
+	{
+		return new MapAllIter<T>(this.head, f);
 	}
 	
 	public function add(name:String, value:T):Void
@@ -98,6 +193,8 @@ class Map<T> extends Node<T>
 	{
 		var n:Node<T> = this._get(mapNode);
 		var t:Node<T> = this._get(childNode);
+		if (t.previous != null) t.previous.next = t.next;
+		if (t.next != null) t.next.previous = t.previous;
 		t.next = null;
 		t.previous = null;
 		var m:Map<T>;
