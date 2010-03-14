@@ -61,7 +61,6 @@ class MapFilerIter<T>
     public function next():T { return this._node.value; }
 }
 
-// TODO: This does not work! :)
 class MapAllIter<T>
 {
     private var _node:Node<T>;
