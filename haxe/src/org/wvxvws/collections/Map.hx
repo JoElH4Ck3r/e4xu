@@ -3,7 +3,7 @@
  * @author wvxvw
  */
 
-package org.wvxvws.css;
+package org.wvxvws.collections;
 
 class MapIter<T>
 {
@@ -66,44 +66,90 @@ class MapAllIter<T>
 {
     private var _node:Node<T>;
 	private var _filter:String->T->Bool;
-	private var _headNext:Bool;
-	private var _walked:Array<Map<T>>;
+	private var _doStep:Bool;
 
     public function new(node:Node<T>, filter:String->T->Bool)
 	{
 		this._node = node;
 		this._filter = filter;
-		this._walked = new Array<Map<T>>();
+		this._doStep = false;
 	}
 
     public function hasNext():Bool
 	{
-		return this._node != null && this._filter(this._node.name, this._node.value);
-	}
-
-    public function next():T
-	{
-		var ret:Node<T> = this._node;
-		var n:Node<T> = null;
+		var m:Map<T>;
 		
-		while (!this._filter(this._node.name, this._node.value))
+		if (this._node == null) return false;
+		if (this._doStep)
 		{
-			ret = this._node;
 			if (Std.is(this._node, Map))
 			{
-				n = untyped this._node.head;
-				if (n == null) n = this._node.next;
-				if (n == null) n = this._node.parent;
+				m = cast this._node;
+				if (m.head != null) this._node = m.head;
+				else if (this._node.next != null) this._node = this._node.next;
+				else 
+				{
+					while (m.next == null) m = m.parent;
+					this._node = m.next;
+				}
+			}
+			else if (this._node.next != null) this._node = this._node.next;
+			else
+			{
+				m = this._node.parent;
+				if (m == null) return false;
+				while (m.next == null)
+				{
+					m = m.parent;
+					if (m == null) return false;
+				}
+				this._node = m.next;
+			}
+			this._doStep = false;
+		}
+		while (true)
+		{
+			if (this._node == null) return false;
+			else if (!this._filter(this._node.name, this._node.value))
+			{
+				if (Std.is(this._node, Map))
+				{
+					m = cast this._node;
+					if (m.head != null) this._node = m.head;
+					else if (this._node.next != null) this._node = this._node.next;
+					else 
+					{
+						while (m.next == null)
+						{
+							m = m.parent;
+							if (m == null) return false;
+						}
+						this._node = m.next;
+					}
+				}
+				else if (this._node.next != null) this._node = this._node.next;
+				else
+				{
+					m = this._node.parent;
+					if (m == null) return false;
+					while (m.next == null)
+					{
+						m = m.parent;
+						if (m == null) return false;
+					}
+					this._node = m.next;
+				}
 			}
 			else
 			{
-				n = this._node.next;
-				if (n == null) n = this._node.parent;
+				this._doStep = true;
+				return true;
 			}
-			this._node = n;
 		}
-		return ret.value;
+		return false;
 	}
+
+    public function next():T { return return this._node.value; }
 }
 
 class Map<T> extends Node<T>
@@ -217,6 +263,7 @@ class Map<T> extends Node<T>
 			t.next = m.head;
 			m.head = t;
 		}
+		t.parent = m;
 	}
 	
 	public function kick(name:String):Void

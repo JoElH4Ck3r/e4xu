@@ -3,7 +3,7 @@
  * @author wvxvw
  */
 
-package org.wvxvws.css;
+package org.wvxvws.collections;
 
 class Node<T>
 {
