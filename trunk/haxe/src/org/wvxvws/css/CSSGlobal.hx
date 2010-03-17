@@ -14,7 +14,7 @@ class CSSGlobal
 	
 	public function new()
 	{
-		this._className = getQualifiedClassName(this);
+		this._className = Type.getClassName(cast this);
 	}
 	
 	/* INTERFACE org.wvxvws.css.ICSSClient */
@@ -24,10 +24,10 @@ class CSSGlobal
 	public function styleNames():List<String>
 	{
 		var v:List<String>;
-		for (var p:String in this._styles)
+		for (p in this._styles)
 		{
-			if (!v) v = new <String>[];
-			v.push(p);
+			if (v == null) v = new List<String>();
+			v.add(Std.string(p));
 		}
 		return v;
 	}
@@ -41,12 +41,12 @@ class CSSGlobal
 	
 	public function getStyle(name:String):CSSRule
 	{
-		return this._styles[name];
+		return this._styles.get(name);
 	}
 	
-	public function addStyle(name:String, style:CSSRule):void
+	public function addStyle(name:String, style:CSSRule):Void
 	{
-		this._styles[name] = style;
+		this._styles.set(name, style);
 	}
 	
 	public function pseudoClasses():List<String>

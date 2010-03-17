@@ -27,7 +27,6 @@ class CSSRule
 						nth:List<UInt> = null, follow:String = null,
 						precede:String = null) 
 	{
-		super();
 		this._className = className;
 		this._table = table;
 		this._mustHaveProperties = properties;
@@ -42,21 +41,33 @@ class CSSRule
 	
 	public function matches(client:ICSSClient):Bool
 	{
-		var i:int;
-		var len:int;
+		var i:Int = 0;
+		var len:Int = 0;
 		var other:ICSSClient;
 		var others:List<ICSSClient>;
 		var strings:List<String>;
+		var a:Array<String>;
+		var hasProp:Bool;
 		
 		if (this._className != client.className()) return false;
-		if (this._mustHaveProperties)
+		if (this._mustHaveProperties != null)
 		{
 			len = this._mustHaveProperties.length;
-			for (i = 0; i < len; i++)
+			i = 0;
+			while (i < len)
 			{
-				if (!(client as Object).hasOwnProperty(
-					this._mustHaveProperties[i]))
-					return false;
+				i++;
+				a = Reflect.fields(client);
+				hasProp = false;
+				for (p in a)
+				{
+					if (p == this._mustHaveProperties[i])
+					{
+						hasProp = true;
+						break;
+					}
+				}
+				if (!hasProp) return false;
 			}
 		}
 		if (this._mustHaveParent)
@@ -69,8 +80,10 @@ class CSSRule
 		{
 			others = client.childClients();
 			len = others.length;
-			for (i = 0; i < len; i++)
+			i = 0;
+			while (i < len)
 			{
+				i++;
 				other = others[i];
 				if (this._mustHaveChildren.indexOf(other.className()) < 0)
 					return false;
@@ -80,8 +93,10 @@ class CSSRule
 		{
 			others = this.descendantsOf(client);
 			len = others.length;
-			for (i = 0; i < len; i++)
+			i = 0;
+			while (i < len)
 			{
+				i++;
 				other = others[i];
 				if (this._mustHaveChildren.indexOf(other.className()) < 0)
 					return false;
@@ -91,8 +106,10 @@ class CSSRule
 		{
 			len = this._mustHavePseudoClasses.length;
 			strings = client.pseudoClasses();
-			for (i = 0; i < len; i++)
+			i = 0;
+			while (i < len)
 			{
+				i++;
 				if (strings.indexOf(this._mustHavePseudoClasses[i]) < 0)
 					return false;
 			}
@@ -102,32 +119,34 @@ class CSSRule
 	
 	public function equails(to:CSSRule):Bool
 	{
-		if (this === to) return true;
-		if (this._className !== to._className) return false;
-		if (this._table !== to._table) return false;
-		if (this._mustHaveProperties !== to._mustHaveProperties) return false;
-		if (this._mustHaveParent !== to._mustHaveParent) return false;
-		if (this._mustHaveChildren !== to._mustHaveChildren) return false;
-		if (this._mustHaveDescendants !== to._mustHaveDescendants) return false;
-		if (this._mustHavePseudoClasses !== to._mustHavePseudoClasses)
+		if (this == to) return true;
+		if (this._className != to._className) return false;
+		if (this._table != to._table) return false;
+		if (this._mustHaveProperties != to._mustHaveProperties) return false;
+		if (this._mustHaveParent != to._mustHaveParent) return false;
+		if (this._mustHaveChildren != to._mustHaveChildren) return false;
+		if (this._mustHaveDescendants != to._mustHaveDescendants) return false;
+		if (this._mustHavePseudoClasses != to._mustHavePseudoClasses)
 			return false;
-		if (this._mustBeNth !== to._mustBeNth) return false;
-		if (this._mustFollow !== to._mustFollow) return false;
-		if (this._mustPrecede !== to._mustPrecede) return false;
+		if (this._mustBeNth != to._mustBeNth) return false;
+		if (this._mustFollow != to._mustFollow) return false;
+		if (this._mustPrecede != to._mustPrecede) return false;
 		return true;
 	}
 	
 	private function descendantsOf(client:ICSSClient):List<ICSSClient>
 	{
-		var i:int;
-		var len:int;
+		var i:Int;
+		var len:Int;
 		var v:List<ICSSClient> = client.childClients();
 		var cv:List<ICSSClient>;
 		
 		if (!v) return null;
 		len = v.length;
-		for (i = 0; i < len; i++)
+		i = 0;
+		while (i < len)
 		{
+			i++;
 			cv = this.descendantsOf(v[i]);
 			if (cv) v = v.concat(cv);
 		}

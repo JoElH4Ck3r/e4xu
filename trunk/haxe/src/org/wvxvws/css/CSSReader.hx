@@ -54,26 +54,51 @@ class CSSReader
 	private static var KEWORD_RESOURCE:String = "resource";
 	
 	private var _char:String;
-	private var _definitions:Object;
-	private var _global:CSSGlobal;
-	private var _importedDefinitions:List<Namespace>;
+	private var _definitions:Hash<String>;
+	//private var _global:CSSGlobal;
+	private var _importedDefinitions:List<Ns>;
 	private var _length:Int;
 	private var _position:Int;
 	private var _source:String;
-	private var _table:CSSTable;
+	//private var _table:CSSTable;
 	
-	private var _currentDefinition:Object;
-	private var _currentId:uInt;
+	private var _currentDefinition:Dynamic;
+	private var _currentId:UInt;
 	private var _currentKeyword:String;
 	private var _currentName:String;
 	private var _currentOperator:String;
 	private var _currentProperty:String;
-	private var _currentRule:CSSRule;
+	//private var _currentRule:CSSRule;
 	private var _currentStyle:String;
-	private var _currentValue:*;
+	private var _currentValue:Dynamic;
 	
-	public function CSSReader(?source:String) 
+	private var _tKeyword:CSSToken;
+	private var _tNameSpace:CSSToken;
+	private var _tComment:CSSToken;
+	private var _tVarName:CSSToken;
+	private var _tScopeThis:CSSToken;
+	private var _tScopeGlob:CSSToken;
+	private var _tNewVal:CSSToken;
+	private var _tByRef:CSSToken;
+	private var _tByVal:CSSToken;
+	private var _tStatProp:CSSToken;
+	private var _tInstProp:CSSToken;
+	
+	private var _tBoolVal:CSSToken;
+	private var _tFloatVal:CSSToken;
+	private var _tIntVal:CSSToken;
+	private var _tNullVal:CSSToken;
+	private var _tDynamicVal:CSSToken;
+	
+	private var _tInvoke:CSSToken;
+	private var _tDefinition:CSSToken;
+	
+	public function new(?source:String) 
 	{
+		this._tKeyword = new CSSToken();
+		this._tKeyword.follows = 
+			cast [CSSTokenType.BoolVal, CSSTokenType.Comment, 
+			CSSTokenType.Invoke, CSSTokenType.VarName];
 		if (source != null) this.read(source);
 	}
 	
@@ -82,41 +107,44 @@ class CSSReader
 		this._source = source;
 		this._position = 0;
 		this._length = this._source.length;
-		this._global = new CSSGlobal();
-		this._table = new CSSTable(this._global);
+		//this._global = new CSSGlobal();
+		//this._table = new CSSTable(this._global);
 		// TEST
-		this.readWhite();
-		this.readImports();
-		this.readDefine();
-		trace(this._importedDefinitions.join("\r"));
-		this._definitions
-		for (var i:String in this._definitions)
-			trace("key : " + i + ", value : " + this._definitions[i]);
-		trace(this._position, this._length);
+		//this.readWhite();
+		//this.readImports();
+		//this.readDefine();
+		//trace(this._importedDefinitions);
+		//this._definitions
+		//for (i in this._definitions)
+			//trace("key : " + i + ", value : " + this._definitions.get(i));
+		//trace(this._position + " : " + this._length);
 	}
 	
-	public function table():CSSTable { return this._table; }
+	//public function table():CSSTable { return this._table; }
 	
+	/**
+	 * Ported
+	 */
 	private function readChar():Bool
 	{
-		var irc:uInt;
-		var inc:uInt;
+		var irc:UInt;
+		var inc:UInt;
 		
 		this._char = this._source.charAt(this._position);
-		if (this._char === SLASH)
+		if (this._char == SLASH)
 		{
-			if (this._source.charAt(this._position + 1) === SLASH)
+			if (this._source.charAt(this._position + 1) == SLASH)
 			{
 				irc = this._source.indexOf("\r", this._position + 1);
 				inc = this._source.indexOf("\n", this._position + 1);
-				this._position = Math.min(irc, inc) + 1;
+				this._position = Std.int(Math.min(irc, inc) + 1);
 				this._char = this._source.charAt(this._position);
 			}
 		}
 		this._position++;
 		return this._length >= this._position;
 	}
-	
+	/*
 	private function readSelector():Bool
 	{
 		var name:Bool;
@@ -153,17 +181,17 @@ class CSSReader
 		var i:Int;
 		var word:String;
 		
-		this._importedDefinitions = new <Namespace>[];
+		this._importedDefinitions = new List<Ns>[];
 		main: while (this.readChar())
 		{
 			if (WHITE.indexOf(this._char) > -1)
 				this.readWhite();
-			if (this._char !== AT && (state < 0 || state === 2))
+			if (this._char !== AT && (state < 0 || state == 2))
 			{
 				this._position--;
 				break main;
 			}
-			else if (this._char === AT && state === 2)
+			else if (this._char == AT && state == 2)
 			{
 				this._position++;
 			}
@@ -214,7 +242,7 @@ class CSSReader
 							}
 							else
 							{
-								throw CSSError.INVALID_IMPORT;
+								throw CSSError.InvalidImport;
 								break main;
 							}
 						}
@@ -236,10 +264,10 @@ class CSSReader
 								this._char == DOT)
 							{
 								if (buf.length && 
-									buf[buf.length - 1] === DOT && 
-									this._char === DOT)
+									buf[buf.length - 1] == DOT && 
+									this._char == DOT)
 								{
-									throw CSSError.INVALID_IMPORT;
+									throw CSSError.InvalidImport;
 									break main;
 								}
 								buf.push(this._char);
@@ -253,12 +281,12 @@ class CSSReader
 							}
 							else
 							{
-								throw CSSError.INVALID_IMPORT;
+								throw CSSError.InvalidImport;
 								break main;
 							}
 						}
 					}
-					if (i === this._importedDefinitions.length && buf.length)
+					if (i == this._importedDefinitions.length && buf.length)
 					{
 						uri = buf.join("");
 						this._importedDefinitions.push(
@@ -290,7 +318,7 @@ class CSSReader
 				this._position--;
 				break main;
 			}
-			else if (this._char === AT && state === 2)
+			else if (this._char == AT && state == 2)
 			{
 				this._position++;
 			}
@@ -341,12 +369,12 @@ class CSSReader
 							}
 							else
 							{
-								throw CSSError.INVALID_DEFINE;
+								throw CSSError.InvalidDefine;
 								break main;
 							}
 						}
 					}
-					if (i === this._importedDefinitions.length && buf.length)
+					if (i == this._importedDefinitions.length && buf.length)
 					{
 						name = buf.join("");
 					}
@@ -361,12 +389,6 @@ class CSSReader
 				break;
 			}
 		}
-		return this._length >= this._position;
-	}
-	
-	private function readDefinition():Bool
-	{
-		
 		return this._length >= this._position;
 	}
 	
@@ -421,15 +443,15 @@ class CSSReader
 							break;
 						case CIRCUMFLEX: // by value
 						default:
-							if (this._char === EXCLAIM) // this
+							if (this._char == EXCLAIM) // this
 								isThis = true;
-							else if (this._char === QUESTION) // defined
+							else if (this._char == QUESTION) // defined
 								isDef = true;
-							else if (this._char === QUOTE) // string
+							else if (this._char == QUOTE) // string
 							{
 								isString = true;
 							}
-							else if (this._char === SHARP) // Int (base 16)
+							else if (this._char == SHARP) // Int (base 16)
 							{
 								isNegative = false;
 								isInt = true;
@@ -439,7 +461,7 @@ class CSSReader
 								isNegative = false;
 								isNumber = true;
 							}
-							else if (this._char === HYPHEN)
+							else if (this._char == HYPHEN)
 							{
 								this.readChar();
 								if (DIGIT.indexOf(this._char) > -1)
@@ -447,11 +469,11 @@ class CSSReader
 									isNumber = true;
 									this._position--;
 								}
-								else if (this._char === SHARP)
+								else if (this._char == SHARP)
 								{
 									isInt = true;
 								}
-								else throw CSSError.INVALID_DEFINE;
+								else throw CSSError.InvalidDefine;
 								isNegative = true;
 							}
 							else if (LETTER.indexOf(this._char) > -1)
@@ -490,7 +512,7 @@ class CSSReader
 									break;
 								}
 							}
-							else throw CSSError.INVALID_DEFINE;
+							else throw CSSError.InvalidDefine;
 							isByRef = false;
 					}
 					//state++;
@@ -522,7 +544,7 @@ class CSSReader
 						{
 							this.readChar();
 							if (this._char !== PIPE)
-								throw CSSError.INVALID_DEFINE;
+								throw CSSError.InvalidDefine;
 							else state++;
 						}
 						break;
@@ -543,7 +565,7 @@ class CSSReader
 								{
 									buf.push(this._char);
 								}
-								else if(this._char === PIPE)
+								else if(this._char == PIPE)
 								{
 									prefix = buf.join("");
 									break;
@@ -556,10 +578,10 @@ class CSSReader
 				case 3: // resolve value in namespcase (prefix)
 				{
 					cns = null;
-					for each (var ns:Namespace in this._importedDefinitions)
+					for (ns in this._importedDefinitions)
 					{
 						trace(ns.prefix, prefix);
-						if (ns.prefix === prefix)
+						if (ns.prefix == prefix)
 						{
 							cns = ns;
 							break;
@@ -567,7 +589,7 @@ class CSSReader
 					}
 					if (!cns)
 					{
-						throw CSSError.INVALID_DEFINE;
+						throw CSSError.InvalidDefine;
 						break;
 					}
 					buf.length = 0;
@@ -579,7 +601,7 @@ class CSSReader
 						{
 							buf.push(this._char);
 						}
-						else if (this._char === PAREN_L)
+						else if (this._char == PAREN_L)
 						{
 							// TODO: Not completed - test
 							evalScope = buf.join("");
@@ -598,129 +620,158 @@ class CSSReader
 		}
 		return this._length >= this._position;
 	}
-	
+	*/
+	/**
+	 * Ported
+	 */
 	private function readString():Void
 	{
-		var escaped:Bool;
-		var buf:List<String> = new <String>[];
-		var subBuf:List<String> = new <String>[];
-		var i:Int;
+		var escaped:Bool = false;
+		var buf:StringBuf = new StringBuf();
+		var i:Int = 0;
+		var hex:String = "0123456789abcdef";
+		var c:String;
+		var cc:Int;
 		
 		while (this.readChar())
 		{
-			if (this._char === ESCAPE)
+			if (this._char == ESCAPE)
 			{
 				escaped = true;
 				continue;
 			}
 			else if (escaped)
 			{
-				switch (this._char.toLocaleLowerCase())
+				switch (this._char.toLowerCase())
 				{
 					case QUOTE:
 					case ESCAPE:
-						buf.push(this._char);
+						buf.add(this._char);
 						break;
 					case "n":
-						buf.push("\n");
+						buf.add("\n");
 						break;
 					case "r":
-						buf.push("\r");
+						buf.add("\r");
 						break;
 					case "t":
-						buf.push("\t");
+						buf.add("\t");
 						break;
 					case "x":
 					{
-						subBuf.length = 0;
-						i = 2;
-						while (i--)
+						i = 0;
+						for (ci in 0...2)
 						{
 							this.readChar();
-							subBuf.push(this._char);
+							c = this._char.toLowerCase();
+							if (hex.indexOf(c) < 0)
+								throw CSSError.InvalidName;
+							cc = c.charCodeAt(0);
+							if (cc < 58) i += (cc - 47);
+							else i += (cc - 96);
+							i = i << 16;
 						}
-						buf.push(String.fromCharCode(
-							parseInt(subBuf.join(""), 16)));
+						buf.addChar(i);
 					}
 					break;
 					case "u":
 					{
-						subBuf.length = 0;
-						i = 4;
-						while (i--)
+						i = 0;
+						for (ci in 0...4)
 						{
 							this.readChar();
-							subBuf.push(this._char);
+							c = this._char.toLowerCase();
+							if (hex.indexOf(c) < 0)
+								throw CSSError.InvalidName;
+							cc = c.charCodeAt(0);
+							if (cc < 58) i += (cc - 47);
+							else i += (cc - 96);
+							i = i << 16;
 						}
-						buf.push(String.fromCharCode(
-							parseInt(subBuf.join(""), 16)));
+						buf.addChar(i);
 					}
 					break;
 				}
 				escaped = false;
 			}
-			else if (this._char === QUOTE)
+			else if (this._char == QUOTE)
 			{
-				this._currentValue = buf.join("");
+				this._currentValue = buf.toString();
 				break;
 			}
-			else buf.push(this._char);
+			else buf.add(this._char);
 		}
 	}
 	
+	/**
+	 * Ported
+	 */
 	private function readNumber():Void
 	{
-		var buf:List<String> = new <String>[];
-		var hasDot:Bool;
-		var hasMinus:Bool;
+		var buf:StringBuf = new StringBuf();
+		var hasDot:Bool = false;
+		var hasMinus:Bool = false;
+		var started:Bool = false;
 		
 		while (this.readChar())
 		{
 			if (DIGIT.indexOf(this._char) > -1)
 			{
-				buf.push(this._char);
+				buf.add(this._char);
+				started = true;
 			}
-			else if (this._char === DOT && !hasDot)
+			else if (this._char == DOT && !hasDot)
 			{
 				hasDot = true;
-				buf.push(this._char);
+				started = true;
+				buf.add(this._char);
 			}
-			else if (this._char === HYPHEN && !hasMinus && !buf.length)
+			else if (this._char == HYPHEN && !hasMinus && !started)
 			{
 				hasMinus = true;
-				buf.push(this._char);
+				started = true;
+				buf.add(this._char);
 			}
-			else 
+			else
 			{
-				this._currentValue = parseFloat(buf.join(""));
+				this._currentValue = Std.parseFloat(buf.toString());
 				this._position--;
 				break;
 			}
 		}
 	}
 	
+	/**
+	 * Ported
+	 */
 	private function readInt(negaitve:Bool = false):Void
 	{
-		var buf:StringBuf = new StringBuf();
-		var hasMinus:Bool;
-		const hex:String = "ABCDEFabcdef";
+		var hasMinus:Bool = false;
+		var hex:String = "ABCDEFabcdef";
+		var n:Int = 0;
+		var c:String;
+		var cc:Int;
 		
 		while (this.readChar())
 		{
 			if (DIGIT.indexOf(this._char) > -1 || hex.indexOf(this._char) > -1)
 			{
-				buf.push(this._char);
+				c = this._char.toLowerCase();
+				cc = c.charCodeAt(0);
+				if (cc < 58) n += (cc - 47);
+				else n += (cc - 96);
+				n = n << 16;
 			}
-			else 
+			else
 			{
-				this._currentValue = parseInt(buf.join(""), 16);
+				this._currentValue = n;
 				if (negaitve) this._currentValue *= -1;
 				this._position--;
 				break;
 			}
 		}
 	}
-	
+	/*
 	private function readName():Bool
 	{
 		var i:Int;
@@ -732,7 +783,7 @@ class CSSReader
 			this._char !== DOT && 
 			this._char !== SHARP)
 		{
-			throw CSSError.INVALID_NAME;
+			throw CSSError.InvalidName;
 		}
 		if (this._char !== ASTERISK || 
 			this._char !== DOT || 
@@ -774,7 +825,7 @@ class CSSReader
 				case PLUS:
 					
 					break readLoop;
-				default: throw CSSError.INVALID_NAME;
+				default: throw CSSError.InvalidName;
 			}
 		}
 		return this._length >= this._position;
@@ -782,14 +833,14 @@ class CSSReader
 	
 	private function readKeyword():Bool
 	{
-		var buf:List<String> = new <String>[];
-		var word:String;
+		var buf:StringBuf = new StringBuf();
+		var word:String = "";
 		
 		while (this.readChar())
 		{
 			if (LETTER.indexOf(this._char) < 0)
 			{
-				word = buf.join("");
+				word = buf.toString();
 				switch (word)
 				{
 					case KEWORD_DEFINE:
@@ -801,11 +852,11 @@ class CSSReader
 					case KEWORD_RESOURCE:
 						this._currentKeyword = word;
 					default:
-						throw CSSError.INVALID_KEYWORD;
+						throw CSSError.InvalidKeyword;
 				}
 				break;
 			}
-			else buf.push(this._char);
+			else buf.add(this._char);
 		}
 		return this._length >= this._position;
 	}
@@ -825,21 +876,22 @@ class CSSReader
 	
 	private function readProperty():Bool
 	{
-		var i:Int;
-		var buf:List<String>;
+		var i:Int = 0;
+		var buf:StringBuf;
 		
 		if (!this.readChar()) return false;
 		if (LETTER.indexOf(this._char) < 0)
 		{
-			throw CSSError.INVALID_NAME;
+			throw CSSError.InvalidName;
 		}
-		buf = new <String>[this._char];
+		buf = new StringBuf();
+		buf.add(this._char);
 		while (this.readChar())
 		{
 			if (LETTER.indexOf(this._char) > -1 || 
 				DIGIT.indexOf(this._char) > -1)
 			{
-				buf[i] = this._char;
+				buf.addSub(this._char, i, 1);
 				i++;
 				continue;
 			}
@@ -848,55 +900,56 @@ class CSSReader
 				this.readWhite();
 			}
 			else if (this._char == SQARE_R) break;
-			else throw CSSError.INVALID_NAME;
+			else throw CSSError.InvalidName;
 		}
 		return this._length >= this._position;
 	}
 	
 	private function readStyle():Bool
 	{
-		var i:Int;
-		var buf:List<String>;
+		var i:Int = 0;
+		var buf:StringBuf;
 		
 		if (!this.readChar()) return false;
 		if (LETTER.indexOf(this._char) < 0)
 		{
-			throw CSSError.INVALID_NAME;
+			throw CSSError.InvalidName;
 		}
-		buf = new <String>[this._char];
+		buf = new StringBuf();
+		buf.add(this._char);
 		while (this.readChar())
 		{
 			if (LETTER.indexOf(this._char) > -1 || 
 				DIGIT.indexOf(this._char) > -1)
 			{
-				buf[i] = this._char;
+				buf.addSub(this._char, i, 1);
 				i++;
 				continue;
 			}
 			else if (WHITE.indexOf(this._char) > -1) break;
-			else throw CSSError.INVALID_NAME;
+			else throw CSSError.InvalidName;
 		}
 		return this._length >= this._position;
 	}
 	
 	private function readId():Bool
 	{
-		var i:Int;
-		var buf:List<String>;
+		var i:Int = 0;
+		var buf:StringBuf;
 		
-		buf = new <String>[];
+		buf = new StringBuf();
 		while (this.readChar())
 		{
 			if (DIGIT.indexOf(this._char) > -1)
 			{
-				buf[i] = this._char;
+				buf.addSub(this._char, i, 1);
 				i++;
 				continue;
 			}
 			else if (WHITE.indexOf(this._char) > -1) break;
-			else throw CSSError.INVALID_NAME;
+			else throw CSSError.InvalidName;
 		}
 		return this._length >= this._position;
 	}
-	
+	*/
 }

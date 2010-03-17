@@ -5,13 +5,13 @@
 
 package org.wvxvws.css;
 
-typedef Ns 
+typedef Ns =
 {
 	var prefic:String;
 	var uri:String;
 }
 
-typedef Qn
+typedef Qn =
 {
 	var local:String;
 	var ns:Ns;
