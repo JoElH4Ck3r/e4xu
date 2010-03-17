@@ -12,6 +12,6 @@ interface ICSSClient
 	function parentClient():ICSSClient;
 	function childClients():List<ICSSClient>;
 	function getStyle(name:String);
-	function addStyle(name:String, style):Void;
+	function addStyle(name:String, style:CSSRule):Void;
 	function pseudoClasses():List<String>;
 }
