@@ -92,6 +92,7 @@ class CSSReader
 	
 	private var _tInvoke:CSSToken;
 	private var _tDefinition:CSSToken;
+	private var _line:UInt;
 	
 	public function new(?source:String) 
 	{
@@ -107,6 +108,8 @@ class CSSReader
 		this._source = source;
 		this._position = 0;
 		this._length = this._source.length;
+		this.readString();
+		trace("??? " + this._currentValue);
 		//this._global = new CSSGlobal();
 		//this._table = new CSSTable(this._global);
 		// TEST
@@ -635,7 +638,7 @@ class CSSReader
 		
 		while (this.readChar())
 		{
-			if (this._char == ESCAPE)
+			if (this._char == ESCAPE && !escaped)
 			{
 				escaped = true;
 				continue;
@@ -644,53 +647,41 @@ class CSSReader
 			{
 				switch (this._char.toLowerCase())
 				{
-					case QUOTE:
-					case ESCAPE:
-						buf.add(this._char);
-						break;
-					case "n":
-						buf.add("\n");
-						break;
-					case "r":
-						buf.add("\r");
-						break;
-					case "t":
-						buf.add("\t");
-						break;
+					case "\"": buf.add(this._char);
+					case "\\": buf.add(this._char);
+					case "n": buf.add("\n");
+					case "r": buf.add("\r");
+					case "t": buf.add("\t");
 					case "x":
-					{
 						i = 0;
 						for (ci in 0...2)
 						{
+							i = i << 4;
 							this.readChar();
 							c = this._char.toLowerCase();
 							if (hex.indexOf(c) < 0)
 								throw CSSError.InvalidName;
 							cc = c.charCodeAt(0);
-							if (cc < 58) i += (cc - 47);
-							else i += (cc - 96);
-							i = i << 16;
+							if (cc < 58) i += (cc - 48);
+							else i += (cc - 87);
 						}
 						buf.addChar(i);
-					}
-					break;
 					case "u":
-					{
 						i = 0;
 						for (ci in 0...4)
 						{
+							i = i << 4;
 							this.readChar();
 							c = this._char.toLowerCase();
 							if (hex.indexOf(c) < 0)
 								throw CSSError.InvalidName;
 							cc = c.charCodeAt(0);
-							if (cc < 58) i += (cc - 47);
-							else i += (cc - 96);
-							i = i << 16;
+							if (cc < 58) i += (cc - 48);
+							else i += (cc - 87);
 						}
 						buf.addChar(i);
-					}
-					break;
+					default:
+						throw CSSError.InvalidName(this._line, this._position);
 				}
 				escaped = false;
 			}
@@ -756,11 +747,11 @@ class CSSReader
 		{
 			if (DIGIT.indexOf(this._char) > -1 || hex.indexOf(this._char) > -1)
 			{
+				n = n << 4;
 				c = this._char.toLowerCase();
 				cc = c.charCodeAt(0);
-				if (cc < 58) n += (cc - 47);
-				else n += (cc - 96);
-				n = n << 16;
+				if (cc < 58) n += (cc - 48);
+				else n += (cc - 87);
 			}
 			else
 			{
