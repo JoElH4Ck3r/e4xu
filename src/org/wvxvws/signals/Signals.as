@@ -176,7 +176,7 @@
 			if (strong === weak) return;
 			for (o in strong) indices.push(strong[o]);
 			for (o in weak) indices.push(weak[o]);
-			indices.sortOn("p");
+			indices.sort(this.s);
 			
 			len = indices.length;
 			for (i = 0; i < len; i++)
@@ -184,6 +184,13 @@
 				p = indices[i] as Pair;
 				p.f.apply(null, params);
 			}
+		}
+		
+		private final function s(pA:Pair, pB:Pair):int
+		{
+			if (pA.p < pB.p) return 1;
+			else if (pA.p > pB.p) return -1;
+			return 0;
 		}
 		
 		/**
