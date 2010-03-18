@@ -21,7 +21,7 @@
   <build>
     <option directives="" />
     <option flashStrict="False" />
-    <option mainClass="tests.TestMap" />
+    <option mainClass="tests.TestCSS" />
     <option override="False" />
     <option verbose="False" />
     <option additional="" />
