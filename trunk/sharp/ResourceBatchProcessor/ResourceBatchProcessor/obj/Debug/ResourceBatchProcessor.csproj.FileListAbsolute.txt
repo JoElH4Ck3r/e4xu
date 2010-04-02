@@ -1,0 +1,8 @@
+C:\www\sharp\rs\ResourceBatchProcessor\ResourceBatchProcessor\bin\Debug\ResourceBatchProcessor.exe
+C:\www\sharp\rs\ResourceBatchProcessor\ResourceBatchProcessor\bin\Debug\ResourceBatchProcessor.pdb
+C:\www\sharp\rs\ResourceBatchProcessor\ResourceBatchProcessor\obj\Debug\ResolveAssemblyReference.cache
+C:\www\sharp\rs\ResourceBatchProcessor\ResourceBatchProcessor\obj\Debug\ResourceBatchProcessor.Form1.resources
+C:\www\sharp\rs\ResourceBatchProcessor\ResourceBatchProcessor\obj\Debug\ResourceBatchProcessor.Properties.Resources.resources
+C:\www\sharp\rs\ResourceBatchProcessor\ResourceBatchProcessor\obj\Debug\ResourceBatchProcessor.csproj.GenerateResource.Cache
+C:\www\sharp\rs\ResourceBatchProcessor\ResourceBatchProcessor\obj\Debug\ResourceBatchProcessor.exe
+C:\www\sharp\rs\ResourceBatchProcessor\ResourceBatchProcessor\obj\Debug\ResourceBatchProcessor.pdb
