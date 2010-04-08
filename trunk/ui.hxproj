@@ -24,7 +24,7 @@
     <option mainClass="tests.TestCSS" />
     <option override="False" />
     <option verbose="False" />
-    <option additional="" />
+    <option additional="-D fdb" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>
@@ -51,6 +51,6 @@
   <!-- Other project options -->
   <options>
     <option showHiddenPaths="False" />
-    <option testMovie="NewWindow" />
+    <option testMovie="Default" />
   </options>
 </project>
