@@ -26,9 +26,6 @@ package org.wvxvws.profiler
 		private var _sh:Object = { };
 		private var _si:int;
 		
-		private var _p:int;
-		private var _bp:int;
-		
 		//--------------------------------------------------------------------------
 		//
 		//  Constructor
