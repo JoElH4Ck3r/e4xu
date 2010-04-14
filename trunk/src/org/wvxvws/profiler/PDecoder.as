@@ -19,7 +19,7 @@ package org.wvxvws.profiler
 		//--------------------------------------------------------------------------
 		
 		private const A:String = 
-		".1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+		".1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_";
 		
 		private var _s:ByteArray;
 		private var _st:Array/*String*/ = [];
@@ -38,7 +38,7 @@ package org.wvxvws.profiler
 		public function PDecoder() 
 		{
 			super();
-			for (var i:int; i < 63; i++) this._st[i] = A.charAt(i);
+			for (var i:int; i < 64; i++) this._st[i] = A.charAt(i);
 		}
 		
 		//--------------------------------------------------------------------------

@@ -19,7 +19,7 @@ package org.wvxvws.profiler
 		//--------------------------------------------------------------------------
 		
 		private const A:String = 
-		".1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+		".1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_";
 		
 		private var _s:ByteArray = new ByteArray();
 		private var _st:Object = { };
@@ -38,7 +38,7 @@ package org.wvxvws.profiler
 		public function PEncoder()
 		{
 			super();
-			for (var i:int; i < 63; i++) this._st[A.charAt(i)] = i;
+			for (var i:int; i < 64; i++) this._st[A.charAt(i)] = i;
 		}
 		
 		//--------------------------------------------------------------------------
