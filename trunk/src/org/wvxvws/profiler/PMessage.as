@@ -18,7 +18,7 @@ package org.wvxvws.profiler
 		//
 		//--------------------------------------------------------------------------
 		
-		public var type:String;
+		public var type:Class;
 		public var size:int;
 		public var mem:int;
 		
@@ -40,7 +40,7 @@ package org.wvxvws.profiler
 		//
 		//--------------------------------------------------------------------------
 		
-		public function PMessage(type:String, size:int, mem:int) 
+		public function PMessage(type:Class, size:int, mem:int) 
 		{
 			super();
 			this.type = type;
