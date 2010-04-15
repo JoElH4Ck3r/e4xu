@@ -79,7 +79,7 @@ package org.wvxvws.profiler
 		 * <code>Offset (not including the library) - UI29</code>
 		 * <code>UB8 - allways 0 (the end of the library)</code>
 		 * <i>Messages Stack</i>
-		 * <code>[Message 1] [Message 2] [Message 3] ... [Message N]</code>
+		 * <code>[Message 1] US(0) [Message 2] US(0) [Message 3] US(0) ... [Message N]</code>
 		 * <i>Message</i>
 		 * <code>UI29 - number of instances</code>
 		 * <code>UI29 - memory usage</code>
