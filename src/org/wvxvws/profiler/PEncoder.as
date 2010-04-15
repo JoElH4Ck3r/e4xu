@@ -102,6 +102,8 @@ package org.wvxvws.profiler
 		
 		/**
 		 * Adds a message to the stack of messages to be sent.
+		 * Note, it is possible to use the same <code>PMessage</code> object
+		 * for continuous writing. The reference to the message isn't stored.
 		 * 
 		 * @param	mes The message to be sent. 
 		 * 			<i><font color="red">Doesn't handle international 
@@ -111,7 +113,7 @@ package org.wvxvws.profiler
 		 * 			method of a null object reference.</code>
 		 * 			If message is null.
 		 * @throws	<code>Max length exceeded!</code> If either <code>size</code> 
-		 * 			or <code>mem</code> properties of the message exceede 0-0x1FFFFFFF range.
+		 * 			or <code>mem</code> properties of the message exceed 0-0x1FFFFFFF range.
 		 */
 		public function write(mes:PMessage):void
 		{
@@ -121,7 +123,7 @@ package org.wvxvws.profiler
 			// TODO: We need to check that the class name doesn't contain $
 			// or international charachters. If it does, this method will not work
 			// and if it does, we should pad the content of the string by 12 zero bits
-			// and put the flags in the remaining 4 bits so we know what 
+			// and put the flags in the remaining 4 bits so we know  
 			// how the content was encoded.
 			this.eStr6(getQualifiedClassName(mes.type).split("::").join("."));
 			if (!first) this._s.writeShort(0);
