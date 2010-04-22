@@ -1,0 +1,7 @@
+C:\www\sharp\fd\FD3\External\Plugins\InsertFile\obj\Debug\ResolveAssemblyReference.cache
+C:\www\sharp\fd\FD3\External\Plugins\InsertFile\obj\Debug\InsertFile.csproj.GenerateResource.Cache
+C:\www\sharp\fd\FD3\FlashDevelop\Bin\Debug\Plugins\InsertFile.dll
+C:\www\sharp\fd\FD3\FlashDevelop\Bin\Debug\Plugins\InsertFile.pdb
+C:\www\sharp\fd\FD3\External\Plugins\InsertFile\obj\Debug\InsertFile.Resources.en_US.resources
+C:\www\sharp\fd\FD3\External\Plugins\InsertFile\obj\Debug\InsertFile.dll
+C:\www\sharp\fd\FD3\External\Plugins\InsertFile\obj\Debug\InsertFile.pdb
