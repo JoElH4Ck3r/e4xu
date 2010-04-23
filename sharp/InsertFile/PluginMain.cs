@@ -34,6 +34,7 @@ namespace InsertFile
         private List<ICompletionListItem> completionList;
         private Boolean completing = false;
         private Regex notAllowed = new Regex("[\\x00-\\x1F\\*\\?%\"<>\\x7F]", RegexOptions.Compiled);
+        private DirectoryInfo currentFolder;
 
 	    #region Required Properties
 
@@ -214,134 +215,84 @@ namespace InsertFile
         private void OnChar(ScintillaControl sci, Int32 value)
         {
             Char ch = (Char)value;
-            FileInfo fi;
-            DirectoryInfo di = null;
-            DirectoryInfo sdi = null;
-            String desc;
-            FileInfo[] foundFiles;
-            DirectoryInfo[] foundDirectories;
-            List<String> fileList;
-            List<String> dirList;
-            Int32 pathEnd = 1;
+            String match;
             String[] parts;
+            DirectoryInfo di = this.FindRoot();
+            String remainder;
 
-            sci.PreviewKeyDown += new PreviewKeyDownEventHandler(sci_PreviewKeyDown);
-
-            if (ch == '/' || ch == '\\')
+            if (di == null)
             {
-                if (this.pathSoFar.Length == 1)
-                {
-                    this.files = Environment.GetLogicalDrives();
-                    this.word = "";
-                }
-                else
-                {
-                    try
-                    {
-                        di = new DirectoryInfo(this.pathSoFar.Substring(0, this.pathSoFar.Length));
-                    }
-                    catch
-                    {
-                        this.FinishFileCompletion(sci, null);
-                        return;
-                    }
-                    parts = this.pathSoFar.Split(new char[2] { '/', '\\' });
-                    this.word = parts[parts.Length - 1];
-                    
-                    if (di.Exists)
-                    {
-                        foundFiles = di.GetFiles();
-                        foundDirectories = di.GetDirectories();
-                        fileList = new List<String>();
-                        dirList = new List<String>();
-                        foreach (DirectoryInfo fd in foundDirectories)
-                        {
-                            dirList.Add(fd.Name);
-                        }
-                        dirList.Sort();
-                        foreach (FileInfo ff in foundFiles)
-                        {
-                            fileList.Add(ff.Name);
-                        }
-                        fileList.Sort();
-                        dirList.AddRange(fileList);
-                        this.files = dirList.ToArray();
-                    }
-                    else this.files = Environment.GetLogicalDrives();
-                }
-            }
-            else 
-            {
-                if (this.pathSoFar.IndexOf('/') > -1)
-                    pathEnd = this.pathSoFar.LastIndexOf('/');
-                if (this.pathSoFar.IndexOf('\\') > -1)
-                    pathEnd = Math.Max(pathEnd, this.pathSoFar.LastIndexOf('\\'));
-                pathEnd = Math.Min(pathEnd, this.pathSoFar.Length - 1);
-                try
-                {
-                    di = new DirectoryInfo(this.pathSoFar.Substring(0, pathEnd + 1));
-                }
-                catch
-                {
-                    this.FinishFileCompletion(sci, null);
-                    return;
-                }
-                this.word = this.pathSoFar.Substring(pathEnd + 1);
-                if (String.IsNullOrEmpty(this.word))
-                    this.word = (String)this.pathSoFar.Clone();
-                if (di.Exists)
-                {
-                    foundFiles = di.GetFiles();
-                    foundDirectories = di.GetDirectories();
-                    fileList = new List<String>();
-                    dirList = new List<String>();
-                    foreach (DirectoryInfo fd in foundDirectories)
-                    {
-                        dirList.Add(fd.Name);
-                    }
-                    dirList.Sort();
-                    foreach (FileInfo ff in foundFiles)
-                    {
-                        fileList.Add(ff.Name);
-                    }
-                    fileList.Sort();
-                    dirList.AddRange(fileList);
-                    this.files = dirList.ToArray();
-                }
-                else this.files = Environment.GetLogicalDrives();
-            }
-            this.completionList = new List<ICompletionListItem>();
-            if (String.IsNullOrEmpty(this.word))
-            {
-                foreach (String s in this.files)
-                {
-                    sdi = new DirectoryInfo(Path.Combine(di.FullName, s));
-                    if (sdi.Exists)
-                    {
-                        if (s.IndexOf(':') > -1) desc = "Hard Disc";
-                        else desc = "Directory";
-                    }
-                    else desc = "File";
-                    this.completionList.Add(new FileCompletionItem(s, s, desc));
-                }
+                if (this.completing)
+                    CompletionList.Show(this.FormatCompletionList(this.pathSoFar), true);
             }
             else
             {
-                foreach (String s in this.files)
+                parts = this.pathSoFar.Split(new Char[2] { '/', '\\' });
+                match = parts[parts.Length - 1];
+                if (this.currentFolder == null)
                 {
-                    if (!s.ToLower().StartsWith(this.word.ToLower()))
-                        continue;
-                    sdi = new DirectoryInfo(Path.Combine(di.FullName, s));
-                    if (sdi.Exists)
+                    this.currentFolder = di;
+                    CompletionList.Show(this.FormatCompletionList(match), true);
+                }
+                else
+                {
+                    Queue<String> q = new Queue<String>(parts);
+                    q.Dequeue();
+                    remainder = "";
+                    foreach (String s in q)
                     {
-                        if (s.IndexOf(':') > -1) desc = "Hard Disc";
-                        else desc = "Directory";
+                        remainder += "\\" + s;
                     }
-                    else desc = "File";
-                    this.completionList.Add(new FileCompletionItem(s, s.Substring(word.Length), desc));
+                    remainder = remainder.Substring(1);
+                    this.currentFolder = new DirectoryInfo(Path.Combine(di.FullName, remainder));
+                    CompletionList.Show(this.FormatCompletionList(match), true);
                 }
             }
-            CompletionList.Show(this.completionList, true);
+        }
+
+        private DirectoryInfo FindRoot()
+        {
+            String[] parts;
+            FileInfo fi;
+            if (String.IsNullOrEmpty(this.pathSoFar) || 
+                this.pathSoFar.StartsWith("\\") || 
+                this.pathSoFar.StartsWith("/"))
+            {
+                return null;
+            }
+            else if (this.pathSoFar.StartsWith(".."))
+            {
+                fi = new FileInfo(PluginBase.MainForm.CurrentDocument.FileName);
+                if (fi.Exists && fi.Directory != null && fi.Directory.Parent != null)
+                    return fi.Directory.Parent;
+                else
+                {
+                    this.FinishFileCompletion(
+                        PluginBase.MainForm.CurrentDocument.SciControl, null);
+                }
+            }
+            else if (this.pathSoFar.StartsWith("."))
+            {
+                fi = new FileInfo(PluginBase.MainForm.CurrentDocument.FileName);
+                if (fi.Exists && fi.Directory != null)
+                    return fi.Directory;
+                else
+                {
+                    this.FinishFileCompletion(
+                        PluginBase.MainForm.CurrentDocument.SciControl, null);
+                }
+            }
+            else if (this.pathSoFar.IndexOf('\\') > -1 ||
+                this.pathSoFar.IndexOf('/') > -1)
+            {
+                parts = this.pathSoFar.Split(new Char[2] { '/', '\\' });
+                return new DirectoryInfo(parts[0] + "\\");
+            }
+            else if (this.pathSoFar.EndsWith(":"))
+            {
+                return new DirectoryInfo(this.pathSoFar + "\\");
+            }
+            return null;
         }
 
         void sci_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -349,11 +300,103 @@ namespace InsertFile
             if (e.KeyCode == Keys.Escape) this.FinishFileCompletion(sender, e);
         }
 
+        private List<ICompletionListItem> FormatCompletionList(String match)
+        {
+            String[] entries;
+            DirectoryInfo sdi = null;
+            String desc;
+            FileInfo[] foundFiles;
+            DirectoryInfo[] foundDirectories;
+            List<String> fileList;
+            List<String> dirList;
+            this.completionList = new List<ICompletionListItem>();
+
+            if (this.currentFolder == null)
+            {
+                entries = Environment.GetLogicalDrives();
+                if (String.IsNullOrEmpty(match))
+                {
+                    this.completionList.Add(new FileCompletionItem("<Current Document>", ".", "Current Document"));
+                }
+            }
+            else
+            {
+                foundFiles = this.currentFolder.GetFiles();
+                foundDirectories = this.currentFolder.GetDirectories();
+                fileList = new List<String>();
+                dirList = new List<String>();
+                foreach (DirectoryInfo fd in foundDirectories)
+                {
+                    dirList.Add(fd.Name);
+                }
+                dirList.Sort();
+                foreach (FileInfo ff in foundFiles)
+                {
+                    fileList.Add(ff.Name);
+                }
+                fileList.Sort();
+                dirList.AddRange(fileList);
+                entries = dirList.ToArray();
+            }
+            
+            foreach (String s in entries)
+            {
+                if (this.currentFolder == null)
+                {
+                    if (String.IsNullOrEmpty(match))
+                    {
+                        this.completionList.Add(new FileCompletionItem(s, s, "Disc"));
+                    }
+                    else if (!s.ToLower().StartsWith(match.ToLower()))
+                    {
+                        this.completionList.Add(new FileCompletionItem(s, s.Substring(match.Length), "Disc"));
+                    }
+                    continue;
+                }
+                else if (String.IsNullOrEmpty(match))
+                {
+                    sdi = new DirectoryInfo(Path.Combine(this.currentFolder.FullName, s));
+                }
+                else if (!s.ToLower().StartsWith(match.ToLower()))
+                {
+                    continue;
+                }
+                else
+                {
+                    sdi = new DirectoryInfo(Path.Combine(this.currentFolder.FullName, s));
+                }
+                if (sdi.Exists)
+                {
+                    if (s.IndexOf(':') > -1) desc = "Disc";
+                    else desc = "Directory";
+                }
+                else desc = "File";
+                this.completionList.Add(new FileCompletionItem(s, s.Substring(match.Length), desc));
+            }
+            return this.completionList;
+        }
+
         private void StartFileCompletion(Object sender, System.EventArgs e)
         {
             this.completing = true;
+            ScintillaControl sci = PluginBase.MainForm.CurrentDocument.SciControl;
+            sci.PreviewKeyDown += new PreviewKeyDownEventHandler(sci_PreviewKeyDown);
             UITools.Manager.OnCharAdded += new UITools.CharAddedHandler(OnChar);
             UITools.Manager.OnTextChanged += new UITools.TextChangedHandler(OnTextChanged);
+            CompletionList.OnInsert += new InsertedTextHandler(CompletionList_OnInsert);
+            CompletionList.Show(this.FormatCompletionList(null), true);
+        }
+
+        void CompletionList_OnInsert(ScintillaControl sender, int position, string text, char trigger, ICompletionListItem item)
+        {
+            if (item.Description == "File")
+                this.FinishFileCompletion(sender, null);
+            else if (item.Description == "Current Document")
+            {
+                FileInfo fi = new FileInfo(PluginBase.MainForm.CurrentDocument.FileName);
+                if (!fi.Exists) this.FinishFileCompletion(sender, null);
+                else this.currentFolder = fi.Directory;
+            }
         }
 
         void OnTextChanged(ScintillaControl sender, int position, int length, int linesAdded)
@@ -389,9 +432,12 @@ namespace InsertFile
             this.pathSoFar = "";
             this.word = "";
             this.files = null;
-            ((ScintillaControl)sender).PreviewKeyDown -= new PreviewKeyDownEventHandler(sci_PreviewKeyDown);
+            this.currentFolder = null;
+            if ((sender as ScintillaControl) != null)
+                ((ScintillaControl)sender).PreviewKeyDown -= new PreviewKeyDownEventHandler(sci_PreviewKeyDown);
             UITools.Manager.OnCharAdded -= new UITools.CharAddedHandler(OnChar);
             UITools.Manager.OnTextChanged -= new UITools.TextChangedHandler(OnTextChanged);
+            CompletionList.OnInsert -= new InsertedTextHandler(CompletionList_OnInsert);
         }
 
 		#endregion
