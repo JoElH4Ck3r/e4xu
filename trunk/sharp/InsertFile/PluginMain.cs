@@ -33,7 +33,7 @@ namespace InsertFile
         private String word;
         private List<ICompletionListItem> completionList;
         private Boolean completing = false;
-        private Regex notAllowed = new Regex("[\\x00-\\x20\\*\\?:%\"<>\\x7F]", RegexOptions.Compiled);
+        private Regex notAllowed = new Regex("[\\x00-\\x1F\\*\\?%\"<>\\x7F]", RegexOptions.Compiled);
 
 	    #region Required Properties
 
@@ -215,11 +215,13 @@ namespace InsertFile
         {
             Char ch = (Char)value;
             FileInfo fi;
-            DirectoryInfo di;
+            DirectoryInfo di = null;
+            DirectoryInfo sdi = null;
             String desc;
             FileInfo[] foundFiles;
             DirectoryInfo[] foundDirectories;
             List<String> fileList;
+            List<String> dirList;
             Int32 pathEnd = 1;
             String[] parts;
 
@@ -234,7 +236,15 @@ namespace InsertFile
                 }
                 else
                 {
-                    di = new DirectoryInfo(this.pathSoFar.Substring(0, this.pathSoFar.Length));
+                    try
+                    {
+                        di = new DirectoryInfo(this.pathSoFar.Substring(0, this.pathSoFar.Length));
+                    }
+                    catch
+                    {
+                        this.FinishFileCompletion(sci, null);
+                        return;
+                    }
                     parts = this.pathSoFar.Split(new char[2] { '/', '\\' });
                     this.word = parts[parts.Length - 1];
                     
@@ -243,15 +253,19 @@ namespace InsertFile
                         foundFiles = di.GetFiles();
                         foundDirectories = di.GetDirectories();
                         fileList = new List<String>();
+                        dirList = new List<String>();
+                        foreach (DirectoryInfo fd in foundDirectories)
+                        {
+                            dirList.Add(fd.Name);
+                        }
+                        dirList.Sort();
                         foreach (FileInfo ff in foundFiles)
                         {
                             fileList.Add(ff.Name);
                         }
-                        foreach (DirectoryInfo fd in foundDirectories)
-                        {
-                            fileList.Add(fd.Name);
-                        }
-                        this.files = fileList.ToArray();
+                        fileList.Sort();
+                        dirList.AddRange(fileList);
+                        this.files = dirList.ToArray();
                     }
                     else this.files = Environment.GetLogicalDrives();
                 }
@@ -263,23 +277,36 @@ namespace InsertFile
                 if (this.pathSoFar.IndexOf('\\') > -1)
                     pathEnd = Math.Max(pathEnd, this.pathSoFar.LastIndexOf('\\'));
                 pathEnd = Math.Min(pathEnd, this.pathSoFar.Length - 1);
-                di = new DirectoryInfo(this.pathSoFar.Substring(0, pathEnd + 1));
+                try
+                {
+                    di = new DirectoryInfo(this.pathSoFar.Substring(0, pathEnd + 1));
+                }
+                catch
+                {
+                    this.FinishFileCompletion(sci, null);
+                    return;
+                }
                 this.word = this.pathSoFar.Substring(pathEnd + 1);
-                if (String.IsNullOrEmpty(this.word)) this.word = (String)this.pathSoFar.Clone();
+                if (String.IsNullOrEmpty(this.word))
+                    this.word = (String)this.pathSoFar.Clone();
                 if (di.Exists)
                 {
                     foundFiles = di.GetFiles();
                     foundDirectories = di.GetDirectories();
                     fileList = new List<String>();
+                    dirList = new List<String>();
+                    foreach (DirectoryInfo fd in foundDirectories)
+                    {
+                        dirList.Add(fd.Name);
+                    }
+                    dirList.Sort();
                     foreach (FileInfo ff in foundFiles)
                     {
                         fileList.Add(ff.Name);
                     }
-                    foreach (DirectoryInfo fd in foundDirectories)
-                    {
-                        fileList.Add(fd.Name);
-                    }
-                    this.files = fileList.ToArray();
+                    fileList.Sort();
+                    dirList.AddRange(fileList);
+                    this.files = dirList.ToArray();
                 }
                 else this.files = Environment.GetLogicalDrives();
             }
@@ -288,17 +315,13 @@ namespace InsertFile
             {
                 foreach (String s in this.files)
                 {
-                    fi = new FileInfo(s);
-                    if (!fi.Exists) desc = "Hard Drive";
-                    else
+                    sdi = new DirectoryInfo(Path.Combine(di.FullName, s));
+                    if (sdi.Exists)
                     {
-                        di = new DirectoryInfo(s);
-                        if (!di.Exists)
-                        {
-                            desc = "File";
-                        }
-                        else desc = "Folder";
+                        if (s.IndexOf(':') > -1) desc = "Hard Disc";
+                        else desc = "Directory";
                     }
+                    else desc = "File";
                     this.completionList.Add(new FileCompletionItem(s, s, desc));
                 }
             }
@@ -308,17 +331,13 @@ namespace InsertFile
                 {
                     if (!s.ToLower().StartsWith(this.word.ToLower()))
                         continue;
-                    fi = new FileInfo(s);
-                    if (!fi.Exists) desc = "Hard Drive";
-                    else
+                    sdi = new DirectoryInfo(Path.Combine(di.FullName, s));
+                    if (sdi.Exists)
                     {
-                        di = new DirectoryInfo(s);
-                        if (!di.Exists)
-                        {
-                            desc = "File";
-                        }
-                        else desc = "Folder";
+                        if (s.IndexOf(':') > -1) desc = "Hard Disc";
+                        else desc = "Directory";
                     }
+                    else desc = "File";
                     this.completionList.Add(new FileCompletionItem(s, s.Substring(word.Length), desc));
                 }
             }
@@ -365,6 +384,7 @@ namespace InsertFile
 
         private void FinishFileCompletion(Object sender, System.EventArgs e)
         {
+            Console.WriteLine("FinishFileCompletion");
             this.completing = false;
             this.pathSoFar = "";
             this.word = "";
