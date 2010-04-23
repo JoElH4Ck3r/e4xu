@@ -12,6 +12,7 @@ using PluginCore.Localization;
 using PluginCore.Managers;
 using PluginCore.Utilities;
 using ScintillaNet;
+using System.Text.RegularExpressions;
 
 namespace InsertFile
 {
@@ -32,6 +33,7 @@ namespace InsertFile
         private String word;
         private List<ICompletionListItem> completionList;
         private Boolean completing = false;
+        private Regex notAllowed = new Regex("[\\x00-\\x20\\*\\?:%\"<>\\x7F]", RegexOptions.Compiled);
 
 	    #region Required Properties
 
@@ -348,6 +350,11 @@ namespace InsertFile
             }
             if (length > 0)
             {
+                if (this.notAllowed.IsMatch(added))
+                {
+                    this.FinishFileCompletion(sender, null);
+                    return;
+                }
                 this.pathSoFar += added;
             }
             else
