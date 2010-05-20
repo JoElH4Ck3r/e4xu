@@ -1,0 +1,15 @@
+<shx:resources version="9" compress="false" package="$(Package)"
+	xmlns:shx="http://mindless-labs.com/samhaxe"
+	xmlns:bin="http://mindless-labs.com/samhaxe/modules/Binary"
+	xmlns:comp="http://mindless-labs.com/samhaxe/modules/Compose"
+	xmlns:font="http://mindless-labs.com/samhaxe/modules/Font"
+	xmlns:img="http://mindless-labs.com/samhaxe/modules/Image"
+	xmlns:snd="http://mindless-labs.com/samhaxe/modules/Sound"
+	xmlns:swf="http://mindless-labs.com/samhaxe/modules/Swf"
+	>
+
+	<shx:frame>
+		$(EntryPoint)
+	</shx:frame>
+
+</shx:resources>

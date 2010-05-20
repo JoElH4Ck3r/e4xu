@@ -16,7 +16,6 @@
     <class path="src" />
     <class path="examples" />
     <class path="e4xuc\ASProject" />
-    <class path="..\as3-signals\src" />
   </classpaths>
   <!-- Build options -->
   <build>
@@ -39,9 +38,9 @@
     <option linkReport="" />
     <option loadExterns="" />
     <option staticLinkRSL="True" />
-    <option additional="-compiler.namespaces.namespace http://e4xu.googlecode.com c:\www\projects\xmlhelpers\run\manifest.xml&#xA;-keep&#xA;-link-report C:\www\projects\xmlhelpers\run\dependencies.xml&#xA;-dump-config C:\www\projects\xmlhelpers\run\config.xml" />
+    <option additional="-compiler.namespaces.namespace http://e4xu.googlecode.com c:\projects\e4xu\trunk\run\manifest.xml&#xA;-keep&#xA;-link-report C:\projects\e4xu\trunk\run\dependencies.xml&#xA;-dump-config C:\projects\e4xu\trunk\run\config.xml" />
     <option compilerConstants="" />
-    <option customSDK="C:\flex-trunk" />
+    <option customSDK="C:\flex\4" />
   </build>
   <!-- SWC Include Libraries -->
   <includeLibraries>
@@ -71,7 +70,7 @@
   </library>
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>
-    <compile path="src\tests\TestSignalvsDispatcher.as" />
+    <compile path="src\tests\TreeSelectionTest.mxml" />
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>
