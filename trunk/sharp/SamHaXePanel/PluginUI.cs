@@ -80,6 +80,7 @@ namespace SamHaXePanel
             this.addButton.Image = LocaleHelper.GetImage("SamIcon");
             this.runButton.Image = PluginBase.MainForm.FindImage("127");
             this.refreshButton.Image = PluginBase.MainForm.FindImage("66");
+            this.createNewBtn.Image = PluginBase.MainForm.FindImage("277");
 
             this.CreateMenus();
             this.RefreshData();
@@ -88,6 +89,7 @@ namespace SamHaXePanel
             this.treeView.NodeMouseDoubleClick += new TreeNodeMouseClickEventHandler(treeView_NodeMouseDoubleClick);
             this.addButton.Click += new EventHandler(addButton_Click);
             this.runButton.Click += new EventHandler(runButton_Click);
+            this.createNewBtn.Click += new EventHandler(createNewBtn_Click);
         }
 
         private void CreateMenus()
@@ -668,6 +670,16 @@ namespace SamHaXePanel
         private void runButton_Click(object sender, EventArgs e)
         {
             this.RunTarget();
+        }
+
+        private void createNewBtn_Click(object sender, EventArgs e)
+        {
+            CreateResourcesFile dialog = new CreateResourcesFile();
+            DialogResult res = dialog.ShowDialog();
+            if (res == DialogResult.OK)
+            {
+
+            }
         }
 
         private void RunTarget()

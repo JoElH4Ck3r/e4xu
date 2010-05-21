@@ -45,11 +45,10 @@ namespace SamHaXePanel
             this.treeView = new System.Windows.Forms.TreeView();
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.addButton = new System.Windows.Forms.ToolStripButton();
-            this.refreshButton = new System.Windows.Forms.ToolStripButton();
             this.runButton = new System.Windows.Forms.ToolStripButton();
             this.flashMovie = new AxShockwaveFlashObjects.AxShockwaveFlash();
             this.imageDisplay = new System.Windows.Forms.PictureBox();
-            this.createNewBtn = new System.Windows.Forms.ToolStripButton();
+            this.refreshButton = new System.Windows.Forms.ToolStripButton();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -99,11 +98,6 @@ namespace SamHaXePanel
             // toolStrip
             // 
             this.toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addButton,
-            this.refreshButton,
-            this.runButton,
-            this.createNewBtn});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.Size = new System.Drawing.Size(279, 25);
@@ -118,17 +112,6 @@ namespace SamHaXePanel
             this.addButton.Size = new System.Drawing.Size(46, 22);
             this.addButton.Text = "Add";
             this.addButton.ToolTipText = "Add build file";
-            // 
-            // refreshButton
-            // 
-            this.refreshButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.refreshButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.refreshButton.Image = ((System.Drawing.Image)(resources.GetObject("refreshButton.Image")));
-            this.refreshButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.refreshButton.Name = "refreshButton";
-            this.refreshButton.Size = new System.Drawing.Size(23, 22);
-            this.refreshButton.Text = "toolStripButton2";
-            this.refreshButton.ToolTipText = "Refresh";
             // 
             // runButton
             // 
@@ -159,13 +142,16 @@ namespace SamHaXePanel
             this.imageDisplay.TabIndex = 0;
             this.imageDisplay.TabStop = false;
             // 
-            // createNewBtn
+            // refreshButton
             // 
-            this.createNewBtn.Image = ((System.Drawing.Image)(resources.GetObject("createNewBtn.Image")));
-            this.createNewBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.createNewBtn.Name = "createNewBtn";
-            this.createNewBtn.Size = new System.Drawing.Size(48, 22);
-            this.createNewBtn.Text = "New";
+            this.refreshButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.refreshButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.refreshButton.Image = ((System.Drawing.Image)(resources.GetObject("refreshButton.Image")));
+            this.refreshButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.refreshButton.Name = "refreshButton";
+            this.refreshButton.Size = new System.Drawing.Size(23, 22);
+            this.refreshButton.Text = "toolStripButton2";
+            this.refreshButton.ToolTipText = "Refresh";
             // 
             // PluginUI
             // 
@@ -260,11 +246,10 @@ namespace SamHaXePanel
         private TreeView treeView;
         private ToolStrip toolStrip;
         private ToolStripButton addButton;
-        private ToolStripButton refreshButton;
         private ToolStripButton runButton;
         private PictureBox imageDisplay;
         private AxShockwaveFlashObjects.AxShockwaveFlash flashMovie;
-        private ToolStripButton createNewBtn;
+        private ToolStripButton refreshButton;
 
 
 
