@@ -48,11 +48,13 @@ namespace SamHaXePanel
             this.refreshButton = new System.Windows.Forms.ToolStripButton();
             this.runButton = new System.Windows.Forms.ToolStripButton();
             this.imageDisplay = new System.Windows.Forms.PictureBox();
+            this.flashMovie = new AxShockwaveFlashObjects.AxShockwaveFlash();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.toolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.imageDisplay)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.flashMovie)).BeginInit();
             this.SuspendLayout();
             // 
             // imageList
@@ -75,6 +77,8 @@ namespace SamHaXePanel
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.splitContainer1.Panel2.Controls.Add(this.flashMovie);
             this.splitContainer1.Panel2.Controls.Add(this.imageDisplay);
             this.splitContainer1.Size = new System.Drawing.Size(279, 310);
             this.splitContainer1.SplitterDistance = 178;
@@ -142,6 +146,17 @@ namespace SamHaXePanel
             this.imageDisplay.TabIndex = 0;
             this.imageDisplay.TabStop = false;
             // 
+            // flashMovie
+            // 
+            this.flashMovie.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flashMovie.Enabled = true;
+            this.flashMovie.Location = new System.Drawing.Point(0, 0);
+            this.flashMovie.Name = "flashMovie";
+            this.flashMovie.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("flashMovie.OcxState")));
+            this.flashMovie.Size = new System.Drawing.Size(279, 128);
+            this.flashMovie.TabIndex = 1;
+            this.flashMovie.Visible = false;
+            // 
             // PluginUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -156,6 +171,7 @@ namespace SamHaXePanel
             this.toolStrip.ResumeLayout(false);
             this.toolStrip.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.imageDisplay)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.flashMovie)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -237,6 +253,7 @@ namespace SamHaXePanel
         private ToolStripButton refreshButton;
         private ToolStripButton runButton;
         private PictureBox imageDisplay;
+        private AxShockwaveFlashObjects.AxShockwaveFlash flashMovie;
 
 
 

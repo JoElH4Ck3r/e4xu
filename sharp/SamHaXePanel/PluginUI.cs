@@ -524,20 +524,47 @@ namespace SamHaXePanel
                     case ResourceNodeType.Font:
                         break;
                     case ResourceNodeType.Sound:
+                        this.PreviewMp3Content(currentNode);
                         break;
                     case ResourceNodeType.Swf:
+                        this.PreviewSWFContent(currentNode);
                         break;
                     case ResourceNodeType.Image:
-                        this.PreviewNodeContent(currentNode);
+                        this.PreviewImageContent(currentNode);
                         break;
                 }
             }
         }
 
-        private void PreviewNodeContent(SamTreeNode node)
+        private void PreviewMp3Content(SamTreeNode node)
         {
             if (File.Exists(node.File))
             {
+                if (!this.flashMovie.Visible)
+                    this.flashMovie.Visible = true;
+                this.imageDisplay.Width = this.splitContainer1.Width;
+                this.flashMovie.FlashVars = "sound=" + node.File;
+                this.flashMovie.LoadMovie(0, this.pluginMain.MP3Player);
+            }
+        }
+
+        private void PreviewSWFContent(SamTreeNode node)
+        {
+            if (File.Exists(node.File))
+            {
+                if (!this.flashMovie.Visible)
+                    this.flashMovie.Visible = true;
+                this.imageDisplay.Width = this.splitContainer1.Width;
+                this.flashMovie.LoadMovie(0, node.File);
+            }
+        }
+
+        private void PreviewImageContent(SamTreeNode node)
+        {
+            if (File.Exists(node.File))
+            {
+                if (this.flashMovie.Visible)
+                    this.flashMovie.Visible = false;
                 this.imageDisplay.Load(node.File);
             }
         }
