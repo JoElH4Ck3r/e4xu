@@ -49,10 +49,16 @@ namespace SamHaXePanel
         private Image pluginImage;
         private List<String> configFilesList;
         private Dictionary<String, SamSettings> buildSettings;
+        private String player;
 
         public List<String> ConfigFilesList
         {
             get { return this.configFilesList; }
+        }
+
+        public String MP3Player
+        {
+            get { return this.player; }
         }
 
 	    #region Required Properties
@@ -256,6 +262,22 @@ namespace SamHaXePanel
                 {
                     file.Write(template);
                     file.Close();
+                }
+            }
+            String dataPath = Path.Combine(PathHelper.DataDir, "SamHaXePanel");
+            if (Directory.Exists(dataPath))
+            {
+                Directory.CreateDirectory(dataPath);
+            }
+            this.player = Path.Combine(dataPath, "player.swf");
+            b = LocaleHelper.GetFile("MP3Player");
+            if (!File.Exists(this.player))
+            {
+                using (BinaryWriter binWriter =
+                    new BinaryWriter(File.Open(this.player, FileMode.Create)))
+                {
+                    binWriter.Write(b);
+                    binWriter.Close();
                 }
             }
         }

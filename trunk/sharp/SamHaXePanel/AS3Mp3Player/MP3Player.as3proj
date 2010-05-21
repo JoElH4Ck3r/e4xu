@@ -4,7 +4,7 @@
   <output>
     <movie disabled="False" />
     <movie input="" />
-    <movie path="bin\index.swf" />
+    <movie path="bin\MP3Player.swf" />
     <movie fps="30" />
     <movie width="800" />
     <movie height="600" />
@@ -14,8 +14,6 @@
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
     <class path="src" />
-    <class path="examples" />
-    <class path="e4xuc\ASProject" />
   </classpaths>
   <!-- Build options -->
   <build>
@@ -25,7 +23,7 @@
     <option es="False" />
     <option locale="" />
     <option loadConfig="" />
-    <option optimize="False" />
+    <option optimize="True" />
     <option showActionScriptWarnings="True" />
     <option showBindingWarnings="True" />
     <option showDeprecationWarnings="True" />
@@ -38,9 +36,9 @@
     <option linkReport="" />
     <option loadExterns="" />
     <option staticLinkRSL="True" />
-    <option additional="-compiler.namespaces.namespace http://e4xu.googlecode.com c:\projects\e4xu\trunk\run\manifest.xml&#xA;-keep&#xA;-link-report C:\projects\e4xu\trunk\run\dependencies.xml&#xA;-dump-config C:\projects\e4xu\trunk\run\config.xml" />
+    <option additional="" />
     <option compilerConstants="" />
-    <option customSDK="C:\flex\4" />
+    <option customSDK="" />
   </build>
   <!-- SWC Include Libraries -->
   <includeLibraries>
@@ -48,9 +46,7 @@
   </includeLibraries>
   <!-- SWC Libraries -->
   <libraryPaths>
-    <element path="lib\styles.swc" />
-    <element path="lib\scroller-skin\scroller_skin.swc" />
-    <element path="lib\button-skin\button_skin.swc" />
+    <!-- example: <element path="..." /> -->
   </libraryPaths>
   <!-- External Libraries -->
   <externalLibraryPaths>
@@ -62,7 +58,7 @@
   </rslPaths>
   <!-- Intrinsic Libraries -->
   <intrinsics>
-    <element path="Library\AS3\frameworks\Flex3" />
+    <!-- example: <element path="..." /> -->
   </intrinsics>
   <!-- Assets to embed into the output SWF -->
   <library>
@@ -70,11 +66,11 @@
   </library>
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>
-    <compile path="src\tests\TreeSelectionTest.mxml" />
+    <compile path="src\com\googlecode\e4xu\MP3Player\Player.as" />
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>
-    <hidden path="src\generated" />
+    <!-- example: <hidden path="..." /> -->
   </hiddenPaths>
   <!-- Executed before build -->
   <preBuildCommand />
@@ -82,7 +78,7 @@
   <postBuildCommand alwaysRun="False" />
   <!-- Other project options -->
   <options>
-    <option showHiddenPaths="True" />
-    <option testMovie="NewWindow" />
+    <option showHiddenPaths="False" />
+    <option testMovie="Default" />
   </options>
 </project>
