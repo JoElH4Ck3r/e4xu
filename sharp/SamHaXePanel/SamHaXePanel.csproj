@@ -165,6 +165,6 @@
     <None Include="Resources\SamIcon.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\MP3Player.swf" />
+    <None Include="AS3Mp3Player\bin\MP3Player.swf" />
   </ItemGroup>
 </Project>
