@@ -83,6 +83,11 @@ namespace SamHaXePanel
 
             this.CreateMenus();
             this.RefreshData();
+
+            this.treeView.NodeMouseClick += new TreeNodeMouseClickEventHandler(treeView_NodeMouseClick);
+            this.treeView.NodeMouseDoubleClick += new TreeNodeMouseClickEventHandler(treeView_NodeMouseDoubleClick);
+            this.addButton.Click += new EventHandler(addButton_Click);
+            this.runButton.Click += new EventHandler(runButton_Click);
         }
 
         private void CreateMenus()
@@ -175,6 +180,7 @@ namespace SamHaXePanel
             this.nsAdded = 0;
             Int32 c = node.Nodes.Count;
             SamTreeNode lastNode;
+            SamTreeNode rootNode = node;
             if (c == 0)
             {
                 lastNode = node;
@@ -183,6 +189,11 @@ namespace SamHaXePanel
             {
                 lastNode = (SamTreeNode)node.Nodes[c - 1];
             }
+            while (rootNode.ResourceType != ResourceNodeType.Root)
+            {
+                rootNode = (SamTreeNode)rootNode.Parent;
+            }
+            String relativeTo = Path.GetDirectoryName(rootNode.File);
             c = this.FindNodeInFile(lastNode);
             if (c < 0)
             {
@@ -237,7 +248,7 @@ namespace SamHaXePanel
                     {
                         if ((Char)sci.CharAt(c - 1) == '/')
                         {
-                            insert = this.NodeToXml(newNode);
+                            insert = this.NodeToXml(newNode, relativeTo);
                             Int32 ind = sci.LineIndentPosition(
                                 sci.LineFromPosition(this.nsAdded + c));
                             insertIndent = "";
@@ -253,7 +264,7 @@ namespace SamHaXePanel
                         }
                         else
                         {
-                            insert = this.NodeToXml(newNode);
+                            insert = this.NodeToXml(newNode, relativeTo);
                             Int32 ind = sci.LineIndentPosition(
                                 sci.LineFromPosition(this.nsAdded + c));
                             insertIndent = "";
@@ -275,7 +286,7 @@ namespace SamHaXePanel
             {
                 Int32 start = c - 1;
                 c = this.FindNodeEnd(c);
-                insert = this.NodeToXml(newNode);
+                insert = this.NodeToXml(newNode, relativeTo);
                 Int32 ind = sci.LineIndentPosition(
                     sci.LineFromPosition(this.nsAdded + c)) - 1;
                 insertIndent = "";
@@ -364,7 +375,7 @@ namespace SamHaXePanel
             this.RefreshData();
         }
 
-        private String NodeToXml(SamTreeNode node)
+        private String NodeToXml(SamTreeNode node, String relativeTo)
         {
             String template = "";
             Regex re = new Regex("([^\\/\\\\\\.]+)((\\.[^\\.]+$)|$)", RegexOptions.Compiled);
@@ -407,9 +418,7 @@ namespace SamHaXePanel
                     break;
             }
             String fullPath = 
-                ProjectManager.Projects.ProjectPaths.GetRelativePath(
-                Path.GetDirectoryName(
-                    PluginBase.CurrentProject.ProjectPath), node.File);
+                ProjectManager.Projects.ProjectPaths.GetRelativePath(relativeTo, node.File);
             template = template.Replace("${Path}", fullPath);
             String fName = re.Match(node.File).Groups[1].Value;
             fName = nonAlpha.Replace(fName, "");
@@ -497,6 +506,39 @@ namespace SamHaXePanel
                         this.resourceMenu.Show(this.treeView, e.Location);
                         break;
                 }
+            }
+            else
+            {
+                SamTreeNode currentNode = this.treeView.GetNodeAt(e.Location) as SamTreeNode;
+                this.treeView.SelectedNode = currentNode;
+                switch (currentNode.ResourceType)
+                {
+                    case ResourceNodeType.Root:
+                        break;
+                    case ResourceNodeType.Frame:
+                        break;
+                    case ResourceNodeType.Compose:
+                        break;
+                    case ResourceNodeType.Binary:
+                        break;
+                    case ResourceNodeType.Font:
+                        break;
+                    case ResourceNodeType.Sound:
+                        break;
+                    case ResourceNodeType.Swf:
+                        break;
+                    case ResourceNodeType.Image:
+                        this.PreviewNodeContent(currentNode);
+                        break;
+                }
+            }
+        }
+
+        private void PreviewNodeContent(SamTreeNode node)
+        {
+            if (File.Exists(node.File))
+            {
+                this.imageDisplay.Load(node.File);
             }
         }
 
@@ -605,7 +647,18 @@ namespace SamHaXePanel
         {
             SamTreeNode node = treeView.SelectedNode as SamTreeNode;
             if (node == null)
+            {
+                // TODO: Move this to resources.
+                MessageBox.Show("Nothing to run. Please select a valid target.");
                 return;
+            }
+            if (node.ResourceType != ResourceNodeType.Root)
+            {
+                while (node.ResourceType != ResourceNodeType.Root)
+                {
+                    node = (SamTreeNode)node.Parent;
+                }
+            }
             pluginMain.RunTarget(node.File, node.Settings);
         }
 
@@ -700,7 +753,7 @@ namespace SamHaXePanel
                 if (child.Name == shxns + ":frame")
                 {
                     SamTreeNode frameNode = new SamTreeNode("Frame #" + i, FRAME_ICON);
-                    this.ConstructFrameChildren(frameNode, child);
+                    this.ConstructFrameChildren(frameNode, child, Path.GetDirectoryName(file));
                     frameNode.File = file;
                     frameNode.ResourceType = ResourceNodeType.Frame;
                     rootNode.Nodes.Add(frameNode);
@@ -711,7 +764,7 @@ namespace SamHaXePanel
             return rootNode;
         }
 
-        private void ConstructFrameChildren(SamTreeNode frameNode, XmlNode node)
+        private void ConstructFrameChildren(SamTreeNode frameNode, XmlNode node, String fileLocation)
         {
             XmlNodeList nodes = node.ChildNodes;
             int nodeCount = nodes.Count;
@@ -771,7 +824,9 @@ namespace SamHaXePanel
                         {
                             file = fname.Match(import.InnerText).Value;
                             resNode = new SamTreeNode(file, icon);
-                            resNode.File = import.InnerText;
+                            if (Path.IsPathRooted(import.InnerText))
+                                resNode.File = import.InnerText;
+                            else resNode.File = Path.Combine(fileLocation, import.InnerText);
                         }
                         else
                         {

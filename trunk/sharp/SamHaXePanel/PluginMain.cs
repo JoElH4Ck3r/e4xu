@@ -290,10 +290,10 @@ namespace SamHaXePanel
             //--module-help module[=interface_version[;flash_version]][:module[=interface_version[;flash_version]]...]
             //       Prints help message of listed modules.
             if (!String.IsNullOrEmpty(settings.Config))
-                arguments += "-c " + settings.Config + " ";
+                arguments += "-c \"" + settings.Config + "\" ";
             if (!String.IsNullOrEmpty(settings.Depfile))
-                arguments += "-d " + settings.Depfile + " ";
-            arguments += settings.Input + " " + settings.Output;
+                arguments += "-d \"" + settings.Depfile + "\" ";
+            arguments += settings.Input + " \"" + settings.Output + "\"";
 
             Globals.MainForm.CallCommand("RunProcessCaptured", command + ";" + arguments);
         }
