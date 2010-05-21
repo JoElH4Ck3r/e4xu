@@ -40,14 +40,56 @@ namespace SamHaXePanel
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PluginUI));
+            this.imageList = new System.Windows.Forms.ImageList(this.components);
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.treeView = new System.Windows.Forms.TreeView();
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.addButton = new System.Windows.Forms.ToolStripButton();
             this.refreshButton = new System.Windows.Forms.ToolStripButton();
             this.runButton = new System.Windows.Forms.ToolStripButton();
-            this.treeView = new System.Windows.Forms.TreeView();
-            this.imageList = new System.Windows.Forms.ImageList(this.components);
+            this.imageDisplay = new System.Windows.Forms.PictureBox();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             this.toolStrip.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.imageDisplay)).BeginInit();
             this.SuspendLayout();
+            // 
+            // imageList
+            // 
+            this.imageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+            this.imageList.ImageSize = new System.Drawing.Size(16, 16);
+            this.imageList.TransparentColor = System.Drawing.Color.Transparent;
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer1.Name = "splitContainer1";
+            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.treeView);
+            this.splitContainer1.Panel1.Controls.Add(this.toolStrip);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.imageDisplay);
+            this.splitContainer1.Size = new System.Drawing.Size(279, 310);
+            this.splitContainer1.SplitterDistance = 178;
+            this.splitContainer1.TabIndex = 3;
+            // 
+            // treeView
+            // 
+            this.treeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeView.HideSelection = false;
+            this.treeView.Location = new System.Drawing.Point(0, 25);
+            this.treeView.Name = "treeView";
+            this.treeView.ShowNodeToolTips = true;
+            this.treeView.Size = new System.Drawing.Size(279, 153);
+            this.treeView.TabIndex = 3;
             // 
             // toolStrip
             // 
@@ -59,7 +101,7 @@ namespace SamHaXePanel
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.Size = new System.Drawing.Size(279, 25);
-            this.toolStrip.TabIndex = 0;
+            this.toolStrip.TabIndex = 2;
             this.toolStrip.Text = "toolStrip1";
             // 
             // addButton
@@ -70,7 +112,6 @@ namespace SamHaXePanel
             this.addButton.Size = new System.Drawing.Size(46, 22);
             this.addButton.Text = "Add";
             this.addButton.ToolTipText = "Add build file";
-            this.addButton.Click += new System.EventHandler(this.addButton_Click);
             // 
             // refreshButton
             // 
@@ -82,7 +123,6 @@ namespace SamHaXePanel
             this.refreshButton.Size = new System.Drawing.Size(23, 22);
             this.refreshButton.Text = "toolStripButton2";
             this.refreshButton.ToolTipText = "Refresh";
-            this.refreshButton.Click += new System.EventHandler(this.refreshButton_Click);
             // 
             // runButton
             // 
@@ -91,53 +131,38 @@ namespace SamHaXePanel
             this.runButton.Name = "runButton";
             this.runButton.Size = new System.Drawing.Size(49, 22);
             this.runButton.Text = "Build";
-            this.runButton.Click += new System.EventHandler(this.runButton_Click);
             // 
-            // treeView
+            // imageDisplay
             // 
-            this.treeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeView.HideSelection = false;
-            this.treeView.Location = new System.Drawing.Point(0, 25);
-            this.treeView.Name = "treeView";
-            this.treeView.ShowNodeToolTips = true;
-            this.treeView.Size = new System.Drawing.Size(279, 285);
-            this.treeView.TabIndex = 1;
-            this.treeView.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView_NodeMouseDoubleClick);
-            this.treeView.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView_BeforeExpand);
-            this.treeView.BeforeCollapse += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView_BeforeCollapse);
-            this.treeView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.treeView_MouseDown);
-            this.treeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView_NodeMouseClick);
-            // 
-            // imageList
-            // 
-            this.imageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
-            this.imageList.ImageSize = new System.Drawing.Size(16, 16);
-            this.imageList.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.imageDisplay.Location = new System.Drawing.Point(0, 0);
+            this.imageDisplay.Name = "imageDisplay";
+            this.imageDisplay.Size = new System.Drawing.Size(279, 128);
+            this.imageDisplay.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.imageDisplay.TabIndex = 0;
+            this.imageDisplay.TabStop = false;
             // 
             // PluginUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.treeView);
-            this.Controls.Add(this.toolStrip);
+            this.Controls.Add(this.splitContainer1);
             this.Name = "PluginUI";
             this.Size = new System.Drawing.Size(279, 310);
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel1.PerformLayout();
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.ResumeLayout(false);
             this.toolStrip.ResumeLayout(false);
             this.toolStrip.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.imageDisplay)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.ToolStrip toolStrip;
-        private System.Windows.Forms.TreeView treeView;
-        private System.Windows.Forms.ToolStripButton addButton;
-        private System.Windows.Forms.ToolStripButton refreshButton;
         private System.Windows.Forms.ImageList imageList;
-        private System.Windows.Forms.ToolStripButton runButton;
 
         #region DargDop
 
@@ -204,6 +229,15 @@ namespace SamHaXePanel
         }
 
         #endregion
+
+        private SplitContainer splitContainer1;
+        private TreeView treeView;
+        private ToolStrip toolStrip;
+        private ToolStripButton addButton;
+        private ToolStripButton refreshButton;
+        private ToolStripButton runButton;
+        private PictureBox imageDisplay;
+
 
 
     }
