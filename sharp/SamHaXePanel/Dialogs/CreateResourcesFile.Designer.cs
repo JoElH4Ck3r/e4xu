@@ -32,29 +32,32 @@
             this.cancelBTN = new System.Windows.Forms.Button();
             this.okBTN = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.compressedCB = new System.Windows.Forms.CheckBox();
             this.browseBTN = new System.Windows.Forms.Button();
             this.locationTXT = new System.Windows.Forms.TextBox();
-            this.compressedCB = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.packageTXT = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // versionDD
             // 
+            this.versionDD.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.versionDD.FormattingEnabled = true;
             this.versionDD.Items.AddRange(new object[] {
             "9",
             "10"});
-            this.versionDD.Location = new System.Drawing.Point(368, 44);
+            this.versionDD.Location = new System.Drawing.Point(368, 60);
             this.versionDD.Name = "versionDD";
             this.versionDD.Size = new System.Drawing.Size(84, 21);
             this.versionDD.TabIndex = 0;
             // 
             // cancelBTN
             // 
-            this.cancelBTN.Location = new System.Drawing.Point(257, 149);
+            this.cancelBTN.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.cancelBTN.Location = new System.Drawing.Point(257, 162);
             this.cancelBTN.Name = "cancelBTN";
             this.cancelBTN.Size = new System.Drawing.Size(225, 23);
             this.cancelBTN.TabIndex = 3;
@@ -63,7 +66,7 @@
             // 
             // okBTN
             // 
-            this.okBTN.Location = new System.Drawing.Point(13, 149);
+            this.okBTN.Location = new System.Drawing.Point(13, 162);
             this.okBTN.Name = "okBTN";
             this.okBTN.Size = new System.Drawing.Size(225, 23);
             this.okBTN.TabIndex = 4;
@@ -72,16 +75,36 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.label2);
+            this.groupBox1.Controls.Add(this.packageTXT);
+            this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.compressedCB);
             this.groupBox1.Controls.Add(this.versionDD);
             this.groupBox1.Location = new System.Drawing.Point(13, 58);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(469, 76);
+            this.groupBox1.Size = new System.Drawing.Size(469, 98);
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Optional Properties";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(246, 65);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(103, 13);
+            this.label3.TabIndex = 3;
+            this.label3.Text = "Output SWF version";
+            // 
+            // compressedCB
+            // 
+            this.compressedCB.AutoSize = true;
+            this.compressedCB.Location = new System.Drawing.Point(87, 64);
+            this.compressedCB.Name = "compressedCB";
+            this.compressedCB.Size = new System.Drawing.Size(84, 17);
+            this.compressedCB.TabIndex = 1;
+            this.compressedCB.Text = "Compressed";
+            this.compressedCB.UseVisualStyleBackColor = true;
             // 
             // browseBTN
             // 
@@ -100,16 +123,6 @@
             this.locationTXT.TabIndex = 7;
             this.locationTXT.WordWrap = false;
             // 
-            // compressedCB
-            // 
-            this.compressedCB.AutoSize = true;
-            this.compressedCB.Location = new System.Drawing.Point(368, 19);
-            this.compressedCB.Name = "compressedCB";
-            this.compressedCB.Size = new System.Drawing.Size(84, 17);
-            this.compressedCB.TabIndex = 1;
-            this.compressedCB.Text = "Compressed";
-            this.compressedCB.UseVisualStyleBackColor = true;
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -119,29 +132,29 @@
             this.label1.TabIndex = 8;
             this.label1.Text = "New resource file location";
             // 
+            // packageTXT
+            // 
+            this.packageTXT.Location = new System.Drawing.Point(87, 19);
+            this.packageTXT.Name = "packageTXT";
+            this.packageTXT.Size = new System.Drawing.Size(365, 20);
+            this.packageTXT.TabIndex = 4;
+            // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 20);
+            this.label2.Location = new System.Drawing.Point(19, 23);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(115, 13);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "Compress SWF Output";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 52);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(103, 13);
-            this.label3.TabIndex = 3;
-            this.label3.Text = "Output SWF version";
+            this.label2.Size = new System.Drawing.Size(50, 13);
+            this.label2.TabIndex = 5;
+            this.label2.Text = "Package";
             // 
             // CreateResourcesFile
             // 
+            this.AcceptButton = this.okBTN;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(494, 188);
+            this.CancelButton = this.cancelBTN;
+            this.ClientSize = new System.Drawing.Size(494, 198);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.locationTXT);
             this.Controls.Add(this.browseBTN);
@@ -175,5 +188,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox packageTXT;
     }
 }
