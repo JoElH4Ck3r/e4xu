@@ -8,9 +8,9 @@ using System.Windows.Forms;
 
 namespace SamHaXePanel.Dialogs
 {
-    public partial class AddResourceDialog : Form
+    public partial class AddFontDialog : Form
     {
-        public AddResourceDialog()
+        public AddFontDialog()
         {
             InitializeComponent();
         }

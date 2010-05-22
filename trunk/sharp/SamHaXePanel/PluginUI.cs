@@ -12,6 +12,7 @@ using System.Reflection;
 using SamHaXePanel.Resources;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 
 namespace SamHaXePanel
 {
@@ -57,6 +58,7 @@ namespace SamHaXePanel
         private ContextMenuStrip buildFileMenu;
         private ContextMenuStrip frameMenu;
         private ContextMenuStrip resourceMenu;
+        private ContextMenuStrip fontMenu;
         private Int32 nsAdded = 0;
         
         public PluginUI(PluginMain pluginMain)
@@ -114,6 +116,13 @@ namespace SamHaXePanel
             this.resourceMenu.Items.Add("Edit", null, this.MenuEditClick);
             this.resourceMenu.Items.Add(new ToolStripSeparator());
             this.resourceMenu.Items.Add("Remove", remImage, this.RemoveNodeClick);
+
+            this.fontMenu = new ContextMenuStrip();
+            this.fontMenu.Items.Add("Edit in external editor", null, this.EditExternalClick);
+            this.fontMenu.Items.Add("Edit", null, this.MenuEditClick);
+            this.fontMenu.Items.Add("Embed ranges", null, this.EmbedRangesClick);
+            this.fontMenu.Items.Add(new ToolStripSeparator());
+            this.fontMenu.Items.Add("Remove", remImage, this.RemoveNodeClick);
         }
 
         private void AddFrameClick(object sender, EventArgs e)
@@ -124,6 +133,12 @@ namespace SamHaXePanel
             //{
             //    Console.WriteLine(n.Text);
             //}
+        }
+
+        private void EmbedRangesClick(Object sender, EventArgs e)
+        {
+            AddFontDialog dialog = new AddFontDialog();
+            dialog.Show();
         }
 
         private void AddResourceClick(object sender, EventArgs e)
@@ -496,6 +511,7 @@ namespace SamHaXePanel
             {
                 SamTreeNode currentNode = this.treeView.GetNodeAt(e.Location) as SamTreeNode;
                 this.treeView.SelectedNode = currentNode;
+                Console.WriteLine("currentNode.ResourceType " + currentNode.ResourceType);
                 switch (currentNode.ResourceType)
                 {
                     case ResourceNodeType.Root:
@@ -503,6 +519,9 @@ namespace SamHaXePanel
                         break;
                     case ResourceNodeType.Frame:
                         this.frameMenu.Show(this.treeView, e.Location);
+                        break;
+                    case ResourceNodeType.Font:
+                        this.fontMenu.Show(this.treeView, e.Location);
                         break;
                     default:
                         this.resourceMenu.Show(this.treeView, e.Location);
@@ -676,9 +695,41 @@ namespace SamHaXePanel
         {
             CreateResourcesFile dialog = new CreateResourcesFile();
             DialogResult res = dialog.ShowDialog();
-            if (res == DialogResult.OK)
+            if (res == DialogResult.OK || res == DialogResult.Yes)
             {
-
+                Byte[] b = LocaleHelper.GetFile("SamTemplate0");
+                String template = UTF8Encoding.Default.GetString(b);
+                template = template.Replace("$(Package)", dialog.Package);
+                template = template.Replace("version=\"9\"", "version=\"" + dialog.Version + "\"");
+                template = template.Replace("compress=\"true\"", "compress=\"" + 
+                    dialog.Compressed.ToString().ToLower() + "\"");
+                using (StreamWriter file = new StreamWriter(dialog.ResourceFilePath))
+                {
+                    file.Write(template);
+                    file.Close();
+                }
+                Globals.MainForm.OpenEditableDocument(dialog.ResourceFilePath, false);
+                this.pluginMain.AddConfigFiles(new String[]{ dialog.ResourceFilePath });
+                ScintillaControl sci = Globals.SciControl;
+                Int32 pos = 0;
+                Char ch;
+                // TODO: This doesn't seem to work because of the csi isn't focused
+                // see if we can focus it before moving cursor
+                while (pos < sci.Length)
+                {
+                    ch = (Char)sci.CharAt(pos);
+                    if (ch == '$')
+                    {
+                        if (sci.GetWordFromPosition(pos + 2) == "EntryPoint")
+                        {
+                            sci.SetSel(pos, pos + 13);
+                            sci.DeleteBack();
+                            sci.SetSel(pos, pos + 1);
+                            break;
+                        }
+                    }
+                    pos++;
+                }
             }
         }
 
@@ -840,6 +891,7 @@ namespace SamHaXePanel
                             case 3://"http://mindless-labs.com/samhaxe/modules/Font"
                                 type = "Font";
                                 icon = FONT_ICON;
+                                resType = ResourceNodeType.Font;
                                 break;
                             case 4://"http://mindless-labs.com/samhaxe/modules/Image"
                                 type = "Image";
@@ -871,6 +923,7 @@ namespace SamHaXePanel
                         {
                             resNode = new SamTreeNode(type + " #" + j, icon);
                         }
+                        Console.WriteLine("Created node of type: " + resType + " : from " + resNode.File + " : " + uri);
                         resNode.ResourceType = resType;
                         frameNode.Nodes.Add(resNode);
                         break;
