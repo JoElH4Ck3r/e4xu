@@ -5,6 +5,8 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using SamHaXePanel.Resources;
+using PluginCore;
 
 namespace SamHaXePanel.Dialogs
 {
@@ -162,6 +164,11 @@ namespace SamHaXePanel.Dialogs
         {
             InitializeComponent();
             this.fontGrid.AllowUserToResizeRows = false;
+
+            this.addSelectedBTN.Image = PluginBase.MainForm.FindImage("461");
+            this.removeSelectedBTN.Image = PluginBase.MainForm.FindImage("153");
+            this.optimizeBTN.Image = PluginBase.MainForm.FindImage("133");
+
             this.activePlanes = new Dictionary<String, LanguagePlane>();
             this.activePlanes["Basic Latin"] = allPlanes["Basic Latin"];
             this.activePlanes["Latin-1 Supplement"] = allPlanes["Latin-1 Supplement"];
