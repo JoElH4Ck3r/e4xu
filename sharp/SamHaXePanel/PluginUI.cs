@@ -19,6 +19,8 @@ namespace SamHaXePanel
 {
     public partial class PluginUI : UserControl
     {
+        #region Public static properties
+
         public const int SAM_ICON = 0;
         public const int FRAME_ICON = 1;
         public const int IMAGE_ICON = 2;
@@ -55,6 +57,10 @@ namespace SamHaXePanel
             @"<${Ns}:swf import=""${Path}"" class=""${Class}Swf""/>"
         };
 
+        #endregion
+
+        #region Private properties
+
         private PluginMain pluginMain;
         private ContextMenuStrip buildFileMenu;
         private ContextMenuStrip frameMenu;
@@ -62,6 +68,8 @@ namespace SamHaXePanel
         private ContextMenuStrip fontMenu;
         private Int32 nsAdded = 0;
         private PrivateFontCollection fontCollection;
+
+        #endregion
 
         // TODO: This should go to settings
         public String FontTestString = "Quick brown fox jumped over the lazy dog.";
@@ -88,6 +96,7 @@ namespace SamHaXePanel
             this.runButton.Image = PluginBase.MainForm.FindImage("127");
             this.refreshButton.Image = PluginBase.MainForm.FindImage("66");
             this.createNewBtn.Image = PluginBase.MainForm.FindImage("277");
+            this.exportTSDB.Image = PluginBase.MainForm.FindImage("243");
 
             this.fontPreviewLB.Text = this.FontTestString;
             this.fontPreviewLB.Visible = false;
@@ -95,176 +104,43 @@ namespace SamHaXePanel
             this.CreateMenus();
             this.RefreshData();
 
-            this.treeView.NodeMouseClick += new TreeNodeMouseClickEventHandler(treeView_NodeMouseClick);
-            this.treeView.NodeMouseDoubleClick += new TreeNodeMouseClickEventHandler(treeView_NodeMouseDoubleClick);
-            this.addButton.Click += new EventHandler(addButton_Click);
-            this.runButton.Click += new EventHandler(runButton_Click);
-            this.createNewBtn.Click += new EventHandler(createNewBtn_Click);
-            this.refreshButton.Click += new EventHandler(refreshButton_Click);
+            this.treeView.NodeMouseClick += new TreeNodeMouseClickEventHandler(treeView_NodeMouseClickHandler);
+            this.treeView.NodeMouseDoubleClick += new TreeNodeMouseClickEventHandler(treeView_NodeMouseDoubleClickHandler);
+            this.addButton.Click += new EventHandler(addButton_ClickHandler);
+            this.runButton.Click += new EventHandler(runButton_ClickHandler);
+            this.createNewBtn.Click += new EventHandler(createNewBtn_ClickHandler);
+            this.refreshButton.Click += new EventHandler(refreshButton_ClickHandler);
         }
 
         private void CreateMenus()
         {
             Image remImage = PluginBase.MainForm.FindImage("153");
             this.buildFileMenu = new ContextMenuStrip();
-            this.buildFileMenu.Items.Add("Compile", this.runButton.Image, this.CompileClick);
-            this.buildFileMenu.Items.Add("Edit", null, this.MenuEditClick);
-            this.buildFileMenu.Items.Add("Configure", null, this.ConfigClick);
-            this.buildFileMenu.Items.Add("Add Frame", null, this.AddFrameClick);
+            this.buildFileMenu.Items.Add("Compile", this.runButton.Image, this.Compile_ClickHandler);
+            this.buildFileMenu.Items.Add("Edit", null, this.MenuEdit_ClickHandler);
+            this.buildFileMenu.Items.Add("Configure", null, this.Config_ClickHandler);
+            this.buildFileMenu.Items.Add("Add Frame", null, this.AddFrame_ClickHandler);
             this.buildFileMenu.Items.Add(new ToolStripSeparator());
-            this.buildFileMenu.Items.Add("Remove", remImage, this.MenuRemoveClick);
+            this.buildFileMenu.Items.Add("Remove", remImage, this.MenuRemove_ClickHandler);
 
             this.frameMenu = new ContextMenuStrip();
-            this.frameMenu.Items.Add("Add resources", null, this.AddResourceClick);
-            this.frameMenu.Items.Add("Edit", null, this.MenuEditClick);
+            this.frameMenu.Items.Add("Add resources", null, this.AddResource_ClickHandler);
+            this.frameMenu.Items.Add("Edit", null, this.MenuEdit_ClickHandler);
             this.frameMenu.Items.Add(new ToolStripSeparator());
-            this.frameMenu.Items.Add("Remove", remImage, this.RemoveNodeClick);
+            this.frameMenu.Items.Add("Remove", remImage, this.RemoveNode_ClickHandler);
 
             this.resourceMenu = new ContextMenuStrip();
-            this.resourceMenu.Items.Add("Edit in external editor", null, this.EditExternalClick);
-            this.resourceMenu.Items.Add("Edit", null, this.MenuEditClick);
+            this.resourceMenu.Items.Add("Edit in external editor", null, this.EditExternal_ClickHandler);
+            this.resourceMenu.Items.Add("Edit", null, this.MenuEdit_ClickHandler);
             this.resourceMenu.Items.Add(new ToolStripSeparator());
-            this.resourceMenu.Items.Add("Remove", remImage, this.RemoveNodeClick);
+            this.resourceMenu.Items.Add("Remove", remImage, this.RemoveNode_ClickHandler);
 
             this.fontMenu = new ContextMenuStrip();
-            this.fontMenu.Items.Add("Edit in external editor", null, this.EditExternalClick);
-            this.fontMenu.Items.Add("Edit", null, this.MenuEditClick);
-            this.fontMenu.Items.Add("Embed ranges", null, this.EmbedRangesClick);
+            this.fontMenu.Items.Add("Edit in external editor", null, this.EditExternal_ClickHandler);
+            this.fontMenu.Items.Add("Edit", null, this.MenuEdit_ClickHandler);
+            this.fontMenu.Items.Add("Embed ranges", null, this.EmbedRanges_ClickHandler);
             this.fontMenu.Items.Add(new ToolStripSeparator());
-            this.fontMenu.Items.Add("Remove", remImage, this.RemoveNodeClick);
-        }
-
-        private void AddFrameClick(object sender, EventArgs e)
-        {
-            MessageBox.Show("Not implemented yet.");
-            //TreeNodeCollection nodes = this.treeView.Nodes[0].Nodes;
-            //foreach (TreeNode n in nodes)
-            //{
-            //    Console.WriteLine(n.Text);
-            //}
-        }
-
-        private void EmbedRangesClick(Object sender, EventArgs e)
-        {
-            AddFontDialog dialog = new AddFontDialog();
-            SamTreeNode node = (SamTreeNode)this.treeView.SelectedNode;
-
-            String nodeContent = this.NodeContentFromXml(node);
-
-            dialog.SetFontPath(node.File);
-            dialog.ParseRanges(nodeContent);
-            DialogResult dr = dialog.ShowDialog();
-
-            if (dr == DialogResult.OK)
-            {
-                String insertStr = dialog.ExportXmlString().Replace("\n", "").Trim();
-                Int32 pos = this.FindNodeInFile(node);
-                ScintillaControl sci = Globals.SciControl;
-                Char ch;
-                String word = "";
-                Boolean wordCompleted = false;
-                Boolean inserted = false;
-                String nodeBody = "";
-                Int32 startedAt = pos;
-                String indentStr;
-
-                while (pos < sci.Length)
-                {
-                    ch = (Char)sci.CharAt(pos);
-                    if (!wordCompleted && ch != ' ' &&
-                        ch != '\t' && ch != '\r' && ch != '\n')
-                    {
-                        word += ch;
-                    }
-                    else wordCompleted = true;
-                    nodeBody += ch;
-
-                    if (ch == '>')
-                    {
-                        if ((Char)sci.CharAt(pos - 1) == '/')
-                        {
-                            sci.SetSel(pos - 1, pos);
-                            sci.DeleteBack();
-                            indentStr = this.InsertLinesIndented(
-                                insertStr.Split(new Char[] { '\r' }), pos, ref pos);
-                            sci.InsertText(pos, "\r" + indentStr + "</" + word + ">");
-                            inserted = true;
-                        }
-                        else
-                        {
-                            pos = this.FindNodeEnd(startedAt);
-                            if (pos < 0) break;
-                            while (pos > 0)
-                            {
-                                ch = (Char)sci.CharAt(pos);
-                                pos--;
-                                if (ch == '<')
-                                {
-                                    pos -= 2;
-                                    indentStr = this.InsertLinesIndented(
-                                        insertStr.Split(new Char[] { '\r' }), 
-                                        startedAt + nodeBody.Length, ref pos);
-                                    inserted = true;
-                                    break;
-                                }
-                            }
-                        }
-                        break;
-                    }
-                    pos++;
-                }
-                if (!inserted)
-                {
-                    // TODO: Move this to resources
-                    MessageBox.Show("Nothig was changed. " + 
-                        "Possibly invalid file structure. " + 
-                        "Correct the syntax and try again.");
-                }
-            }
-        }
-
-        private String NodeContentFromXml(SamTreeNode node)
-        {
-            Int32 pos = this.FindNodeInFile(node);
-            if (pos < 0)
-            {
-                MessageBox.Show("File structure invalid.");
-                return "";
-            }
-            Int32 end = this.FindNodeEnd(pos);
-            if (end < 0)
-            {
-                MessageBox.Show("File structure invalid.");
-                return "";
-            }
-            Char ch;
-            StringBuilder content = new StringBuilder();
-            ScintillaControl sci = Globals.SciControl;
-
-            while (pos < end)
-            {
-                ch = (Char)sci.CharAt(pos);
-                if (ch == '>')
-                {
-                    if ((Char)sci.CharAt(pos - 1) == '/')
-                        return "";
-                    else break;
-                }
-                pos++;
-            }
-            pos++;
-            while (pos < end)
-            {
-                ch = (Char)sci.CharAt(end);
-                if (ch == '<')  break;
-                end--;
-            }
-            while (pos < end)
-            {
-                content.Append((Char)sci.CharAt(pos));
-                pos++;
-            }
-            return content.ToString();
+            this.fontMenu.Items.Add("Remove", remImage, this.RemoveNode_ClickHandler);
         }
 
         private String InsertLinesIndented(String[] lines, Int32 startPos, ref Int32 endPos)
@@ -314,431 +190,6 @@ namespace SamHaXePanel
             if (indentChar == '\t')
                 return insertIndentStr.Substring(1);
             else return insertIndentStr.Substring(4);
-        }
-
-        private void AddResourceClick(object sender, EventArgs e)
-        {
-            OpenFileDialog dialog = new OpenFileDialog();
-            SamTreeNode node = (SamTreeNode)this.treeView.SelectedNode;
-            dialog.Filter =
-                "SWF Files (*.swf)|*.swf|" +
-                "Font Files (*.ttf,*.otf)|*.ttf;*.otf|" +
-                "Image Files (*.gif,*.jpeg,*.jpg,*.png)|*.gif;*.jpeg;*.jpg;*.png|" +
-                "Sound Files (*.mp3)|*.mp3|" +
-                "All files(*.*)|*.*";
-            dialog.Multiselect = true;
-            if (PluginBase.CurrentProject != null)
-            {
-                String fullPath = Path.GetDirectoryName(
-                        PluginBase.CurrentProject.ProjectPath);
-                dialog.CustomPlaces.Add(fullPath);
-                dialog.InitialDirectory = fullPath;
-            }
-            dialog.Title = "Browse for resource files";
-            DialogResult res = dialog.ShowDialog();
-            if (res == DialogResult.OK)
-            {
-                Int32 type = 1;
-                switch (dialog.FilterIndex)
-                {
-                    case 1:
-                        type = SWF_ICON;
-                        break;
-                    case 2:
-                        type = FONT_ICON;
-                        break;
-                    case 3:
-                        type = IMAGE_ICON;
-                        break;
-                    case 4:
-                        type = SOUND_ICON;
-                        break;
-                    case 5:
-                        type = BINARY_ICON;
-                        break;
-                }
-                this.treeView.BeginUpdate();
-                foreach (String fn in dialog.FileNames)
-                {
-                    if (!this.AddResourceNode(node, new FileInfo(fn), type))
-                        break;
-                }
-                this.treeView.EndUpdate();
-            }
-        }
-
-        private Boolean AddResourceNode(SamTreeNode node, FileInfo file, Int32 type)
-        {
-            this.nsAdded = 0;
-            Int32 c = node.Nodes.Count;
-            SamTreeNode lastNode;
-            SamTreeNode rootNode = node;
-            if (c == 0)
-            {
-                lastNode = node;
-            }
-            else
-            {
-                lastNode = (SamTreeNode)node.Nodes[c - 1];
-            }
-            while (rootNode.ResourceType != ResourceNodeType.Root)
-            {
-                rootNode = (SamTreeNode)rootNode.Parent;
-            }
-            String relativeTo = Path.GetDirectoryName(rootNode.File);
-            c = this.FindNodeInFile(lastNode);
-            if (c < 0)
-            {
-                // TODO: Put this into resources.
-                MessageBox.Show("Cannot make changes. File structure is invalid.");
-                return false;
-            }
-            SamTreeNode newNode = new SamTreeNode(file.Name, type);
-            newNode.File = file.FullName;
-
-            switch (type)
-            {
-                case SWF_ICON:
-                    newNode.ResourceType = ResourceNodeType.Swf;
-                    break;
-                case IMAGE_ICON:
-                    newNode.ResourceType = ResourceNodeType.Image;
-                    break;
-                case SOUND_ICON:
-                    newNode.ResourceType = ResourceNodeType.Sound;
-                    break;
-                case FONT_ICON:
-                    newNode.ResourceType = ResourceNodeType.Font;
-                    break;
-                case BINARY_ICON:
-                    newNode.ResourceType = ResourceNodeType.Binary;
-                    break;
-            }
-
-            node.Nodes.Add(newNode);
-            ScintillaControl sci = Globals.SciControl;
-            String insert;
-            String insertIndent;
-            Char ch;
-
-            if (node == lastNode)
-            {
-                String word = "";
-                Boolean nameKnown = false;
-                
-                while (c < sci.Length)
-                {
-                    ch = (Char)sci.CharAt(c);
-                    if (!nameKnown && ch != ' ' &&
-                        ch != '\t' && ch != '\r' && 
-                        ch != '\n' && ch != '>')
-                    {
-                        word += ch;
-                    }
-                    else nameKnown = true;
-                    if (ch == '>')
-                    {
-                        if ((Char)sci.CharAt(c - 1) == '/')
-                        {
-                            insert = this.NodeToXml(newNode, relativeTo);
-                            Int32 ind = sci.LineIndentPosition(
-                                sci.LineFromPosition(this.nsAdded + c));
-                            insertIndent = "";
-                            while (ch != '\r' && ch != '\n')
-                            {
-                                insertIndent += '\t';
-                                ind--;
-                                ch = (Char)sci.CharAt(ind);
-                            }
-                            insert = '\r' + insertIndent + insert + '\r';
-                            insert += insertIndent.Substring(1) + "</" + word + ">";
-                            sci.InsertText(this.nsAdded + c + 1, insert);
-                        }
-                        else
-                        {
-                            insert = this.NodeToXml(newNode, relativeTo);
-                            Int32 ind = sci.LineIndentPosition(
-                                sci.LineFromPosition(this.nsAdded + c));
-                            insertIndent = "";
-                            while (ch != '\r' && ch != '\n')
-                            {
-                                insertIndent += '\t';
-                                ind--;
-                                ch = (Char)sci.CharAt(ind);
-                            }
-                            insert = '\r' + insertIndent + insert + '\r';
-                            sci.InsertText(this.nsAdded + c + 1, insert);
-                        }
-                        break;
-                    }
-                    c++;
-                }
-            }
-            else
-            {
-                Int32 start = c - 1;
-                c = this.FindNodeEnd(c);
-                insert = this.NodeToXml(newNode, relativeTo);
-                Int32 ind = sci.LineIndentPosition(
-                    sci.LineFromPosition(this.nsAdded + c)) - 1;
-                insertIndent = "";
-                ch = (Char)sci.CharAt(ind);
-                while (ch != '\r' && ch != '\n')
-                {
-                    insertIndent += '\t';
-                    ind--;
-                    ch = (Char)sci.CharAt(ind);
-                }
-                insert = '\r' + insertIndent + insert;
-                sci.InsertText(this.nsAdded + c, insert);
-            }
-            return true;
-        }
-
-        private Int32 FindNodeEnd(Int32 startedAt)
-        {
-            startedAt--;
-            Int32 start = startedAt;
-            ScintillaControl sci = Globals.SciControl;
-            Char ch;
-            Int16 openCount = 0;
-            Boolean afterOpen = false;
-
-            while (true)
-            {
-                ch = (Char)sci.CharAt(startedAt);
-                if (ch == '>')
-                {
-                    if ((Char)sci.CharAt(startedAt - 1) == '/')
-                    {
-                        openCount--;
-                        afterOpen = false;
-                    }
-                }
-                else if (ch == '<')
-                {
-                    ch = (Char)sci.CharAt(startedAt + 1);
-                    if (ch == '/')
-                    {
-                        openCount--;
-                        afterOpen = true;
-                    }
-                    else if (ch != '!' && ch != '?' && ch != '-')
-                    {
-                        openCount++;
-                    }
-                }
-                if (openCount == 0 || sci.Length < startedAt)
-                {
-                    if (afterOpen)
-                    {
-                        while (ch != '>')
-                        {
-                            ch = (Char)sci.CharAt(startedAt);
-                            startedAt++;
-                        }
-                    }
-                    else startedAt++;
-                    break;
-                }
-                startedAt++;
-            }
-            return startedAt;
-        }
-
-        private void RemoveNodeClick(object sender, EventArgs e)
-        {
-            SamTreeNode node = (SamTreeNode)this.treeView.SelectedNode;
-
-            Int32 pos = this.FindNodeInFile(node);
-            if (pos < 0)
-            {
-                // TODO: Put this into resources.
-                MessageBox.Show("Cannot make changes. File structure is invalid.");
-                return;
-            }
-
-            Int32 start = pos - 1;
-            pos = this.FindNodeEnd(pos);
-            ScintillaControl sci = Globals.SciControl;
-            sci.SetSel(start, pos);
-            sci.DeleteBack();
-            this.treeView.Nodes.Remove(node);
-            this.RefreshData();
-        }
-
-        private String NodeToXml(SamTreeNode node, String relativeTo)
-        {
-            String template = "";
-            Regex re = new Regex("([^\\/\\\\\\.]+)((\\.[^\\.]+$)|$)", RegexOptions.Compiled);
-            Regex nonAlpha = new Regex("\\W", RegexOptions.Compiled);
-            String requiredNs = KnownNamespaces[0];
-            Boolean hasRequiredNs = false;
-            String knownPrefix = KnownPrefices[0];
-
-            switch (node.ResourceType)
-            {
-                case ResourceNodeType.Binary:
-                    template = Templates[0];
-                    requiredNs = KnownNamespaces[1];
-                    knownPrefix = KnownPrefices[1];
-                    break;
-                case ResourceNodeType.Compose:
-                    template = Templates[1];
-                    requiredNs = KnownNamespaces[2];
-                    knownPrefix = KnownPrefices[2];
-                    break;
-                case ResourceNodeType.Font:
-                    template = Templates[2];
-                    requiredNs = KnownNamespaces[3];
-                    knownPrefix = KnownPrefices[3];
-                    break;
-                case ResourceNodeType.Image:
-                    template = Templates[3];
-                    requiredNs = KnownNamespaces[4];
-                    knownPrefix = KnownPrefices[4];
-                    break;
-                case ResourceNodeType.Sound:
-                    template = Templates[4];
-                    requiredNs = KnownNamespaces[5];
-                    knownPrefix = KnownPrefices[5];
-                    break;
-                case ResourceNodeType.Swf:
-                    template = Templates[5];
-                    requiredNs = KnownNamespaces[6];
-                    knownPrefix = KnownPrefices[6];
-                    break;
-            }
-            String fullPath = 
-                ProjectManager.Projects.ProjectPaths.GetRelativePath(relativeTo, node.File);
-            template = template.Replace("${Path}", fullPath);
-            String fName = re.Match(node.File).Groups[1].Value;
-            fName = nonAlpha.Replace(fName, "");
-            fName = fName.ToCharArray()[0].ToString().ToUpper() + fName.Substring(1);
-            template = template.Replace("${Class}", fName);
-            ScintillaControl sci = Globals.SciControl;
-            XmlDocument xml = new XmlDocument();
-            try
-            {
-                xml.LoadXml(sci.Text);
-            }
-            catch
-            {
-                // TODO: Move this to resources
-                MessageBox.Show("Invalid file structure");
-                return "";
-            }
-            Hashtable namespaces = new Hashtable();
-            XmlAttributeCollection col = xml.DocumentElement.Attributes;
-            Int32 count = col.Count;
-
-            for (Int32 i = 0; i < count; i++)
-            {
-                XmlAttribute at = col[i];
-                if (at.Prefix == "xmlns")
-                {
-                    namespaces[at.InnerText] = at.LocalName;
-                    if (requiredNs == at.InnerText)
-                    {
-                        hasRequiredNs = true;
-                        knownPrefix = at.LocalName;
-                        break;
-                    }
-                }
-            }
-            if (!hasRequiredNs)
-            {
-                SamTreeNode rootNode = node;
-                while (rootNode.ResourceType != ResourceNodeType.Root)
-                {
-                    rootNode = (SamTreeNode)rootNode.Parent;
-                }
-                Int32 start = this.FindNodeInFile(rootNode);
-                Char ch = (Char)sci.CharAt(start);
-                while (ch != '>')
-                {
-                    ch = (Char)sci.CharAt(start);
-                    start++;
-                }
-                String insertText = " xmlns:" + knownPrefix + "=\"" + requiredNs + "\"";
-                this.nsAdded += insertText.Length;
-                sci.InsertText(start - 1, insertText);
-            }
-            return template.Replace("${Ns}", knownPrefix);
-        }
-
-        private void EditExternalClick(object sender, EventArgs e)
-        {
-            SamTreeNode node = this.treeView.SelectedNode as SamTreeNode;
-            switch (node.ResourceType)
-            {
-                case ResourceNodeType.Frame:
-                case ResourceNodeType.Root:
-                case ResourceNodeType.Compose:
-                    return;
-            }
-            if (PluginBase.CurrentProject == null) return;
-            
-            String fullPath = Path.GetDirectoryName(
-                    PluginBase.CurrentProject.ProjectPath);
-            fullPath = Path.Combine(fullPath, node.File);
-            using (System.Diagnostics.Process prc = new System.Diagnostics.Process())
-            {
-                prc.StartInfo.FileName = fullPath;
-                prc.Start();
-            }
-        }
-
-        private void treeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                SamTreeNode currentNode = this.treeView.GetNodeAt(e.Location) as SamTreeNode;
-                this.treeView.SelectedNode = currentNode;
-                switch (currentNode.ResourceType)
-                {
-                    case ResourceNodeType.Root:
-                        this.buildFileMenu.Show(this.treeView, e.Location);
-                        break;
-                    case ResourceNodeType.Frame:
-                        this.frameMenu.Show(this.treeView, e.Location);
-                        break;
-                    case ResourceNodeType.Font:
-                        this.fontMenu.Show(this.treeView, e.Location);
-                        break;
-                    default:
-                        this.resourceMenu.Show(this.treeView, e.Location);
-                        break;
-                }
-            }
-            else
-            {
-                SamTreeNode currentNode = this.treeView.GetNodeAt(e.Location) as SamTreeNode;
-                this.treeView.SelectedNode = currentNode;
-                switch (currentNode.ResourceType)
-                {
-                    case ResourceNodeType.Root:
-                        break;
-                    case ResourceNodeType.Frame:
-                        break;
-                    case ResourceNodeType.Compose:
-                        break;
-                    case ResourceNodeType.Binary:
-                        break;
-                    case ResourceNodeType.Font:
-                        this.PreviewFontContent(currentNode);
-                        break;
-                    case ResourceNodeType.Sound:
-                        this.PreviewMp3Content(currentNode);
-                        break;
-                    case ResourceNodeType.Swf:
-                        this.PreviewSWFContent(currentNode);
-                        break;
-                    case ResourceNodeType.Image:
-                        this.PreviewImageContent(currentNode);
-                        break;
-                }
-            }
         }
 
         private void PreviewFontContent(SamTreeNode node)
@@ -849,149 +300,6 @@ namespace SamHaXePanel
             }
         }
 
-        private void treeView_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
-        {
-            this.RunTarget();
-        }
-
-        private void CompileClick(object sender, EventArgs e)
-        {
-            this.RunTarget();
-        }
-        
-        private void MenuEditClick(object sender, EventArgs e)
-        {
-            SamTreeNode node = treeView.SelectedNode as SamTreeNode;
-            Int32 pos = this.FindNodeInFile(node);
-            ScintillaControl sci = Globals.SciControl;
-
-            if (pos < 0) pos = 0;
-            sci.GotoPos(pos);
-        }
-
-        private Int32 FindNodeInFile(SamTreeNode node)
-        {
-            SamTreeNode rootNode = node;
-            List<SamTreeNode> validSamNodes = new List<SamTreeNode>();
-            while (rootNode != null && rootNode.ResourceType != ResourceNodeType.Root)
-            {
-                validSamNodes.Add(rootNode);
-                rootNode = (SamTreeNode)rootNode.Parent;
-            }
-            validSamNodes.Add(rootNode);
-            validSamNodes.Reverse();
-            Globals.MainForm.OpenEditableDocument(rootNode.File, false);
-            ScintillaControl sci = Globals.SciControl;
-            String text = sci.Text;
-
-            try
-            {
-                SamXmlReader reader = new SamXmlReader(text);
-                Int32 pos = reader.FindNodeStart(validSamNodes);
-                Int32 sciPos = sci.PositionFromLine(pos);
-                String word = "";
-
-                if (String.IsNullOrEmpty(reader.Name))
-                {
-                    while ((Char)sci.CharAt(sciPos) != '<') sciPos++;
-                    sciPos++;
-                }
-                else
-                {
-                    sciPos += reader.LinePosition;
-                    while (sci.CharAt(sciPos) > 32) sciPos++;
-                    while (!word.StartsWith(reader.Name) && sciPos > 0)
-                    {
-                        sciPos--;
-                        word = (Char)sci.CharAt(sciPos) + word;
-                    }
-                    if ((Char)sci.CharAt(sciPos - 1) == '/')
-                    {
-                        word = "";
-                        sciPos--;
-                        while (!word.StartsWith(reader.Name) && sciPos > 0)
-                        {
-                            sciPos--;
-                            word = (Char)sci.CharAt(sciPos) + word;
-                        }
-                    }
-                }
-                return sciPos;
-            }
-            catch
-            {
-                return -1;
-            }
-        }
-
-        private void MenuRemoveClick(object sender, EventArgs e)
-        {
-            this.pluginMain.RemoveConfigFile(
-                (this.treeView.SelectedNode as SamTreeNode).File);
-        }
-        
-        private void addButton_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "SamHaXe resource files (*.xml)|*.XML|" + "All files (*.*)|*.*";
-            dialog.Multiselect = true;
-            if (PluginBase.CurrentProject != null)
-                dialog.InitialDirectory = Path.GetDirectoryName(
-                    PluginBase.CurrentProject.ProjectPath);
-
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                this.pluginMain.AddConfigFiles(dialog.FileNames);
-            }
-        }
-
-        private void runButton_Click(object sender, EventArgs e)
-        {
-            this.RunTarget();
-        }
-
-        private void createNewBtn_Click(object sender, EventArgs e)
-        {
-            CreateResourcesFile dialog = new CreateResourcesFile();
-            DialogResult res = dialog.ShowDialog();
-            if (res == DialogResult.OK || res == DialogResult.Yes)
-            {
-                Byte[] b = LocaleHelper.GetFile("SamTemplate0");
-                String template = UTF8Encoding.Default.GetString(b);
-                template = template.Replace("$(Package)", dialog.Package);
-                template = template.Replace("version=\"9\"", "version=\"" + dialog.Version + "\"");
-                template = template.Replace("compress=\"true\"", "compress=\"" + 
-                    dialog.Compressed.ToString().ToLower() + "\"");
-                using (StreamWriter file = new StreamWriter(dialog.ResourceFilePath))
-                {
-                    file.Write(template);
-                    file.Close();
-                }
-                Globals.MainForm.OpenEditableDocument(dialog.ResourceFilePath, false);
-                this.pluginMain.AddConfigFiles(new String[]{ dialog.ResourceFilePath });
-                ScintillaControl sci = Globals.SciControl;
-                Int32 pos = 0;
-                Char ch;
-                // TODO: This doesn't seem to work because of the csi isn't focused
-                // see if we can focus it before moving cursor
-                while (pos < sci.Length)
-                {
-                    ch = (Char)sci.CharAt(pos);
-                    if (ch == '$')
-                    {
-                        if (sci.GetWordFromPosition(pos + 2) == "EntryPoint")
-                        {
-                            sci.SetSel(pos, pos + 13);
-                            sci.DeleteBack();
-                            sci.SetSel(pos, pos + 1);
-                            break;
-                        }
-                    }
-                    pos++;
-                }
-            }
-        }
-
         private void RunTarget()
         {
             SamTreeNode node = treeView.SelectedNode as SamTreeNode;
@@ -1011,11 +319,6 @@ namespace SamHaXePanel
             pluginMain.RunTarget(node.File, node.Settings);
         }
 
-        private void refreshButton_Click(object sender, EventArgs e)
-        {
-            this.RefreshData();
-        }
-        
         public void RefreshData()
         {
             Boolean projectExists = PluginBase.CurrentProject != null;
@@ -1031,21 +334,7 @@ namespace SamHaXePanel
             }
         }
 
-        private void FillTree()
-        {
-            this.treeView.BeginUpdate();
-            this.treeView.Nodes.Clear();
-            foreach (String file in this.pluginMain.ConfigFilesList)
-            {
-                if (File.Exists(file))
-                {
-                    this.treeView.Nodes.Add(this.GetBuildFileNode(file));
-                }
-            }
-            this.treeView.EndUpdate();
-        }
-
-        private TreeNode GetBuildFileNode(string file)
+        private TreeNode GetBuildFileNode(String file)
         {
             XmlDocument xml = new XmlDocument();
             try
@@ -1054,7 +343,7 @@ namespace SamHaXePanel
             }
             catch
             {
-                MessageBox.Show("Invalid file structure");
+                MessageBox.Show(LocaleHelper.GetString(LocaleHelper.INVALID_FILE_ERROR));
                 return new SamTreeNode("Not a valid resource file", PROJECT_ICON);
             }
 
@@ -1121,13 +410,156 @@ namespace SamHaXePanel
             return rootNode;
         }
 
+        #region Building tree
+
+        private Boolean AddResourceNode(SamTreeNode node, FileInfo file, Int32 type)
+        {
+            this.nsAdded = 0;
+            Int32 c = node.Nodes.Count;
+            SamTreeNode lastNode;
+            SamTreeNode rootNode = node;
+            if (c == 0)
+            {
+                lastNode = node;
+            }
+            else
+            {
+                lastNode = (SamTreeNode)node.Nodes[c - 1];
+            }
+            while (rootNode.ResourceType != ResourceNodeType.Root)
+            {
+                rootNode = (SamTreeNode)rootNode.Parent;
+            }
+            String relativeTo = Path.GetDirectoryName(rootNode.File);
+            c = this.FindNodeInFile(lastNode);
+            if (c < 0)
+            {
+                MessageBox.Show(LocaleHelper.GetString(LocaleHelper.INVALID_FILE_ERROR));
+                return false;
+            }
+            SamTreeNode newNode = new SamTreeNode(file.Name, type);
+            newNode.File = file.FullName;
+
+            switch (type)
+            {
+                case SWF_ICON:
+                    newNode.ResourceType = ResourceNodeType.Swf;
+                    break;
+                case IMAGE_ICON:
+                    newNode.ResourceType = ResourceNodeType.Image;
+                    break;
+                case SOUND_ICON:
+                    newNode.ResourceType = ResourceNodeType.Sound;
+                    break;
+                case FONT_ICON:
+                    newNode.ResourceType = ResourceNodeType.Font;
+                    break;
+                case BINARY_ICON:
+                    newNode.ResourceType = ResourceNodeType.Binary;
+                    break;
+            }
+
+            node.Nodes.Add(newNode);
+            ScintillaControl sci = Globals.SciControl;
+            String insert;
+            String insertIndent;
+            Char ch;
+
+            if (node == lastNode)
+            {
+                String word = "";
+                Boolean nameKnown = false;
+
+                while (c < sci.Length)
+                {
+                    ch = (Char)sci.CharAt(c);
+                    if (!nameKnown && ch != ' ' &&
+                        ch != '\t' && ch != '\r' &&
+                        ch != '\n' && ch != '>')
+                    {
+                        word += ch;
+                    }
+                    else nameKnown = true;
+                    if (ch == '>')
+                    {
+                        if ((Char)sci.CharAt(c - 1) == '/')
+                        {
+                            insert = this.NodeToXml(newNode, relativeTo);
+                            Int32 ind = sci.LineIndentPosition(
+                                sci.LineFromPosition(this.nsAdded + c));
+                            insertIndent = "";
+                            while (ch != '\r' && ch != '\n')
+                            {
+                                insertIndent += '\t';
+                                ind--;
+                                ch = (Char)sci.CharAt(ind);
+                            }
+                            insert = '\r' + insertIndent + insert + '\r';
+                            insert += insertIndent.Substring(1) + "</" + word + ">";
+                            sci.InsertText(this.nsAdded + c + 1, insert);
+                        }
+                        else
+                        {
+                            insert = this.NodeToXml(newNode, relativeTo);
+                            Int32 ind = sci.LineIndentPosition(
+                                sci.LineFromPosition(this.nsAdded + c));
+                            insertIndent = "";
+                            while (ch != '\r' && ch != '\n')
+                            {
+                                insertIndent += '\t';
+                                ind--;
+                                ch = (Char)sci.CharAt(ind);
+                            }
+                            insert = '\r' + insertIndent + insert + '\r';
+                            sci.InsertText(this.nsAdded + c + 1, insert);
+                        }
+                        break;
+                    }
+                    c++;
+                }
+            }
+            else
+            {
+                Int32 start = c - 1;
+                c = this.FindNodeEnd(c);
+                insert = this.NodeToXml(newNode, relativeTo);
+                Int32 ind = sci.LineIndentPosition(
+                    sci.LineFromPosition(this.nsAdded + c)) - 1;
+                insertIndent = "";
+                ch = (Char)sci.CharAt(ind);
+                while (ch != '\r' && ch != '\n')
+                {
+                    insertIndent += '\t';
+                    ind--;
+                    ch = (Char)sci.CharAt(ind);
+                }
+                insert = '\r' + insertIndent + insert;
+                sci.InsertText(this.nsAdded + c, insert);
+            }
+            return true;
+        }
+
+        private void FillTree()
+        {
+            this.treeView.BeginUpdate();
+            this.treeView.Nodes.Clear();
+            foreach (String file in this.pluginMain.ConfigFilesList)
+            {
+                if (File.Exists(file))
+                {
+                    this.treeView.Nodes.Add(this.GetBuildFileNode(file));
+                }
+            }
+            this.treeView.EndUpdate();
+        }
+
         private void ConstructFrameChildren(SamTreeNode frameNode, XmlNode node, String fileLocation)
         {
             XmlNodeList nodes = node.ChildNodes;
             int nodeCount = nodes.Count;
             Int16 len = (Int16)KnownNamespaces.Length;
             Regex fname = new Regex("[^\\/\\\\]+$", RegexOptions.Compiled);
-            
+
             for (int i = 0; i < nodeCount; i++)
             {
                 XmlNode child = nodes[i];
@@ -1198,7 +630,459 @@ namespace SamHaXePanel
             }
         }
 
-        private void ConfigClick(object sender, EventArgs e)
+        #endregion
+
+        #region Xml parsing
+
+        private String NodeToXml(SamTreeNode node, String relativeTo)
+        {
+            String template = "";
+            Regex re = new Regex("([^\\/\\\\\\.]+)((\\.[^\\.]+$)|$)", RegexOptions.Compiled);
+            Regex nonAlpha = new Regex("\\W", RegexOptions.Compiled);
+            String requiredNs = KnownNamespaces[0];
+            Boolean hasRequiredNs = false;
+            String knownPrefix = KnownPrefices[0];
+
+            switch (node.ResourceType)
+            {
+                case ResourceNodeType.Binary:
+                    template = Templates[0];
+                    requiredNs = KnownNamespaces[1];
+                    knownPrefix = KnownPrefices[1];
+                    break;
+                case ResourceNodeType.Compose:
+                    template = Templates[1];
+                    requiredNs = KnownNamespaces[2];
+                    knownPrefix = KnownPrefices[2];
+                    break;
+                case ResourceNodeType.Font:
+                    template = Templates[2];
+                    requiredNs = KnownNamespaces[3];
+                    knownPrefix = KnownPrefices[3];
+                    break;
+                case ResourceNodeType.Image:
+                    template = Templates[3];
+                    requiredNs = KnownNamespaces[4];
+                    knownPrefix = KnownPrefices[4];
+                    break;
+                case ResourceNodeType.Sound:
+                    template = Templates[4];
+                    requiredNs = KnownNamespaces[5];
+                    knownPrefix = KnownPrefices[5];
+                    break;
+                case ResourceNodeType.Swf:
+                    template = Templates[5];
+                    requiredNs = KnownNamespaces[6];
+                    knownPrefix = KnownPrefices[6];
+                    break;
+            }
+            String fullPath =
+                ProjectManager.Projects.ProjectPaths.GetRelativePath(relativeTo, node.File);
+            template = template.Replace("${Path}", fullPath);
+            String fName = re.Match(node.File).Groups[1].Value;
+            fName = nonAlpha.Replace(fName, "");
+            fName = fName.ToCharArray()[0].ToString().ToUpper() + fName.Substring(1);
+            template = template.Replace("${Class}", fName);
+            ScintillaControl sci = Globals.SciControl;
+            XmlDocument xml = new XmlDocument();
+            try
+            {
+                xml.LoadXml(sci.Text);
+            }
+            catch
+            {
+                MessageBox.Show(LocaleHelper.GetString(LocaleHelper.INVALID_FILE_ERROR));
+                return "";
+            }
+            Hashtable namespaces = new Hashtable();
+            XmlAttributeCollection col = xml.DocumentElement.Attributes;
+            Int32 count = col.Count;
+
+            for (Int32 i = 0; i < count; i++)
+            {
+                XmlAttribute at = col[i];
+                if (at.Prefix == "xmlns")
+                {
+                    namespaces[at.InnerText] = at.LocalName;
+                    if (requiredNs == at.InnerText)
+                    {
+                        hasRequiredNs = true;
+                        knownPrefix = at.LocalName;
+                        break;
+                    }
+                }
+            }
+            if (!hasRequiredNs)
+            {
+                SamTreeNode rootNode = node;
+                while (rootNode.ResourceType != ResourceNodeType.Root)
+                {
+                    rootNode = (SamTreeNode)rootNode.Parent;
+                }
+                Int32 start = this.FindNodeInFile(rootNode);
+                Char ch = (Char)sci.CharAt(start);
+                while (ch != '>')
+                {
+                    ch = (Char)sci.CharAt(start);
+                    start++;
+                }
+                String insertText = " xmlns:" + knownPrefix + "=\"" + requiredNs + "\"";
+                this.nsAdded += insertText.Length;
+                sci.InsertText(start - 1, insertText);
+            }
+            return template.Replace("${Ns}", knownPrefix);
+        }
+
+        private Int32 FindNodeEnd(Int32 startedAt)
+        {
+            startedAt--;
+            Int32 start = startedAt;
+            ScintillaControl sci = Globals.SciControl;
+            Char ch;
+            Int16 openCount = 0;
+            Boolean afterOpen = false;
+
+            while (true)
+            {
+                ch = (Char)sci.CharAt(startedAt);
+                if (ch == '>')
+                {
+                    if ((Char)sci.CharAt(startedAt - 1) == '/')
+                    {
+                        openCount--;
+                        afterOpen = false;
+                    }
+                }
+                else if (ch == '<')
+                {
+                    ch = (Char)sci.CharAt(startedAt + 1);
+                    if (ch == '/')
+                    {
+                        openCount--;
+                        afterOpen = true;
+                    }
+                    else if (ch != '!' && ch != '?' && ch != '-')
+                    {
+                        openCount++;
+                    }
+                }
+                if (openCount == 0 || sci.Length < startedAt)
+                {
+                    if (afterOpen)
+                    {
+                        while (ch != '>')
+                        {
+                            ch = (Char)sci.CharAt(startedAt);
+                            startedAt++;
+                        }
+                    }
+                    else startedAt++;
+                    break;
+                }
+                startedAt++;
+            }
+            return startedAt;
+        }
+
+        private String NodeContentFromXml(SamTreeNode node)
+        {
+            Int32 pos = this.FindNodeInFile(node);
+            if (pos < 0)
+            {
+                MessageBox.Show(LocaleHelper.GetString(LocaleHelper.INVALID_FILE_ERROR));
+                return "";
+            }
+            Int32 end = this.FindNodeEnd(pos);
+            if (end < 0)
+            {
+                MessageBox.Show(LocaleHelper.GetString(LocaleHelper.INVALID_FILE_ERROR));
+                return "";
+            }
+            Char ch;
+            StringBuilder content = new StringBuilder();
+            ScintillaControl sci = Globals.SciControl;
+
+            while (pos < end)
+            {
+                ch = (Char)sci.CharAt(pos);
+                if (ch == '>')
+                {
+                    if ((Char)sci.CharAt(pos - 1) == '/')
+                        return "";
+                    else break;
+                }
+                pos++;
+            }
+            pos++;
+            while (pos < end)
+            {
+                ch = (Char)sci.CharAt(end);
+                if (ch == '<') break;
+                end--;
+            }
+            while (pos < end)
+            {
+                content.Append((Char)sci.CharAt(pos));
+                pos++;
+            }
+            return content.ToString();
+        }
+
+        private Int32 FindNodeInFile(SamTreeNode node)
+        {
+            SamTreeNode rootNode = node;
+            List<SamTreeNode> validSamNodes = new List<SamTreeNode>();
+            while (rootNode != null && rootNode.ResourceType != ResourceNodeType.Root)
+            {
+                validSamNodes.Add(rootNode);
+                rootNode = (SamTreeNode)rootNode.Parent;
+            }
+            validSamNodes.Add(rootNode);
+            validSamNodes.Reverse();
+            Globals.MainForm.OpenEditableDocument(rootNode.File, false);
+            ScintillaControl sci = Globals.SciControl;
+            String text = sci.Text;
+
+            try
+            {
+                SamXmlReader reader = new SamXmlReader(text);
+                Int32 pos = reader.FindNodeStart(validSamNodes);
+                Int32 sciPos = sci.PositionFromLine(pos);
+                String word = "";
+
+                if (String.IsNullOrEmpty(reader.Name))
+                {
+                    while ((Char)sci.CharAt(sciPos) != '<') sciPos++;
+                    sciPos++;
+                }
+                else
+                {
+                    sciPos += reader.LinePosition;
+                    while (sci.CharAt(sciPos) > 32) sciPos++;
+                    while (!word.StartsWith(reader.Name) && sciPos > 0)
+                    {
+                        sciPos--;
+                        word = (Char)sci.CharAt(sciPos) + word;
+                    }
+                    if ((Char)sci.CharAt(sciPos - 1) == '/')
+                    {
+                        word = "";
+                        sciPos--;
+                        while (!word.StartsWith(reader.Name) && sciPos > 0)
+                        {
+                            sciPos--;
+                            word = (Char)sci.CharAt(sciPos) + word;
+                        }
+                    }
+                }
+                return sciPos;
+            }
+            catch
+            {
+                return -1;
+            }
+        }
+
+        #endregion
+
+        #region Event handlers
+
+        private void AddFrame_ClickHandler(Object sender, EventArgs e)
+        {
+            MessageBox.Show("Not implemented yet.");
+            //TreeNodeCollection nodes = this.treeView.Nodes[0].Nodes;
+            //foreach (TreeNode n in nodes)
+            //{
+            //    Console.WriteLine(n.Text);
+            //}
+        }
+
+        private void EmbedRanges_ClickHandler(Object sender, EventArgs e)
+        {
+            AddFontDialog dialog = new AddFontDialog();
+            SamTreeNode node = (SamTreeNode)this.treeView.SelectedNode;
+
+            String nodeContent = this.NodeContentFromXml(node);
+
+            dialog.SetFontPath(node.File);
+            dialog.ParseRanges(nodeContent);
+            DialogResult dr = dialog.ShowDialog();
+
+            if (dr == DialogResult.OK)
+            {
+                String insertStr = dialog.ExportXmlString().Replace("\n", "").Trim();
+                Int32 pos = this.FindNodeInFile(node);
+                ScintillaControl sci = Globals.SciControl;
+                Char ch;
+                String word = "";
+                Boolean wordCompleted = false;
+                Boolean inserted = false;
+                String nodeBody = "";
+                Int32 startedAt = pos;
+                String indentStr;
+
+                while (pos < sci.Length)
+                {
+                    ch = (Char)sci.CharAt(pos);
+                    if (!wordCompleted && ch != ' ' &&
+                        ch != '\t' && ch != '\r' && ch != '\n')
+                    {
+                        word += ch;
+                    }
+                    else wordCompleted = true;
+                    nodeBody += ch;
+
+                    if (ch == '>')
+                    {
+                        if ((Char)sci.CharAt(pos - 1) == '/')
+                        {
+                            sci.SetSel(pos - 1, pos);
+                            sci.DeleteBack();
+                            indentStr = this.InsertLinesIndented(
+                                insertStr.Split(new Char[] { '\r' }), pos, ref pos);
+                            sci.InsertText(pos, "\r" + indentStr + "</" + word + ">");
+                            inserted = true;
+                        }
+                        else
+                        {
+                            pos = this.FindNodeEnd(startedAt);
+                            if (pos < 0) break;
+                            while (pos > 0)
+                            {
+                                ch = (Char)sci.CharAt(pos);
+                                pos--;
+                                if (ch == '<')
+                                {
+                                    pos -= 2;
+                                    indentStr = this.InsertLinesIndented(
+                                        insertStr.Split(new Char[] { '\r' }),
+                                        startedAt + nodeBody.Length, ref pos);
+                                    inserted = true;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
+                    pos++;
+                }
+                if (!inserted)
+                {
+                    MessageBox.Show(LocaleHelper.GetString(LocaleHelper.INVALID_FILE_ERROR));
+                }
+            }
+        }
+
+        private void AddResource_ClickHandler(Object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            SamTreeNode node = (SamTreeNode)this.treeView.SelectedNode;
+            dialog.Filter =
+                "SWF Files (*.swf)|*.swf|" +
+                "Font Files (*.ttf,*.otf)|*.ttf;*.otf|" +
+                "Image Files (*.gif,*.jpeg,*.jpg,*.png)|*.gif;*.jpeg;*.jpg;*.png|" +
+                "Sound Files (*.mp3)|*.mp3|" +
+                "All files(*.*)|*.*";
+            dialog.Multiselect = true;
+            if (PluginBase.CurrentProject != null)
+            {
+                String fullPath = Path.GetDirectoryName(
+                        PluginBase.CurrentProject.ProjectPath);
+                dialog.CustomPlaces.Add(fullPath);
+                dialog.InitialDirectory = fullPath;
+            }
+            dialog.Title = "Browse for resource files";
+            DialogResult res = dialog.ShowDialog();
+            if (res == DialogResult.OK)
+            {
+                Int32 type = 1;
+                switch (dialog.FilterIndex)
+                {
+                    case 1:
+                        type = SWF_ICON;
+                        break;
+                    case 2:
+                        type = FONT_ICON;
+                        break;
+                    case 3:
+                        type = IMAGE_ICON;
+                        break;
+                    case 4:
+                        type = SOUND_ICON;
+                        break;
+                    case 5:
+                        type = BINARY_ICON;
+                        break;
+                }
+                this.treeView.BeginUpdate();
+                foreach (String fn in dialog.FileNames)
+                {
+                    if (!this.AddResourceNode(node, new FileInfo(fn), type))
+                        break;
+                }
+                this.treeView.EndUpdate();
+            }
+        }
+
+        private void RemoveNode_ClickHandler(Object sender, EventArgs e)
+        {
+            SamTreeNode node = (SamTreeNode)this.treeView.SelectedNode;
+
+            Int32 pos = this.FindNodeInFile(node);
+            if (pos < 0)
+            {
+                MessageBox.Show(LocaleHelper.GetString(LocaleHelper.INVALID_FILE_ERROR));
+                return;
+            }
+
+            Int32 start = pos - 1;
+            pos = this.FindNodeEnd(pos);
+            ScintillaControl sci = Globals.SciControl;
+            sci.SetSel(start, pos);
+            sci.DeleteBack();
+            this.treeView.Nodes.Remove(node);
+            this.RefreshData();
+        }
+
+        private void EditExternal_ClickHandler(Object sender, EventArgs e)
+        {
+            SamTreeNode node = this.treeView.SelectedNode as SamTreeNode;
+
+            switch (node.ResourceType)
+            {
+                case ResourceNodeType.Frame:
+                case ResourceNodeType.Root:
+                case ResourceNodeType.Compose:
+                    return;
+            }
+            if (PluginBase.CurrentProject == null) return;
+
+            String fullPath = Path.GetDirectoryName(
+                    PluginBase.CurrentProject.ProjectPath);
+            fullPath = Path.Combine(fullPath, node.File);
+            using (System.Diagnostics.Process prc = new System.Diagnostics.Process())
+            {
+                prc.StartInfo.FileName = fullPath;
+                prc.Start();
+            }
+        }
+
+        private void Compile_ClickHandler(Object sender, EventArgs e)
+        {
+            this.RunTarget();
+        }
+        
+        private void MenuEdit_ClickHandler(Object sender, EventArgs e)
+        {
+            SamTreeNode node = treeView.SelectedNode as SamTreeNode;
+            Int32 pos = this.FindNodeInFile(node);
+            ScintillaControl sci = Globals.SciControl;
+
+            if (pos < 0) pos = 0;
+            sci.GotoPos(pos);
+        }
+
+        private void Config_ClickHandler(Object sender, EventArgs e)
         {
             SamTreeNode node = this.treeView.SelectedNode as SamTreeNode;
             SamProperties sp = new SamProperties();
@@ -1223,6 +1107,152 @@ namespace SamHaXePanel
             this.fontPreviewLB.Height = this.splitContainer1.Height;
         }
 
+        private void ExportHaXe_ClickHandler(Object sender, EventArgs e)
+        {
+
+        }
+
+        private void ExportAs3_ClickHandler(Object sender, EventArgs e)
+        {
+
+        }
+
+        private void ExportFlex_ClickHandler(Object sender, EventArgs e)
+        {
+
+        }
+
+        private void MenuRemove_ClickHandler(Object sender, EventArgs e)
+        {
+            this.pluginMain.RemoveConfigFile(
+                (this.treeView.SelectedNode as SamTreeNode).File);
+        }
+
+        private void addButton_ClickHandler(Object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "SamHaXe resource files (*.xml)|*.XML|" + "All files (*.*)|*.*";
+            dialog.Multiselect = true;
+            if (PluginBase.CurrentProject != null)
+                dialog.InitialDirectory = Path.GetDirectoryName(
+                    PluginBase.CurrentProject.ProjectPath);
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                this.pluginMain.AddConfigFiles(dialog.FileNames);
+            }
+        }
+
+        private void runButton_ClickHandler(Object sender, EventArgs e)
+        {
+            this.RunTarget();
+        }
+
+        private void createNewBtn_ClickHandler(Object sender, EventArgs e)
+        {
+            CreateResourcesFile dialog = new CreateResourcesFile();
+            DialogResult res = dialog.ShowDialog();
+            if (res == DialogResult.OK || res == DialogResult.Yes)
+            {
+                Byte[] b = LocaleHelper.GetFile("SamTemplate0");
+                String template = UTF8Encoding.Default.GetString(b);
+                template = template.Replace("$(Package)", dialog.Package);
+                template = template.Replace("version=\"9\"", "version=\"" + dialog.Version + "\"");
+                template = template.Replace("compress=\"true\"", "compress=\"" +
+                    dialog.Compressed.ToString().ToLower() + "\"");
+                using (StreamWriter file = new StreamWriter(dialog.ResourceFilePath))
+                {
+                    file.Write(template);
+                    file.Close();
+                }
+                Globals.MainForm.OpenEditableDocument(dialog.ResourceFilePath, false);
+                this.pluginMain.AddConfigFiles(new String[] { dialog.ResourceFilePath });
+                ScintillaControl sci = Globals.SciControl;
+                Int32 pos = 0;
+                Char ch;
+                // TODO: This doesn't seem to work because of the csi isn't focused
+                // see if we can focus it before moving cursor
+                while (pos < sci.Length)
+                {
+                    ch = (Char)sci.CharAt(pos);
+                    if (ch == '$')
+                    {
+                        if (sci.GetWordFromPosition(pos + 2) == "EntryPoint")
+                        {
+                            sci.SetSel(pos, pos + 13);
+                            sci.DeleteBack();
+                            sci.SetSel(pos, pos + 1);
+                            break;
+                        }
+                    }
+                    pos++;
+                }
+            }
+        }
+
+        private void refreshButton_ClickHandler(Object sender, EventArgs e)
+        {
+            this.RefreshData();
+        }
+
+        private void treeView_NodeMouseClickHandler(Object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                SamTreeNode currentNode = this.treeView.GetNodeAt(e.Location) as SamTreeNode;
+                this.treeView.SelectedNode = currentNode;
+                switch (currentNode.ResourceType)
+                {
+                    case ResourceNodeType.Root:
+                        this.buildFileMenu.Show(this.treeView, e.Location);
+                        break;
+                    case ResourceNodeType.Frame:
+                        this.frameMenu.Show(this.treeView, e.Location);
+                        break;
+                    case ResourceNodeType.Font:
+                        this.fontMenu.Show(this.treeView, e.Location);
+                        break;
+                    default:
+                        this.resourceMenu.Show(this.treeView, e.Location);
+                        break;
+                }
+            }
+            else
+            {
+                SamTreeNode currentNode = this.treeView.GetNodeAt(e.Location) as SamTreeNode;
+                this.treeView.SelectedNode = currentNode;
+                switch (currentNode.ResourceType)
+                {
+                    case ResourceNodeType.Root:
+                        break;
+                    case ResourceNodeType.Frame:
+                        break;
+                    case ResourceNodeType.Compose:
+                        break;
+                    case ResourceNodeType.Binary:
+                        break;
+                    case ResourceNodeType.Font:
+                        this.PreviewFontContent(currentNode);
+                        break;
+                    case ResourceNodeType.Sound:
+                        this.PreviewMp3Content(currentNode);
+                        break;
+                    case ResourceNodeType.Swf:
+                        this.PreviewSWFContent(currentNode);
+                        break;
+                    case ResourceNodeType.Image:
+                        this.PreviewImageContent(currentNode);
+                        break;
+                }
+            }
+        }
+
+        private void treeView_NodeMouseDoubleClickHandler(Object sender, TreeNodeMouseClickEventArgs e)
+        {
+            this.RunTarget();
+        }
+
+        #endregion
     }
 
     internal class SamTreeNode : TreeNode

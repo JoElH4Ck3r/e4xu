@@ -115,6 +115,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Resources\LocaleHelper.cs" />
+    <Compile Include="SamSchemaExporter.cs" />
     <Compile Include="SamSettings.cs" />
     <Compile Include="SamXmlReader.cs" />
     <Compile Include="Settings.cs" />

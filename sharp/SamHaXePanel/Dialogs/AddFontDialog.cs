@@ -14,15 +14,23 @@ namespace SamHaXePanel.Dialogs
 {
     public partial class AddFontDialog : Form
     {
+        #region Static properties
+
         private static Dictionary<String, LanguagePlane> allPlanes =
             new Dictionary<String, LanguagePlane>();
         private static Char[] charPool = 
             { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
-        private Dictionary<String, LanguagePlane> activePlanes;
 
+        #endregion
+
+        #region Private properties
+
+        private Dictionary<String, LanguagePlane> activePlanes;
         private PrivateFontCollection fontCollection;
         private String fontPath;
         private Boolean[] selectedRangesPool = new Boolean[0xFFFF];
+
+        #endregion
 
         #region Fill All Language Planes
 
@@ -196,6 +204,8 @@ namespace SamHaXePanel.Dialogs
             }
         }
 
+        #region Public API
+
         public String ExportXmlString()
         {
             String pat = "";
@@ -253,28 +263,17 @@ namespace SamHaXePanel.Dialogs
             this.PaintGrid();
         }
 
-        private void ModifyStringRange(String range, Boolean include)
+        public void SetFontPath(String path)
         {
-            Int32 start = (Int32)range[0];
-            Int32 end = (Int32)range[range.Length - 1];
-
-            while (start < end)
-            {
-                this.selectedRangesPool[start] = include;
-                start++;
-            }
+            this.fontCollection = new PrivateFontCollection();
+            this.fontCollection.AddFontFile(path);
+            this.fontPath = path;
+            this.SetGridFont();
         }
 
-        private void ModifyStringCharacters(String range, Boolean include)
-        {
-            Int32 start = 0;
-            Int32 end = range.Length;
-            while (start < end)
-            {
-                this.selectedRangesPool[(Int32)range[start]] = include;
-                start++;
-            }
-        }
+        #endregion
+
+        #region Event handlers
 
         private void removeSelectedBTN_Click(object sender, EventArgs e)
         {
@@ -302,13 +301,25 @@ namespace SamHaXePanel.Dialogs
             this.PaintGrid();
         }
 
-        public void SetFontPath(String path)
+        private void langPlanesCBL_ItemCheck(Object sender, ItemCheckEventArgs e)
         {
-            this.fontCollection = new PrivateFontCollection();
-            this.fontCollection.AddFontFile(path);
-            this.fontPath = path;
-            this.SetGridFont();
+            this.activePlanes.Clear();
+            foreach (String cbs in this.langPlanesCBL.CheckedItems)
+            {
+                if (e.NewValue == CheckState.Unchecked &&
+                    cbs == (String)(this.langPlanesCBL.Items[e.Index]))
+                    continue;
+                this.activePlanes[cbs] = allPlanes[cbs];
+            }
+            if (e.NewValue == CheckState.Checked)
+            {
+                String cbs = (String)(this.langPlanesCBL.Items[e.Index]);
+                this.activePlanes[cbs] = allPlanes[cbs];
+            }
+            this.PopulateGrid();
         }
+
+        #endregion
 
         private void SetGridFont()
         {
@@ -367,24 +378,6 @@ namespace SamHaXePanel.Dialogs
                     new Font(this.fontCollection.Families[0], 16,
                     fs, GraphicsUnit.Pixel);
             }
-        }
-
-        private void langPlanesCBL_ItemCheck(Object sender, ItemCheckEventArgs e)
-        {
-            this.activePlanes.Clear();
-            foreach (String cbs in this.langPlanesCBL.CheckedItems)
-            {
-                if (e.NewValue == CheckState.Unchecked &&
-                    cbs == (String)(this.langPlanesCBL.Items[e.Index]))
-                    continue;
-                this.activePlanes[cbs] = allPlanes[cbs];
-            }
-            if (e.NewValue == CheckState.Checked)
-            {
-                String cbs = (String)(this.langPlanesCBL.Items[e.Index]);
-                this.activePlanes[cbs] = allPlanes[cbs];
-            }
-            this.PopulateGrid();
         }
 
         private void PopulateList()
@@ -494,20 +487,6 @@ namespace SamHaXePanel.Dialogs
             this.selectedRanges.EndUpdate();
         }
 
-        private String ToFourDigit(Int32 val)
-        {
-            Int16 i = 4;
-            Int16 v = (Int16)(val & 0xFFFF);
-            Char[] result =  {'0', '0', '0', '0'};
-            while (i > 0)
-            {
-                i--;
-                result[i] = charPool[v & 0xF];
-                v >>= 4;
-            }
-            return new String(result);
-        }
-
         private void AddCharRange(Int32 start, Int32 end)
         {
             for (Int32 i = start; i < end; i++)
@@ -525,6 +504,47 @@ namespace SamHaXePanel.Dialogs
             }
             this.PaintGrid();
         }
+
+        #region Utilities
+
+        private void ModifyStringRange(String range, Boolean include)
+        {
+            Int32 start = (Int32)range[0];
+            Int32 end = (Int32)range[range.Length - 1];
+
+            while (start < end)
+            {
+                this.selectedRangesPool[start] = include;
+                start++;
+            }
+        }
+
+        private void ModifyStringCharacters(String range, Boolean include)
+        {
+            Int32 start = 0;
+            Int32 end = range.Length;
+            while (start < end)
+            {
+                this.selectedRangesPool[(Int32)range[start]] = include;
+                start++;
+            }
+        }
+
+        private String ToFourDigit(Int32 val)
+        {
+            Int16 i = 4;
+            Int16 v = (Int16)(val & 0xFFFF);
+            Char[] result =  {'0', '0', '0', '0'};
+            while (i > 0)
+            {
+                i--;
+                result[i] = charPool[v & 0xF];
+                v >>= 4;
+            }
+            return new String(result);
+        }
+
+        #endregion
 
         class LanguagePlane
         {

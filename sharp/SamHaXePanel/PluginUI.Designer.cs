@@ -48,6 +48,11 @@ namespace SamHaXePanel
             this.refreshButton = new System.Windows.Forms.ToolStripButton();
             this.runButton = new System.Windows.Forms.ToolStripButton();
             this.createNewBtn = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.exportTSDB = new System.Windows.Forms.ToolStripDropDownButton();
+            this.exportHaXe = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportAS3All = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportAS3Each = new System.Windows.Forms.ToolStripMenuItem();
             this.fontPreviewLB = new System.Windows.Forms.Label();
             this.flashMovie = new AxShockwaveFlashObjects.AxShockwaveFlash();
             this.imageDisplay = new System.Windows.Forms.PictureBox();
@@ -106,7 +111,9 @@ namespace SamHaXePanel
             this.addButton,
             this.refreshButton,
             this.runButton,
-            this.createNewBtn});
+            this.createNewBtn,
+            this.toolStripSeparator1,
+            this.exportTSDB});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.Size = new System.Drawing.Size(279, 25);
@@ -148,6 +155,44 @@ namespace SamHaXePanel
             this.createNewBtn.Name = "createNewBtn";
             this.createNewBtn.Size = new System.Drawing.Size(48, 22);
             this.createNewBtn.Text = "New";
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // exportTSDB
+            // 
+            this.exportTSDB.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exportHaXe,
+            this.exportAS3All,
+            this.exportAS3Each});
+            this.exportTSDB.Image = ((System.Drawing.Image)(resources.GetObject("exportTSDB.Image")));
+            this.exportTSDB.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.exportTSDB.Name = "exportTSDB";
+            this.exportTSDB.Size = new System.Drawing.Size(68, 22);
+            this.exportTSDB.Text = "Export";
+            // 
+            // exportHaXe
+            // 
+            this.exportHaXe.Name = "exportHaXe";
+            this.exportHaXe.Size = new System.Drawing.Size(152, 22);
+            this.exportHaXe.Text = "HaXe classes";
+            this.exportHaXe.Click += new System.EventHandler(this.ExportHaXe_ClickHandler);
+            // 
+            // exportAS3All
+            // 
+            this.exportAS3All.Name = "exportAS3All";
+            this.exportAS3All.Size = new System.Drawing.Size(152, 22);
+            this.exportAS3All.Text = "AS3 classes";
+            this.exportAS3All.Click += new System.EventHandler(this.ExportAs3_ClickHandler);
+            // 
+            // exportAS3Each
+            // 
+            this.exportAS3Each.Name = "exportAS3Each";
+            this.exportAS3Each.Size = new System.Drawing.Size(152, 22);
+            this.exportAS3Each.Text = "Flex [embed]";
+            this.exportAS3Each.Click += new System.EventHandler(this.ExportFlex_ClickHandler);
             // 
             // fontPreviewLB
             // 
@@ -279,6 +324,11 @@ namespace SamHaXePanel
         private AxShockwaveFlashObjects.AxShockwaveFlash flashMovie;
         private ToolStripButton createNewBtn;
         private Label fontPreviewLB;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripDropDownButton exportTSDB;
+        private ToolStripMenuItem exportHaXe;
+        private ToolStripMenuItem exportAS3All;
+        private ToolStripMenuItem exportAS3Each;
 
 
 

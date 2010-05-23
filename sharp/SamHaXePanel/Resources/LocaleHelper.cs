@@ -12,6 +12,8 @@ namespace SamHaXePanel.Resources
 {
     class LocaleHelper
     {
+        public const String INVALID_FILE_ERROR = "Errors.InvalidFile";
+
         private static ResourceManager resources = null;
 
         /// <summary>

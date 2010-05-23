@@ -11,6 +11,8 @@ namespace SamHaXePanel.Dialogs
 {
     public partial class CreateResourcesFile : Form
     {
+        #region Public properties
+
         public String ResourceFilePath
         {
             get { return this.locationTXT.Text; }
@@ -31,27 +33,35 @@ namespace SamHaXePanel.Dialogs
             get { return this.packageTXT.Text; }
         }
 
+        #endregion
+
         public CreateResourcesFile()
         {
             InitializeComponent();
             this.okBTN.DialogResult = DialogResult.OK;
-            this.browseBTN.Click += new EventHandler(browseBTN_Click);
-            this.FormClosing += new FormClosingEventHandler(CreateResourcesFile_FormClosing);
+            this.browseBTN.Click += new EventHandler(browseBTN_ClickHandler);
+            this.FormClosing += new FormClosingEventHandler(CreateResourcesFile_FormClosingHandler);
             this.versionDD.Text = "10";
         }
 
-        private void CreateResourcesFile_FormClosing(object sender, FormClosingEventArgs e)
+        private void CreateResourcesFile_FormClosingHandler(Object sender, FormClosingEventArgs e)
         {
-            if (String.IsNullOrEmpty(this.locationTXT.Text) ||
-                !Directory.Exists(Path.GetDirectoryName(this.locationTXT.Text)))
+            if (e.CloseReason != CloseReason.UserClosing)
             {
-                e.Cancel = true;
-                // TODO: Put this into resources
-                MessageBox.Show("You must enter valid path.");
+                if (this.DialogResult == DialogResult.OK)
+                {
+                    if (String.IsNullOrEmpty(this.locationTXT.Text) ||
+                        !Directory.Exists(Path.GetDirectoryName(this.locationTXT.Text)))
+                    {
+                        e.Cancel = true;
+                        // TODO: Put this into resources
+                        MessageBox.Show("You must enter valid path.");
+                    }
+                }
             }
         }
 
-        private void browseBTN_Click(object sender, EventArgs e)
+        private void browseBTN_ClickHandler(Object sender, EventArgs e)
         {
             SaveFileDialog dialog = new SaveFileDialog();
             dialog.Filter = "";
