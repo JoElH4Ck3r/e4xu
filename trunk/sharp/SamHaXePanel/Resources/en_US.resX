@@ -120,6 +120,12 @@
   <data name="Errors.InvalidFile" xml:space="preserve">
     <value>File structure is not valid. Correct the syntax and try again.</value>
   </data>
+  <data name="Errors.NoOutputFile" xml:space="preserve">
+    <value>Please specify output SWF (right click on the project icon &gt; Configure &gt; Output)</value>
+  </data>
+  <data name="Errors.NoSamHome" xml:space="preserve">
+    <value>Please set path to SamHaXe executable (F10 &gt; SamHaXePanel &gt; SamHome)</value>
+  </data>
   <data name="Info.Description" xml:space="preserve">
     <value>SamHaXe Panel</value>
   </data>

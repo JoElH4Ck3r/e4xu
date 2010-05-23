@@ -343,7 +343,7 @@ namespace SamHaXePanel
             }
             catch
             {
-                MessageBox.Show(LocaleHelper.GetString(LocaleHelper.INVALID_FILE_ERROR));
+                MessageBox.Show(LocaleHelper.GetErrorString(LocaleHelper.INVALID_FILE_ERROR));
                 return new SamTreeNode("Not a valid resource file", PROJECT_ICON);
             }
 
@@ -434,7 +434,7 @@ namespace SamHaXePanel
             c = this.FindNodeInFile(lastNode);
             if (c < 0)
             {
-                MessageBox.Show(LocaleHelper.GetString(LocaleHelper.INVALID_FILE_ERROR));
+                MessageBox.Show(LocaleHelper.GetErrorString(LocaleHelper.INVALID_FILE_ERROR));
                 return false;
             }
             SamTreeNode newNode = new SamTreeNode(file.Name, type);
@@ -691,7 +691,7 @@ namespace SamHaXePanel
             }
             catch
             {
-                MessageBox.Show(LocaleHelper.GetString(LocaleHelper.INVALID_FILE_ERROR));
+                MessageBox.Show(LocaleHelper.GetErrorString(LocaleHelper.INVALID_FILE_ERROR));
                 return "";
             }
             Hashtable namespaces = new Hashtable();
@@ -789,13 +789,13 @@ namespace SamHaXePanel
             Int32 pos = this.FindNodeInFile(node);
             if (pos < 0)
             {
-                MessageBox.Show(LocaleHelper.GetString(LocaleHelper.INVALID_FILE_ERROR));
+                MessageBox.Show(LocaleHelper.GetErrorString(LocaleHelper.INVALID_FILE_ERROR));
                 return "";
             }
             Int32 end = this.FindNodeEnd(pos);
             if (end < 0)
             {
-                MessageBox.Show(LocaleHelper.GetString(LocaleHelper.INVALID_FILE_ERROR));
+                MessageBox.Show(LocaleHelper.GetErrorString(LocaleHelper.INVALID_FILE_ERROR));
                 return "";
             }
             Char ch;
@@ -968,7 +968,7 @@ namespace SamHaXePanel
                 }
                 if (!inserted)
                 {
-                    MessageBox.Show(LocaleHelper.GetString(LocaleHelper.INVALID_FILE_ERROR));
+                    MessageBox.Show(LocaleHelper.GetErrorString(LocaleHelper.INVALID_FILE_ERROR));
                 }
             }
         }
@@ -1031,7 +1031,7 @@ namespace SamHaXePanel
             Int32 pos = this.FindNodeInFile(node);
             if (pos < 0)
             {
-                MessageBox.Show(LocaleHelper.GetString(LocaleHelper.INVALID_FILE_ERROR));
+                MessageBox.Show(LocaleHelper.GetErrorString(LocaleHelper.INVALID_FILE_ERROR));
                 return;
             }
 

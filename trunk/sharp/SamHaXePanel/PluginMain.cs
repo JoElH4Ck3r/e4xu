@@ -287,12 +287,14 @@ namespace SamHaXePanel
             // TODO: Put this into resources
             if (String.IsNullOrEmpty(command) || !File.Exists(command))
             {
-                MessageBox.Show("Please set path to SamHaXe executable (F10 > SamHaXePanel > SamHome)");
+                MessageBox.Show(
+                    LocaleHelper.GetErrorString(LocaleHelper.NO_SAM_HOME));
                 return;
             }
             if (settings == null || String.IsNullOrEmpty(settings.Output))
             {
-                MessageBox.Show("Please specify output SWF (right click on the project icon > Configure > Output)");
+                MessageBox.Show(
+                    LocaleHelper.GetErrorString(LocaleHelper.NO_OUTPUT_FILE));
                 return;
             }
             String arguments = "";
@@ -316,7 +318,7 @@ namespace SamHaXePanel
                 arguments += "-d \"" + settings.Depfile + "\" ";
             arguments += settings.Input + " \"" + settings.Output + "\"";
 
-            Globals.MainForm.CallCommand("RunProcessCaptured", command + ";" + arguments);
+            Globals.MainForm.CallCommand("RunProcessCaptured", "\"" + command + "\";" + arguments);
         }
 
         private void ReadConfigFiles()

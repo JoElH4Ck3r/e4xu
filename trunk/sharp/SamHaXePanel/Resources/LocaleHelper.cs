@@ -12,7 +12,9 @@ namespace SamHaXePanel.Resources
 {
     class LocaleHelper
     {
-        public const String INVALID_FILE_ERROR = "Errors.InvalidFile";
+        public const String INVALID_FILE_ERROR = "InvalidFile";
+        public const String NO_SAM_HOME = "NoSamHome";
+        public const String NO_OUTPUT_FILE = "NoOutputFile";
 
         private static ResourceManager resources = null;
 
@@ -32,6 +34,11 @@ namespace SamHaXePanel.Resources
         {
             //TraceManager.Add("InsertFile GetString " + identifier);
             return resources.GetString(identifier);
+        }
+
+        public static String GetErrorString(String identifier)
+        {
+            return resources.GetString("Errors." + identifier);
         }
 
         /// <summary>
