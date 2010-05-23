@@ -212,7 +212,6 @@ namespace SamHaXePanel
             this.pluginUI = new PluginUI(this);
             this.pluginUI.Text = "SamHaXe";
             this.pluginUI.StartDragHandling();
-            this.pluginUI.StartDragHandling();
             this.pluginPanel = PluginBase.MainForm.CreateDockablePanel(
                 this.pluginUI, this.pluginGuid, this.pluginImage, DockState.DockRight);
         }
@@ -327,6 +326,7 @@ namespace SamHaXePanel
             else this.configFilesList.Clear();
             String folder = GetConfigFilesStorageFolder();
             String fullName = Path.Combine(folder, STORAGE_FILE_NAME);
+            Console.WriteLine("Reading config from storage " + fullName);
             this.buildSettings = new Dictionary<String, SamSettings>();
             Char argsSeparator = '?';
             String[] parts;

@@ -92,6 +92,7 @@ namespace SamHaXePanel
             this.addButton.Click += new EventHandler(addButton_Click);
             this.runButton.Click += new EventHandler(runButton_Click);
             this.createNewBtn.Click += new EventHandler(createNewBtn_Click);
+            this.refreshButton.Click += new EventHandler(refreshButton_Click);
         }
 
         private void CreateMenus()
@@ -850,8 +851,10 @@ namespace SamHaXePanel
         {
             this.treeView.BeginUpdate();
             this.treeView.Nodes.Clear();
+            Console.WriteLine("FillTree " + this.pluginMain.ConfigFilesList.Count);
             foreach (String file in this.pluginMain.ConfigFilesList)
             {
+                Console.WriteLine("refreshig file " + file);
                 if (File.Exists(file))
                 {
                     this.treeView.Nodes.Add(this.GetBuildFileNode(file));
