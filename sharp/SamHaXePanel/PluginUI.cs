@@ -13,6 +13,7 @@ using SamHaXePanel.Resources;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Drawing.Text;
 
 namespace SamHaXePanel
 {
@@ -44,7 +45,7 @@ namespace SamHaXePanel
 	        "shx", "bin", "compose", "fnt", "img", "snd", "swf"
         };
 
-        private String[] Templates = new String[6]
+        private static String[] Templates = new String[6]
         {
             @"<${Ns}:binary import=""${Path}"" class=""${Class}Bin""/>",
             @"<${Ns}:compose/>",
@@ -60,6 +61,10 @@ namespace SamHaXePanel
         private ContextMenuStrip resourceMenu;
         private ContextMenuStrip fontMenu;
         private Int32 nsAdded = 0;
+        private PrivateFontCollection fontCollection;
+
+        // TODO: This should go to settings
+        public String FontTestString = "Quick brown fox jumped over the lazy dog.";
         
         public PluginUI(PluginMain pluginMain)
         {
@@ -83,6 +88,9 @@ namespace SamHaXePanel
             this.runButton.Image = PluginBase.MainForm.FindImage("127");
             this.refreshButton.Image = PluginBase.MainForm.FindImage("66");
             this.createNewBtn.Image = PluginBase.MainForm.FindImage("277");
+
+            this.fontPreviewLB.Text = this.FontTestString;
+            this.fontPreviewLB.Visible = false;
 
             this.CreateMenus();
             this.RefreshData();
@@ -140,24 +148,25 @@ namespace SamHaXePanel
         {
             AddFontDialog dialog = new AddFontDialog();
             SamTreeNode node = (SamTreeNode)this.treeView.SelectedNode;
+
+            String nodeContent = this.NodeContentFromXml(node);
+
             dialog.SetFontPath(node.File);
+            dialog.ParseRanges(nodeContent);
             DialogResult dr = dialog.ShowDialog();
 
             if (dr == DialogResult.OK)
             {
-                String insertStr = dialog.ExportXmlString();
+                String insertStr = dialog.ExportXmlString().Replace("\n", "").Trim();
                 Int32 pos = this.FindNodeInFile(node);
                 ScintillaControl sci = Globals.SciControl;
                 Char ch;
                 String word = "";
                 Boolean wordCompleted = false;
                 Boolean inserted = false;
-                Int32 line;
-                String lineStr;
-                Char indentChar = ' ';
-                Int32 lineIndent = 0;
-                String indentStr = "";
-                String insertIndentStr = "\r";
+                String nodeBody = "";
+                Int32 startedAt = pos;
+                String indentStr;
 
                 while (pos < sci.Length)
                 {
@@ -168,40 +177,37 @@ namespace SamHaXePanel
                         word += ch;
                     }
                     else wordCompleted = true;
+                    nodeBody += ch;
 
                     if (ch == '>')
                     {
                         if ((Char)sci.CharAt(pos - 1) == '/')
                         {
-                            line = sci.LineFromPosition(pos);
-                            lineIndent = sci.GetLineIndentation(line);
-                            lineStr = sci.GetLine(line);
-                            if (lineStr[0] == '\t')
-                            {
-                                indentChar = '\t';
-                                lineIndent /= 4;
-                            }
-                            while (lineIndent > 0)
-                            {
-                                indentStr += indentChar;
-                                lineIndent--;
-                            }
-                            if (indentChar == '\t')
-                            {
-                                insertIndentStr += indentStr + indentChar;
-                            }
-                            else
-                            {
-                                insertIndentStr += indentStr + "    ";
-                            }
-                            insertStr = insertStr.Replace("\n", "");
-                            if (insertStr.EndsWith("\r"))
-                                insertStr = insertStr.Substring(0, insertStr.Length - 1);
-                            insertStr = insertIndentStr + insertStr.Replace("\r", insertIndentStr);
                             sci.SetSel(pos - 1, pos);
                             sci.DeleteBack();
-                            sci.InsertText(pos, insertStr + "\r" + indentStr + "</" + word + ">");
+                            indentStr = this.InsertLinesIndented(
+                                insertStr.Split(new Char[] { '\r' }), pos, ref pos);
+                            sci.InsertText(pos, "\r" + indentStr + "</" + word + ">");
                             inserted = true;
+                        }
+                        else
+                        {
+                            pos = this.FindNodeEnd(startedAt);
+                            if (pos < 0) break;
+                            while (pos > 0)
+                            {
+                                ch = (Char)sci.CharAt(pos);
+                                pos--;
+                                if (ch == '<')
+                                {
+                                    pos -= 2;
+                                    indentStr = this.InsertLinesIndented(
+                                        insertStr.Split(new Char[] { '\r' }), 
+                                        startedAt + nodeBody.Length, ref pos);
+                                    inserted = true;
+                                    break;
+                                }
+                            }
                         }
                         break;
                     }
@@ -209,11 +215,105 @@ namespace SamHaXePanel
                 }
                 if (!inserted)
                 {
+                    // TODO: Move this to resources
                     MessageBox.Show("Nothig was changed. " + 
                         "Possibly invalid file structure. " + 
                         "Correct the syntax and try again.");
                 }
             }
+        }
+
+        private String NodeContentFromXml(SamTreeNode node)
+        {
+            Int32 pos = this.FindNodeInFile(node);
+            if (pos < 0)
+            {
+                MessageBox.Show("File structure invalid.");
+                return "";
+            }
+            Int32 end = this.FindNodeEnd(pos);
+            if (end < 0)
+            {
+                MessageBox.Show("File structure invalid.");
+                return "";
+            }
+            Char ch;
+            StringBuilder content = new StringBuilder();
+            ScintillaControl sci = Globals.SciControl;
+
+            while (pos < end)
+            {
+                ch = (Char)sci.CharAt(pos);
+                if (ch == '>')
+                {
+                    if ((Char)sci.CharAt(pos - 1) == '/')
+                        return "";
+                    else break;
+                }
+                pos++;
+            }
+            pos++;
+            while (pos < end)
+            {
+                ch = (Char)sci.CharAt(end);
+                if (ch == '<')  break;
+                end--;
+            }
+            while (pos < end)
+            {
+                content.Append((Char)sci.CharAt(pos));
+                pos++;
+            }
+            return content.ToString();
+        }
+
+        private String InsertLinesIndented(String[] lines, Int32 startPos, ref Int32 endPos)
+        {
+            ScintillaControl sci = Globals.SciControl;
+            Int32 line = sci.LineFromPosition(startPos);
+            Int32 lineIndent = sci.GetLineIndentation(line);
+            String lineStr = sci.GetLine(line);
+            Char indentChar = ' ';
+            String indentStr = "";
+            String insertIndentStr = "";
+
+            if (lineStr[0] == '\t')
+            {
+                indentChar = '\t';
+                lineIndent /= 4;
+            }
+            while (lineIndent > 0)
+            {
+                indentStr += indentChar;
+                lineIndent--;
+            }
+            if (indentChar == '\t')
+            {
+                insertIndentStr += indentStr + indentChar;
+            }
+            else
+            {
+                insertIndentStr += indentStr + "    ";
+            }
+            Int32 lineCount = lines.Length;
+            String total = "";
+            for (Int32 i = 0; i < lineCount; i++)
+            {
+                total += "\r" + insertIndentStr + lines[i].Trim();
+            }
+            Int32 adVal = 0;
+            if (startPos != endPos)
+            {
+                sci.SetSel(startPos, endPos);
+                sci.DeleteBack();
+                adVal = endPos - startPos;
+            }
+            adVal += total.Length;
+            endPos = startPos + adVal;
+            sci.InsertText(startPos, total);
+            if (indentChar == '\t')
+                return insertIndentStr.Substring(1);
+            else return insertIndentStr.Substring(4);
         }
 
         private void AddResourceClick(object sender, EventArgs e)
@@ -479,32 +579,32 @@ namespace SamHaXePanel
             switch (node.ResourceType)
             {
                 case ResourceNodeType.Binary:
-                    template = this.Templates[0];
+                    template = Templates[0];
                     requiredNs = KnownNamespaces[1];
                     knownPrefix = KnownPrefices[1];
                     break;
                 case ResourceNodeType.Compose:
-                    template = this.Templates[1];
+                    template = Templates[1];
                     requiredNs = KnownNamespaces[2];
                     knownPrefix = KnownPrefices[2];
                     break;
                 case ResourceNodeType.Font:
-                    template = this.Templates[2];
+                    template = Templates[2];
                     requiredNs = KnownNamespaces[3];
                     knownPrefix = KnownPrefices[3];
                     break;
                 case ResourceNodeType.Image:
-                    template = this.Templates[3];
+                    template = Templates[3];
                     requiredNs = KnownNamespaces[4];
                     knownPrefix = KnownPrefices[4];
                     break;
                 case ResourceNodeType.Sound:
-                    template = this.Templates[4];
+                    template = Templates[4];
                     requiredNs = KnownNamespaces[5];
                     knownPrefix = KnownPrefices[5];
                     break;
                 case ResourceNodeType.Swf:
-                    template = this.Templates[5];
+                    template = Templates[5];
                     requiredNs = KnownNamespaces[6];
                     knownPrefix = KnownPrefices[6];
                     break;
@@ -518,7 +618,16 @@ namespace SamHaXePanel
             template = template.Replace("${Class}", fName);
             ScintillaControl sci = Globals.SciControl;
             XmlDocument xml = new XmlDocument();
-            xml.LoadXml(sci.Text);
+            try
+            {
+                xml.LoadXml(sci.Text);
+            }
+            catch
+            {
+                // TODO: Move this to resources
+                MessageBox.Show("Invalid file structure");
+                return "";
+            }
             Hashtable namespaces = new Hashtable();
             XmlAttributeCollection col = xml.DocumentElement.Attributes;
             Int32 count = col.Count;
@@ -586,7 +695,6 @@ namespace SamHaXePanel
             {
                 SamTreeNode currentNode = this.treeView.GetNodeAt(e.Location) as SamTreeNode;
                 this.treeView.SelectedNode = currentNode;
-                Console.WriteLine("currentNode.ResourceType " + currentNode.ResourceType);
                 switch (currentNode.ResourceType)
                 {
                     case ResourceNodeType.Root:
@@ -618,6 +726,7 @@ namespace SamHaXePanel
                     case ResourceNodeType.Binary:
                         break;
                     case ResourceNodeType.Font:
+                        this.PreviewFontContent(currentNode);
                         break;
                     case ResourceNodeType.Sound:
                         this.PreviewMp3Content(currentNode);
@@ -632,13 +741,84 @@ namespace SamHaXePanel
             }
         }
 
+        private void PreviewFontContent(SamTreeNode node)
+        {
+            if (File.Exists(node.File))
+            {
+                if (!this.flashMovie.Visible)
+                    this.flashMovie.Visible = false;
+                this.fontPreviewLB.Visible = true;
+                this.fontCollection = new PrivateFontCollection();
+                this.fontCollection.AddFontFile(node.File);
+                this.fontPreviewLB.Width = this.splitContainer1.Width;
+
+                FontFamily ff = this.fontCollection.Families[0];
+                FontStyle fs = FontStyle.Regular;
+                Boolean hasStyle = false;
+
+                if (ff.IsStyleAvailable(FontStyle.Regular))
+                {
+                    fs = FontStyle.Regular;
+                    hasStyle = true;
+                }
+                else if (ff.IsStyleAvailable(FontStyle.Italic))
+                {
+                    fs = FontStyle.Italic;
+                    hasStyle = true;
+                }
+                else if (ff.IsStyleAvailable(FontStyle.Bold))
+                {
+                    fs = FontStyle.Bold;
+                    hasStyle = true;
+                }
+                else if (ff.IsStyleAvailable(FontStyle.Strikeout))
+                {
+                    fs = FontStyle.Strikeout;
+                    hasStyle = true;
+                }
+                else if (ff.IsStyleAvailable(FontStyle.Underline))
+                {
+                    fs = FontStyle.Underline;
+                    hasStyle = true;
+                }
+                else if (ff.IsStyleAvailable(FontStyle.Bold | FontStyle.Italic))
+                {
+                    fs = FontStyle.Bold | FontStyle.Italic;
+                    hasStyle = true;
+                }
+                else if (ff.IsStyleAvailable(FontStyle.Bold | FontStyle.Underline))
+                {
+                    fs = FontStyle.Bold | FontStyle.Underline;
+                    hasStyle = true;
+                }
+                else if (ff.IsStyleAvailable(FontStyle.Italic | FontStyle.Underline))
+                {
+                    fs = FontStyle.Italic | FontStyle.Underline;
+                    hasStyle = true;
+                }
+                else if (ff.IsStyleAvailable(FontStyle.Bold | FontStyle.Italic | FontStyle.Underline))
+                {
+                    fs = FontStyle.Bold | FontStyle.Italic | FontStyle.Underline;
+                    hasStyle = true;
+                }
+                if (hasStyle)
+                {
+                    this.fontPreviewLB.Font =
+                        new Font(this.fontCollection.Families[0], 24,
+                        fs, GraphicsUnit.Pixel);
+                }
+            }
+        }
+
         private void PreviewMp3Content(SamTreeNode node)
         {
             if (File.Exists(node.File))
             {
                 if (!this.flashMovie.Visible)
                     this.flashMovie.Visible = true;
-                this.imageDisplay.Width = this.splitContainer1.Width;
+                if (this.fontPreviewLB.Visible)
+                    this.fontPreviewLB.Visible = false;
+                this.flashMovie.Width = this.splitContainer1.Width;
                 this.flashMovie.FlashVars = "sound=" + node.File;
                 this.flashMovie.LoadMovie(0, this.pluginMain.MP3Player);
             }
@@ -650,7 +830,9 @@ namespace SamHaXePanel
             {
                 if (!this.flashMovie.Visible)
                     this.flashMovie.Visible = true;
-                this.imageDisplay.Width = this.splitContainer1.Width;
+                if (this.fontPreviewLB.Visible)
+                    this.fontPreviewLB.Visible = false;
+                this.flashMovie.Width = this.splitContainer1.Width;
                 this.flashMovie.LoadMovie(0, node.File);
             }
         }
@@ -661,6 +843,8 @@ namespace SamHaXePanel
             {
                 if (this.flashMovie.Visible)
                     this.flashMovie.Visible = false;
+                if (this.fontPreviewLB.Visible)
+                    this.fontPreviewLB.Visible = false;
                 this.imageDisplay.Load(node.File);
             }
         }
@@ -851,10 +1035,8 @@ namespace SamHaXePanel
         {
             this.treeView.BeginUpdate();
             this.treeView.Nodes.Clear();
-            Console.WriteLine("FillTree " + this.pluginMain.ConfigFilesList.Count);
             foreach (String file in this.pluginMain.ConfigFilesList)
             {
-                Console.WriteLine("refreshig file " + file);
                 if (File.Exists(file))
                 {
                     this.treeView.Nodes.Add(this.GetBuildFileNode(file));
@@ -866,7 +1048,15 @@ namespace SamHaXePanel
         private TreeNode GetBuildFileNode(string file)
         {
             XmlDocument xml = new XmlDocument();
-            xml.Load(file);
+            try
+            {
+                xml.Load(file);
+            }
+            catch
+            {
+                MessageBox.Show("Invalid file structure");
+                return new SamTreeNode("Not a valid resource file", PROJECT_ICON);
+            }
 
             XmlAttribute package = xml.DocumentElement.Attributes["package"];
             String packageName = (package != null) ? package.InnerText : file;
@@ -1000,7 +1190,6 @@ namespace SamHaXePanel
                         {
                             resNode = new SamTreeNode(type + " #" + j, icon);
                         }
-                        Console.WriteLine("Created node of type: " + resType + " : from " + resNode.File + " : " + uri);
                         resNode.ResourceType = resType;
                         frameNode.Nodes.Add(resNode);
                         break;
@@ -1026,6 +1215,12 @@ namespace SamHaXePanel
                 node.Settings = st;
             this.pluginMain.UpdateSettings(node.File, node.Settings);
             this.pluginMain.SaveConfigFiles();
+        }
+
+        private void Panel2_ResizeHandler(Object sender, EventArgs e)
+        {
+            this.fontPreviewLB.Width = this.splitContainer1.Width;
+            this.fontPreviewLB.Height = this.splitContainer1.Height;
         }
 
     }

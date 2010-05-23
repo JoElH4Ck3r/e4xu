@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using SamHaXePanel.Resources;
 using PluginCore;
@@ -216,7 +217,7 @@ namespace SamHaXePanel.Dialogs
                         pat += (Char)(i - 1);
                         if (pat.EndsWith(".."))
                         {
-                            builder.AppendLine("<include range=\"" + pat[0] + "\"/>");
+                            builder.AppendLine("<include characters=\"" + pat[0] + "\"/>");
                         }
                         else builder.AppendLine("<include range=\"" + pat + "\"/>");
                         pat = "";
@@ -224,6 +225,55 @@ namespace SamHaXePanel.Dialogs
                 }
             }
             return builder.ToString();
+        }
+
+        public void ParseRanges(String ranges)
+        {
+            Regex re =
+                new Regex("(include|exclude)[\\r\\n\\s]+[^>]*(range|chatacters)[\\r\\n\\s]*=[\\r\\n\\s]*(\"|')(.+)(?=\\3)",
+                    RegexOptions.Compiled);
+            MatchCollection col = re.Matches(ranges);
+            Int32 c = col.Count;
+
+            for (Int32 i = 0; i < c; i++)
+            {
+                if (col[i].Groups[1].Value == "include")
+                {
+                    if (col[i].Groups[2].Value == "range")
+                        this.ModifyStringRange(col[i].Groups[4].Value, true);
+                    else this.ModifyStringCharacters(col[i].Groups[4].Value, false);
+                }
+                else
+                {
+                    if (col[i].Groups[2].Value == "range")
+                        this.ModifyStringRange(col[i].Groups[4].Value, false);
+                    else this.ModifyStringCharacters(col[i].Groups[4].Value, false);
+                }
+            }
+            this.PaintGrid();
+        }
+
+        private void ModifyStringRange(String range, Boolean include)
+        {
+            Int32 start = (Int32)range[0];
+            Int32 end = (Int32)range[range.Length - 1];
+
+            while (start < end)
+            {
+                this.selectedRangesPool[start] = include;
+                start++;
+            }
+        }
+
+        private void ModifyStringCharacters(String range, Boolean include)
+        {
+            Int32 start = 0;
+            Int32 end = range.Length;
+            while (start < end)
+            {
+                this.selectedRangesPool[(Int32)range[start]] = include;
+                start++;
+            }
         }
 
         private void removeSelectedBTN_Click(object sender, EventArgs e)
@@ -258,7 +308,6 @@ namespace SamHaXePanel.Dialogs
             this.fontCollection.AddFontFile(path);
             this.fontPath = path;
             this.SetGridFont();
-            this.AddCharRange(50, 100);
         }
 
         private void SetGridFont()
