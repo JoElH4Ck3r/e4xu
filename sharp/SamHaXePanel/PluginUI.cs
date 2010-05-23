@@ -138,7 +138,81 @@ namespace SamHaXePanel
         private void EmbedRangesClick(Object sender, EventArgs e)
         {
             AddFontDialog dialog = new AddFontDialog();
-            dialog.Show();
+            SamTreeNode node = (SamTreeNode)this.treeView.SelectedNode;
+            dialog.SetFontPath(node.File);
+            DialogResult dr = dialog.ShowDialog();
+
+            if (dr == DialogResult.OK)
+            {
+                String insertStr = dialog.ExportXmlString();
+                Int32 pos = this.FindNodeInFile(node);
+                ScintillaControl sci = Globals.SciControl;
+                Char ch;
+                String word = "";
+                Boolean wordCompleted = false;
+                Boolean inserted = false;
+                Int32 line;
+                String lineStr;
+                Char indentChar = ' ';
+                Int32 lineIndent = 0;
+                String indentStr = "";
+                String insertIndentStr = "\r";
+
+                while (pos < sci.Length)
+                {
+                    ch = (Char)sci.CharAt(pos);
+                    if (!wordCompleted && ch != ' ' &&
+                        ch != '\t' && ch != '\r' && ch != '\n')
+                    {
+                        word += ch;
+                    }
+                    else wordCompleted = true;
+
+                    if (ch == '>')
+                    {
+                        if ((Char)sci.CharAt(pos - 1) == '/')
+                        {
+                            line = sci.LineFromPosition(pos);
+                            lineIndent = sci.GetLineIndentation(line);
+                            lineStr = sci.GetLine(line);
+                            if (lineStr[0] == '\t')
+                            {
+                                indentChar = '\t';
+                                lineIndent /= 4;
+                            }
+                            while (lineIndent > 0)
+                            {
+                                indentStr += indentChar;
+                                lineIndent--;
+                            }
+                            if (indentChar == '\t')
+                            {
+                                insertIndentStr += indentStr + indentChar;
+                            }
+                            else
+                            {
+                                insertIndentStr += indentStr + "    ";
+                            }
+                            insertStr = insertStr.Replace("\n", "");
+                            if (insertStr.EndsWith("\r"))
+                                insertStr = insertStr.Substring(0, insertStr.Length - 1);
+                            insertStr = insertIndentStr + insertStr.Replace("\r", insertIndentStr);
+                            sci.SetSel(pos - 1, pos);
+                            sci.DeleteBack();
+                            sci.InsertText(pos, insertStr + "\r" + indentStr + "</" + word + ">");
+                            inserted = true;
+                        }
+                        break;
+                    }
+                    pos++;
+                }
+                if (!inserted)
+                {
+                    MessageBox.Show("Nothig was changed. " + 
+                        "Possibly invalid file structure. " + 
+                        "Correct the syntax and try again.");
+                }
+            }
         }
 
         private void AddResourceClick(object sender, EventArgs e)
