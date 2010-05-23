@@ -47,9 +47,10 @@ namespace SamHaXePanel
             this.addButton = new System.Windows.Forms.ToolStripButton();
             this.refreshButton = new System.Windows.Forms.ToolStripButton();
             this.runButton = new System.Windows.Forms.ToolStripButton();
+            this.createNewBtn = new System.Windows.Forms.ToolStripButton();
+            this.fontPreviewLB = new System.Windows.Forms.Label();
             this.flashMovie = new AxShockwaveFlashObjects.AxShockwaveFlash();
             this.imageDisplay = new System.Windows.Forms.PictureBox();
-            this.createNewBtn = new System.Windows.Forms.ToolStripButton();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -79,8 +80,10 @@ namespace SamHaXePanel
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.splitContainer1.Panel2.Controls.Add(this.fontPreviewLB);
             this.splitContainer1.Panel2.Controls.Add(this.flashMovie);
             this.splitContainer1.Panel2.Controls.Add(this.imageDisplay);
+            this.splitContainer1.Panel2.Resize += new System.EventHandler(this.Panel2_ResizeHandler);
             this.splitContainer1.Size = new System.Drawing.Size(279, 310);
             this.splitContainer1.SplitterDistance = 178;
             this.splitContainer1.TabIndex = 3;
@@ -138,6 +141,24 @@ namespace SamHaXePanel
             this.runButton.Size = new System.Drawing.Size(49, 22);
             this.runButton.Text = "Build";
             // 
+            // createNewBtn
+            // 
+            this.createNewBtn.Image = ((System.Drawing.Image)(resources.GetObject("createNewBtn.Image")));
+            this.createNewBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.createNewBtn.Name = "createNewBtn";
+            this.createNewBtn.Size = new System.Drawing.Size(48, 22);
+            this.createNewBtn.Text = "New";
+            // 
+            // fontPreviewLB
+            // 
+            this.fontPreviewLB.BackColor = System.Drawing.Color.White;
+            this.fontPreviewLB.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.fontPreviewLB.Location = new System.Drawing.Point(3, 0);
+            this.fontPreviewLB.Name = "fontPreviewLB";
+            this.fontPreviewLB.Size = new System.Drawing.Size(273, 128);
+            this.fontPreviewLB.TabIndex = 2;
+            this.fontPreviewLB.Text = "label1";
+            // 
             // flashMovie
             // 
             this.flashMovie.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -158,14 +179,6 @@ namespace SamHaXePanel
             this.imageDisplay.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.imageDisplay.TabIndex = 0;
             this.imageDisplay.TabStop = false;
-            // 
-            // createNewBtn
-            // 
-            this.createNewBtn.Image = ((System.Drawing.Image)(resources.GetObject("createNewBtn.Image")));
-            this.createNewBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.createNewBtn.Name = "createNewBtn";
-            this.createNewBtn.Size = new System.Drawing.Size(48, 22);
-            this.createNewBtn.Text = "New";
             // 
             // PluginUI
             // 
@@ -265,6 +278,7 @@ namespace SamHaXePanel
         private PictureBox imageDisplay;
         private AxShockwaveFlashObjects.AxShockwaveFlash flashMovie;
         private ToolStripButton createNewBtn;
+        private Label fontPreviewLB;
 
 
 
