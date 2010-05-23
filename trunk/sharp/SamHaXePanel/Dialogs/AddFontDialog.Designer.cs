@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle19 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle20 = new System.Windows.Forms.DataGridViewCellStyle();
             this.fontGrid = new System.Windows.Forms.DataGridView();
             this.C0 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.C1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -83,14 +83,14 @@
             this.CD,
             this.CE,
             this.CF});
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle7.Font = new System.Drawing.Font("Arial", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.fontGrid.DefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle19.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle19.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle19.Font = new System.Drawing.Font("Arial", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle19.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle19.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle19.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle19.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.fontGrid.DefaultCellStyle = dataGridViewCellStyle19;
             this.fontGrid.Dock = System.Windows.Forms.DockStyle.Left;
             this.fontGrid.Location = new System.Drawing.Point(10, 10);
             this.fontGrid.Name = "fontGrid";
@@ -98,8 +98,8 @@
             this.fontGrid.RowHeadersVisible = false;
             this.fontGrid.RowHeadersWidth = 20;
             this.fontGrid.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.fontGrid.RowsDefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle20.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.fontGrid.RowsDefaultCellStyle = dataGridViewCellStyle20;
             this.fontGrid.RowTemplate.Height = 30;
             this.fontGrid.Size = new System.Drawing.Size(498, 446);
             this.fontGrid.TabIndex = 0;
@@ -261,6 +261,7 @@
             // 
             // okBTN
             // 
+            this.okBTN.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.okBTN.Location = new System.Drawing.Point(515, 433);
             this.okBTN.Name = "okBTN";
             this.okBTN.Size = new System.Drawing.Size(105, 23);
@@ -336,11 +337,14 @@
             this.Controls.Add(this.langPlanesCBL);
             this.Controls.Add(this.fontGrid);
             this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(750, 500);
             this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(750, 500);
             this.Name = "AddFontDialog";
             this.Padding = new System.Windows.Forms.Padding(10);
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Import Font";
             ((System.ComponentModel.ISupportInitialize)(this.fontGrid)).EndInit();
             this.ResumeLayout(false);

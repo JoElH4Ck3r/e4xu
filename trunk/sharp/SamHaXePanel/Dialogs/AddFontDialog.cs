@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using SamHaXePanel.Resources;
 using PluginCore;
+using System.Drawing.Text;
 
 namespace SamHaXePanel.Dialogs
 {
@@ -14,7 +15,13 @@ namespace SamHaXePanel.Dialogs
     {
         private static Dictionary<String, LanguagePlane> allPlanes =
             new Dictionary<String, LanguagePlane>();
+        private static Char[] charPool = 
+            { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
         private Dictionary<String, LanguagePlane> activePlanes;
+
+        private PrivateFontCollection fontCollection;
+        private String fontPath;
+        private Boolean[] selectedRangesPool = new Boolean[0xFFFF];
 
         #region Fill All Language Planes
 
@@ -173,10 +180,144 @@ namespace SamHaXePanel.Dialogs
             this.activePlanes["Basic Latin"] = allPlanes["Basic Latin"];
             this.activePlanes["Latin-1 Supplement"] = allPlanes["Latin-1 Supplement"];
             this.activePlanes["Latin Extended-B"] = allPlanes["Latin Extended-B"];
+
+            this.addSelectedBTN.Click += new EventHandler(addSelectedBTN_Click);
+            this.removeSelectedBTN.Click += new EventHandler(removeSelectedBTN_Click);
+
             this.PopulateGrid();
             this.PopulateList();
 
             this.langPlanesCBL.ItemCheck += new ItemCheckEventHandler(langPlanesCBL_ItemCheck);
+
+            for (Int32 i = 0; i < 0xFFFF; i++)
+            {
+                this.selectedRangesPool[i] = false;
+            }
+        }
+
+        public String ExportXmlString()
+        {
+            String pat = "";
+            StringBuilder builder = new StringBuilder();
+
+            for (Int32 i = 0; i < 0xFFFF; i++)
+            {
+                if (this.selectedRangesPool[i])
+                {
+                    if (pat == "")
+                    {
+                        pat = (Char)i + "..";
+                    }
+                }
+                else
+                {
+                    if (pat.Length > 0)
+                    {
+                        pat += (Char)(i - 1);
+                        if (pat.EndsWith(".."))
+                        {
+                            builder.AppendLine("<include range=\"" + pat[0] + "\"/>");
+                        }
+                        else builder.AppendLine("<include range=\"" + pat + "\"/>");
+                        pat = "";
+                    }
+                }
+            }
+            return builder.ToString();
+        }
+
+        private void removeSelectedBTN_Click(object sender, EventArgs e)
+        {
+            DataGridViewSelectedCellCollection selCells = this.fontGrid.SelectedCells;
+            Int32 cellCount = selCells.Count;
+            Int32 charInt = 0;
+            for (Int32 i = 0; i < cellCount; i++)
+            {
+                charInt = (Int32)((String)(selCells[i].Value))[0];
+                this.selectedRangesPool[charInt] = false;
+            }
+            this.PaintGrid();
+        }
+
+        private void addSelectedBTN_Click(object sender, EventArgs e)
+        {
+            DataGridViewSelectedCellCollection selCells = this.fontGrid.SelectedCells;
+            Int32 cellCount = selCells.Count;
+            Int32 charInt = 0;
+            for (Int32 i = 0; i < cellCount; i++)
+            {
+                charInt = (Int32)((String)(selCells[i].Value))[0];
+                this.selectedRangesPool[charInt] = true;
+            }
+            this.PaintGrid();
+        }
+
+        public void SetFontPath(String path)
+        {
+            this.fontCollection = new PrivateFontCollection();
+            this.fontCollection.AddFontFile(path);
+            this.fontPath = path;
+            this.SetGridFont();
+            this.AddCharRange(50, 100);
+        }
+
+        private void SetGridFont()
+        {
+            FontFamily ff = this.fontCollection.Families[0];
+            FontStyle fs = FontStyle.Regular;
+            Boolean hasStyle = false;
+            
+            if (ff.IsStyleAvailable(FontStyle.Regular))
+            {
+                fs = FontStyle.Regular;
+                hasStyle = true;
+            }
+            else if (ff.IsStyleAvailable(FontStyle.Italic))
+            {
+                fs = FontStyle.Italic;
+                hasStyle = true;
+            }
+            else if (ff.IsStyleAvailable(FontStyle.Bold))
+            {
+                fs = FontStyle.Bold;
+                hasStyle = true;
+            }
+            else if (ff.IsStyleAvailable(FontStyle.Strikeout))
+            {
+                fs = FontStyle.Strikeout;
+                hasStyle = true;
+            }
+            else if (ff.IsStyleAvailable(FontStyle.Underline))
+            {
+                fs = FontStyle.Underline;
+                hasStyle = true;
+            }
+            else if (ff.IsStyleAvailable(FontStyle.Bold | FontStyle.Italic))
+            {
+                fs = FontStyle.Bold | FontStyle.Italic;
+                hasStyle = true;
+            }
+            else if (ff.IsStyleAvailable(FontStyle.Bold | FontStyle.Underline))
+            {
+                fs = FontStyle.Bold | FontStyle.Underline;
+                hasStyle = true;
+            }
+            else if (ff.IsStyleAvailable(FontStyle.Italic | FontStyle.Underline))
+            {
+                fs = FontStyle.Italic | FontStyle.Underline;
+                hasStyle = true;
+            }
+            else if (ff.IsStyleAvailable(FontStyle.Bold | FontStyle.Italic | FontStyle.Underline))
+            {
+                fs = FontStyle.Bold | FontStyle.Italic | FontStyle.Underline;
+                hasStyle = true;
+            }
+            if (hasStyle)
+            {
+                this.fontGrid.Font =
+                    new Font(this.fontCollection.Families[0], 16,
+                    fs, GraphicsUnit.Pixel);
+            }
         }
 
         private void langPlanesCBL_ItemCheck(Object sender, ItemCheckEventArgs e)
@@ -192,7 +333,6 @@ namespace SamHaXePanel.Dialogs
             if (e.NewValue == CheckState.Checked)
             {
                 String cbs = (String)(this.langPlanesCBL.Items[e.Index]);
-                Console.WriteLine("Missing value: " + cbs);
                 this.activePlanes[cbs] = allPlanes[cbs];
             }
             this.PopulateGrid();
@@ -200,6 +340,7 @@ namespace SamHaXePanel.Dialogs
 
         private void PopulateList()
         {
+            this.langPlanesCBL.BeginUpdate();
             foreach (String lp in allPlanes.Keys)
             {
                 if (this.activePlanes.ContainsKey(lp))
@@ -211,6 +352,7 @@ namespace SamHaXePanel.Dialogs
                     this.langPlanesCBL.Items.Add(lp, false);
                 }
             }
+            this.langPlanesCBL.EndUpdate();
         }
 
         private void PopulateGrid()
@@ -219,6 +361,10 @@ namespace SamHaXePanel.Dialogs
             Int32 iter = 32;
 
             this.fontGrid.Rows.Clear();
+            if (!String.IsNullOrEmpty(this.fontPath))
+                this.SetGridFont();
+
+            this.fontGrid.SuspendLayout();
             foreach (LanguagePlane lp in this.activePlanes.Values)
             {
                 row = new String[16];
@@ -241,6 +387,94 @@ namespace SamHaXePanel.Dialogs
                     this.fontGrid.Rows.Add(row);
                 }
             }
+            this.fontGrid.PerformLayout();
+            this.PaintGrid();
+        }
+
+        private void PaintGrid()
+        {
+            Int32 col = 0;
+            Int32 row = 0;
+            Int32 rowCount = this.fontGrid.Rows.Count;
+            Int32 charInt = 0;
+
+            this.fontGrid.SuspendLayout();
+            for (Int32 i = 0; i < rowCount * 16; i++)
+            {
+                col = i % 16;
+                row = i / 16;
+                charInt = (Int32)((String)(this.fontGrid[col, row].Value))[0];
+                if (this.selectedRangesPool[charInt])
+                {
+                    this.fontGrid[col, row].Style.BackColor = Color.Beige;
+                }
+                else
+                {
+                    this.fontGrid[col, row].Style.BackColor = Color.White;
+                }
+            }
+            this.fontGrid.PerformLayout();
+            this.PopulatedSelectedRangesList();
+        }
+
+        private void PopulatedSelectedRangesList()
+        {
+            String pat = "";
+
+            this.selectedRanges.BeginUpdate();
+            this.selectedRanges.Items.Clear();
+            for (Int32 i = 0; i < 0xFFFF; i++)
+            {
+                if (this.selectedRangesPool[i])
+                {
+                    if (pat == "")
+                    {
+                        pat = "U" + this.ToFourDigit(i) + "-";
+                    }
+                }
+                else
+                {
+                    if (pat.Length > 0)
+                    {
+                        pat += "U" + this.ToFourDigit(i - 1);
+                        this.selectedRanges.Items.Add(pat);
+                        pat = "";
+                    }
+                }
+            }
+            this.selectedRanges.EndUpdate();
+        }
+
+        private String ToFourDigit(Int32 val)
+        {
+            Int16 i = 4;
+            Int16 v = (Int16)(val & 0xFFFF);
+            Char[] result =  {'0', '0', '0', '0'};
+            while (i > 0)
+            {
+                i--;
+                result[i] = charPool[v & 0xF];
+                v >>= 4;
+            }
+            return new String(result);
+        }
+
+        private void AddCharRange(Int32 start, Int32 end)
+        {
+            for (Int32 i = start; i < end; i++)
+            {
+                this.selectedRangesPool[i] = true;
+            }
+            this.PaintGrid();
+        }
+
+        private void RemoveCharRange(Int32 start, Int32 end)
+        {
+            for (Int32 i = start; i < end; i++)
+            {
+                this.selectedRangesPool[i] = false;
+            }
+            this.PaintGrid();
         }
 
         class LanguagePlane
