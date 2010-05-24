@@ -1,0 +1,16 @@
+/**
+$(CBI)* ...
+$(CBI)* @author $(DefaultUser)
+$(CBI)*/
+
+package $(SamPackage);
+$(SamSuperImport)
+
+// @Resource $(SamResource)
+extern class $(SamClass) extends $(SamSuperClass)$(CSLB){
+
+	public function new()$(CSLB){
+		super();
+	}
+	
+}

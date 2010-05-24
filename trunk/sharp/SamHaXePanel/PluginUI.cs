@@ -1109,7 +1109,23 @@ namespace SamHaXePanel
 
         private void ExportHaXe_ClickHandler(Object sender, EventArgs e)
         {
-
+            SamTreeNode rootNode = this.treeView.SelectedNode as SamTreeNode;
+            if (rootNode == null)
+            {
+                MessageBox.Show("Nothing selected. Please select a resource file and try again.");
+                return;
+            }
+            while (rootNode.ResourceType != ResourceNodeType.Root)
+            {
+                rootNode = (SamTreeNode)rootNode.Parent;
+            }
+            FolderBrowserDialog dialog = new FolderBrowserDialog();
+            dialog.Description = "Select folder to create HaXe extern classes";
+            dialog.ShowNewFolderButton = true;
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                SamSchemaExporter.ExportHaXeClasses(rootNode.File, dialog.SelectedPath);
+            }
         }
 
         private void ExportAs3_ClickHandler(Object sender, EventArgs e)
