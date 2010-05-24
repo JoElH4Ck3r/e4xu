@@ -177,5 +177,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="AS3Mp3Player\bin\MP3Player.swf" />
+    <None Include="Resources\Resource.hx.fdt" />
   </ItemGroup>
 </Project>

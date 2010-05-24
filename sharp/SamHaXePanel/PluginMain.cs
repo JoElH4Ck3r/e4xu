@@ -51,6 +51,20 @@ namespace SamHaXePanel
         private Dictionary<String, SamSettings> buildSettings;
         private String player;
 
+        private static Dictionary<String, String> resourceTemplates = new Dictionary<String, String>();
+
+        public static String GetTemplatePath(String ofKind)
+        {
+            String templateContent = "";
+
+            using (StreamReader reader = new StreamReader(resourceTemplates[ofKind]))
+            {
+                templateContent = reader.ReadToEnd();
+                reader.Close();
+            }
+            return templateContent;
+        }
+
         public List<String> ConfigFilesList
         {
             get { return this.configFilesList; }
@@ -279,6 +293,18 @@ namespace SamHaXePanel
                     binWriter.Close();
                 }
             }
+            b = LocaleHelper.GetFile("Resource.hx");
+            template = UTF8Encoding.Default.GetString(b);
+            templatePath = Path.Combine(dataPath, "Resources.hx.fdt");
+            resourceTemplates["haxe"] = templatePath;
+            if (!File.Exists(templatePath))
+            {
+                using (StreamWriter file = new StreamWriter(templatePath))
+                {
+                    file.Write(template);
+                    file.Close();
+                }
+            }
         }
 
         public void RunTarget(String file, SamSettings settings)
@@ -328,7 +354,7 @@ namespace SamHaXePanel
             else this.configFilesList.Clear();
             String folder = GetConfigFilesStorageFolder();
             String fullName = Path.Combine(folder, STORAGE_FILE_NAME);
-            Console.WriteLine("Reading config from storage " + fullName);
+
             this.buildSettings = new Dictionary<String, SamSettings>();
             Char argsSeparator = '?';
             String[] parts;
