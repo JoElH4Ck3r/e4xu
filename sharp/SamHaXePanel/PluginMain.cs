@@ -318,7 +318,7 @@ namespace SamHaXePanel
                 arguments += "-d \"" + settings.Depfile + "\" ";
             arguments += settings.Input + " \"" + settings.Output + "\"";
 
-            Globals.MainForm.CallCommand("RunProcessCaptured", "\"" + command + "\";" + arguments);
+            Globals.MainForm.CallCommand("RunProcessCaptured", command + ";" + arguments);
         }
 
         private void ReadConfigFiles()
