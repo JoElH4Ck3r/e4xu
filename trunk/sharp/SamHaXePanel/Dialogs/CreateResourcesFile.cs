@@ -33,6 +33,26 @@ namespace SamHaXePanel.Dialogs
             get { return this.packageTXT.Text; }
         }
 
+        public Boolean Recursive
+        {
+            get { return this.recursiveCB.Checked; }
+        }
+
+        public Boolean GenerateComposites
+        {
+            get { return this.generateCompositeCB.Checked; }
+        }
+
+        public String Filer
+        {
+            get { return this.fileFilerTXT.Text; }
+        }
+
+        public String ResourceFolder
+        {
+            get { return this.selectedFolderTXT.Text; }
+        }
+
         #endregion
 
         public CreateResourcesFile()
@@ -41,7 +61,19 @@ namespace SamHaXePanel.Dialogs
             this.okBTN.DialogResult = DialogResult.OK;
             this.browseBTN.Click += new EventHandler(browseBTN_ClickHandler);
             this.FormClosing += new FormClosingEventHandler(CreateResourcesFile_FormClosingHandler);
+            this.fromFolderBTN.Click += new EventHandler(fromFolderBTN_Click);
             this.versionDD.Text = "10";
+        }
+
+        void fromFolderBTN_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog dialog = new FolderBrowserDialog();
+            dialog.Description = "Select folder containing resources";
+            dialog.RootFolder = Environment.SpecialFolder.MyComputer;
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                this.selectedFolderTXT.Text = dialog.SelectedPath;
+            }
         }
 
         private void CreateResourcesFile_FormClosingHandler(Object sender, FormClosingEventArgs e)
