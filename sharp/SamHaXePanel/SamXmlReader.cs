@@ -69,7 +69,6 @@ namespace SamHaXePanel
             if (this.currentSamNode.Parent != null)
             {
                 TreeNodeCollection brothers = this.currentSamNode.Parent.Nodes;
-                Int16 nodesLen = (Int16)brothers.Count;
                 while (brothers[nodeCount] != this.currentSamNode)
                     nodeCount++;
             }
@@ -107,7 +106,6 @@ namespace SamHaXePanel
             if (this.currentSamNode.Parent != null)
             {
                 TreeNodeCollection brothers = this.currentSamNode.Parent.Nodes;
-                Int16 nodesLen = (Int16)brothers.Count;
                 while (brothers[nodeCount] != this.currentSamNode)
                     nodeCount++;
             }
@@ -139,7 +137,6 @@ namespace SamHaXePanel
             if (this.currentSamNode.Parent != null)
             {
                 TreeNodeCollection brothers = this.currentSamNode.Parent.Nodes;
-                Int16 nodesLen = (Int16)brothers.Count;
                 while (brothers[nodeCount] != this.currentSamNode)
                     nodeCount++;
             }
@@ -151,9 +148,16 @@ namespace SamHaXePanel
             {
                 while (nodeCount > 0 && base.NodeType != XmlNodeType.EndElement)
                 {
-                    base.Read();
                     if (namespaces.Contains(base.NamespaceURI))
                         nodeCount--;
+                    if (base.NodeType == XmlNodeType.Element && !this.IsEmptyElement)
+                    {
+                        base.Skip();
+                    }
+                    else
+                    {
+                        base.Read();
+                    }
                 }
             }
             return nodeCount == 0;

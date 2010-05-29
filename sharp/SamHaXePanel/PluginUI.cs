@@ -620,10 +620,14 @@ namespace SamHaXePanel
                         }
                         else
                         {
-                            resNode = new SamTreeNode(type + " #" + j, icon);
+                            resNode = new SamTreeNode(type + " #" + i, icon);
                         }
                         resNode.ResourceType = resType;
                         frameNode.Nodes.Add(resNode);
+                        if (resType == ResourceNodeType.Compose)
+                        {
+                            this.ConstructFrameChildren(resNode, child, fileLocation);
+                        }
                         break;
                     }
                 }
@@ -883,6 +887,123 @@ namespace SamHaXePanel
             }
         }
 
+        private String GenerateFromFolder(SamTreeNode frameNode, String path, String filter, 
+            Boolean recursive, Boolean generateComposites, String rootFolder)
+        {
+            StringBuilder sb = new StringBuilder();
+            if (Directory.Exists(path))
+            {
+                String[] files = Directory.GetFiles(path);
+                String[] directories = Directory.GetDirectories(path);
+                Regex re = null;
+
+                if (!String.IsNullOrEmpty(filter))
+                    re = new Regex(filter, RegexOptions.IgnoreCase);
+
+                if (recursive)
+                {
+                    foreach (String subPath in directories)
+                    {
+                        sb.AppendLine(
+                            this.GenerateFromFolder(subPath, re, frameNode, generateComposites, rootFolder, 0));
+                    }
+                }
+                foreach (String file in files)
+                {
+                    if (re == null || re.IsMatch(file))
+                    {
+                        sb.AppendLine(this.NodeToXml(this.NodeFromFile(file), rootFolder));
+                    }
+                }
+            }
+
+            return sb.ToString();
+        }
+
+        private SamTreeNode NodeFromFile(String file)
+        {
+            Regex ext = new Regex("[^\\.]+$", RegexOptions.Compiled);
+            String extension = ext.Match(file).Value.ToLower();
+            SamTreeNode resourceNode = null;
+
+            switch (extension)
+            {
+                case "jpeg":
+                case "jpg":
+                case "gif":
+                case "png":
+                    resourceNode = new SamTreeNode(new FileInfo(file).Name, IMAGE_ICON);
+                    resourceNode.ResourceType = ResourceNodeType.Image;
+                    break;
+                case "swf":
+                    resourceNode = new SamTreeNode(new FileInfo(file).Name, SWF_ICON);
+                    resourceNode.ResourceType = ResourceNodeType.Swf;
+                    break;
+                case "mp3":
+                case "wav":
+                    resourceNode = new SamTreeNode(new FileInfo(file).Name, SOUND_ICON);
+                    resourceNode.ResourceType = ResourceNodeType.Sound;
+                    break;
+                case "ttf":
+                    resourceNode = new SamTreeNode(new FileInfo(file).Name, FONT_ICON);
+                    resourceNode.ResourceType = ResourceNodeType.Font;
+                    break;
+                default:
+                    resourceNode = new SamTreeNode(new FileInfo(file).Name, BINARY_ICON);
+                    resourceNode.ResourceType = ResourceNodeType.Binary;
+                    break;
+            }
+            resourceNode.File = file;
+            return resourceNode;
+        }
+
+        private String GenerateFromFolder(String path, Regex filter,
+            SamTreeNode toNode, Boolean generateComposites, String rootFolder, Int16 depth)
+        {
+            StringBuilder sb = new StringBuilder();
+            String[] files = Directory.GetFiles(path);
+            String[] directories = Directory.GetDirectories(path);
+            String indent = "";
+            Int16 localDepth = depth;
+
+            if (generateComposites)
+            {
+                indent = "\t";
+                while (localDepth-- > 0)
+                {
+                    indent += '\t';
+                }
+                //TODO: Have get the compose prefix from template
+                if (files.Length > 0 || directories.Length > 0)
+                {
+                    sb.AppendLine(indent.Substring(1) + "<comp:compose>");
+                }
+            }
+
+            foreach (String subPath in directories)
+            {
+                sb.AppendLine(
+                    this.GenerateFromFolder(subPath, filter,
+                    toNode, generateComposites, rootFolder, (Int16)(depth + 1)));
+            }
+
+            foreach (String file in files)
+            {
+                if (filter == null || filter.IsMatch(file))
+                {
+                    sb.AppendLine(indent + this.NodeToXml(this.NodeFromFile(file), rootFolder));
+                }
+            }
+            if (generateComposites)
+            {
+                if (files.Length > 0 || directories.Length > 0)
+                {
+                    sb.AppendLine(indent.Substring(1) + "</comp:compose>");
+                }
+            }
+            return sb.ToString();
+        }
+
         #endregion
 
         #region Event handlers
@@ -903,7 +1024,37 @@ namespace SamHaXePanel
             SamTreeNode node = (SamTreeNode)this.treeView.SelectedNode;
 
             String nodeContent = this.NodeContentFromXml(node);
+            String ns = "";
+            Char ch;
 
+            ScintillaControl sci = Globals.SciControl;
+            Int32 pos = -1;
+            Int32 colonPos;
+            Int32 ltPos;
+
+            if (!String.IsNullOrEmpty(nodeContent.Trim()))
+            {
+                colonPos = nodeContent.IndexOf(':');
+                if (colonPos > -1)
+                {
+                    ltPos = nodeContent.IndexOf('<') + 1;
+                    if (ltPos < colonPos)
+                        ns = nodeContent.Substring(ltPos, colonPos - ltPos);
+                }
+            }
+            else
+            {
+                pos = this.FindNodeInFile(node);
+                ltPos = pos;
+                while (ltPos < sci.Length)
+                {
+                    ch = (Char)sci.CharAt(ltPos);
+                    if (ch == ':') break;
+                    ns += ch;
+                    ltPos++;
+                }
+            }
+            
             dialog.SetFontPath(node.File);
             dialog.ParseRanges(nodeContent);
             DialogResult dr = dialog.ShowDialog();
@@ -911,13 +1062,12 @@ namespace SamHaXePanel
             if (dr == DialogResult.OK)
             {
                 String insertStr = dialog.ExportXmlString().Replace("\n", "").Trim();
-                Int32 pos = this.FindNodeInFile(node);
-                ScintillaControl sci = Globals.SciControl;
-                Char ch;
-                String word = "";
+                insertStr = insertStr.Replace("$(ns)", ns);
+                if (pos < 0) pos = this.FindNodeInFile(node);
                 Boolean wordCompleted = false;
                 Boolean inserted = false;
                 String nodeBody = "";
+                String word = "";
                 Int32 startedAt = pos;
                 String indentStr;
 
@@ -1176,6 +1326,33 @@ namespace SamHaXePanel
                 template = template.Replace("version=\"9\"", "version=\"" + dialog.Version + "\"");
                 template = template.Replace("compress=\"true\"", "compress=\"" +
                     dialog.Compressed.ToString().ToLower() + "\"");
+                if (!String.IsNullOrEmpty(dialog.ResourceFolder))
+                {
+                    String package = "resources";
+                    if (!String.IsNullOrEmpty(dialog.Package)) package = dialog.Package;
+                    SamTreeNode rootNode = new SamTreeNode(package, PROJECT_ICON);
+                    SamTreeNode frameNode = new SamTreeNode("Frame #0", FRAME_ICON);
+                    rootNode.Nodes.Add(frameNode);
+                    rootNode.File = dialog.ResourceFilePath;
+                    //SamTreeNode, String, String, Boolean, Boolean, String
+                    String generated = this.GenerateFromFolder(frameNode, dialog.ResourceFolder,
+                        dialog.Filer, dialog.Recursive, dialog.GenerateComposites, 
+                        Path.GetDirectoryName(dialog.ResourceFilePath));
+                    Int32 index = template.IndexOf("$(EntryPoint)");
+                    Int32 indexOfNL = index - 1;
+                    String pad = "\n";
+                    if (index > -1)
+                    {
+                        while (template[indexOfNL] != '\r' && template[indexOfNL] != '\n')
+                        {
+                            indexOfNL--;
+                            pad += '\t';
+                        }
+                    }
+                    generated = generated.Replace("\n", pad);
+                    template = template.Replace("$(EntryPoint)", generated);
+                }
+                else template = template.Replace("$(EntryPoint)", "");
                 using (StreamWriter file = new StreamWriter(dialog.ResourceFilePath))
                 {
                     file.Write(template);
@@ -1183,26 +1360,7 @@ namespace SamHaXePanel
                 }
                 Globals.MainForm.OpenEditableDocument(dialog.ResourceFilePath, false);
                 this.pluginMain.AddConfigFiles(new String[] { dialog.ResourceFilePath });
-                ScintillaControl sci = Globals.SciControl;
-                Int32 pos = 0;
-                Char ch;
-                // TODO: This doesn't seem to work because of the csi isn't focused
-                // see if we can focus it before moving cursor
-                while (pos < sci.Length)
-                {
-                    ch = (Char)sci.CharAt(pos);
-                    if (ch == '$')
-                    {
-                        if (sci.GetWordFromPosition(pos + 2) == "EntryPoint")
-                        {
-                            sci.SetSel(pos, pos + 13);
-                            sci.DeleteBack();
-                            sci.SetSel(pos, pos + 1);
-                            break;
-                        }
-                    }
-                    pos++;
-                }
+                
             }
         }
 

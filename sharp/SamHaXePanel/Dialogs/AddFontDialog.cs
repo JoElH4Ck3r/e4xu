@@ -181,17 +181,18 @@ namespace SamHaXePanel.Dialogs
             InitializeComponent();
             this.fontGrid.AllowUserToResizeRows = false;
 
-            this.addSelectedBTN.Image = PluginBase.MainForm.FindImage("461");
-            this.removeSelectedBTN.Image = PluginBase.MainForm.FindImage("153");
-            this.optimizeBTN.Image = PluginBase.MainForm.FindImage("133");
+            //this.optimizeBTN.Image = PluginBase.MainForm.FindImage("133");
+            this.addBTN.Image = PluginBase.MainForm.FindImage("461");
+            this.removeBTN.Image = PluginBase.MainForm.FindImage("153");
+            this.presetsCB.Image = PluginBase.MainForm.FindImage("402");
 
             this.activePlanes = new Dictionary<String, LanguagePlane>();
             this.activePlanes["Basic Latin"] = allPlanes["Basic Latin"];
             this.activePlanes["Latin-1 Supplement"] = allPlanes["Latin-1 Supplement"];
             this.activePlanes["Latin Extended-B"] = allPlanes["Latin Extended-B"];
 
-            this.addSelectedBTN.Click += new EventHandler(addSelectedBTN_Click);
-            this.removeSelectedBTN.Click += new EventHandler(removeSelectedBTN_Click);
+            this.addBTN.Click += new EventHandler(addSelectedBTN_Click);
+            this.removeBTN.Click += new EventHandler(removeSelectedBTN_Click);
 
             this.PopulateGrid();
             this.PopulateList();
@@ -227,20 +228,20 @@ namespace SamHaXePanel.Dialogs
                         pat += (Char)(i - 1);
                         if (pat.EndsWith(".."))
                         {
-                            builder.AppendLine("<include characters=\"" + pat[0] + "\"/>");
+                            builder.AppendLine("<$(ns):include characters=\"" + pat[0] + "\"/>");
                         }
-                        else builder.AppendLine("<include range=\"" + pat + "\"/>");
+                        else builder.AppendLine("<$(ns):include range=\"" + pat + "\"/>");
                         pat = "";
                     }
                 }
             }
-            return builder.ToString();
+            return "<$(ns):characters>\r" + builder.ToString() + "</$(ns):characters>";
         }
 
         public void ParseRanges(String ranges)
         {
             Regex re =
-                new Regex("(include|exclude)[\\r\\n\\s]+[^>]*(range|chatacters)[\\r\\n\\s]*=[\\r\\n\\s]*(\"|')(.+)(?=\\3)",
+                new Regex("(include|exclude)[\\r\\n\\s]+[^>]*(range|characters)[\\r\\n\\s]*=[\\r\\n\\s]*(\"|')(.+)(?=\\3)",
                     RegexOptions.Compiled);
             MatchCollection col = re.Matches(ranges);
             Int32 c = col.Count;
@@ -251,7 +252,7 @@ namespace SamHaXePanel.Dialogs
                 {
                     if (col[i].Groups[2].Value == "range")
                         this.ModifyStringRange(col[i].Groups[4].Value, true);
-                    else this.ModifyStringCharacters(col[i].Groups[4].Value, false);
+                    else this.ModifyStringCharacters(col[i].Groups[4].Value, true);
                 }
                 else
                 {
@@ -445,14 +446,19 @@ namespace SamHaXePanel.Dialogs
             {
                 col = i % 16;
                 row = i / 16;
-                charInt = (Int32)((String)(this.fontGrid[col, row].Value))[0];
+                DataGridViewCell cell = this.fontGrid[col, row];
+                charInt = (Int32)((String)(cell.Value))[0];
                 if (this.selectedRangesPool[charInt])
                 {
-                    this.fontGrid[col, row].Style.BackColor = Color.Beige;
+                    cell.Style.BackColor = Color.Beige;
                 }
                 else
                 {
-                    this.fontGrid[col, row].Style.BackColor = Color.White;
+                    cell.Style.BackColor = Color.White;
+                }
+                if (cell.Style.Font != this.fontGrid.Font)
+                {
+                    cell.Style.Font = this.fontGrid.Font;
                 }
             }
             this.fontGrid.PerformLayout();

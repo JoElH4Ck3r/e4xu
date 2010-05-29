@@ -28,8 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle19 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle20 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AddFontDialog));
             this.fontGrid = new System.Windows.Forms.DataGridView();
             this.C0 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.C1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -52,10 +53,15 @@
             this.selectedRanges = new System.Windows.Forms.ListBox();
             this.okBTN = new System.Windows.Forms.Button();
             this.cancelBTN = new System.Windows.Forms.Button();
-            this.addSelectedBTN = new System.Windows.Forms.Button();
-            this.removeSelectedBTN = new System.Windows.Forms.Button();
-            this.optimizeBTN = new System.Windows.Forms.Button();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.presetsCB = new System.Windows.Forms.ToolStripDropDownButton();
+            this.addPresetBTN = new System.Windows.Forms.ToolStripMenuItem();
+            this.removePresetBTN = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.addBTN = new System.Windows.Forms.ToolStripButton();
+            this.removeBTN = new System.Windows.Forms.ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)(this.fontGrid)).BeginInit();
+            this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // fontGrid
@@ -83,14 +89,14 @@
             this.CD,
             this.CE,
             this.CF});
-            dataGridViewCellStyle19.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle19.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle19.Font = new System.Drawing.Font("Arial", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle19.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle19.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle19.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle19.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.fontGrid.DefaultCellStyle = dataGridViewCellStyle19;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("Arial", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.fontGrid.DefaultCellStyle = dataGridViewCellStyle7;
             this.fontGrid.Dock = System.Windows.Forms.DockStyle.Left;
             this.fontGrid.Location = new System.Drawing.Point(10, 10);
             this.fontGrid.Name = "fontGrid";
@@ -98,8 +104,8 @@
             this.fontGrid.RowHeadersVisible = false;
             this.fontGrid.RowHeadersWidth = 20;
             this.fontGrid.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            dataGridViewCellStyle20.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.fontGrid.RowsDefaultCellStyle = dataGridViewCellStyle20;
+            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.fontGrid.RowsDefaultCellStyle = dataGridViewCellStyle8;
             this.fontGrid.RowTemplate.Height = 30;
             this.fontGrid.Size = new System.Drawing.Size(498, 446);
             this.fontGrid.TabIndex = 0;
@@ -236,9 +242,9 @@
             // 
             this.langPlanesCBL.CheckOnClick = true;
             this.langPlanesCBL.FormattingEnabled = true;
-            this.langPlanesCBL.Location = new System.Drawing.Point(514, 30);
+            this.langPlanesCBL.Location = new System.Drawing.Point(514, 28);
             this.langPlanesCBL.Name = "langPlanesCBL";
-            this.langPlanesCBL.Size = new System.Drawing.Size(215, 199);
+            this.langPlanesCBL.Size = new System.Drawing.Size(215, 214);
             this.langPlanesCBL.Sorted = true;
             this.langPlanesCBL.TabIndex = 1;
             // 
@@ -254,7 +260,7 @@
             // selectedRanges
             // 
             this.selectedRanges.FormattingEnabled = true;
-            this.selectedRanges.Location = new System.Drawing.Point(515, 266);
+            this.selectedRanges.Location = new System.Drawing.Point(515, 267);
             this.selectedRanges.Name = "selectedRanges";
             this.selectedRanges.Size = new System.Drawing.Size(214, 160);
             this.selectedRanges.TabIndex = 4;
@@ -279,46 +285,65 @@
             this.cancelBTN.Text = "Cancel";
             this.cancelBTN.UseVisualStyleBackColor = true;
             // 
-            // addSelectedBTN
+            // toolStrip1
             // 
-            this.addSelectedBTN.FlatAppearance.BorderSize = 0;
-            this.addSelectedBTN.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.addSelectedBTN.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.addSelectedBTN.Location = new System.Drawing.Point(515, 236);
-            this.addSelectedBTN.Name = "addSelectedBTN";
-            this.addSelectedBTN.Size = new System.Drawing.Size(55, 23);
-            this.addSelectedBTN.TabIndex = 9;
-            this.addSelectedBTN.Text = "Add";
-            this.addSelectedBTN.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.addSelectedBTN.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.addSelectedBTN.UseVisualStyleBackColor = true;
+            this.toolStrip1.AutoSize = false;
+            this.toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
+            this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.presetsCB,
+            this.addBTN,
+            this.removeBTN});
+            this.toolStrip1.Location = new System.Drawing.Point(515, 242);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(214, 25);
+            this.toolStrip1.TabIndex = 12;
+            this.toolStrip1.Text = "toolStrip1";
             // 
-            // removeSelectedBTN
+            // presetsCB
             // 
-            this.removeSelectedBTN.FlatAppearance.BorderSize = 0;
-            this.removeSelectedBTN.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.removeSelectedBTN.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.removeSelectedBTN.Location = new System.Drawing.Point(570, 236);
-            this.removeSelectedBTN.Name = "removeSelectedBTN";
-            this.removeSelectedBTN.Size = new System.Drawing.Size(75, 23);
-            this.removeSelectedBTN.TabIndex = 10;
-            this.removeSelectedBTN.Text = "Remove";
-            this.removeSelectedBTN.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.removeSelectedBTN.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.removeSelectedBTN.UseVisualStyleBackColor = true;
+            this.presetsCB.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addPresetBTN,
+            this.removePresetBTN,
+            this.toolStripSeparator1});
+            this.presetsCB.Image = ((System.Drawing.Image)(resources.GetObject("presetsCB.Image")));
+            this.presetsCB.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.presetsCB.Name = "presetsCB";
+            this.presetsCB.Size = new System.Drawing.Size(72, 22);
+            this.presetsCB.Text = "Presets";
             // 
-            // optimizeBTN
+            // addPresetBTN
             // 
-            this.optimizeBTN.FlatAppearance.BorderSize = 0;
-            this.optimizeBTN.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.optimizeBTN.Location = new System.Drawing.Point(642, 236);
-            this.optimizeBTN.Name = "optimizeBTN";
-            this.optimizeBTN.Size = new System.Drawing.Size(87, 23);
-            this.optimizeBTN.TabIndex = 11;
-            this.optimizeBTN.Text = "Optimize";
-            this.optimizeBTN.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.optimizeBTN.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.optimizeBTN.UseVisualStyleBackColor = true;
+            this.addPresetBTN.Name = "addPresetBTN";
+            this.addPresetBTN.Size = new System.Drawing.Size(152, 22);
+            this.addPresetBTN.Text = "Add preset";
+            // 
+            // removePresetBTN
+            // 
+            this.removePresetBTN.Name = "removePresetBTN";
+            this.removePresetBTN.Size = new System.Drawing.Size(152, 22);
+            this.removePresetBTN.Text = "Remove preset";
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+            // 
+            // addBTN
+            // 
+            this.addBTN.Image = ((System.Drawing.Image)(resources.GetObject("addBTN.Image")));
+            this.addBTN.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.addBTN.Name = "addBTN";
+            this.addBTN.Size = new System.Drawing.Size(46, 22);
+            this.addBTN.Text = "Add";
+            // 
+            // removeBTN
+            // 
+            this.removeBTN.Image = ((System.Drawing.Image)(resources.GetObject("removeBTN.Image")));
+            this.removeBTN.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.removeBTN.Name = "removeBTN";
+            this.removeBTN.Size = new System.Drawing.Size(66, 22);
+            this.removeBTN.Text = "Remove";
             // 
             // AddFontDialog
             // 
@@ -327,9 +352,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancelBTN;
             this.ClientSize = new System.Drawing.Size(742, 466);
-            this.Controls.Add(this.optimizeBTN);
-            this.Controls.Add(this.removeSelectedBTN);
-            this.Controls.Add(this.addSelectedBTN);
+            this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.cancelBTN);
             this.Controls.Add(this.okBTN);
             this.Controls.Add(this.selectedRanges);
@@ -347,6 +370,8 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Import Font";
             ((System.ComponentModel.ISupportInitialize)(this.fontGrid)).EndInit();
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -376,9 +401,13 @@
         private System.Windows.Forms.ListBox selectedRanges;
         private System.Windows.Forms.Button okBTN;
         private System.Windows.Forms.Button cancelBTN;
-        private System.Windows.Forms.Button addSelectedBTN;
-        private System.Windows.Forms.Button removeSelectedBTN;
-        private System.Windows.Forms.Button optimizeBTN;
+        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.ToolStripDropDownButton presetsCB;
+        private System.Windows.Forms.ToolStripMenuItem addPresetBTN;
+        private System.Windows.Forms.ToolStripMenuItem removePresetBTN;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripButton addBTN;
+        private System.Windows.Forms.ToolStripButton removeBTN;
 
     }
 }
