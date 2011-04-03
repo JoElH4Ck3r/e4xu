@@ -7,7 +7,7 @@
 	<lineEndRegExp options="g">\r\n</lineEndRegExp>
 	<regexStartRegExp options="g">\/[^\/]</regexStartRegExp>
 	<!-- Yeah, this isn't technically correct, but will do for now -->
-	<regexEndRegExp options="g">\/([gmisx]){0,5}</regexEndRegExp>
+	<regexEndRegExp options="g">\/([gmisx]){0,5}(?![gmisx])</regexEndRegExp>
 	<lineCommentStartRegExp options="g">\/\/</lineCommentStartRegExp>
 	<blockCommentStartRegExp options="g">\/\*</blockCommentStartRegExp>
 	<blockCommentEndRegExp options="g">\*\/</blockCommentEndRegExp>

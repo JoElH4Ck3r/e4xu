@@ -18,7 +18,7 @@ package org.wvxvws.parsers.as3.sinks
 		{
 			var source:String = from.source;
 			var position:int = from.column;
-			var current:String = source.charAt(position);
+			var current:String;
 			var backSlash:Boolean;
 			var reEnd:RegExp = from.settings.regexEndRegExp;
 			var escapeChar:String = from.settings.escapeChar;
@@ -26,9 +26,9 @@ package org.wvxvws.parsers.as3.sinks
 			var totalLenght:int = from.source.length;
 			var remaining:String;
 			var match:String;
-			
+			position++;
 			match = this.resetMatch(from, reEnd, position);
-			trace(this, match);
+			
 			do
 			{
 				position++;
@@ -48,6 +48,16 @@ package org.wvxvws.parsers.as3.sinks
 				from.advanceColumn(current);
 			}
 			while (keepGoing);
+			// TODO: this is ugly, must find a better way.
+			if (position < totalLenght || from.hasError)
+			{
+				for (var i:int; i < match.length; i++, position++)
+				{
+					trace("Regexp tail:", match.charAt(i));
+					from.advanceColumn(match.charAt(i));
+				}
+			}
+			trace("Finished regexp:", match, i);
 			return totalLenght > position;
 		}
 		
@@ -62,9 +72,10 @@ package org.wvxvws.parsers.as3.sinks
 			position:int):String
 		{
 			var match:String;
-			
-			regexp.lastIndex = position;
-			match = sinks.source.match(regexp)[0];
+			var subseq:String = 
+				sinks.source.substring(position, sinks.source.length);
+			match = subseq.match(regexp)[0];
+			trace("----------subseq:", subseq);
 			if (!match || !match.length)
 				sinks.reportError(sinks.settings.errors.regexp[0]);
 			return match;
