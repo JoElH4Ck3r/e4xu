@@ -68,6 +68,7 @@ package org.wvxvws.parsers.as3
 		private var _currentSink:ISink;
 		private var _hasError:Boolean;
 		private var _sinks:Dictionary = new Dictionary();
+		private var _cleanSinks:Dictionary = new Dictionary();
 		private var _error:AS3ReaderError;
 		
 		public function AS3Sinks()
@@ -85,7 +86,9 @@ package org.wvxvws.parsers.as3
 			this._line = 0;
 			this._lines.splice(0, this._lines.length);
 			this._word = "";
-			this.chooseNextSink();
+			//this.chooseNextSink();
+			this.cleanSinks();
+			this.sinkCombinator(this._cleanSinks[StringSink], StringSink);
 		}
 		
 		public function advanceColumn(character:String):void
@@ -93,7 +96,7 @@ package org.wvxvws.parsers.as3
 			if (!this._hasError)
 			{
 				this._column++;
-				trace("advanceColumn", character, this._source.charAt(this._column));
+				//trace("advanceColumn", character, this._source.charAt(this._column));
 				if (this.isWhiteSpace(character))
 				{
 					//trace("isWhiteSpace");
@@ -142,52 +145,90 @@ package org.wvxvws.parsers.as3
 		}
 		
 		// TODO: This is ugly, must think of a better way of doing it.
-		private function chooseNextSink():void
+		//private function chooseNextSink():void
+		//{
+			//var quote:RegExp = this._settings.quoteRegExp;
+			//var regexStart:RegExp = this._settings.regexStartRegExp;
+			//var white:RegExp = this._settings.whiteSpaceRegExp;
+			//var subseq:String = 
+				//this._source.substring(this._column, this._source.length);
+			//var match:String;
+			//match = subseq.match(quote)[0];
+			//if (match && subseq.indexOf(match) == 0)
+			//{
+				//quote.lastIndex = 0;
+				//this._currentSink = this._sinks[StringSink];
+				//if (this._currentSink.read(this))
+				//{
+					//this.chooseNextSink();
+					//return;
+				//}
+			//}
+			//
+			//match = subseq.match(white)[0];
+			//if (match && subseq.indexOf(match) == 0)
+			//{
+				//white.lastIndex = 0;
+				//this._currentSink = this._sinks[WhiteSpaceSink];
+				//if (this._currentSink.read(this))
+				//{
+					//this.chooseNextSink();
+					//return;
+				//}
+			//}
+			//
+			//match = subseq.match(regexStart)[0];
+			//if (match && subseq.indexOf(match) == 0)
+			//{
+				//regexStart.lastIndex = 0;
+				//this._currentSink = this._sinks[RegExpSink];
+				//if (this._currentSink.read(this))
+				//{
+					//this.chooseNextSink();
+				//}
+			//}
+		//}
+		
+		private function sinkCombinator(regexp:RegExp, sinkClass:Class):void
 		{
-			var quote:RegExp = this._settings.quoteRegExp;
-			var regexStart:RegExp = this._settings.regexStartRegExp;
-			var white:RegExp = this._settings.whiteSpaceRegExp;
 			var subseq:String = 
 				this._source.substring(this._column, this._source.length);
-			var match:String;
-			match = subseq.match(quote)[0];
-			trace("matched to:", match, subseq);
-			if (match && subseq.indexOf(match) == 0)
-			{
-				quote.lastIndex = 0;
-				this._currentSink = this._sinks[StringSink];
-				if (this._currentSink.read(this))
-				{
-					this._column++;
-					this.chooseNextSink();
-				}
-			}
+			var match:String = subseq.match(regexp)[0];
+			var cleanSink:Class;
+			var cleanRE:RegExp;
 			
-			match = subseq.match(white)[0];
-			trace("matched to white:", match, subseq);
 			if (match && subseq.indexOf(match) == 0)
 			{
-				white.lastIndex = 0;
-				this._currentSink = this._sinks[WhiteSpaceSink];
+				this._currentSink = this._sinks[sinkClass];
 				if (this._currentSink.read(this))
 				{
-					//this._column++;
-					this.chooseNextSink();
+					this.cleanSinks();
+					this.sinkCombinator(regexp, sinkClass);
 				}
 			}
-			
-			match = subseq.match(regexStart)[0];
-			trace("matched to regex:", match, subseq);
-			if (match && subseq.indexOf(match) == 0)
+			else
 			{
-				regexStart.lastIndex = 0;
-				this._currentSink = this._sinks[RegExpSink];
-				if (this._currentSink.read(this))
+				// TODO: This is not an ideal way to choose next sink to try.
+				// Some cannot follow others, so it's useless trying them.
+				for (var sink:Object in this._cleanSinks)
 				{
-					//this._column++;
-					this.chooseNextSink();
+					cleanRE = this._cleanSinks[sink] as RegExp;
+					cleanSink = sink as Class;
+					break;
+				}
+				if (cleanRE)
+				{
+					delete this._cleanSinks[cleanSink];
+					this.sinkCombinator(cleanRE, cleanSink);
 				}
 			}
+		}
+		
+		private function cleanSinks():void
+		{
+			this._cleanSinks[StringSink] = this._settings.quoteRegExp;
+			this._cleanSinks[RegExpSink] = this._settings.regexStartRegExp;
+			this._cleanSinks[WhiteSpaceSink] = this._settings.whiteSpaceRegExp;
 		}
 		
 		private function wordEndHandler():void
@@ -196,7 +237,7 @@ package org.wvxvws.parsers.as3
 				this.onKeyword();
 			if (this.isClassName(this._word) && this.onClassName)
 				this.onClassName();
-			if (this.onWord) this.onWord();
+			if (this.onWord && this._word) this.onWord();
 			this._word = "";
 		}
 		

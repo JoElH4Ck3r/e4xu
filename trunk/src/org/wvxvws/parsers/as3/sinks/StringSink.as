@@ -25,6 +25,7 @@ package org.wvxvws.parsers.as3.sinks
 			var totalLenght:int = from.source.length;
 			var matchingQuote:String = current;
 			
+			from.advanceColumn(current);
 			do
 			{
 				position++;
