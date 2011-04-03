@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<as3>
+	<escapeChar>\</escapeChar>
+	<whiteSpaceRegExp options="gm">\s+</whiteSpaceRegExp>
+	<alphaNumRegExp options="g">\w+</alphaNumRegExp>
+	<quoteRegExp options="g">"|'</quoteRegExp>
+	<lineEndRegExp options="g">\r\n</lineEndRegExp>
+	<regexStartRegExp options="g">\/[^\/]</regexStartRegExp>
+	<!-- Yeah, this isn't technically correct, but will do for now -->
+	<regexEndRegExp options="g">\/([gmisx]){0,5}</regexEndRegExp>
+	<lineCommentStartRegExp options="g">\/\/</lineCommentStartRegExp>
+	<blockCommentStartRegExp options="g">\/\*</blockCommentStartRegExp>
+	<blockCommentEndRegExp options="g">\*\/</blockCommentEndRegExp>
+	<asdocCommentStartRegExp options="g">\/\*\*</asdocCommentStartRegExp>
+	<errors>
+		<string>Illegal line break in Sting at line: %line%, column: %column%!</string>
+		<regexp>Unterminated RegExp at line: %line%, column: %column%!</regexp>
+	</errors>
+</as3>
