@@ -8,13 +8,13 @@ package org.wvxvws.parsers.as3.sinks
 	 * ...
 	 * @author wvxvw
 	 */
-	public class RegExpSink implements ISink
+	public class RegExpSink extends Sink implements ISink
 	{
 		public function RegExpSink() { super(); }
 		
 		/* INTERFACE org.wvxvws.parsers.as3.ISink */
 		
-		public function read(from:AS3Sinks):Boolean
+		public function read(from:AS3Sinks, flags:Vector.<Function>):Boolean
 		{
 			var source:String = from.source;
 			var position:int = from.column;
@@ -26,12 +26,20 @@ package org.wvxvws.parsers.as3.sinks
 			var totalLenght:int = from.source.length;
 			var remaining:String;
 			var match:String;
+			var collected:Vector.<String> = new <String>[];
+			var collectedText:String;
+			
+			flags[0](false);
+			flags[1](false);
+			flags[2](false);
+			
+			current = source.charAt(position);
+			collected.push(current);
+			from.advanceColumn(current);
 			position++;
 			match = this.resetMatch(from, reEnd, position);
-			
 			do
 			{
-				position++;
 				if (position < totalLenght || from.hasError)
 				{
 					current = source.charAt(position);
@@ -45,18 +53,24 @@ package org.wvxvws.parsers.as3.sinks
 					}
 				}
 				else break;
+				collected.push(current);
 				from.advanceColumn(current);
+				position++;
 			}
 			while (keepGoing);
 			// TODO: this is ugly, must find a better way.
 			if (position < totalLenght || from.hasError)
 			{
-				for (var i:int; i < match.length; i++, position++)
+				for (var i:int = 1; i < match.length; i++, position++)
 				{
-					trace("Regexp tail:", match.charAt(i));
-					from.advanceColumn(match.charAt(i));
+					current = match.charAt(i);
+					collected.push(current);
+					from.advanceColumn(current);
 				}
 			}
+			collectedText = collected.join("");
+			if (from.onRegExp) collectedText = from.onRegExp(collectedText);
+			from.appendCollectedText(collectedText);
 			trace("Finished regexp:", match, i);
 			return totalLenght > position;
 		}
@@ -79,6 +93,12 @@ package org.wvxvws.parsers.as3.sinks
 			if (!match || !match.length)
 				sinks.reportError(sinks.settings.errors.regexp[0]);
 			return match;
+		}
+		
+		public override function isSinkStart(from:AS3Sinks):Boolean
+		{
+			super._startRegExp = from.settings.regexStartRegExp;
+			return super.isSinkStart(from);
 		}
 	}
 }

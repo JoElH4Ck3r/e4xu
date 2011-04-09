@@ -5,13 +5,14 @@
 	<alphaNumRegExp options="g">\w+</alphaNumRegExp>
 	<quoteRegExp options="g">"|'</quoteRegExp>
 	<lineEndRegExp options="g">\r\n</lineEndRegExp>
-	<regexStartRegExp options="g">\/[^\/]</regexStartRegExp>
+	<regexStartRegExp options="g">\/[^\/*]</regexStartRegExp>
 	<!-- Yeah, this isn't technically correct, but will do for now -->
 	<regexEndRegExp options="g">\/([gmisx]){0,5}(?![gmisx])</regexEndRegExp>
 	<lineCommentStartRegExp options="g">\/\/</lineCommentStartRegExp>
-	<blockCommentStartRegExp options="g">\/\*</blockCommentStartRegExp>
+	<blockCommentStartRegExp options="g">\/\*(?=(\*\/|[^*]))</blockCommentStartRegExp>
 	<blockCommentEndRegExp options="g">\*\/</blockCommentEndRegExp>
 	<asdocCommentStartRegExp options="g">\/\*\*</asdocCommentStartRegExp>
+	<asdocKeywordRegExp options="g">@\\w+</asdocKeywordRegExp>
 	<errors>
 		<string>Illegal line break in Sting at line: %line%, column: %column%!</string>
 		<regexp>Unterminated RegExp at line: %line%, column: %column%!</regexp>

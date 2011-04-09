@@ -83,6 +83,61 @@ package org.wvxvws.parsers.as3.resources
 		
 		public function get errors():XMLList { return this._errors.copy(); }
 		
+		public function get lineCommentStartRegExp():RegExp
+		{
+			if (!this._lineCommentStartRegExp)
+			{
+				this._lineCommentStartRegExp = 
+					this.regexFromXML(this._xml.lineCommentStartRegExp[0]);
+			}
+			this._lineCommentStartRegExp.lastIndex = 0;
+			return this._lineCommentStartRegExp;
+		}
+		
+		public function get blockCommentStartRegExp():RegExp
+		{
+			if (!this._blockCommentStartRegExp)
+			{
+				this._blockCommentStartRegExp = 
+					this.regexFromXML(this._xml.blockCommentStartRegExp[0]);
+			}
+			this._blockCommentStartRegExp.lastIndex = 0;
+			return this._blockCommentStartRegExp;
+		}
+		
+		public function get blockCommentEndRegExp():RegExp
+		{
+			if (!this._blockCommentEndRegExp)
+			{
+				this._blockCommentEndRegExp = 
+					this.regexFromXML(this._xml.blockCommentEndRegExp[0]);
+			}
+			this._blockCommentEndRegExp.lastIndex = 0;
+			return this._blockCommentEndRegExp;
+		}
+		
+		public function get asdocCommentStartRegExp():RegExp
+		{
+			if (!this._asdocCommentStartRegExp)
+			{
+				this._asdocCommentStartRegExp = 
+					this.regexFromXML(this._xml.asdocCommentStartRegExp[0]);
+			}
+			this._asdocCommentStartRegExp.lastIndex = 0;
+			return this._asdocCommentStartRegExp;
+		}
+		
+		public function get asdocKeywordRegExp():RegExp
+		{
+			if (!this._asdocKeywordRegExp)
+			{
+				this._asdocKeywordRegExp = 
+					this.regexFromXML(this._xml.asdocKeywordRegExp[0]);
+			}
+			this._asdocKeywordRegExp.lastIndex = 0;
+			return this._asdocKeywordRegExp;
+		}
+		
 		private var _whiteSpaceRegExp:RegExp;
 		private var _alphaNumRegExp:RegExp;
 		private var _lineEndRegExp:RegExp;
@@ -90,6 +145,11 @@ package org.wvxvws.parsers.as3.resources
 		private var _regexStartRegExp:RegExp;
 		private var _quoteRegExp:RegExp;
 		private var _errors:XMLList;
+		private var _lineCommentStartRegExp:RegExp;
+		private var _blockCommentStartRegExp:RegExp;
+		private var _blockCommentEndRegExp:RegExp;
+		private var _asdocCommentStartRegExp:RegExp;
+		private var _asdocKeywordRegExp:RegExp;
 		
 		private var _xml:XML;
 		
