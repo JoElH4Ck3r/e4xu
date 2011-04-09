@@ -7,38 +7,36 @@ package org.wvxvws.parsers.as3.sinks
 	 * ...
 	 * @author wvxvw
 	 */
-	public class WhiteSpaceSink implements ISink
+	public class WhiteSpaceSink extends Sink implements ISink
 	{
 		
-		public function WhiteSpaceSink() 
-		{
-			super();
-		}
+		public function WhiteSpaceSink() { super(); }
 		
 		/* INTERFACE org.wvxvws.parsers.as3.ISink */
 		
-		public function read(from:AS3Sinks):Boolean
+		// TODO: it's possible to optimize if we move collected and collected
+		// text to the class, instead of locals.
+		public function read(from:AS3Sinks, flags:Vector.<Function>):Boolean
 		{
-			var source:String = from.source;
-			var position:int = from.column;
 			var white:RegExp = from.settings.whiteSpaceRegExp;
-			var current:String;
-			var keepGoing:Boolean;
-			var totalLenght:int = from.source.length;
+			var subseq:String = from.source.substr(from.column);
+			var match:String;
+			match = subseq.match(white)[0];
 			
-			do
+			flags[0](false);
+			flags[1](false);
+			flags[2](false);
+			
+			for (var position:int; position < match.length; position++)
 			{
-				position++;
-				white.lastIndex = 0;
-				if (position < totalLenght || from.hasError)
-				{
-					current = source.charAt(position);
-				}
-				else break;
-				from.advanceColumn(current);
+				from.advanceColumn(match.charAt(position));
 			}
-			while (white.test(current));
-			return totalLenght > position;
+			
+			trace("------ whitespace returned", white, match.length);
+			if (from.onWhiteSpace)
+				match = from.onWhiteSpace(match);
+			from.appendCollectedText(match);
+			return from.source.length > position;
 		}
 		
 		public function canFollow(from:AS3Sinks):Boolean
@@ -46,6 +44,12 @@ package org.wvxvws.parsers.as3.sinks
 			var result:Boolean;
 			
 			return result;
+		}
+		
+		public override function isSinkStart(from:AS3Sinks):Boolean
+		{
+			super._startRegExp = from.settings.whiteSpaceRegExp;
+			return super.isSinkStart(from);
 		}
 		
 	}
