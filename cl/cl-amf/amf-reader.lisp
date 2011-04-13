@@ -37,8 +37,27 @@
 	
 )
 
+(defun decode-utf-8 (bytes)
+	(let (	(first-byte (first bytes))
+		(result))
+		(if (logbitp 7 first-byte)
+			(if (not (logbitp 5 first-byte))
+				(setf result (+ (ash (logand first-byte #x1F) 6) 
+					(logand (second bytes) #x3F)))
+				(if (not (logbitp 4 first-byte))
+					(setf result (+ (ash (logand first-byte #xF) 12) 
+							(ash (logand (second bytes) #x3F) 6) 
+							(logand (third bytes) #x3F)))
+					(when (not (logbitp 3 first-byte)) 
+						(setf result (+ (ash (logand first-byte #x7) 18) 
+							(ash (logand (second bytes) #x3F) 12) 
+							(ash (logand (third bytes) #x3F) 6) 
+							(logand (fourth bytes) #x3F))))))
+			(setf result first-byte))
+		(code-char result)))
+
 (defun decode-ieee-754 (bytes)
-	(let (	(sign (if (logbitp 1 (first bytes)) 1 -1))
+	(let (	(sign (if (logbitp 0 (first bytes)) 1 -1))
 		(exponent (- (logior (ash (logand (first bytes) #x7F) 4) 
 			(ash (second bytes) -4)) #x3FF))
 		(significand (+ #x10000000000000 
