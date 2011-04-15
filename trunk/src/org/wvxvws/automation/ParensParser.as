@@ -3,6 +3,7 @@ package org.wvxvws.automation
 	import flash.utils.Dictionary;
 	import flash.utils.describeType;
 	
+	import org.wvxvws.automation.display.DisplayFunctions;
 	import org.wvxvws.automation.language.DefunFunctions;
 	import org.wvxvws.automation.language.LanguageFunctions;
 	import org.wvxvws.automation.language.ParensPackage;
@@ -55,6 +56,11 @@ package org.wvxvws.automation
 			{
 				pack.extern(meta.@name, context[meta.@name]);
 			}
+			// Automatically populate "this" variable.
+			this._language.inpackage(alias);
+			this._language.defvar("this", context);
+//			var pack:ParensPackage = this._parser.language.getpackage("test-runner");
+//			pack.extern("this", this);
 		}
 		
 		public function read(programs:String):Array
@@ -262,6 +268,11 @@ package org.wvxvws.automation
 			pack.extern("slot-value", UtilsFunctions.slotValue);
 			pack.extern("set-slot", UtilsFunctions.setSlot);
 			
+			this._language.defpackage("display");
+			pack = this._language.getpackage("display");
+			pack.extern("init", DisplayFunctions.init);
+			pack.extern("click", DisplayFunctions.click);
+			
 			this._language.inpackage("lang");
 		}
 		
@@ -289,7 +300,7 @@ package org.wvxvws.automation
 			else
 			{
 				newNode = new ComplexNode(undefined, 
-					this.resolveContext, this.resolveMethod);
+					this.resolveContext, this.resolveMethod, this.propertyResolver);
 			}
 			if (this._word)
 			{

@@ -147,7 +147,6 @@ package org.wvxvws.automation.language
 				pack = this._current;
 				varname = parts[0];
 			}
-			
 			return pack.get(varname, this._current);
 		}
 		
