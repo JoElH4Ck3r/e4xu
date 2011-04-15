@@ -6,7 +6,6 @@ package org.wvxvws.automation.strings
 		
 		public static function concat(...params):String
 		{
-			trace("concatenating:", params);
 			return params.join("");
 		}
 	}

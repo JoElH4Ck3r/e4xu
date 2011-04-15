@@ -1,5 +1,6 @@
 package org.wvxvws.automation.language
 {
+	import org.wvxvws.automation.nodes.EvalNode;
 	import org.wvxvws.automation.nodes.Node;
 
 	public class Callable
@@ -33,13 +34,15 @@ package org.wvxvws.automation.language
 			while (param = this._parameters.next())
 			{
 				pack.extern(this._parameters.nameOf(param), nodes[i]);
+				i++;
 			}
 			
 			this._context.inpackage(tempContext);
 			
-			for each (var node:Node in this._parameters)
+			for each (var node:Node in this._body)
 			{
-				result = node.value;
+				if (node is EvalNode) result = (node as EvalNode).eval();
+				else result = node.value;
 			}
 			
 			this._context.inpackage(prevPack.name);

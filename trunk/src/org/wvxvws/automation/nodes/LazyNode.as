@@ -23,9 +23,9 @@ package org.wvxvws.automation.nodes
 		}
 		
 		public function LazyNode(value:* = undefined, 
-			context:Function = null, methodResolver:Function = null)
+			context:Function = null, methodResolver:Function = null, propertyResolver:Function = null)
 		{
-			super(value, context, methodResolver);
+			super(value, context, methodResolver, propertyResolver);
 		}
 	}
 }

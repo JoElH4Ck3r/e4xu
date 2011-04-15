@@ -1,5 +1,8 @@
 package org.wvxvws.automation
 {
+	import flash.utils.Dictionary;
+	import flash.utils.describeType;
+	
 	import org.wvxvws.automation.language.DefunFunctions;
 	import org.wvxvws.automation.language.LanguageFunctions;
 	import org.wvxvws.automation.language.ParensPackage;
@@ -9,14 +12,12 @@ package org.wvxvws.automation
 	import org.wvxvws.automation.nodes.EvalNode;
 	import org.wvxvws.automation.nodes.LazyNode;
 	import org.wvxvws.automation.nodes.Lexer;
+	import org.wvxvws.automation.nodes.NamedSymbol;
 	import org.wvxvws.automation.nodes.Node;
 	import org.wvxvws.automation.strings.StringFunctions;
 	import org.wvxvws.automation.time.TimeFunctions;
 	import org.wvxvws.automation.utils.LoopFunctions;
 	import org.wvxvws.automation.utils.UtilsFunctions;
-	
-	import flash.utils.Dictionary;
-	import flash.utils.describeType;
 	
 	public class ParensParser
 	{
@@ -130,7 +131,8 @@ package org.wvxvws.automation
 				{
 					(this._currentNode as ComplexNode)
 					.add(new Node(this.inferValueType(this._word), 
-						this.resolveContext, this.resolveMethod));
+						this.resolveContext, this.resolveMethod,
+						this.propertyResolver));
 				}
 				else throw this._inputError;
 			}
@@ -148,6 +150,9 @@ package org.wvxvws.automation
 			else if (value == "true") real = true;
 			else if (value == "false") real = false;
 			else if (value == "null") real = null;
+			else real = new NamedSymbol(value, 
+				this.resolveContext, this.resolveMethod,
+				this.propertyResolver);
 			return real;
 		}
 		
@@ -161,7 +166,7 @@ package org.wvxvws.automation
 				{
 					var cond:LazyNode = 
 						new LazyNode(undefined, this.resolveContext, 
-							this.resolveMethod);
+							this.resolveMethod, this.propertyResolver);
 					if (this._currentNode.parent)
 					{
 						(this._currentNode.parent as ComplexNode)
@@ -190,7 +195,12 @@ package org.wvxvws.automation
 			var parts:Array = methodName.split(":");
 			var method:String = parts.pop();
 			var context:String = parts[0];
-			return this.resolveContext(context).get(method);
+			return this.resolveContext(context).get(method, this._language.currentPackage());
+		}
+		
+		private function propertyResolver(symbol:NamedSymbol):*
+		{
+			return this._language.getvar(symbol.value);
 		}
 		
 		private function buildScopes():void
@@ -209,8 +219,11 @@ package org.wvxvws.automation
 			pack.extern("setvar", this._language.setvar);
 			pack.extern("getpackage", this._language.getpackage);
 			pack.extern("defun", this._defuns.defun);
-			pack.extern("list", this._defuns.list);
-			pack.extern("lazy", this._defuns.lazy);
+			pack.extern("arguments", this._defuns.makeFunctionArguments);
+			pack.extern("body-form", this._defuns.makeFunctionBody);
+			pack.extern("new", this._language.makeInstance);
+			pack.extern("package", this._language.currentPackage);
+			pack.extern("extern", this._language.externInCurrent);
 			
 			this._language.defpackage("math");
 			pack = this._language.getpackage("math");
@@ -219,6 +232,7 @@ package org.wvxvws.automation
 			pack.extern("random", MathFunctions.random);
 			pack.extern("<", MathFunctions.less);
 			pack.extern(">", MathFunctions.greater);
+			pack.extern("++", MathFunctions.increment);
 			
 			this._language.defpackage("bool");
 			pack = this._language.getpackage("bool");
@@ -235,6 +249,8 @@ package org.wvxvws.automation
 			this._language.defpackage("time");
 			pack = this._language.getpackage("time");
 			pack.extern("interval", TimeFunctions.interval);
+			pack.extern("stop", TimeFunctions.stop);
+			pack.extern("timeout", TimeFunctions.timeout);
 			
 			this._language.defpackage("utils");
 			pack = this._language.getpackage("utils");
@@ -242,6 +258,9 @@ package org.wvxvws.automation
 			pack.extern("reflect", UtilsFunctions.reflect);
 			pack.extern("dotimes", LoopFunctions.dotimes);
 			pack.extern("funcall", UtilsFunctions.funcall);
+			pack.extern("resolve-class", UtilsFunctions.resolveClass);
+			pack.extern("slot-value", UtilsFunctions.slotValue);
+			pack.extern("set-slot", UtilsFunctions.setSlot);
 			
 			this._language.inpackage("lang");
 		}
@@ -264,7 +283,8 @@ package org.wvxvws.automation
 			if (this._lexer.nextIsQuote)
 			{
 				newNode = new EvalNode(undefined, 
-					this.resolveContext, this.resolveMethod);
+					this.resolveContext, this.resolveMethod,
+					this.propertyResolver);
 			}
 			else
 			{

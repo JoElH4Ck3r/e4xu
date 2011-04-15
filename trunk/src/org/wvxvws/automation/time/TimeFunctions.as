@@ -13,7 +13,7 @@ package org.wvxvws.automation.time
 		
 		public function TimeFunctions() { super(); }
 		
-		public static function interval(method:Function, time:int, ...values):void
+		public static function interval(method:Function, time:int, ...values):CallRecord
 		{
 			if (!_timer.running)
 			{
@@ -24,6 +24,21 @@ package org.wvxvws.automation.time
 			record.method = method;
 			record.parameters = values;
 			_callRecords[record] = time;
+			return record;
+		}
+		
+		public static function stop(record:CallRecord):void
+		{
+			delete _callRecords[record];
+		}
+		
+		public static function timeout(method:Function, time:int, times:int, ...values):CallRecord
+		{
+			var params:Array = [method, time];
+			if (values) params = params.concat(values);
+			var record:CallRecord = interval.apply(null, params);
+			record.maxCalls = times;
+			return record;
 		}
 		
 		private static function timerHandler(event:TimerEvent):void
@@ -39,6 +54,8 @@ package org.wvxvws.automation.time
 					if (cast.parameters)
 						cast.method.apply(null, cast.parameters);
 					else cast.method();
+					if (cast.maxCalls < cast.callCount)
+						stop(cast);
 				}
 			}
 		}

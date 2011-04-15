@@ -4,6 +4,11 @@ package org.wvxvws.automation.math
 	{
 		public function MathFunctions() { super(); }
 		
+		public static function increment(what:Number):Number
+		{
+			return ++what;
+		}
+		
 		public static function plus(...rest):Number
 		{
 			var result:Number;
