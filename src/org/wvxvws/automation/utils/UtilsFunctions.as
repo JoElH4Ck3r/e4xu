@@ -1,5 +1,7 @@
 package org.wvxvws.automation.utils
 {
+	import flash.utils.getDefinitionByName;
+	
 	import org.wvxvws.automation.language.ParensPackage;
 
 	public class UtilsFunctions
@@ -14,6 +16,21 @@ package org.wvxvws.automation.utils
 		public static function reflect(field:String, inScope:ParensPackage):*
 		{
 			return inScope.get(field);
+		}
+		
+		public static function resolveClass(className:String):Class
+		{
+			return getDefinitionByName(className) as Class;
+		}
+		
+		public static function slotValue(scope:Object, slotName:String):*
+		{
+			return scope[slotName];
+		}
+		
+		public static function setSlot(scope:Object, slotName:String, slotValue:*):*
+		{
+			return scope[slotName] = slotValue;
 		}
 		
 		public static function funcall(method:Function, ...parameters):*

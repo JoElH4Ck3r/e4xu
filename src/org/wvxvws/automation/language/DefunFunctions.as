@@ -33,12 +33,11 @@ package org.wvxvws.automation.language
 				pack = lang.currentPackage();
 				varname = parts[0];
 			}
-			
-			pack.intern(varname, callable);
+			pack.intern(varname, callable.call);
 			return callable.call;
 		}
 		
-		public function list(...nodes):ArgumentsList
+		public function makeFunctionArguments(...nodes):ArgumentsList
 		{
 			var aList:ArgumentsList = new ArgumentsList();
 			
@@ -49,9 +48,8 @@ package org.wvxvws.automation.language
 			return aList;
 		}
 		
-		public function lazy(...nodes):Vector.<Node>
+		public function makeFunctionBody(...nodes):Vector.<Node>
 		{
-			trace("lazy", nodes);
 			var vec:Vector.<Node> = new <Node>[];
 			for each (var node:Node in nodes) vec.push(node);
 			return vec;

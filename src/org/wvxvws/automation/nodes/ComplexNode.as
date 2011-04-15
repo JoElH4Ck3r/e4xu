@@ -1,5 +1,7 @@
 package org.wvxvws.automation.nodes
 {
+	import org.wvxvws.automation.language.ParensPackage;
+
 	public class ComplexNode extends Node
 	{
 		public var method:String;
@@ -9,23 +11,27 @@ package org.wvxvws.automation.nodes
 			var calculated:Array = [];
 			var context:Object;
 			var inContextMethod:Function;
+			var tempValue:*;
 			
-			for each (var member:Node in this._parameters)
-			{
-				calculated.push(member.value);
-			}
 			context = super._context(this.method);
 			inContextMethod = super._methodResolver(this.method);
-			trace("this.method", this.method);
+			for each (var member:Node in this._parameters)
+			{
+				tempValue = member.value;
+				if (tempValue is NamedSymbol)
+					tempValue = super._propertyResolver(tempValue);
+				calculated.push(tempValue);
+			}
+//			trace("died on:", this.method, (context is ParensPackage) ? context.name : context);
 			return inContextMethod.apply(context, calculated);
 		}
 		
 		protected var _parameters:Vector.<Node> = new <Node>[];
 		
 		public function ComplexNode(value:* = undefined, context:Function = null, 
-			methodResolver:Function = null)
+			methodResolver:Function = null, propertyResolver:Function = null)
 		{
-			super(value, context, methodResolver);
+			super(value, context, methodResolver, propertyResolver);
 		}
 		
 		public function add(child:Node):Node
