@@ -15,6 +15,7 @@ package org.wvxvws.automation.nodes
 			
 			context = super._context(this.method);
 			inContextMethod = super._methodResolver(this.method);
+//			trace("died on:", this.method, inContextMethod, (context is ParensPackage) ? context.name : context);
 			for each (var member:Node in this._parameters)
 			{
 				tempValue = member.value;
@@ -22,7 +23,7 @@ package org.wvxvws.automation.nodes
 					tempValue = super._propertyResolver(tempValue);
 				calculated.push(tempValue);
 			}
-//			trace("died on:", this.method, (context is ParensPackage) ? context.name : context);
+//			trace("just before death:", inContextMethod, this.method);
 			return inContextMethod.apply(context, calculated);
 		}
 		

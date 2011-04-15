@@ -19,6 +19,7 @@ package org.wvxvws.automation.nodes
 		public function process(character:String):void
 		{
 			var hasQuote:Boolean;
+			// TODO: need to be able to escape quotes
 			if ((character == "\r" || character == "\n") && this._wasComment)
 			{
 				this._wasComment = false;
@@ -28,7 +29,8 @@ package org.wvxvws.automation.nodes
 				switch (character)
 				{
 					case ")":
-						this.closeHandler();
+						if (!this._stingStart) this.closeHandler();
+						else this.defaultHandler();
 						this._wasLastWhite = false;
 						break;
 					case " ":
@@ -36,25 +38,32 @@ package org.wvxvws.automation.nodes
 					case "\r":
 					case "\n":
 					case "\v":
-						if (this._stingStart)
-							this.defaultHandler();
+						if (this._stingStart) this.defaultHandler();
 						else if (!this._wasLastWhite) this.delimiterHandler();
 						this._wasLastWhite = true;
 						break;
 					case "(":
-						this.openHandler();
+						if (!this._stingStart) this.openHandler();
+						else this.defaultHandler();
 						this._wasLastWhite = false;
 						break;
 					case ";":
-						this._wasComment = true;
+						if (!this._wasComment && this._stingStart) this.defaultHandler();
+						this._wasComment = !this._stingStart;
+						this._wasLastWhite = false;
 						break;
 					case "\"":
-						this._stingStart = !this._stingStart;
+						if (!this._wasComment) this._stingStart = !this._stingStart;
 						this.defaultHandler();
+						this._wasLastWhite = false;
 						break;
 					case "'":
-						this.nextIsQuote = true;
-						hasQuote = true;
+						if (!this._stingStart && !this._wasComment)
+						{
+							this.nextIsQuote = true;
+							hasQuote = true;
+						}
+						this._wasLastWhite = false;
 						break;
 					default:
 						this.defaultHandler();
