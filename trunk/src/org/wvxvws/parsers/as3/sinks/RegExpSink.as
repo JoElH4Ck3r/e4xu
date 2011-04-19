@@ -14,65 +14,31 @@ package org.wvxvws.parsers.as3.sinks
 		
 		/* INTERFACE org.wvxvws.parsers.as3.ISink */
 		
-		public function read(from:AS3Sinks, flags:Vector.<Function>):Boolean
+		public function read(from:AS3Sinks):Boolean
 		{
-			var source:String = from.source;
-			var position:int = from.column;
-			var current:String;
-			var backSlash:Boolean;
-			var reEnd:RegExp = from.settings.regexEndRegExp;
-			var escapeChar:String = from.settings.escapeChar;
-			var keepGoing:Boolean;
-			var totalLenght:int = from.source.length;
-			var remaining:String;
+			var subseq:String = from.source.substr(from.column);
 			var match:String;
-			var collected:Vector.<String> = new <String>[];
-			var collectedText:String;
+			var endIndex:int;
 			
-			flags[0](false);
-			flags[1](false);
-			flags[2](false);
+			super.clearCollected();
+			// this is the first slash
+			from.advanceColumn(subseq.charAt());
+			super._collected.push(subseq.charAt());
+			subseq = subseq.substr(1);
+			match = subseq.match(from.settings.regexEndRegExp)[0];
+			endIndex = subseq.indexOf(match);
+			if (endIndex > -1)
+			{
+				endIndex += match.length;
+				super._collected.push(subseq.substr(0, endIndex));
+				for (var i:int; i < endIndex; i++)
+					from.advanceColumn(subseq.charAt(i));
+			}
+			else from.reportError(from.settings.errors[1]);
 			
-			current = source.charAt(position);
-			collected.push(current);
-			from.advanceColumn(current);
-			position++;
-			match = this.resetMatch(from, reEnd, position);
-			do
-			{
-				if (position < totalLenght || from.hasError)
-				{
-					current = source.charAt(position);
-					remaining = source.substr(position);
-					backSlash = !backSlash && current == escapeChar;
-					keepGoing = remaining.indexOf(match) != 0;
-					if (!keepGoing && backSlash)
-					{
-						keepGoing = true;
-						match = this.resetMatch(from, reEnd, position);
-					}
-				}
-				else break;
-				collected.push(current);
-				from.advanceColumn(current);
-				position++;
-			}
-			while (keepGoing);
-			// TODO: this is ugly, must find a better way.
-			if (position < totalLenght || from.hasError)
-			{
-				for (var i:int = 1; i < match.length; i++, position++)
-				{
-					current = match.charAt(i);
-					collected.push(current);
-					from.advanceColumn(current);
-				}
-			}
-			collectedText = collected.join("");
-			if (from.onRegExp) collectedText = from.onRegExp(collectedText);
-			from.appendCollectedText(collectedText);
-			trace("Finished regexp:", match, i);
-			return totalLenght > position;
+			super.appendParsedText(
+				super._collected.join(""), from, from.onRegExp);
+			return from.column > from.source.length;
 		}
 		
 		public function canFollow(from:AS3Sinks):Boolean
@@ -80,19 +46,6 @@ package org.wvxvws.parsers.as3.sinks
 			var result:Boolean;
 			
 			return result;
-		}
-		
-		private function resetMatch(sinks:AS3Sinks, regexp:RegExp, 
-			position:int):String
-		{
-			var match:String;
-			var subseq:String = 
-				sinks.source.substring(position, sinks.source.length);
-			match = subseq.match(regexp)[0];
-			trace("----------subseq:", subseq);
-			if (!match || !match.length)
-				sinks.reportError(sinks.settings.errors.regexp[0]);
-			return match;
 		}
 		
 		public override function isSinkStart(from:AS3Sinks):Boolean

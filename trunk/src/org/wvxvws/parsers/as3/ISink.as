@@ -7,7 +7,7 @@ package org.wvxvws.parsers.as3
 	 */
 	public interface ISink 
 	{
-		function read(from:AS3Sinks, flags:Vector.<Function>):Boolean;
+		function read(from:AS3Sinks):Boolean;
 		
 		function isSinkStart(from:AS3Sinks):Boolean;
 		

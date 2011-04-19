@@ -1,20 +1,399 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <as3>
 	<escapeChar>\</escapeChar>
-	<whiteSpaceRegExp options="gm">\s+</whiteSpaceRegExp>
+	<!-- 
+		ECMAScript doesn't fully support Unicode syntax in RegExp 
+		This is the list of all Unicode ranges, which would be \p{L} otherwise.
+		I don't feel like making this geeky regexp, so, for now names (words)
+		are only the alphanums never staritng on digit (i.e. basic Latin alphabet). 
+		If you will want to use this with other language sets, see the list below:
+		For example, if you named your variables in Ancient Coptic, then
+		the regexp below should look something like:
+		[A-Z\u0370-\u03FF\$_][\w\u0370-\u03FF\$]*
+
+		See: http://www.regular-expressions.info/unicode.html for more info.
+		
+		\p{InBasic_Latin}: U+0000..U+007F
+		\p{InLatin-1_Supplement}: U+0080..U+00FF
+		\p{InLatin_Extended-A}: U+0100..U+017F
+		\p{InLatin_Extended-B}: U+0180..U+024F
+		\p{InIPA_Extensions}: U+0250..U+02AF
+		\p{InSpacing_Modifier_Letters}: U+02B0..U+02FF
+		\p{InCombining_Diacritical_Marks}: U+0300..U+036F
+		\p{InGreek_and_Coptic}: U+0370..U+03FF
+		\p{InCyrillic}: U+0400..U+04FF
+		\p{InCyrillic_Supplementary}: U+0500..U+052F
+		\p{InArmenian}: U+0530..U+058F
+		\p{InHebrew}: U+0590..U+05FF
+		\p{InArabic}: U+0600..U+06FF
+		\p{InSyriac}: U+0700..U+074F
+		\p{InThaana}: U+0780..U+07BF
+		\p{InDevanagari}: U+0900..U+097F
+		\p{InBengali}: U+0980..U+09FF
+		\p{InGurmukhi}: U+0A00..U+0A7F
+		\p{InGujarati}: U+0A80..U+0AFF
+		\p{InOriya}: U+0B00..U+0B7F
+		\p{InTamil}: U+0B80..U+0BFF
+		\p{InTelugu}: U+0C00..U+0C7F
+		\p{InKannada}: U+0C80..U+0CFF
+		\p{InMalayalam}: U+0D00..U+0D7F
+		\p{InSinhala}: U+0D80..U+0DFF
+		\p{InThai}: U+0E00..U+0E7F
+		\p{InLao}: U+0E80..U+0EFF
+		\p{InTibetan}: U+0F00..U+0FFF
+		\p{InMyanmar}: U+1000..U+109F
+		\p{InGeorgian}: U+10A0..U+10FF
+		\p{InHangul_Jamo}: U+1100..U+11FF
+		\p{InEthiopic}: U+1200..U+137F
+		\p{InCherokee}: U+13A0..U+13FF
+		\p{InUnified_Canadian_Aboriginal_Syllabics}: U+1400..U+167F
+		\p{InOgham}: U+1680..U+169F
+		\p{InRunic}: U+16A0..U+16FF
+		\p{InTagalog}: U+1700..U+171F
+		\p{InHanunoo}: U+1720..U+173F
+		\p{InBuhid}: U+1740..U+175F
+		\p{InTagbanwa}: U+1760..U+177F
+		\p{InKhmer}: U+1780..U+17FF
+		\p{InMongolian}: U+1800..U+18AF
+		\p{InLimbu}: U+1900..U+194F
+		\p{InTai_Le}: U+1950..U+197F
+		\p{InKhmer_Symbols}: U+19E0..U+19FF
+		\p{InPhonetic_Extensions}: U+1D00..U+1D7F
+		\p{InLatin_Extended_Additional}: U+1E00..U+1EFF
+		\p{InGreek_Extended}: U+1F00..U+1FFF
+		\p{InGeneral_Punctuation}: U+2000..U+206F
+		\p{InSuperscripts_and_Subscripts}: U+2070..U+209F
+		\p{InCurrency_Symbols}: U+20A0..U+20CF
+		\p{InCombining_Diacritical_Marks_for_Symbols}: U+20D0..U+20FF
+		\p{InLetterlike_Symbols}: U+2100..U+214F
+		\p{InNumber_Forms}: U+2150..U+218F
+		\p{InArrows}: U+2190..U+21FF
+		\p{InMathematical_Operators}: U+2200..U+22FF
+		\p{InMiscellaneous_Technical}: U+2300..U+23FF
+		\p{InControl_Pictures}: U+2400..U+243F
+		\p{InOptical_Character_Recognition}: U+2440..U+245F
+		\p{InEnclosed_Alphanumerics}: U+2460..U+24FF
+		\p{InBox_Drawing}: U+2500..U+257F
+		\p{InBlock_Elements}: U+2580..U+259F
+		\p{InGeometric_Shapes}: U+25A0..U+25FF
+		\p{InMiscellaneous_Symbols}: U+2600..U+26FF
+		\p{InDingbats}: U+2700..U+27BF
+		\p{InMiscellaneous_Mathematical_Symbols-A}: U+27C0..U+27EF
+		\p{InSupplemental_Arrows-A}: U+27F0..U+27FF
+		\p{InBraille_Patterns}: U+2800..U+28FF
+		\p{InSupplemental_Arrows-B}: U+2900..U+297F
+		\p{InMiscellaneous_Mathematical_Symbols-B}: U+2980..U+29FF
+		\p{InSupplemental_Mathematical_Operators}: U+2A00..U+2AFF
+		\p{InMiscellaneous_Symbols_and_Arrows}: U+2B00..U+2BFF
+		\p{InCJK_Radicals_Supplement}: U+2E80..U+2EFF
+		\p{InKangxi_Radicals}: U+2F00..U+2FDF
+		\p{InIdeographic_Description_Characters}: U+2FF0..U+2FFF
+		\p{InCJK_Symbols_and_Punctuation}: U+3000..U+303F
+		\p{InHiragana}: U+3040..U+309F
+		\p{InKatakana}: U+30A0..U+30FF
+		\p{InBopomofo}: U+3100..U+312F
+		\p{InHangul_Compatibility_Jamo}: U+3130..U+318F
+		\p{InKanbun}: U+3190..U+319F
+		\p{InBopomofo_Extended}: U+31A0..U+31BF
+		\p{InKatakana_Phonetic_Extensions}: U+31F0..U+31FF
+		\p{InEnclosed_CJK_Letters_and_Months}: U+3200..U+32FF
+		\p{InCJK_Compatibility}: U+3300..U+33FF
+		\p{InCJK_Unified_Ideographs_Extension_A}: U+3400..U+4DBF
+		\p{InYijing_Hexagram_Symbols}: U+4DC0..U+4DFF
+		\p{InCJK_Unified_Ideographs}: U+4E00..U+9FFF
+		\p{InYi_Syllables}: U+A000..U+A48F
+		\p{InYi_Radicals}: U+A490..U+A4CF
+		\p{InHangul_Syllables}: U+AC00..U+D7AF
+		\p{InHigh_Surrogates}: U+D800..U+DB7F
+		\p{InHigh_Private_Use_Surrogates}: U+DB80..U+DBFF
+		\p{InLow_Surrogates}: U+DC00..U+DFFF
+		\p{InPrivate_Use_Area}: U+E000..U+F8FF
+		\p{InCJK_Compatibility_Ideographs}: U+F900..U+FAFF
+		\p{InAlphabetic_Presentation_Forms}: U+FB00..U+FB4F
+		\p{InArabic_Presentation_Forms-A}: U+FB50..U+FDFF
+		\p{InVariation_Selectors}: U+FE00..U+FE0F
+		\p{InCombining_Half_Marks}: U+FE20..U+FE2F
+		\p{InCJK_Compatibility_Forms}: U+FE30..U+FE4F
+		\p{InSmall_Form_Variants}: U+FE50..U+FE6F
+		\p{InArabic_Presentation_Forms-B}: U+FE70..U+FEFF
+		\p{InHalfwidth_and_Fullwidth_Forms}: U+FF00..U+FFEF
+	-->
+	<wordRegExp options="ig">[A-Z\$_][\w\$]*</wordRegExp>
+	<whiteSpaceRegExp options="g">[\ \t]+</whiteSpaceRegExp>
 	<alphaNumRegExp options="g">\w+</alphaNumRegExp>
 	<quoteRegExp options="g">"|'</quoteRegExp>
-	<lineEndRegExp options="g">\r\n</lineEndRegExp>
+	<lineEndRegExp options="g">(\r?\n)|(\n?\r)</lineEndRegExp>
 	<regexStartRegExp options="g">\/[^\/*]</regexStartRegExp>
 	<!-- Yeah, this isn't technically correct, but will do for now -->
-	<regexEndRegExp options="g">\/([gmisx]){0,5}(?![gmisx])</regexEndRegExp>
+	<regexEndRegExp options="g">(?&lt;!\\)\/([gmisx]){0,5}(?![gmisx])</regexEndRegExp>
 	<lineCommentStartRegExp options="g">\/\/</lineCommentStartRegExp>
 	<blockCommentStartRegExp options="g">\/\*(?=(\*\/|[^*]))</blockCommentStartRegExp>
 	<blockCommentEndRegExp options="g">\*\/</blockCommentEndRegExp>
 	<asdocCommentStartRegExp options="g">\/\*\*</asdocCommentStartRegExp>
-	<asdocKeywordRegExp options="g">@\\w+</asdocKeywordRegExp>
+	<asdocKeywordRegExp options="g">@\w+</asdocKeywordRegExp>
+	<numberStartRegExp options="g">\.?\d</numberStartRegExp>
+	<!-- I'm not sure if 0XABCD is OK. Not sure either if 123E234 is OK -->
+	<numberRegExp options="gi">(0x[\dA-F]+)|(\d*(\.\d+)?(e[+-]?\d)?)+</numberRegExp>
+	<operatorRegExp options="g">[~!@\.;+=&amp;^%*(){}?:|,\/[\]&lt;&gt;-]+</operatorRegExp>
 	<errors>
 		<string>Illegal line break in Sting at line: %line%, column: %column%!</string>
 		<regexp>Unterminated RegExp at line: %line%, column: %column%!</regexp>
 	</errors>
+	<keywords>
+		<class/>
+		<dynamic/>
+		<extends/>
+		<implements/>
+		<import/>
+		<interface/>
+		<new/>
+		<case/>
+		<do/>
+		<while/>
+		<else/>
+		<if/>
+		<for/>
+		<in/>
+		<switch/>
+		<throw/>
+		<intrinsic/>
+		<private/>
+		<public/>
+		<static/>
+		<get/>
+		<set/>
+		<function/>
+		<var/>
+		<try/>
+		<catch/>
+		<finally/>
+		<while/>
+		<with/>
+		<default/>
+		<break/>
+		<continue/>
+		<delete/>
+		<return/>
+		<final/>
+		<each/>
+		<internal/>
+		<native/>
+		<override/>
+		<protected/>
+		<const/>
+		<namespace/>
+		<package/>
+		<include/>
+		<use/>
+		<AS3/>
+	</keywords>
+	<!-- The list is very outdated... -->
+	<classnames>
+		<void/>
+		<Null/>
+		<ArgumentError/>
+		<arguments/>
+		<Array/>
+		<Boolean/>
+		<Class/>
+		<Date/>
+		<DefinitionError/>
+		<Error/>
+		<EvalError/>
+		<Function/>
+		<int/>
+		<Math/>
+		<Namespace/>
+		<Number/>
+		<Object/>
+		<QName/>
+		<RangeError/>
+		<ReferenceError/>
+		<RegExp/>
+		<SecurityError/>
+		<String/>
+		<SyntaxError/>
+		<TypeError/>
+		<uint/>
+		<URIError/>
+		<VerifyError/>
+		<XML/>
+		<XMLList/>
+		<Accessibility/>
+		<AccessibilityProperties/>
+		<ActionScriptVersion/>
+		<AVM1Movie/>
+		<Bitmap/>
+		<BitmapData/>
+		<BitmapDataChannel/>
+		<BlendMode/>
+		<CapsStyle/>
+		<DisplayObject/>
+		<DisplayObjectContainer/>
+		<FrameLabel/>
+		<GradientType/>
+		<Graphics/>
+		<IBitmapDrawable/>
+		<InteractiveObject/>
+		<InterpolationMethod/>
+		<JointStyle/>
+		<LineScaleMode/>
+		<Loader/>
+		<LoaderInfo/>
+		<MorphShape/>
+		<MovieClip/>
+		<PixelSnapping/>
+		<Scene/>
+		<Shape/>
+		<SimpleButton/>
+		<SpreadMethod/>
+		<Sprite/>
+		<Stage/>
+		<StageAlign/>
+		<StageDisplayState/>
+		<StageQuality/>
+		<StageScaleMode/>
+		<SWFVersion/>
+		<EOFError/>
+		<IllegalOperationError/>
+		<InvalidSWFError/>
+		<IOError/>
+		<MemoryError/>
+		<ScriptTimeoutError/>
+		<StackOverflowError/>
+		<ActivityEvent/>
+		<AsyncErrorEvent/>
+		<ContextMenuEvent/>
+		<DataEvent/>
+		<ErrorEvent/>
+		<Event/>
+		<EventDispatcher/>
+		<EventPhase/>
+		<FocusEvent/>
+		<FullScreenEvent/>
+		<HTTPStatusEvent/>
+		<IEventDispatcher/>
+		<IMEEvent/>
+		<IOErrorEvent/>
+		<KeyboardEvent/>
+		<MouseEvent/>
+		<NetStatusEvent/>
+		<ProgressEvent/>
+		<SecurityErrorEvent/>
+		<StatusEvent/>
+		<SyncEvent/>
+		<TextEvent/>
+		<TimerEvent/>
+		<ExternalInterface/>
+		<BevelFilter/>
+		<BitmapFilter/>
+		<BitmapFilterQuality/>
+		<BitmapFilterType/>
+		<BlurFilter/>
+		<ColorMatrixFilter/>
+		<ConvolutionFilter/>
+		<DisplacementMapFilter/>
+		<DisplacementMapFilterMode/>
+		<DropShadowFilter/>
+		<GlowFilter/>
+		<GradientBevelFilter/>
+		<GradientGlowFilter/>
+		<ColorTransform/>
+		<Matrix/>
+		<Point/>
+		<Rectangle/>
+		<Transform/>
+		<Camera/>
+		<ID3Info/>
+		<Microphone/>
+		<Sound/>
+		<SoundChannel/>
+		<SoundLoaderContext/>
+		<SoundMixer/>
+		<SoundTransform/>
+		<Video/>
+		<FileFilter/>
+		<FileReference/>
+		<FileReferenceList/>
+		<IDynamicPropertyOutput/>
+		<IDynamicPropertyWriter/>
+		<LocalConnection/>
+		<NetConnection/>
+		<NetStream/>
+		<ObjectEncoding/>
+		<Responder/>
+		<SharedObject/>
+		<SharedObjectFlushStatus/>
+		<Socket/>
+		<URLLoader/>
+		<URLLoaderDataFormat/>
+		<URLRequest/>
+		<URLRequestHeader/>
+		<URLRequestMethod/>
+		<URLStream/>
+		<URLVariables/>
+		<XMLSocket/>
+		<PrintJob/>
+		<PrintJobOptions/>
+		<PrintJobOrientation/>
+		<ApplicationDomain/>
+		<Capabilities/>
+		<IME/>
+		<IMEConversionMode/>
+		<LoaderContext/>
+		<Security/>
+		<SecurityDomain/>
+		<SecurityPanel/>
+		<System/>
+		<AntiAliasType/>
+		<CSMSettings/>
+		<Font/>
+		<FontStyle/>
+		<FontType/>
+		<GridFitType/>
+		<StaticText/>
+		<StyleSheet/>
+		<TextColorType/>
+		<TextDisplayMode/>
+		<TextField/>
+		<TextFieldAutoSize/>
+		<TextFieldType/>
+		<TextFormat/>
+		<TextFormatAlign/>
+		<TextLineMetrics/>
+		<TextRenderer/>
+		<TextSnapshot/>
+		<ContextMenu/>
+		<ContextMenuBuiltInItems/>
+		<ContextMenuItem/>
+		<Keyboard/>
+		<KeyLocation/>
+		<Mouse/>
+		<ByteArray/>
+		<Dictionary/>
+		<Endian/>
+		<IDataSPAN/>
+		<IDataOutput/>
+		<IExternalizable/>
+		<Proxy/>
+		<Timer/>
+		<XMLDocument/>
+		<XMLNode/>
+		<XMLNodeType/>
+	</classnames>
+	<reserved>
+		<super/>
+		<this/>
+		<null/>
+		<!-- we count -Infinity as operator + Infinity -->
+		<Infinity/>
+		<NaN/>
+		<undefined/>
+		<true/>
+		<false/>
+		<is/>
+		<as/>
+		<instanceof/>
+		<typeof/>
+	</reserved>
 </as3>

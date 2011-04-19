@@ -10,6 +10,39 @@ package org.wvxvws.parsers.as3.resources
 	 */
 	public class AS3ParserSettings extends ByteArray
 	{
+		public function get operatorRegExp():RegExp
+		{
+			if (!this._operatorRegExp)
+			{
+				this._operatorRegExp = 
+					this.regexFromXML(this._xml.operatorRegExp[0]);
+			}
+			this._operatorRegExp.lastIndex = 0;
+			return this._operatorRegExp;
+		}
+		
+		public function get numberRegExp():RegExp
+		{
+			if (!this._numberRegExp)
+			{
+				this._numberRegExp = 
+					this.regexFromXML(this._xml.numberRegExp[0]);
+			}
+			this._numberRegExp.lastIndex = 0;
+			return this._numberRegExp;
+		}
+		
+		public function get numberStartRegExp():RegExp
+		{
+			if (!this._numberStartRegExp)
+			{
+				this._numberStartRegExp = 
+					this.regexFromXML(this._xml.numberStartRegExp[0]);
+			}
+			this._numberStartRegExp.lastIndex = 0;
+			return this._numberStartRegExp;
+		}
+		
 		public function get quoteRegExp():RegExp
 		{
 			if (!this._quoteRegExp)
@@ -19,6 +52,17 @@ package org.wvxvws.parsers.as3.resources
 			}
 			this._quoteRegExp.lastIndex = 0;
 			return this._quoteRegExp;
+		}
+		
+		public function get wordRegExp():RegExp
+		{
+			if (!this._wordRegExp)
+			{
+				this._wordRegExp = 
+					this.regexFromXML(this._xml.wordRegExp[0]);
+			}
+			this._wordRegExp.lastIndex = 0;
+			return this._wordRegExp;
 		}
 		
 		public function get escapeChar():String
@@ -150,6 +194,10 @@ package org.wvxvws.parsers.as3.resources
 		private var _blockCommentEndRegExp:RegExp;
 		private var _asdocCommentStartRegExp:RegExp;
 		private var _asdocKeywordRegExp:RegExp;
+		private var _wordRegExp:RegExp;
+		private var _numberStartRegExp:RegExp;
+		private var _numberRegExp:RegExp;
+		private var _operatorRegExp:RegExp;
 		
 		private var _xml:XML;
 		
@@ -158,6 +206,21 @@ package org.wvxvws.parsers.as3.resources
 			super();
 			this._xml = XML(super.toString());
 			this._errors = this._xml.errors;
+		}
+		
+		public function isKeyword(word:String):Boolean
+		{
+			return Boolean(this._xml.keyword.*[word].length());
+		}
+		
+		public function isClassName(word:String):Boolean
+		{
+			return Boolean(this._xml.classname.*[word].length());
+		}
+		
+		public function isReserved(word:String):Boolean
+		{
+			return Boolean(this._xml.reserved.*[word].length());
 		}
 		
 		private function regexFromXML(node:XML):RegExp

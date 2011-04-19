@@ -13,45 +13,36 @@ package org.wvxvws.parsers.as3.sinks
 		
 		/* INTERFACE org.wvxvws.parsers.as3.ISink */
 		
-		public function read(from:AS3Sinks, flags:Vector.<Function>):Boolean
+		public function read(from:AS3Sinks):Boolean
 		{
-			var source:String = from.source;
-			var position:int = from.column;
-			var current:String = source.charAt(position);
-			var backSlash:Boolean;
-			var quotes:RegExp = from.settings.quoteRegExp;
+			var source:String = from.source.substr(from.column);
+			var position:int;
 			var escapeChar:String = from.settings.escapeChar;
-			var keepGoing:Boolean;
-			var totalLenght:int = from.source.length;
-			var matchingQuote:String = current;
-			var collected:Vector.<String> = new <String>[];
-			var collectedText:String;
+			var sourceLenght:int = source.length;
+			var escaped:Boolean;
+			var isQuote:RegExp = from.settings.quoteRegExp;
+			var current:String = source.match(isQuote)[0];
+			var matchedQuote:String;
 			
-			flags[0](false);
-			flags[1](false);
-			flags[2](false);
-			
+			super.clearCollected();
+			// first quote
+			super._collected.push(current);
 			from.advanceColumn(current);
-			collected.push(current);
-			do
+			matchedQuote = current;
+			
+			for (var i:int = 1; i < sourceLenght; i++)
 			{
-				position++;
-				if (position < totalLenght || from.hasError)
-				{
-					current = source.charAt(position);
-					backSlash = !backSlash && current == escapeChar;
-					keepGoing = !(matchingQuote == current);
-					if (!keepGoing && backSlash) keepGoing = true;
-				}
-				else break;
+				current = source.charAt(i);
 				from.advanceColumn(current);
-				collected.push(current);
+				super._collected.push(current);
+				isQuote.lastIndex = 0;
+				if (matchedQuote == current && !escaped) break;
+				escaped = current == escapeChar;
 			}
-			while (keepGoing);
-			collectedText = collected.join("");
-			if (from.onString) collectedText = from.onString(collectedText);
-			from.appendCollectedText(collectedText);
-			return totalLenght > position;
+			super.appendParsedText(
+				super._collected.join(""), from, from.onString);
+//			trace("parsed sting");
+			return from.column < from.source.length;
 		}
 		
 		public function canFollow(from:AS3Sinks):Boolean
@@ -63,6 +54,7 @@ package org.wvxvws.parsers.as3.sinks
 		
 		public override function isSinkStart(from:AS3Sinks):Boolean
 		{
+//			trace("maybe string", from.source.substr(from.column));
 			super._startRegExp = from.settings.quoteRegExp;
 			return super.isSinkStart(from);
 		}

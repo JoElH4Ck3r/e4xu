@@ -15,71 +15,47 @@ package org.wvxvws.parsers.as3.sinks
 		
 		/* INTERFACE org.wvxvws.parsers.as3.ISink */
 		
-		public function read(from:AS3Sinks, flags:Vector.<Function>):Boolean
+		public function read(from:AS3Sinks):Boolean
 		{
-			var source:String = from.source;
-			var position:int = from.column;
-			var totalLenght:int = from.source.length;
-			var commentEnd:RegExp = from.settings.asdocCommentStartRegExp;
-			var commentStart:RegExp = from.settings.blockCommentStartRegExp;
+			var subseq:String = from.source.substr(from.column);
+			var commentStart:RegExp = from.settings.asdocCommentStartRegExp;
+			var commentEnd:RegExp = from.settings.blockCommentEndRegExp;
 			var asdocKeyword:RegExp = from.settings.asdocKeywordRegExp;
-			var beginning:String;
-			var subseq:String;
-			var i:int;
-			var current:String;
-			var matchIndex:int;
 			var match:String;
-			var possibleKeyword:String;
-			var keywordPosition:int = -1;
-			var hasKeywords:Boolean;
-			var kewordLength:int;
+			var nextKeyword:int = -1;
+			var keywordMatch:String;
+			var difference:int;
+			var current:String;
 			
-			flags[0](false);
-			flags[1](false);
-			flags[2](false);
+			match = subseq.substr(0, 
+				subseq.indexOf(subseq.match(commentEnd)[0]) + 2);
 			
-			subseq = source.substring(position);
-			possibleKeyword = subseq.match(asdocKeyword)[0];
-			if (possibleKeyword)
-				keywordPosition = subseq.indexOf(possibleKeyword);
-			beginning = subseq.match(commentStart)[0];
-			while (i < beginning.length)
+			super.clearCollected();
+			
+			keywordMatch = match.match(asdocKeyword)[0];
+			if (keywordMatch)
+				nextKeyword = match.indexOf(keywordMatch);
+			
+			for (var i:int; i < match.length; i++)
 			{
-				from.advanceColumn(beginning.charAt(i));
-				i++;
-			}
-			position += i;
-			match = subseq.match(commentEnd)[0];
-			matchIndex = subseq.indexOf(match) + match.length - i;
-			hasKeywords = keywordPosition > 0 && keywordPosition < matchIndex;
-			do
-			{
-				if (hasKeywords && i == keywordPosition)
+				if (i == nextKeyword)
 				{
-					// TODO: returned value not used. Not sure if I'd need 
-					// to check it here, probably the former check for 
-					// comment completeness would fail, if the keyword ends
-					// the comment, as there won't be block comment end.
+					difference = from.column;
 					this._keywordSink.read(from);
-					kewordLength = position;
-					position = from.column;
-					kewordLength = position - kewordLength;
-					i += kewordLength;
-					matchIndex -= kewordLength;
-					// TODO: this should be a separate function.
-					possibleKeyword = subseq.match(asdocKeyword)[0];
-					if (possibleKeyword)
-						keywordPosition = subseq.indexOf(possibleKeyword);
-					hasKeywords = keywordPosition > 0 && keywordPosition < matchIndex;
+					i += (from.column - difference);
+					keywordMatch = match.match(asdocKeyword)[0];
+					super._collected.push(this._keywordSink.collected[0]);
+					if (keywordMatch)
+						nextKeyword = match.indexOf(keywordMatch);
 				}
-				current = subseq.charAt(i);
-				i++;
-				matchIndex--;
-				position++;
+				current = match.charAt(i);
 				from.advanceColumn(current);
+				super._collected.push(current);
 			}
-			while (matchIndex > 0 && position < totalLenght);
-			return position < totalLenght;
+			
+			super.appendParsedText(
+				super._collected.join(""), from, from.onASDocComment);
+			return from.column < from.source.length;
 		}
 		
 		public function canFollow(from:AS3Sinks):Boolean

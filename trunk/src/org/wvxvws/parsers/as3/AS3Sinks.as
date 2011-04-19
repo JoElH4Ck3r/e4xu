@@ -1,10 +1,16 @@
 package org.wvxvws.parsers.as3 
 {
 	import flash.utils.Dictionary;
+	
 	import org.wvxvws.parsers.as3.resources.AS3ParserSettings;
+	import org.wvxvws.parsers.as3.sinks.ASDocCommentSink;
 	import org.wvxvws.parsers.as3.sinks.ASDocKeywordSink;
 	import org.wvxvws.parsers.as3.sinks.BlockCommentSink;
+	import org.wvxvws.parsers.as3.sinks.DefaultSink;
 	import org.wvxvws.parsers.as3.sinks.LineCommentSink;
+	import org.wvxvws.parsers.as3.sinks.LineEndSink;
+	import org.wvxvws.parsers.as3.sinks.NumberSink;
+	import org.wvxvws.parsers.as3.sinks.OperatorSink;
 	import org.wvxvws.parsers.as3.sinks.RegExpSink;
 	import org.wvxvws.parsers.as3.sinks.StringSink;
 	import org.wvxvws.parsers.as3.sinks.WhiteSpaceSink;
@@ -33,12 +39,19 @@ package org.wvxvws.parsers.as3
 		public var onRegExp:Function;
 		public var onXML:Function;
 		public var onOperator:Function;
-		public var onWord:Function;
+		// This one causes a lot of troubles for compiler :(
+		// I'd need to have callbacks from sinks to this
+		// class to tell whether we should or should not
+		// collect words. I will not add this feature for now
+		// maybe after I figure out how to clean up the 
+		// rest of the code.
+//		public var onWord:Function;
 		public var onKeyword:Function;
-		public var onParens:Function;
-		public var onCurlyBrackets:Function;
-		public var onSquareBrackets:Function;
+//		public var onParens:Function;
+//		public var onCurlyBrackets:Function;
+//		public var onSquareBrackets:Function;
 		public var onWhiteSpace:Function;
+		public var onDefault:Function;
 		public var onCharacter:Function;
 		public var onLine:Function;
 		public var onClassName:Function;
@@ -108,55 +121,57 @@ package org.wvxvws.parsers.as3
 		// TODO: this is becoming nasty...
 		public function advanceColumn(character:String):void
 		{
-			var maybeCollect:String;
-			
+//			var maybeCollect:String;
+//			
 			if (!this._hasError)
 			{
 				this._column++;
-				//trace("advanceColumn", character, this._source.charAt(this._column));
-				if (this.isWhiteSpace(character))
-				{
-					//trace("isWhiteSpace");
-					if (this.onWhiteSpace)
-					{
-						maybeCollect = this.onWhiteSpace(character);
-						if (this._collectWhiteSpaces)
-							this._collectedText += maybeCollect;
-					}
-					else if (this._collectWhiteSpaces)
-						this._collectedText += character;
-					if (this._collectWords) this.wordEndHandler();
-				}
-				else if (this.isLineEnd(character))
-				{
-					//trace("isLineEnd");
-					this._lines.push(
-						this._source.substr(
-							this._lastLineEnd, 
-							this._column - this._lastLineEnd));
-					this._lastLineEnd = this._column;
-					if (this._collectWords) this.wordEndHandler();
-					if (this.onLine)
-					{
-						maybeCollect = this.onLine(character);
-						if (this._collectLineEnds)
-							this._collectedText += this.onLine(character);
-					}
-					else if (this._collectLineEnds)
-						this._collectedText += character;
-				}
-				else if (this.isAphaNum(character))
-				{
-					//trace("isAphaNum", character);
-					if (this._collectWords) this._word += character;
-				}
-				else
-				{
-					//trace("Else", character);
-					if (this._collectWords) this.wordEndHandler();
-				}
+//				//trace("advanceColumn", character, this._source.charAt(this._column));
+//				if (this.isWhiteSpace(character))
+//				{
+//					//trace("isWhiteSpace");
+//					if (this.onWhiteSpace)
+//					{
+//						maybeCollect = this.onWhiteSpace(character);
+//						if (this._collectWhiteSpaces)
+//							this._collectedText += maybeCollect;
+//					}
+//					else if (this._collectWhiteSpaces)
+//						this._collectedText += character;
+//					if (this._collectWords) this.wordEndHandler();
+//				}
+//				else if (this.isLineEnd(character))
+//				{
+//					//trace("isLineEnd");
+//					this._lines.push(
+//						this._source.substr(
+//							this._lastLineEnd, 
+//							this._column - this._lastLineEnd));
+//					this._lastLineEnd = this._column;
+//					if (this._collectWords) this.wordEndHandler();
+//					if (this.onLine)
+//					{
+//						maybeCollect = this.onLine(character);
+//						if (this._collectLineEnds)
+//							this._collectedText += this.onLine(character);
+//					}
+//					else if (this._collectLineEnds)
+//						this._collectedText += character;
+//				}
+//				else if (this.isAphaNum(character))
+//				{
+//					//trace("isAphaNum", character);
+//					if (this._collectWords) this._word += character;
+//				}
+//				else
+//				{
+//					//trace("Else", character);
+//					if (this._collectWords) this.wordEndHandler();
+//				}
 				if (this.onCharacter) this.onCharacter(character);
 			}
+			// NOTE: we don't collect single characters, this
+			// function is here to provide information on progress.
 		}
 		
 		public function appendCollectedText(text:String):void
@@ -187,20 +202,24 @@ package org.wvxvws.parsers.as3
 				.add(new WhiteSpaceSink())
 				.add(new LineCommentSink())
 				.add(new BlockCommentSink())
-				.add(new ASDocKeywordSink());
+				.add(new ASDocCommentSink())
+				.add(new LineEndSink())
+				.add(new NumberSink())
+				.add(new OperatorSink())
+				.add(new DefaultSink());
 		}
 		
 		private function loopSinks():void
 		{
 			var nextSink:ISink;
-			var flags:Vector.<Function> = 
-				new <Function>[
-					this.collectLineEnds, 
-					this.collectWhitespaces, 
-					this.collectWords];
+//			var flags:Vector.<Function> = 
+//				new <Function>[
+//					this.collectLineEnds, 
+//					this.collectWhitespaces, 
+//					this.collectWords];
 			while (nextSink = this._stack.next())
 			{
-				if (nextSink.isSinkStart(this) && nextSink.read(this, flags))
+				if (nextSink.isSinkStart(this) && nextSink.read(this))
 					this._stack.reset();
 			}
 		}
@@ -253,60 +272,60 @@ package org.wvxvws.parsers.as3
 			//this._cleanSinks[ASDocKeywordSink] = this._settings.asdocCommentStartRegExp;
 		//}
 		
-		private function wordEndHandler():void
-		{
-			if (this.isKeyword(this._word) && this.onKeyword)
-				this._collectedText += this.onKeyword(this._word);
-			else if (this.isClassName(this._word) && this.onClassName)
-				this._collectedText += this.onClassName(this._word);
-			else if (this.onWord && this._word)
-				this._collectedText += this.onWord(this._word);
-			else this._collectedText += this._word;
-			this._word = "";
-		}
+//		private function wordEndHandler():void
+//		{
+//			if (this.isKeyword(this._word) && this.onKeyword)
+//				this._collectedText += this.onKeyword(this._word);
+//			else if (this.isClassName(this._word) && this.onClassName)
+//				this._collectedText += this.onClassName(this._word);
+//			else if (this.onWord && this._word)
+//				this._collectedText += this.onWord(this._word);
+//			else this._collectedText += this._word;
+//			this._word = "";
+//		}
 		
-		private function collectWhitespaces(value:Boolean):void
-		{
-			this._collectWhiteSpaces = value;
-		}
+//		private function collectWhitespaces(value:Boolean):void
+//		{
+//			this._collectWhiteSpaces = value;
+//		}
+//		
+//		private function collectWords(value:Boolean):void
+//		{
+//			this._collectWords = value;
+//		}
+//		
+//		private function collectLineEnds(value:Boolean):void
+//		{
+//			this._collectLineEnds = value;
+//		}
 		
-		private function collectWords(value:Boolean):void
-		{
-			this._collectWords = value;
-		}
+//		private function isClassName(word:String):Boolean
+//		{
+//			var result:Boolean;
+//			
+//			return result;
+//		}
+//		
+//		private function isKeyword(word:String):Boolean
+//		{
+//			var result:Boolean;
+//			
+//			return result;
+//		}
 		
-		private function collectLineEnds(value:Boolean):void
-		{
-			this._collectLineEnds = value;
-		}
-		
-		private function isClassName(word:String):Boolean
-		{
-			var result:Boolean;
-			
-			return result;
-		}
-		
-		private function isKeyword(word:String):Boolean
-		{
-			var result:Boolean;
-			
-			return result;
-		}
-		
-		private function isAphaNum(character:String):Boolean
-		{
-			return this.settings.alphaNumRegExp.test(character);
-		}
-		
-		private function isLineEnd(character:String):Boolean
-		{
-			return this.settings.lineEndRegExp.test(character);
-		}
-		
-		private function isWhiteSpace(character:String):Boolean
-		{
-			return this.settings.whiteSpaceRegExp.test(character);
-		}
+//		private function isAphaNum(character:String):Boolean
+//		{
+//			return this.settings.alphaNumRegExp.test(character);
+//		}
+//		
+//		private function isLineEnd(character:String):Boolean
+//		{
+//			return this.settings.lineEndRegExp.test(character);
+//		}
+//		
+//		private function isWhiteSpace(character:String):Boolean
+//		{
+//			return this.settings.whiteSpaceRegExp.test(character);
+//		}
 	}
 }
