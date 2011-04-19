@@ -6,8 +6,6 @@ package examples
 	import flash.events.MouseEvent;
 	import flash.utils.Dictionary;
 	
-	import mx.controls.Text;
-	
 	import org.wvxvws.automation.ParensParser;
 	import org.wvxvws.automation.language.ParensPackage;
 	
@@ -27,7 +25,7 @@ package examples
 		private function test():void
 		{
 			// Makes all public methods accessible by names so
-			// we don't need to user utils:slot-value all the time.
+			// we don't need to use utils:slot-value all the time.
 			this._parser.pushContext(this, "test-runner");
 			this._parser.read(
 <![CDATA[

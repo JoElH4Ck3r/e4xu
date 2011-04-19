@@ -13,7 +13,7 @@ package org.wvxvws.parsers.as3.sinks
 		
 		/* INTERFACE org.wvxvws.parsers.as3.ISink */
 		
-		public function read(from:AS3Sinks, flags:Vector.<Function>):Boolean
+		public function read(from:AS3Sinks):Boolean
 		{
 			var source:String = from.source;
 			var position:int = from.column;
@@ -26,13 +26,12 @@ package org.wvxvws.parsers.as3.sinks
 			var current:String;
 			var matchIndex:int;
 			
-			flags[0](false);
-			flags[1](false);
-			flags[2](false);
+			super.clearCollected();
 			
 			subseq = source.substring(position);
 			
 			beginning = subseq.match(commentStart)[0];
+			super._collected.push(beginning);
 			while (i < beginning.length)
 			{
 				from.advanceColumn(beginning.charAt(i));
@@ -41,6 +40,7 @@ package org.wvxvws.parsers.as3.sinks
 			position += i;
 			matchIndex = subseq.indexOf(subseq.match(lineEnd)[0]);
 			if (matchIndex < 0) matchIndex = subseq.length;
+			super._collected.push(subseq.substring(i, matchIndex));
 			do
 			{
 				current = subseq.charAt(i);
@@ -50,6 +50,8 @@ package org.wvxvws.parsers.as3.sinks
 				from.advanceColumn(current);
 			}
 			while (matchIndex > 0 && position < totalLenght);
+			super.appendParsedText(
+				super._collected.join(""), from, from.onLineComment);
 			return position < totalLenght;
 		}
 		

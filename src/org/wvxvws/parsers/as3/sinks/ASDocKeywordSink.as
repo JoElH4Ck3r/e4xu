@@ -14,13 +14,21 @@ package org.wvxvws.parsers.as3.sinks
 		
 		/* INTERFACE org.wvxvws.parsers.as3.ISink */
 		
-		public function read(from:AS3Sinks, flags:Vector.<Function>):Boolean
+		public function read(from:AS3Sinks):Boolean
 		{
+			var word:String = from.source.substr(from.column);
+			word = word.match(from.settings.asdocKeywordRegExp)[0];
 			
-			flags[0](false);
-			flags[1](false);
-			flags[2](false);
+			super.clearCollected();
 			
+			for (var i:int; i < word.length; i++)
+				from.advanceColumn(word.charAt(i));
+			
+			// NOTE: we don't need to append text yet, this
+			// text will be appended in ASDocCommentSink
+			if (from.onASDocKeyword)
+				super._collected.push(from.onASDocKeyword(word));
+			else super._collected.push(word);
 			return true;
 		}
 		
