@@ -25,6 +25,7 @@ package org.wvxvws.automation.utils
 		
 		public static function slotValue(scope:Object, slotName:String):*
 		{
+//			trace("slotValue", scope, slotName);
 			return scope[slotName];
 		}
 		

@@ -6,6 +6,7 @@ package org.wvxvws.automation
 	import org.wvxvws.automation.display.DisplayFunctions;
 	import org.wvxvws.automation.language.DefunFunctions;
 	import org.wvxvws.automation.language.LanguageFunctions;
+	import org.wvxvws.automation.language.LetFunctions;
 	import org.wvxvws.automation.language.ParensPackage;
 	import org.wvxvws.automation.logic.LogicFunctions;
 	import org.wvxvws.automation.math.MathFunctions;
@@ -37,6 +38,7 @@ package org.wvxvws.automation
 		private var _language:LanguageFunctions;
 		private var _lexer:Lexer;
 		private var _defuns:DefunFunctions;
+		private var _lets:LetFunctions;
 		
 		public function ParensParser()
 		{
@@ -201,6 +203,7 @@ package org.wvxvws.automation
 			var parts:Array = methodName.split(":");
 			var method:String = parts.pop();
 			var context:String = parts[0];
+//			trace("resolving method", methodName);
 			return this.resolveContext(context).get(method, this._language.currentPackage());
 		}
 		
@@ -215,6 +218,7 @@ package org.wvxvws.automation
 			
 			this._language = new LanguageFunctions(this);
 			this._defuns = new DefunFunctions(this);
+			this._lets = new LetFunctions(this);
 			
 			this._language.defpackage("lang");
 			pack = this._language.getpackage("lang");
@@ -230,6 +234,8 @@ package org.wvxvws.automation
 			pack.extern("new", this._language.makeInstance);
 			pack.extern("package", this._language.currentPackage);
 			pack.extern("extern", this._language.externInCurrent);
+			pack.extern("let", this._lets.bind);
+			pack.extern("variables", this._lets.makeBindingsList);
 			
 			this._language.defpackage("math");
 			pack = this._language.getpackage("math");
