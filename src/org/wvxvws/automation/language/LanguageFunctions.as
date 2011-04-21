@@ -110,6 +110,11 @@ package org.wvxvws.automation.language
 			this._current.extern(varName, this._current.get(varName, this._current));
 		}
 		
+		public function removePackage(packName:String):void
+		{
+			delete this._packages[this.getpackage(packName)];
+		}
+		
 		public function defvar(name:String, value:Object = null):*
 		{
 			var pack:ParensPackage;
@@ -147,6 +152,7 @@ package org.wvxvws.automation.language
 				pack = this._current;
 				varname = parts[0];
 			}
+//			trace("requesting var:", name);
 			return pack.get(varname, this._current);
 		}
 		

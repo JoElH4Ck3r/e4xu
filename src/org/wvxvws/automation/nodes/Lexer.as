@@ -63,6 +63,7 @@ package org.wvxvws.automation.nodes
 							this.nextIsQuote = true;
 							hasQuote = true;
 						}
+						else this.defaultHandler();
 						this._wasLastWhite = false;
 						break;
 					default:

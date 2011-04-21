@@ -46,6 +46,7 @@ package org.wvxvws.automation.language
 			}
 			
 			this._context.inpackage(prevPack.name);
+			this._context.removePackage(tempContext);
 			return result;
 		}
 	}
