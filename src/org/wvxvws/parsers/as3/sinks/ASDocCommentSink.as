@@ -9,7 +9,11 @@ package org.wvxvws.parsers.as3.sinks
 	 */
 	public class ASDocCommentSink extends Sink implements ISink
 	{
+		// TODO: It could be better to reuse the sinks from the AS3Sinks
+		// instead of having these here, but seems rather complex atm.
 		private const _keywordSink:ASDocKeywordSink = new ASDocKeywordSink();
+		private const _whitesPaceSink:WhiteSpaceSink = new WhiteSpaceSink();
+		private const _lineEndSink:LineEndSink = new LineEndSink();
 		
 		public function ASDocCommentSink() { super(); }
 		
@@ -22,39 +26,59 @@ package org.wvxvws.parsers.as3.sinks
 			var commentEnd:RegExp = from.settings.blockCommentEndRegExp;
 			var asdocKeyword:RegExp = from.settings.asdocKeywordRegExp;
 			var match:String;
-			var nextKeyword:int = -1;
-			var keywordMatch:String;
 			var difference:int;
 			var current:String;
+			var lineEnd:RegExp = from.settings.lineEndRegExp;
+			var white:RegExp = from.settings.whiteSpaceRegExp;
+			var whiteAfterLine:Boolean;
 			
 			match = subseq.substr(0, 
 				subseq.indexOf(subseq.match(commentEnd)[0]) + 2);
 			
 			super.clearCollected();
 			
-			keywordMatch = match.match(asdocKeyword)[0];
-			if (keywordMatch)
-				nextKeyword = match.indexOf(keywordMatch);
-			
 			for (var i:int; i < match.length; i++)
 			{
-				if (i == nextKeyword)
+				current = match.charAt(i);
+				if (asdocKeyword.test(from.source.substr(from.column)))
 				{
+					this.collectAndClear(from);
+					
 					difference = from.column;
 					this._keywordSink.read(from);
 					i += (from.column - difference);
-					keywordMatch = match.match(asdocKeyword)[0];
-					super._collected.push(this._keywordSink.collected[0]);
-					if (keywordMatch)
-						nextKeyword = match.indexOf(keywordMatch);
+					whiteAfterLine = true;
+					i--;
 				}
-				current = match.charAt(i);
-				from.advanceColumn(current);
-				super._collected.push(current);
+				else if (lineEnd.test(current))
+				{
+					this.collectAndClear(from);
+					
+					difference = from.column;
+					this._lineEndSink.read(from);
+					i += (from.column - difference);
+					whiteAfterLine = true;
+					i--;
+				}
+				else if (whiteAfterLine && white.test(current))
+				{
+//					this.collectAndClear(from);
+					
+					difference = from.column;
+					this._whitesPaceSink.read(from);
+					i += (from.column - difference);
+					whiteAfterLine = false;
+					i--;
+				}
+				else 
+				{
+					from.advanceColumn(current);
+					super._collected.push(current);
+				}
+				asdocKeyword.lastIndex = white.lastIndex = lineEnd.lastIndex = 0;
 			}
 			
-			super.appendParsedText(
-				super._collected.join(""), from, from.onASDocComment);
+			this.collectAndClear(from);
 			return from.column < from.source.length;
 		}
 		
@@ -69,6 +93,16 @@ package org.wvxvws.parsers.as3.sinks
 		{
 			super._startRegExp = from.settings.asdocCommentStartRegExp;
 			return super.isSinkStart(from);
+		}
+		
+		private function collectAndClear(from:AS3Sinks):void
+		{
+			if (super._collected.length)
+			{
+				super.appendParsedText(
+					super._collected.join(""), from, from.onASDocComment);
+				super.clearCollected();
+			}
 		}
 	}
 }

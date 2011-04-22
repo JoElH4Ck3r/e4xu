@@ -15,44 +15,26 @@ package org.wvxvws.parsers.as3.sinks
 		
 		public function read(from:AS3Sinks):Boolean
 		{
-			var source:String = from.source;
-			var position:int = from.column;
-			var totalLenght:int = from.source.length;
-			var lineEnd:RegExp = from.settings.lineEndRegExp;
-			var commentStart:RegExp = from.settings.lineCommentStartRegExp;
-			var beginning:String;
-			var subseq:String;
-			var i:int;
+			var match:String;
+			var subseq:String = from.source.substr(from.column);
+			var i:int = -1;
 			var current:String;
-			var matchIndex:int;
 			
 			super.clearCollected();
 			
-			subseq = source.substring(position);
+			match = subseq.match(from.settings.lineEndRegExp)[0];
+			if (match) i = subseq.indexOf(match);
+			else i = subseq.length;
 			
-			beginning = subseq.match(commentStart)[0];
-			super._collected.push(beginning);
-			while (i < beginning.length)
-			{
-				from.advanceColumn(beginning.charAt(i));
-				i++;
-			}
-			position += i;
-			matchIndex = subseq.indexOf(subseq.match(lineEnd)[0]);
-			if (matchIndex < 0) matchIndex = subseq.length;
-			super._collected.push(subseq.substring(i, matchIndex));
-			do
-			{
-				current = subseq.charAt(i);
-				i++;
-				matchIndex--;
-				position++;
-				from.advanceColumn(current);
-			}
-			while (matchIndex > 0 && position < totalLenght);
+			match = subseq.substr(0, i);
+			super._collected.push(match);
+			
+			for (i = 0; i < match.length; i++)
+				from.advanceColumn(match.charAt(i));
 			super.appendParsedText(
 				super._collected.join(""), from, from.onLineComment);
-			return position < totalLenght;
+			
+			return from.column < from.source.length;
 		}
 		
 		public function canFollow(from:AS3Sinks):Boolean

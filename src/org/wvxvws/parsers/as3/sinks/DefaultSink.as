@@ -27,6 +27,8 @@ package org.wvxvws.parsers.as3.sinks
 				result = from.onKeyword;
 			else if (from.settings.isClassName(forWord) && from.onClassName)
 				result = from.onClassName;
+			else if (from.settings.isReserved(forWord) && from.onReserved)
+				result = from.onReserved;
 			else if (from.onDefault)
 				result = from.onDefault;
 			return result;

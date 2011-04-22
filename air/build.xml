@@ -1,0 +1,92 @@
+<project name="NitroEncryptedModulesDemo"  basedir="." default="distributable-air">
+
+    <property name="FLEX_HOME" value="/home/wvxvw/Flex/SDK/4.0" />
+
+    <property name="adt" value="/home/wvxvw/Flex/SDK/air/bin/adt" />
+    <property name="adl" value="/home/wvxvw/Flex/SDK/air/bin/adl" />
+	
+	<property name="src.dir" value="${basedir}/src/" />
+    <property name="out.dir" value="${basedir}/bin-release/" />
+	<property name="dbg.dir" value="${basedir}/bin-debug/" />
+	<property name="e4xu.dir" value="/home/wvxvw/Projects/e4xu/src/" />
+    	
+	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
+		
+	<target name="clean" description="Clean the project">
+		<delete dir="${out.dir}" failonerror="false" />
+	</target>
+	
+	<target name="create-certificate" description="Creates a self-signed certificate">
+		<input message="The password for certificate" addproperty="password"/>
+		<!-- 
+			Remember the password you entered (better write it somewhere),
+			you will need it to compile the project later.
+			This target is not included in the build, so you will have to
+			run it before you build the project.
+		-->
+		<exec executable="${adt}" failonerror="true">
+			<arg line="-certificate -cn SelfSigned 1024-RSA ${basedir}/AS3Reader.pfx ${password}" />
+		</exec>
+	</target>
+	
+	<target name="init" description="initialize the project" depends="clean">
+		<mkdir dir="${out.dir}" />
+		<!-- 
+			This is similar to what Flash Builder does when it copies files
+			you used in the source folders to the bin folder.
+		-->
+		<copy todir="${out.dir}" includeemptydirs="false">
+			<fileset dir="${basedir}">
+				<exclude name="**/*.as" />
+				<exclude name="**/*.mxml" />
+				<exclude name="**/build.xml" />
+				<exclude name="**/*.properties" />
+				<exclude name="**/*.air" />
+				<exclude name="**/*.pfx" />
+				<exclude name="**/*.swf" />
+				<include name="**/*" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="compile-as3-reader" 
+		description="Compile swf modules and main swf" depends="init">
+		<!-- Compiles AS3Reader.swf -->
+		<mxmlc file="${src.dir}/AS3ReaderTest.mxml" output="${out.dir}/AS3Reader.swf"
+			debug="true"
+			optimize="true"
+			warn-unlikely-function-value="false"
+			locale="en_US"
+			configname="air">
+			<source-path path-element="${src.dir}" />
+			<source-path path-element="${e4xu.dir}" />
+			<library-path dir="${FLEX_HOME}/frameworks/libs" append="true">
+				<include name="*.swc" />
+			</library-path>
+			<library-path dir="${FLEX_HOME}/frameworks/libs/air" append="true">
+				<include name="*.swc" />
+			</library-path>
+			<library-path dir="${FLEX_HOME}/frameworks/locale" append="true">
+				<include name="{locale}" />
+			</library-path>	
+		</mxmlc>
+	</target>
+	
+	<target name="distributable-air" description="Create the AIR package for our app" 
+		depends="compile-as3-reader">
+		<!-- Packages the AS3Reader.swf into AS3Reader.air -->
+		<input addproperty="password" message="The password you used to sign the certificate"/>
+		<exec executable="${adt}" failonerror="true">
+			<arg line="-package -storetype pkcs12"/>
+			<arg line="-keystore ${basedir}/AS3Reader.pfx -storepass ${password}"/>
+			<arg line="AS3Reader.air ${src.dir}/AS3ReaderTest-app.xml ${out.dir}/AS3Reader.swf -C ${out.dir}" />
+		</exec>
+	</target>
+	
+	<target name="debug-air" description="Runs AIR debugger with our application" >
+			<!-- Use this for debugging -->
+			<exec executable="${adl}" failonerror="true">
+				<arg line="${src.dir}/AS3ReaderTest-app.xml -C ${basedir}" />
+			</exec>
+		</target>
+</project>
