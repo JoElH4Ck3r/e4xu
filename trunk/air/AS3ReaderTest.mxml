@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import org.wvxvws.parsers.as3.AS3AIRReader;
+			private var _airReader:AS3AIRReader = new AS3AIRReader();
+			
+			private function completeHandler(event:Event):void
+			{
+				var template:String = 
+					this._airReader.settings.generateHTML(this._airReader.parsedText);
+				var saveFile:File = new File("/home/wvxvw/Projects/e4xu/examples/test.html");
+				var stream:FileStream = new FileStream();
+				stream.open(saveFile, FileMode.WRITE);
+				stream.writeUTFBytes(template);
+				stream.close();
+			}
+		]]>
+	</fx:Script>
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+	<s:Button label="test">
+		<s:click>
+			<![CDATA[
+			this._airReader.addEventListener(Event.COMPLETE, this.completeHandler);
+			try
+			{
+				this._airReader.readFromFile("/home/wvxvw/Projects/e4xu/src/org/wvxvws/parsers/as3/AS3Sinks.as");
+				this.tracer.text = "Could read file.";
+			}
+			catch (error:*)
+			{
+				if (error is Error) this.tracer.text = (error as Error).getStackTrace();
+				else this.tracer.text = error;
+			}
+			]]>
+		</s:click>
+	</s:Button>
+	<s:TextArea id="tracer" width="500" height="400"/>
+</s:WindowedApplication>

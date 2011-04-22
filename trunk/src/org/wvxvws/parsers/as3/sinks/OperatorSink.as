@@ -11,7 +11,6 @@ package org.wvxvws.parsers.as3.sinks
 		{
 			var subseq:String = from.source.substr(from.column);
 			var match:String = subseq.match(from.settings.operatorRegExp)[0];
-			trace(this, match, match.length);
 			for (var i:int; i < match.length; i++)
 				from.advanceColumn(match.charAt(i));
 			

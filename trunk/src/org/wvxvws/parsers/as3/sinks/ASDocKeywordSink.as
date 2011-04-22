@@ -24,11 +24,7 @@ package org.wvxvws.parsers.as3.sinks
 			for (var i:int; i < word.length; i++)
 				from.advanceColumn(word.charAt(i));
 			
-			// NOTE: we don't need to append text yet, this
-			// text will be appended in ASDocCommentSink
-			if (from.onASDocKeyword)
-				super._collected.push(from.onASDocKeyword(word));
-			else super._collected.push(word);
+			super.appendParsedText(word, from, from.onASDocKeyword);
 			return true;
 		}
 		

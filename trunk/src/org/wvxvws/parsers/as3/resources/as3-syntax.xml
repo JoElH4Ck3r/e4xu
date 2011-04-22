@@ -130,7 +130,7 @@
 	<blockCommentStartRegExp options="g">\/\*(?=(\*\/|[^*]))</blockCommentStartRegExp>
 	<blockCommentEndRegExp options="g">\*\/</blockCommentEndRegExp>
 	<asdocCommentStartRegExp options="g">\/\*\*</asdocCommentStartRegExp>
-	<asdocKeywordRegExp options="g">@\w+</asdocKeywordRegExp>
+	<asdocKeywordRegExp options="g">^@\w+</asdocKeywordRegExp>
 	<numberStartRegExp options="g">\.?\d</numberStartRegExp>
 	<!-- I'm not sure if 0XABCD is OK. Not sure either if 123E234 is OK -->
 	<numberRegExp options="gi">(0x[\dA-F]+)|(\d*(\.\d+)?(e[+-]?\d)?)+</numberRegExp>
@@ -396,4 +396,37 @@
 		<instanceof/>
 		<typeof/>
 	</reserved>
+	<htmlTemplate><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>Code example</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="language" content="en" />
+</head>
+<style type="text/css">
+html body { padding:0; margin:0 } 
+.code-base
+{
+	color:#c6c9c9; white-space:pre;
+	background-color:#2f3d39;
+	padding:20px 0px 20px 40px; margin:0;
+}
+.classname { color:#17e0ec; }
+.keyword { color:#528eef; }
+.reserved { color:#8a66de; }
+.xml { color:#f0b93c; }
+.operator { color:#ffffff; }
+.asdoc-comment { color:#b3f03c; font-style:italic; }
+.asdoc-keyword { color:#e18e51; font-style:italic; }
+.block-comment { color:#798161; }
+.line-comment { color:#61816d; font-style:italic; }
+.number { color:#ee86f1; }
+.regexp { color:#e21c99; }
+.string { color:#e36352; font-weight:bold; }
+</style>
+<body>%code%</body>
+</html>]]></htmlTemplate>
 </as3>

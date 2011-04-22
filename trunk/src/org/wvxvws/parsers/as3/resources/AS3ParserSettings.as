@@ -208,19 +208,25 @@ package org.wvxvws.parsers.as3.resources
 			this._errors = this._xml.errors;
 		}
 		
+		public function generateHTML(insertText:String):String
+		{
+			var html:String = this._xml.htmlTemplate[0];
+			return html.replace(/%code%/g, insertText);
+		}
+		
 		public function isKeyword(word:String):Boolean
 		{
-			return Boolean(this._xml.keyword.*[word].length());
+			return Boolean(this._xml.keywords.child(word).length());
 		}
 		
 		public function isClassName(word:String):Boolean
 		{
-			return Boolean(this._xml.classname.*[word].length());
+			return Boolean(this._xml.classnames.child(word).length());
 		}
 		
 		public function isReserved(word:String):Boolean
 		{
-			return Boolean(this._xml.reserved.*[word].length());
+			return Boolean(this._xml.reserved.child(word).length());
 		}
 		
 		private function regexFromXML(node:XML):RegExp
