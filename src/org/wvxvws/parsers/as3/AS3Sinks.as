@@ -3,6 +3,7 @@ package org.wvxvws.parsers.as3
 	import flash.utils.Dictionary;
 	
 	import org.wvxvws.parsers.as3.resources.AS3ParserSettings;
+	import org.wvxvws.parsers.as3.resources.BracketsInfo;
 	import org.wvxvws.parsers.as3.sinks.ASDocCommentSink;
 	import org.wvxvws.parsers.as3.sinks.ASDocKeywordSink;
 	import org.wvxvws.parsers.as3.sinks.BlockCommentSink;
@@ -14,6 +15,7 @@ package org.wvxvws.parsers.as3
 	import org.wvxvws.parsers.as3.sinks.RegExpSink;
 	import org.wvxvws.parsers.as3.sinks.StringSink;
 	import org.wvxvws.parsers.as3.sinks.WhiteSpaceSink;
+	import org.wvxvws.parsers.as3.sinks.XMLSink;
 	
 	/**
 	 * Note that in order for this class to compile without warnings, you would
@@ -67,6 +69,10 @@ package org.wvxvws.parsers.as3
 		
 		public function get collectedText():String { return this._collectedText; }
 		
+		public function get whiteSink():WhiteSpaceSink { return this._whiteSink; }
+		
+		public function get lineEndSink():LineEndSink { return this._lineEndSink; }
+		
 		private var _line:int;
 		private var _column:int;
 		private var _lines:Vector.<String> = new <String>[];
@@ -83,6 +89,13 @@ package org.wvxvws.parsers.as3
 		private var _collectWhiteSpaces:Boolean;
 		private var _collectWords:Boolean;
 		private var _collectLineEnds:Boolean;
+		
+		private var _whiteSink:WhiteSpaceSink;
+		private var _lineEndSink:LineEndSink;
+		
+		private var _openCurly:int;
+		private var _openSquare:int;
+		private var _openParens:int;
 		
 		public function AS3Sinks()
 		{
@@ -105,13 +118,14 @@ package org.wvxvws.parsers.as3
 			this.loopSinks();
 		}
 		
-		public function advanceColumn(character:String):void
+		public function advanceColumn(character:String):String
 		{
 			if (!this._hasError)
 			{
 				this._column++;
 				if (this.onCharacter) this.onCharacter(character);
 			}
+			return character;
 		}
 		
 		public function appendCollectedText(text:String):void
@@ -128,17 +142,76 @@ package org.wvxvws.parsers.as3
 			else throw this._error;
 		}
 		
+		public function incrementBracket():void
+		{
+			var info:BracketsInfo = this._settings.bracketInfo;
+			
+			switch (this._source.charAt(this._column - 1))
+			{
+				case info.curlyOpen:
+					this._openCurly++;
+					break;
+				case info.curlyClose:
+					this._openCurly--;
+					break;
+				case info.parenOpen:
+					this._openParens++;
+					break;
+				case info.parenClose:
+					this._openParens--;
+					break;
+				case info.squareOpen:
+					this._openSquare++;
+					break;
+				case info.squareClose:
+					this._openSquare--;
+					break;
+			}
+		}
+		
+		public function bracketCount(bracket:String):int
+		{
+			var info:BracketsInfo = this._settings.bracketInfo;
+			var result:int;
+			
+			switch (bracket)
+			{
+				case info.curlyOpen:
+					result = this._openCurly;
+					break;
+				case info.curlyClose:
+					result = -this._openCurly;
+					break;
+				case info.parenOpen:
+					result = this._openParens;
+					break;
+				case info.parenClose:
+					result = -this._openParens;
+					break;
+				case info.squareOpen:
+					result = this._openSquare;
+					break;
+				case info.squareClose:
+					result = -this._openSquare;
+					break;
+			}
+			return result;
+		}
+		
 		private function buildDictionary():void
 		{
 			this._stack.clear();
+			this._lineEndSink = new LineEndSink();
+			this._whiteSink = new WhiteSpaceSink();
 			this._stack.add(new StringSink())
 				.add(new RegExpSink())
-				.add(new WhiteSpaceSink())
+				.add(this._whiteSink)
 				.add(new LineCommentSink())
 				.add(new BlockCommentSink())
 				.add(new ASDocCommentSink())
-				.add(new LineEndSink())
+				.add(this._lineEndSink)
 				.add(new NumberSink())
+				.add(new XMLSink())
 				.add(new OperatorSink())
 				.add(new DefaultSink());
 		}

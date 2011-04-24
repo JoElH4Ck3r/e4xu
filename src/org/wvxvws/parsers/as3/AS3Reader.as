@@ -1,6 +1,7 @@
 package org.wvxvws.parsers.as3 
 {
 	import org.wvxvws.parsers.as3.resources.AS3ParserSettings;
+	import org.wvxvws.parsers.as3.sinks.xml.E4XNodeKind;
 
 	/**
 	 * ...
@@ -41,7 +42,9 @@ package org.wvxvws.parsers.as3
 			XML.prettyIndent = 0;
 			XML.prettyPrinting = false;
 			XML.ignoreWhitespace = false;
-			result = XML("<pre class=\"code-base\">" + this.readAsString(source) + "</pre>");
+			result = XML("<pre class=\"" + 
+				this._settings.styles.codeBase + "\">" + 
+				this.readAsString(source) + "</pre>");
 			XML.setSettings(before);
 			return result;
 		}
@@ -60,27 +63,50 @@ package org.wvxvws.parsers.as3
 		
 		protected function onClassName(text:String):String
 		{
-			return <span class="classname">{text}</span>.toXMLString();
+			return this.formatNode(this._settings.styles.classname, text);
 		}
 		
 		protected function onKeyword(text:String):String
 		{
-			return <span class="keyword">{text}</span>.toXMLString();
+			return this.formatNode(this._settings.styles.keyword, text);
 		}
 		
 		protected function onReserved(text:String):String
 		{
-			return <span class="reserved">{text}</span>.toXMLString();
+			return this.formatNode(this._settings.styles.reserved, text);
 		}
 		
-		protected function onXML(text:String):String
+		protected function onXML(text:String, kind:E4XNodeKind):String
 		{
-			return <span class="xml">{XMLList(text)}</span>.toXMLString();
+			var style:String;
+			
+			switch (kind)
+			{
+				case E4XNodeKind.ATTRIBUTE:
+					style = this._settings.styles.xmlAttribute;
+					break;
+				case E4XNodeKind.CDATA:
+					style = this._settings.styles.xmlCData;
+					break;
+				case E4XNodeKind.COMMENT:
+					style = this._settings.styles.xmlComment;
+					break;
+				case E4XNodeKind.ELEMENT:
+					style = this._settings.styles.xmlElement;
+					break;
+				case E4XNodeKind.PROCESSING_INSTRUCTION:
+					style = this._settings.styles.xmlPI;
+					break;
+				case E4XNodeKind.TEXT:
+					style = this._settings.styles.xmlText;
+					break;
+			}
+			return this.formatNode(this._settings.styles.xml + " " + style, text);
 		}
 		
 		protected function onOperator(text:String):String
 		{
-			return <span class="operator">{text}</span>.toXMLString();
+			return this.formatNode(this._settings.styles.operator, text);
 		}
 		
 		protected function onWhiteSpace(text:String):String
@@ -91,42 +117,48 @@ package org.wvxvws.parsers.as3
 		
 		protected function onASDocComment(text:String):String
 		{
-			return <span class="asdoc-comment">{
-				this.whitePadding(text)}</span>.toXMLString();
+			return this.formatNode(
+				this._settings.styles.asdocComment, 
+				this.whitePadding(text));
 		}
 		
 		protected function onDefault(text:String):String { return text; }
 		
 		protected function onASDocKeyword(text:String):String
 		{
-			return <span class="asdoc-keyword">{text}</span>.toXMLString();
+			return this.formatNode(this._settings.styles.asdocKeyword, text);
 		}
 		
 		protected function onBlockComment(text:String):String
 		{
-			return <span class="block-comment">{text}</span>.toXMLString();
+			return this.formatNode(this._settings.styles.blockComment, text);
 		}
 		
 		protected function onLine(text:String):String { return "<br/>"; }
 		
 		protected function onLineComment(text:String):String
 		{
-			return <span class="line-comment">{text}</span>.toXMLString();
+			return this.formatNode(this._settings.styles.lineComment, text);
 		}
 		
 		protected function onNumber(text:String):String
 		{
-			return <span class="number">{text}</span>.toXMLString();
+			return this.formatNode(this._settings.styles.number, text);
 		}
 		
 		protected function onRegExp(text:String):String
 		{
-			return <span class="regexp">{text}</span>.toXMLString();
+			return this.formatNode(this._settings.styles.regexp, text);
 		}
 		
 		protected function onString(text:String):String
 		{
-			return <span class="string">{text}</span>.toXMLString();
+			return this.formatNode(this._settings.styles.string, text);
+		}
+		
+		private function formatNode(style:String, text:String):String
+		{
+			return <span class={style}>{text}</span>.toXMLString();
 		}
 		
 		/**
