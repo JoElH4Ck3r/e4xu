@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <as3>
 	<escapeChar>\</escapeChar>
+	<vectorDelimiter>.</vectorDelimiter>
 	<!-- 
 		ECMAScript doesn't fully support Unicode syntax in RegExp 
 		This is the list of all Unicode ranges, which would be \p{L} otherwise.
 		I don't feel like making this geeky regexp, so, for now names (words)
-		are only the alphanums never staritng on digit (i.e. basic Latin alphabet). 
-		If you will want to use this with other language sets, see the list below:
+		are only the alphanums never staritng with digit (i.e. basic Latin alphabet). 
+		If you will want to use this with other languages, see the list below:
 		For example, if you named your variables in Ancient Coptic, then
 		the regexp below should look something like:
 		[A-Z\u0370-\u03FF\$_][\w\u0370-\u03FF\$]*
@@ -135,6 +136,54 @@
 	<!-- I'm not sure if 0XABCD is OK. Not sure either if 123E234 is OK -->
 	<numberRegExp options="gi">(0x[\dA-F]+)|(\d*(\.\d+)?(e[+-]?\d)?)+</numberRegExp>
 	<operatorRegExp options="g">[~!@\.;+=&amp;^%*(){}?:|,\/[\]&lt;&gt;-]+</operatorRegExp>
+	<bracketRegExp options="">[[\](){}]</bracketRegExp>
+	<!-- 
+		Same as with wordRegExp, if you have XMLs in languages other than
+		English - add the character you need.
+	 -->
+	<xmlStartRegExp options="gi">(?!&lt;\.[\s\r\n]*)&lt;(\{|([A-Z]([\w\.\-\$:]*\w)?([\s\r\n][A-Z])|(\/?&gt;)))</xmlStartRegExp>
+	<xmlAttributeStartRegExp options="gi">[A-Z][\w\.:\-\$]*[\s\r\n]*=[\s\r\n]*["'{]</xmlAttributeStartRegExp>
+	<xml>
+		<pi options="gi">^&lt;\?[A-Z].*?\?&gt;</pi>
+		<comment options="gi">^&lt;--.*?--&gt;</comment>
+		<cdata options="gi">^&lt;!\[CDATA\[.*?(\]\]&gt;)</cdata>
+		<pcdata options="gi">^[^&lt;&gt;]*</pcdata>
+		<attribute options="gi">^[A-Z][\w\.:\-\$]*[\s\r\n]*=[\s\r\n]*("|').*?\1</attribute>
+		<!-- This is oversimplifying, but will do for now -->
+		<name options="gi">^[A-Z][\w\$\.:-]*</name>
+		<attributeValue options="g">^("|').*?\1</attributeValue>
+		<attributeEQ options="g">^[\s\r\n]*=[\s\r\n]*</attributeEQ>
+		<gt options="g">^\/?&gt;</gt>
+	</xml>
+	<brackets>
+		<squareOpen>[</squareOpen>
+		<squareClose>]</squareClose>
+		<curlyOpen>{</curlyOpen>
+		<curlyClose>}</curlyClose>
+		<parenOpen>(</parenOpen>
+		<parenClose>)</parenClose>
+	</brackets>
+	<styles>
+		<string>string</string>
+		<number>number</number>
+		<regexp>regexp</regexp>
+		<operator>operator</operator>
+		<keyword>keyword</keyword>
+		<keyword>classname</keyword>
+		<reserved>reserved</reserved>
+		<asdocComment>asdoc-comment</asdocComment>
+		<asdocKeyword>asdoc-keyword</asdocKeyword>
+		<blockComment>block-komment</blockComment>
+		<lineComment>line-comment</lineComment>
+		<xml>xml</xml>
+		<xmlElement>element</xmlElement>
+		<xmlAttribute>attribute</xmlAttribute>
+		<xmlText>text</xmlText>
+		<xmlPI>pi</xmlPI>
+		<xmlCData>cdata</xmlCData>
+		<xmlComment>comment</xmlComment>
+		<codeBase>code-base</codeBase>
+	</styles>
 	<errors>
 		<string>Illegal line break in Sting at line: %line%, column: %column%!</string>
 		<regexp>Unterminated RegExp at line: %line%, column: %column%!</regexp>
@@ -408,24 +457,30 @@
 </head>
 <style type="text/css">
 html body { padding:0; margin:0 } 
-.code-base
+%codeBase%
 {
 	color:#c6c9c9; white-space:pre;
 	background-color:#2f3d39;
 	padding:20px 0px 20px 40px; margin:0;
 }
-.classname { color:#17e0ec; }
-.keyword { color:#528eef; }
-.reserved { color:#8a66de; }
-.xml { color:#f0b93c; }
-.operator { color:#ffffff; }
-.asdoc-comment { color:#b3f03c; font-style:italic; }
-.asdoc-keyword { color:#e18e51; font-style:italic; }
-.block-comment { color:#798161; }
-.line-comment { color:#61816d; font-style:italic; }
-.number { color:#ee86f1; }
-.regexp { color:#e21c99; }
-.string { color:#e36352; font-weight:bold; }
+.%classname% { color:#17e0ec; }
+.%keyword% { color:#528eef; }
+.%reserved% { color:#8a66de; }
+.%xml% { color:#f0b93c; }
+.%xmlElement% {  }
+.%xmlAttribute% {  }
+.%xmlText% {  }
+.%xmlPI% {  }
+.%xmlCData% {  }
+.%xmlComment% {  }
+.%operator% { color:#ffffff; }
+.%asdocComment% { color:#b3f03c; font-style:italic; }
+.%asdocKeyword% { color:#e18e51; font-style:italic; }
+.%blockComment% { color:#798161; }
+.%lineComment% { color:#61816d; font-style:italic; }
+.%number% { color:#ee86f1; }
+.%regexp% { color:#e21c99; }
+.%string% { color:#e36352; font-weight:bold; }
 </style>
 <body>%code%</body>
 </html>]]></htmlTemplate>
