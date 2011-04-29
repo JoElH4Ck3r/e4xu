@@ -30,7 +30,7 @@ package org.wvxvws.parsers.as3
 	 * 
 	 * @author wvxvw
 	 */
-	public class AS3Sinks
+	public class AS3Sinks extends SinksBase implements ISinks
 	{
 		public var onASDocComment:Function;
 		public var onASDocKeyword:Function;
@@ -73,6 +73,7 @@ package org.wvxvws.parsers.as3
 		
 		public function get lineEndSink():LineEndSink { return this._lineEndSink; }
 		
+		// TODO: some of these will habe to go into base class.
 		private var _line:int;
 		private var _column:int;
 		private var _lines:Vector.<String> = new <String>[];
@@ -84,7 +85,6 @@ package org.wvxvws.parsers.as3
 		private var _hasError:Boolean;
 		private var _error:AS3ReaderError;
 		
-		private const _stack:SinksStack = new SinksStack();
 		private var _collectedText:String = "";
 		private var _collectWhiteSpaces:Boolean;
 		private var _collectWords:Boolean;
@@ -97,11 +97,7 @@ package org.wvxvws.parsers.as3
 		private var _openSquare:int;
 		private var _openParens:int;
 		
-		public function AS3Sinks()
-		{
-			super();
-			this.buildDictionary();
-		}
+		public function AS3Sinks() { super(); }
 		
 		public function read(source:String, settings:AS3ParserSettings):void
 		{
@@ -114,8 +110,7 @@ package org.wvxvws.parsers.as3
 			this._lines.splice(0, this._lines.length);
 			this._word = "";
 			this._collectedText = "";
-			this.buildDictionary();
-			this.loopSinks();
+			super.readInternal();
 		}
 		
 		public function advanceColumn(character:String):String
@@ -131,6 +126,133 @@ package org.wvxvws.parsers.as3
 		public function appendCollectedText(text:String):void
 		{
 			this._collectedText += text;
+		}
+		
+		public function readHandler(forSink:ISink, forWord:String = null):Function
+		{
+			var result:Function;
+			
+			switch ((forSink as Object).constructor)
+			{
+				case ASDocCommentSink:
+					result = this.onASDocComment;
+					break;
+				case ASDocKeywordSink:
+					result = this.onASDocKeyword;
+					break;
+				case BlockCommentSink:
+					result = this.onBlockComment;
+					break;
+				case DefaultSink:
+					result = this.selectDefaultHandler(forWord);
+					break;
+				case LineCommentSink:
+					result = this.onLineComment;
+					break;
+				case lineEndSink:
+					result = this.onLine;
+					break;
+				case NumberSink:
+					result = this.onNumber;
+					break;
+				case OperatorSink:
+					result = this.onOperator;
+					break;
+				case RegExpSink:
+					result = this.onRegExp;
+					break;
+				case StringSink:
+					result = this.onString;
+					break;
+				case WhiteSpaceSink:
+					result = this.onWhiteSpace;
+					break;
+				case XMLSink:
+					result = this.onXML;
+					break;
+			}
+			return result;
+		}			
+		
+		public function sinkEndRegExp(forSink:ISink):RegExp
+		{
+			var result:RegExp;
+			
+			switch ((forSink as Object).constructor)
+			{
+				case ASDocCommentSink:
+				case BlockCommentSink:
+					result = this._settings.blockCommentEndRegExp;
+					break;
+				case NumberSink:
+					result = this._settings.numberRegExp;
+					break;
+				case RegExpSink:
+					result = this._settings.regexEndRegExp;
+					break;
+			}
+			return result;
+		}
+		
+		private function selectDefaultHandler(forWord:String):Function
+		{
+			var result:Function;
+			
+			if (this._settings.isKeyword(forWord) && this.onKeyword)
+				result = this.onKeyword;
+			else if (this._settings.isClassName(forWord) && this.onClassName)
+				result = this.onClassName;
+			else if (this._settings.isReserved(forWord) && this.onReserved)
+				result = this.onReserved;
+			else if (this.onDefault)
+				result = this.onDefault;
+			return result;
+		}
+		
+		public function sinkStartRegExp(forSink:ISink):RegExp
+		{
+			var result:RegExp;
+			
+			switch ((forSink as Object).constructor)
+			{
+				case ASDocCommentSink:
+					result = this._settings.asdocCommentStartRegExp;
+					break;
+				case ASDocKeywordSink:
+					result = this._settings.asdocKeywordRegExp;
+					break;
+				case BlockCommentSink:
+					result = this._settings.blockCommentStartRegExp;
+					break;
+				case DefaultSink:
+					result = this._settings.wordRegExp;
+					break;
+				case LineCommentSink:
+					result = this._settings.lineCommentStartRegExp;
+					break;
+				case LineEndSink:
+					result = this._settings.lineEndRegExp;
+					break;
+				case NumberSink:
+					result = this._settings.numberStartRegExp;
+					break;
+				case OperatorSink:
+					result = this._settings.operatorRegExp;
+					break;
+				case RegExpSink:
+					result = this._settings.regexStartRegExp;
+					break;
+				case StringSink:
+					result = this._settings.quoteRegExp;
+					break;
+				case WhiteSpaceSink:
+					result = this._settings.whiteSpaceRegExp;
+					break;
+				case XMLSink:
+					result = this._settings.xmlStartRegExp;
+					break;
+			}
+			return result;
 		}
 		
 		public function reportError(message:String):void
@@ -198,9 +320,9 @@ package org.wvxvws.parsers.as3
 			return result;
 		}
 		
-		private function buildDictionary():void
+		protected override function buildDictionary():void
 		{
-			this._stack.clear();
+			super.buildDictionary();
 			this._lineEndSink = new LineEndSink();
 			this._whiteSink = new WhiteSpaceSink();
 			this._stack.add(new StringSink())
@@ -214,16 +336,6 @@ package org.wvxvws.parsers.as3
 				.add(new XMLSink())
 				.add(new OperatorSink())
 				.add(new DefaultSink());
-		}
-		
-		private function loopSinks():void
-		{
-			var nextSink:ISink;
-			while (nextSink = this._stack.next())
-			{
-				if (nextSink.isSinkStart(this) && nextSink.read(this))
-					this._stack.reset();
-			}
 		}
 	}
 }

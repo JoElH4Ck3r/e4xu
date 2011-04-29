@@ -1,7 +1,12 @@
 package org.wvxvws.parsers.as3 
 {
 	import org.wvxvws.parsers.as3.resources.AS3ParserSettings;
-	import org.wvxvws.parsers.as3.sinks.xml.E4XNodeKind;
+	import org.wvxvws.parsers.as3.sinks.xml.AttributeNode;
+	import org.wvxvws.parsers.as3.sinks.xml.CDataNode;
+	import org.wvxvws.parsers.as3.sinks.xml.CommentNode;
+	import org.wvxvws.parsers.as3.sinks.xml.ElementNode;
+	import org.wvxvws.parsers.as3.sinks.xml.PINode;
+	import org.wvxvws.parsers.as3.sinks.xml.TextNode;
 
 	/**
 	 * ...
@@ -76,28 +81,30 @@ package org.wvxvws.parsers.as3
 			return this.formatNode(this._settings.styles.reserved, text);
 		}
 		
-		protected function onXML(text:String, kind:E4XNodeKind):String
+		protected function onXML(text:String, kind:ISink):String
 		{
 			var style:String;
+			var kindKind:Class;
+			if (kind) kindKind = (kind as Object).constructo;
 			
-			switch (kind)
+			switch (kindKind)
 			{
-				case E4XNodeKind.ATTRIBUTE:
+				case AttributeNode:
 					style = this._settings.styles.xmlAttribute;
 					break;
-				case E4XNodeKind.CDATA:
+				case CDataNode:
 					style = this._settings.styles.xmlCData;
 					break;
-				case E4XNodeKind.COMMENT:
+				case CommentNode:
 					style = this._settings.styles.xmlComment;
 					break;
-				case E4XNodeKind.ELEMENT:
+				case ElementNode:
 					style = this._settings.styles.xmlElement;
 					break;
-				case E4XNodeKind.PROCESSING_INSTRUCTION:
+				case PINode:
 					style = this._settings.styles.xmlPI;
 					break;
-				case E4XNodeKind.TEXT:
+				case TextNode:
 					style = this._settings.styles.xmlText;
 					break;
 			}
