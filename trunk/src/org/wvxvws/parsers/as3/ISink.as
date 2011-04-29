@@ -7,11 +7,8 @@ package org.wvxvws.parsers.as3
 	 */
 	public interface ISink 
 	{
-		function read(from:AS3Sinks):Boolean;
+		function read(from:ISinks):Boolean;
 		
-		function isSinkStart(from:AS3Sinks):Boolean;
-		
-		function canFollow(from:AS3Sinks):Boolean;
+		function isSinkStart(from:ISinks):Boolean;
 	}
-	
 }

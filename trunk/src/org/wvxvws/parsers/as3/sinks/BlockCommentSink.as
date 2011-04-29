@@ -2,26 +2,26 @@ package org.wvxvws.parsers.as3.sinks
 {
 	import org.wvxvws.parsers.as3.AS3Sinks;
 	import org.wvxvws.parsers.as3.ISink;
+	import org.wvxvws.parsers.as3.ISinks;
 	
 	/**
 	 * ...
 	 * @author wvxvw
 	 */
-	public class BlockCommentSink extends Sink implements ISink
+	public class BlockCommentSink extends Sink
 	{
-		
 		public function BlockCommentSink() { super(); }
 		
 		/* INTERFACE org.wvxvws.parsers.as3.ISink */
 		
 		// TODO: needs cleenup
-		public function read(from:AS3Sinks):Boolean
+		public override function read(from:ISinks):Boolean
 		{
 			var source:String = from.source;
 			var position:int = from.column;
 			var totalLenght:int = from.source.length;
-			var commentEnd:RegExp = from.settings.blockCommentEndRegExp;
-			var commentStart:RegExp = from.settings.blockCommentStartRegExp;
+			var commentEnd:RegExp = from.sinkEndRegExp(this);
+			var commentStart:RegExp = from.sinkStartRegExp(this);
 			var beginning:String;
 			var subseq:String;
 			var i:int;
@@ -53,33 +53,15 @@ package org.wvxvws.parsers.as3.sinks
 				from.advanceColumn(current);
 			}
 			while (matchIndex > 0 && position < totalLenght);
-			super.appendParsedText(
-				super._collected.join(""), from, from.onBlockComment);
+			super.appendParsedText(super._collected.join(""), from);
 			return position < totalLenght;
 		}
 		
-		public function canFollow(from:AS3Sinks):Boolean
+		public override function isSinkStart(from:ISinks):Boolean
 		{
-			var result:Boolean;
-			
-			return result;
+			return super.isSinkStart(from) && 
+				super.checkAndReset(from.source.substr(from.column, 3), 
+					from.sinkStartRegExp(this));
 		}
-		
-		public override function isSinkStart(from:AS3Sinks):Boolean
-		{
-			var result:Boolean;
-			var test:String;
-			super._startRegExp = from.settings.blockCommentStartRegExp;
-			result = super.isSinkStart(from);
-			if (result)
-			{
-				test = from.source.substr(from.column, 3);
-				super._startRegExp.lastIndex = 0;
-				result = super._startRegExp.test(test);
-			}
-			return result;
-		}
-		
 	}
-
 }

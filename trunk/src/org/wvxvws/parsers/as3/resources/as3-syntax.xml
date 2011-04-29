@@ -140,18 +140,25 @@
 	<!-- 
 		Same as with wordRegExp, if you have XMLs in languages other than
 		English - add the character you need.
+		NOTE: {,256} quantifier is used instead of * because of a bug:
+		http://bugs.adobe.com/jira/browse/ASC-4235
 	 -->
-	<xmlStartRegExp options="gi">(?!&lt;\.[\s\r\n]*)&lt;(\{|([A-Z]([\w\.\-\$:]*\w)?([\s\r\n][A-Z])|(\/?&gt;)))</xmlStartRegExp>
+	<xmlStartRegExp options="gi">&lt;(\{|([A-Z_]([\w\.\-\$:]*[\w\$])?(([\s\r\n][A-Z_])|(\/?&gt;))))</xmlStartRegExp>
 	<xmlAttributeStartRegExp options="gi">[A-Z][\w\.:\-\$]*[\s\r\n]*=[\s\r\n]*["'{]</xmlAttributeStartRegExp>
 	<xml>
-		<pi options="gi">^&lt;\?[A-Z].*?\?&gt;</pi>
-		<comment options="gi">^&lt;--.*?--&gt;</comment>
-		<cdata options="gi">^&lt;!\[CDATA\[.*?(\]\]&gt;)</cdata>
-		<pcdata options="gi">^[^&lt;&gt;]*</pcdata>
+		<!-- 
+			Note, this may be another bug, [.\r\n] does not match the same as (.|\r|\n) 
+			m (Multiline) flag does not cause . (any character) to match end of line. Not as
+			advertised... however, it causes ^ to match any line start.
+		-->
+		<pi options="g">^&lt;\?(.|\r|\n)*?\?&gt;</pi>
+		<comment options="g">^&lt;!--(.|\r|\n)*?--&gt;</comment>
+		<cdata options="gi">^&lt;!\[CDATA\[(.|\r|\n)*?\]\]&gt;</cdata>
+		<pcdata options="g">^[^&lt;&gt;]+</pcdata>
 		<attribute options="gi">^[A-Z][\w\.:\-\$]*[\s\r\n]*=[\s\r\n]*("|').*?\1</attribute>
 		<!-- This is oversimplifying, but will do for now -->
-		<name options="gi">^[A-Z][\w\$\.:-]*</name>
-		<attributeValue options="g">^("|').*?\1</attributeValue>
+		<name options="gi">^[A-Z_][\w\$\.:-]*</name>
+		<attributeValue options="g">^("|')(.|\r|\n)*?\1</attributeValue>
 		<attributeEQ options="g">^[\s\r\n]*=[\s\r\n]*</attributeEQ>
 		<gt options="g">^\/?&gt;</gt>
 	</xml>

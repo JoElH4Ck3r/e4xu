@@ -2,25 +2,26 @@ package org.wvxvws.parsers.as3.sinks
 {
 	import org.wvxvws.parsers.as3.AS3Sinks;
 	import org.wvxvws.parsers.as3.ISink;
+	import org.wvxvws.parsers.as3.ISinks;
 	
 	/**
 	 * ...
 	 * @author wvxvw
 	 */
-	public class StringSink extends Sink implements ISink
+	public class StringSink extends Sink
 	{
 		public function StringSink() { super(); }
 		
 		/* INTERFACE org.wvxvws.parsers.as3.ISink */
 		
-		public function read(from:AS3Sinks):Boolean
+		public override function read(from:ISinks):Boolean
 		{
 			var source:String = from.source.substr(from.column);
 			var position:int;
-			var escapeChar:String = from.settings.escapeChar;
+			var escapeChar:String = (from as AS3Sinks).settings.escapeChar;
 			var sourceLenght:int = source.length;
 			var escaped:Boolean;
-			var isQuote:RegExp = from.settings.quoteRegExp;
+			var isQuote:RegExp = from.sinkStartRegExp(this);
 			var current:String = source.match(isQuote)[0];
 			var matchedQuote:String;
 			
@@ -39,24 +40,9 @@ package org.wvxvws.parsers.as3.sinks
 				if (matchedQuote == current && !escaped) break;
 				escaped = current == escapeChar;
 			}
-			super.appendParsedText(
-				super._collected.join(""), from, from.onString);
+			super.appendParsedText(super._collected.join(""), from);
 //			trace("parsed sting");
 			return from.column < from.source.length;
-		}
-		
-		public function canFollow(from:AS3Sinks):Boolean
-		{
-			var result:Boolean;
-			
-			return result;
-		}
-		
-		public override function isSinkStart(from:AS3Sinks):Boolean
-		{
-//			trace("maybe string", from.source.substr(from.column));
-			super._startRegExp = from.settings.quoteRegExp;
-			return super.isSinkStart(from);
 		}
 	}
 }

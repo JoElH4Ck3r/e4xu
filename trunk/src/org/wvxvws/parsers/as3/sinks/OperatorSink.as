@@ -2,36 +2,27 @@ package org.wvxvws.parsers.as3.sinks
 {
 	import org.wvxvws.parsers.as3.AS3Sinks;
 	import org.wvxvws.parsers.as3.ISink;
+	import org.wvxvws.parsers.as3.ISinks;
 	
 	public class OperatorSink extends Sink implements ISink
 	{
 		public function OperatorSink() { super(); }
 		
-		public function read(from:AS3Sinks):Boolean
+		public override function read(from:ISinks):Boolean
 		{
 			var subseq:String = from.source.substr(from.column);
-			var match:String = subseq.match(from.settings.operatorRegExp)[0];
+			var match:String = subseq.match(from.sinkStartRegExp(this))[0];
+			var as3Sinks:AS3Sinks = from as AS3Sinks;
 			
 			for (var i:int; i < match.length; i++)
 			{
-				if (from.settings.bracketRegExp.test(
-					from.advanceColumn(match.charAt(i))))
-					from.incrementBracket();
+				if (as3Sinks.settings.bracketRegExp.test(
+					as3Sinks.advanceColumn(match.charAt(i))))
+					as3Sinks.incrementBracket();
 			}
 			
-			super.appendParsedText(match, from, from.onOperator);
+			super.appendParsedText(match, from);
 			return from.column < from.source.length;
-		}
-		
-		public function canFollow(from:AS3Sinks):Boolean
-		{
-			return false;
-		}
-		
-		public override function isSinkStart(from:AS3Sinks):Boolean
-		{
-			super._startRegExp = from.settings.operatorRegExp;
-			return super.isSinkStart(from);
 		}
 	}
 }

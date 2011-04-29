@@ -2,12 +2,13 @@ package org.wvxvws.parsers.as3.sinks
 {
 	import org.wvxvws.parsers.as3.AS3Sinks;
 	import org.wvxvws.parsers.as3.ISink;
+	import org.wvxvws.parsers.as3.ISinks;
 	
 	/**
 	 * ...
 	 * @author wvxvw
 	 */
-	public class ASDocCommentSink extends Sink implements ISink
+	public class ASDocCommentSink extends Sink
 	{
 		// TODO: It could be better to reuse the sinks from the AS3Sinks
 		// instead of having these here, but seems rather complex atm.
@@ -19,17 +20,17 @@ package org.wvxvws.parsers.as3.sinks
 		
 		/* INTERFACE org.wvxvws.parsers.as3.ISink */
 		
-		public function read(from:AS3Sinks):Boolean
+		public override function read(from:ISinks):Boolean
 		{
 			var subseq:String = from.source.substr(from.column);
-			var commentStart:RegExp = from.settings.asdocCommentStartRegExp;
-			var commentEnd:RegExp = from.settings.blockCommentEndRegExp;
-			var asdocKeyword:RegExp = from.settings.asdocKeywordRegExp;
+			var commentStart:RegExp = (from as AS3Sinks).settings.asdocCommentStartRegExp;
+			var commentEnd:RegExp = from.sinkEndRegExp(this);
+			var asdocKeyword:RegExp = from.sinkStartRegExp(this._keywordSink);
 			var match:String;
 			var difference:int;
 			var current:String;
-			var lineEnd:RegExp = from.settings.lineEndRegExp;
-			var white:RegExp = from.settings.whiteSpaceRegExp;
+			var lineEnd:RegExp = from.sinkStartRegExp(this._lineEndSink);
+			var white:RegExp = from.sinkStartRegExp(this._whitesPaceSink);
 			var whiteAfterLine:Boolean;
 			
 			match = subseq.substr(0, 
@@ -82,25 +83,11 @@ package org.wvxvws.parsers.as3.sinks
 			return from.column < from.source.length;
 		}
 		
-		public function canFollow(from:AS3Sinks):Boolean
-		{
-			var result:Boolean;
-			
-			return result;
-		}
-		
-		public override function isSinkStart(from:AS3Sinks):Boolean
-		{
-			super._startRegExp = from.settings.asdocCommentStartRegExp;
-			return super.isSinkStart(from);
-		}
-		
-		private function collectAndClear(from:AS3Sinks):void
+		private function collectAndClear(from:ISinks):void
 		{
 			if (super._collected.length)
 			{
-				super.appendParsedText(
-					super._collected.join(""), from, from.onASDocComment);
+				super.appendParsedText(super._collected.join(""), from);
 				super.clearCollected();
 			}
 		}
