@@ -1,7 +1,6 @@
 package org.wvxvws.parsers.as3.sinks 
 {
 	import org.wvxvws.parsers.as3.AS3Sinks;
-	import org.wvxvws.parsers.as3.ISink;
 	import org.wvxvws.parsers.as3.ISinks;
 	
 	/**
@@ -20,6 +19,7 @@ package org.wvxvws.parsers.as3.sinks
 		
 		/* INTERFACE org.wvxvws.parsers.as3.ISink */
 		
+		// TODO: looks like it may be possible to make it shorter.
 		public override function read(from:ISinks):Boolean
 		{
 			var subseq:String = from.source.substr(from.column);

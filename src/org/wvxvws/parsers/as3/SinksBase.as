@@ -12,9 +12,9 @@ package org.wvxvws.parsers.as3
 			this.loopSinks();
 		}
 		
-		protected function buildDictionary():void
+		protected function buildDictionary(stack:SinksStack = null):SinksStack
 		{
-			this._stack.clear();
+			return this._stack.clear(stack);
 		}
 		
 		private function loopSinks():void

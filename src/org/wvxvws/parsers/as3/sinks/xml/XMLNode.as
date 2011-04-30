@@ -16,9 +16,23 @@ package org.wvxvws.parsers.as3.sinks.xml
 			this._value = source;
 		}
 		
+		protected function appendParsedText(text:String, sinks:ISinks):String
+		{
+			var usingMethod:Function = sinks.readHandler(this, text);
+			if (usingMethod)
+			{
+				if (usingMethod.length == 1)
+					sinks.appendCollectedText(usingMethod(text));
+				else sinks.appendCollectedText(usingMethod(text, this));
+			}
+			else sinks.appendCollectedText(text);
+			return text;
+		}
+		
 		protected function report(text:String, toSinks:ISinks):String
 		{
 			// FIXME: whitespaces and line ends...
+			trace("--- Carrygun's reportn':", text);
 			if (!this._value) this._value = "";
 			for (var position:int; position < text.length; position++)
 				this._value += toSinks.advanceColumn(text.charAt(position));
@@ -38,8 +52,10 @@ package org.wvxvws.parsers.as3.sinks.xml
 		
 		public function isSinkStart(from:ISinks):Boolean
 		{
-			trace("is sink start?", getQualifiedClassName(this), from.source.substr(from.column), from.sinkStartRegExp(this).test(
-				from.source.substr(from.column)));
+			if (from.sinkStartRegExp(this).test(
+				from.source.substr(from.column)))
+				trace("is sink start?", getQualifiedClassName(this), 
+					from.source.substr(from.column));
 			return from.sinkStartRegExp(this).test(
 				from.source.substr(from.column));
 		}

@@ -20,19 +20,24 @@ package org.wvxvws.parsers.as3.sinks.xml
 		
 		public override function read(from:ISinks):Boolean
 		{
-			var subseq:String = from.source.substr(from.column);
+			var subseq:String = 
+				from.source.substr(from.column)
+					.match(from.sinkStartRegExp(this))[0];
 			var index:int = subseq.indexOf("<");
 			var hasBracket:Boolean;
 			
 			this._finished = false;
 			
-			if (index < 0) index = subseq.indexOf("{");
-			else hasBracket = true;
+			if (index < 0)
+			{
+				index = subseq.indexOf("{");
+				if (index > -1) hasBracket = true;
+			}
 			if (index < 0) index = subseq.length;
 			(from as XMLReader).lastNodeIn(this);
 			from.appendCollectedText(
 				super.report(subseq.substr(0, index), from));
-			if (hasBracket) (from as XMLReader).exitOnCurly();
+			if (hasBracket) (from as XMLReader).exitOnCurly(this);
 			else this._finished = true;
 			return from.source.length > from.column;
 		}

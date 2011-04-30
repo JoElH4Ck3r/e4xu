@@ -8,8 +8,6 @@ package org.wvxvws.parsers.as3.sinks
 	
 	public class XMLSink extends Sink
 	{
-		private var _bracketCount:int;
-		
 		private const _reader:XMLReader = new XMLReader();
 		
 		public function XMLSink() { super(); }
@@ -17,25 +15,8 @@ package org.wvxvws.parsers.as3.sinks
 		public override function read(from:ISinks):Boolean
 		{
 			trace("is XML");
-			var subseq:String = from.source.substr(from.column);
-			
 			this._reader.read(from as AS3Sinks);
-			
-//			if (!this._currentNode) this._currentNode = new E4XNode(null);
-//			readState = this._currentNode.read(from as AS3Sinks);
-//			if (readState == E4XReadState.TAIL)
-//				this._currentNode = null;
-//			else if (readState == E4XReadState.BRACKET)
-//				this._currentNode = this._currentNode.continueFrom;
-//			else trace("Error reading XML:", readState);
-			
-			return false;
-//			return from.source.length > from.column;
-		}
-		
-		public function canFollow(from:AS3Sinks):Boolean
-		{
-			return false;
+			return from.source.length > from.column;
 		}
 		
 		public override function isSinkStart(from:ISinks):Boolean

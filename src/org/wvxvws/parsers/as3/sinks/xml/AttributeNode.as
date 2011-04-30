@@ -10,7 +10,7 @@ package org.wvxvws.parsers.as3.sinks.xml
 		
 		private var _name:String;
 		
-		private var _finished:Boolean;
+		private var _finished:Boolean = true;
 		
 		public function AttributeNode() { super(); }
 		
@@ -32,43 +32,52 @@ package org.wvxvws.parsers.as3.sinks.xml
 			var expressions:XMLRegExp = 
 				(from as XMLReader).as3Sinks.settings.xmlRegExp;
 			var subseq:String = from.source.substr(from.column);
+			var reader:XMLReader = from as XMLReader;
 			
-			(from as XMLReader).lastNodeIn(this);
+			reader.lastNodeIn(this);
 			
 			this._finished = false;
 			
 			if (subseq.charAt() != "{")
 			{
-				from.appendCollectedText(
+				super.appendParsedText(
 					super.report(
 						(this._name = this.resetAndMatch(
-							subseq, expressions.name)), from));
+							subseq, expressions.name)), from), from);
 				
-				if ((from as XMLReader).readWhite())
+				if (reader.readWhite())
 				{
-					from.appendCollectedText(
+					super.appendParsedText(
 						super.report(
 							this.resetAndMatch(
 								from.source.substr(from.column), 
-								expressions.attributeEQ), from));
-					if ((from as XMLReader).readWhite())
+								expressions.attributeEQ), from), from);
+					if (reader.readWhite())
 					{
 						subseq = from.source.substr(from.column);
 						if (subseq.charAt() != "{")
 						{
-							from.appendCollectedText(
+							super.appendParsedText(
 								super.report(
 									(this._value = this.resetAndMatch(
-										subseq, expressions.attributeValue)), from));
+										subseq, expressions.attributeValue)),
+										from), from);
 							this._finished = true;
 						}
-						else (from as XMLReader).exitOnCurly();
+						else reader.exitOnCurly(this);
 					}
 				}
 			}
-			else (from as XMLReader).exitOnCurly();
+			else reader.exitOnCurly(this);
 			
 			return from.source.length > from.column;
+		}
+		
+		public override function isSinkStart(from:ISinks):Boolean
+		{
+			trace("--- testing for attribute:", from.source.substr(from.column, 20));
+			return (from.source.charAt(from.column) == "{") || 
+				super.isSinkStart(from);
 		}
 		
 		private function resetAndMatch(seq:String, expression:RegExp):String
