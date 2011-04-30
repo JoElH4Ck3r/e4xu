@@ -18,6 +18,8 @@ package org.wvxvws.parsers.as3.sinks.xml
 		
 		public function get as3Sinks():AS3Sinks { return this._as3Sinks; }
 		
+		public function get finished():Boolean { return this._finished; }
+		
 		protected const _whiteStack:SinksStack = new SinksStack();
 		
 		private var _currentNode:XMLNode;
@@ -27,6 +29,12 @@ package org.wvxvws.parsers.as3.sinks.xml
 		private var _lineEndSink:LineEndSink;
 		
 		private var _whiteSink:WhiteSpaceSink;
+		
+		private var _elementSink:ElementNode;
+		
+		private var _finished:Boolean;
+		
+		private const _unfinishedStacks:Vector.<SinksStack> = new <SinksStack>[];
 		
 		public function XMLReader() { super(); }
 		
@@ -41,9 +49,12 @@ package org.wvxvws.parsers.as3.sinks.xml
 			this._currentNode = node;
 		}
 		
-		public function exitOnCurly():void
+		public function exitOnCurly(sink:ISink):void
 		{
-			super._stack.clear();
+			trace("--- was meant to exit", getQualifiedClassName(sink));
+			this._finished = false;
+			this._unfinishedStacks.push(super._stack.clear());
+			this._as3Sinks.appendCollectedText("|||");
 		}
 		
 		public function readHandler(forSink:ISink, forWord:String = null):Function
@@ -58,13 +69,14 @@ package org.wvxvws.parsers.as3.sinks.xml
 		
 		public function appendCollectedText(text:String):void
 		{
-			this.reportCollected(this._currentNode, text);
+			this._as3Sinks.appendCollectedText(text);
 		}
 		
 		public function sinkStartRegExp(forSink:ISink):RegExp
 		{
 			var result:RegExp;
 			
+			// TODO: we could cache the regexps.
 			switch ((forSink as Object).constructor)
 			{
 				case ElementNode:
@@ -89,13 +101,14 @@ package org.wvxvws.parsers.as3.sinks.xml
 					result = this._as3Sinks.sinkStartRegExp(forSink);
 			}
 			result.lastIndex = 0;
-			trace(getQualifiedClassName(forSink), result);
+			trace("sink requested regexp:", getQualifiedClassName(forSink), result);
 			return result;
 		}
 		
 		public function sinkEndRegExp(forSink:ISink):RegExp
 		{
-			return null;
+			throw "unimplemented";
+//			return null;
 		}
 		
 		public function readWhite():Boolean
@@ -114,109 +127,21 @@ package org.wvxvws.parsers.as3.sinks.xml
 			return this._as3Sinks.source.length > this._as3Sinks.column;
 		}
 		
-//		public function readNode(sinks:AS3Sinks):void
-//		{
-//			switch (sinks.source.charAt(sinks.column))
-//			{
-//				case "{":
-//					this.readCurly(sinks);
-//					break;
-//				case " ":
-//				case "\t":
-//				case "\r":
-//				case "\n":
-//					this.readWhite(sinks);
-//					break;
-//				case "<":
-//					this.readElement(sinks);
-//					break;
-//				default:
-//					this.readText(sinks);
-//			}
-//		}
-//		
-//		public function readWhite(sinks:AS3Sinks):void
-//		{
-//			var nextSink:ISink;
-//			var current:String;
-//			
-//			this._whiteStack.clear();
-//			this._whiteStack.add(from.whiteSink).add(from.lineEndSink);
-//			
-//			while (nextSink = this._whiteStack.next())
-//			{
-//				if (nextSink.isSinkStart(from) && nextSink.read(from))
-//					this._whiteStack.reset();
-//			}
-//			
-//			current = sinks.source.charAt(sinks.column);
-//			
-//			switch (current)
-//			{
-//				case "{":
-//					this.readCurly(sinks);
-//					break;
-//				case "<":
-//					this.readElement(sinks);
-//					break;
-//				case "/":
-//					if (sinks.source.charAt(sinks.column + 1) == ">")
-//						this.closeElement(sinks);
-//					else this.readText(sinks);
-//					break;
-//				default:
-//					this.readText(sinks);
-//			}
-//		}
-//		
-//		public function readElement(sinks:AS3Sinks):void
-//		{
-//			var current:String = sinks.source.charAt(sinks.column + 1);
-//			
-//			switch (current)
-//			{
-//				case "/":
-//					this.readTail(sinks);
-//					break;
-//				case "{":
-//					this.readCurly(sinks);
-//					break;
-//				case "!":
-//					if (sinks.source.charAt(sinks.column + 2) == "[")
-//						this.readCdata(sinks);
-//					else this.readComment(sinks);
-//					break;
-//				case "?":
-//					this.readPI(sinks);
-//					break;
-//				default:
-//					this.readName(sinks);
-//			}
-//		}
-		
-		public function reportCollected(kind:ISink, text:String):void
+		protected override function buildDictionary(stack:SinksStack = null):SinksStack
 		{
-			if (this._as3Sinks.onXML)
-			{
-				if (this._as3Sinks.onXML.length > 1)
-					this._as3Sinks.appendCollectedText(this._as3Sinks.onXML(text, kind));
-				else this._as3Sinks.appendCollectedText(this._as3Sinks.onXML(text));
-			}
-			else this._as3Sinks.appendCollectedText(text);
-		}
-		
-		protected override function buildDictionary():void
-		{
-			super.buildDictionary();
-			this._lineEndSink = this._as3Sinks.lineEndSink;
-			this._whiteSink = this._as3Sinks.whiteSink;
-			this._stack.add(new ElementNode())
-				.add(this._whiteSink)
-				.add(this._lineEndSink)
+			// TODO: Once we finish reading on a "{" we should save the stack
+			// And then when we come back another time we should try
+			// to discover wether we are continuing to read the old stack
+			// or are we opening a new one.
+			var result:SinksStack = super.buildDictionary(stack);
+			this._stack.add(this._elementSink = new ElementNode())
+				.add(this._whiteSink = this._as3Sinks.whiteSink)
+				.add(this._lineEndSink = this._as3Sinks.lineEndSink)
 				.add(new CDataNode())
 				.add(new CommentNode())
 				.add(new PINode())
 				.add(new TextNode());
+			return result;
 		}
 	}
 }

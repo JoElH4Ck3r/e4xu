@@ -85,7 +85,7 @@ package org.wvxvws.parsers.as3
 		{
 			var style:String;
 			var kindKind:Class;
-			if (kind) kindKind = (kind as Object).constructo;
+			if (kind) kindKind = (kind as Object).constructor;
 			
 			switch (kindKind)
 			{

@@ -15,8 +15,6 @@ package org.wvxvws.parsers.as3.sinks
 			return this._collected;
 		}
 		
-//		protected var _startRegExp:RegExp;
-		
 		protected var _collected:Vector.<String> = new <String>[];
 		
 		public function Sink() { super(); }
@@ -26,6 +24,7 @@ package org.wvxvws.parsers.as3.sinks
 			this._collected.splice(0, this._collected.length);
 		}
 		
+		// NOTE: This is duplicated in XMLNode
 		protected function appendParsedText(text:String, sinks:ISinks):void
 		{
 			var usingMethod:Function = sinks.readHandler(this, text);
@@ -74,5 +73,4 @@ package org.wvxvws.parsers.as3.sinks
 			return match && subseq.indexOf(match) == 0;
 		}
 	}
-
 }

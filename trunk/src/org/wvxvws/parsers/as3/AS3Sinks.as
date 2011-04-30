@@ -61,10 +61,6 @@ package org.wvxvws.parsers.as3
 			return this._settings;
 		}
 		
-		public function get word():String { return this._word; }
-		
-		public function get currentSink():ISink { return this._currentSink; }
-		
 		public function get hasError():Boolean { return this._hasError; }
 		
 		public function get collectedText():String { return this._collectedText; }
@@ -78,18 +74,11 @@ package org.wvxvws.parsers.as3
 		private var _column:int;
 		private var _lines:Vector.<String> = new <String>[];
 		private var _source:String;
-		private var _lastLineEnd:int;
-		private var _word:String;
 		private var _settings:AS3ParserSettings;
-		private var _currentSink:ISink;
 		private var _hasError:Boolean;
 		private var _error:AS3ReaderError;
 		
 		private var _collectedText:String = "";
-		private var _collectWhiteSpaces:Boolean;
-		private var _collectWords:Boolean;
-		private var _collectLineEnds:Boolean;
-		
 		private var _whiteSink:WhiteSpaceSink;
 		private var _lineEndSink:LineEndSink;
 		
@@ -104,11 +93,9 @@ package org.wvxvws.parsers.as3
 			this._source = source;
 			this._settings = settings;
 			this._column = 0;
-			this._lastLineEnd = 0;
 			this._line = 0;
 			// TODO: whoops, forgot these :) have to count them and collect!
 			this._lines.splice(0, this._lines.length);
-			this._word = "";
 			this._collectedText = "";
 			super.readInternal();
 		}
@@ -320,9 +307,9 @@ package org.wvxvws.parsers.as3
 			return result;
 		}
 		
-		protected override function buildDictionary():void
+		protected override function buildDictionary(stack:SinksStack = null):SinksStack
 		{
-			super.buildDictionary();
+			var result:SinksStack = super.buildDictionary();
 			this._lineEndSink = new LineEndSink();
 			this._whiteSink = new WhiteSpaceSink();
 			this._stack.add(new StringSink())
@@ -336,6 +323,7 @@ package org.wvxvws.parsers.as3
 				.add(new XMLSink())
 				.add(new OperatorSink())
 				.add(new DefaultSink());
+			return result;
 		}
 	}
 }

@@ -6,8 +6,8 @@ package org.wvxvws.parsers.as3
 	 */
 	public class SinksStack
 	{
-		private const _sinks:Vector.<ISink> = new <ISink>[];
-		private var _current:int;
+		protected const _sinks:Vector.<ISink> = new <ISink>[];
+		protected var _current:int;
 		
 		public function SinksStack() { super(); }
 		
@@ -25,10 +25,18 @@ package org.wvxvws.parsers.as3
 		
 		public function reset():void { this._current = 0; }
 		
-		public function clear():void
+		public function clear(stack:SinksStack = null):SinksStack
 		{
-			this._sinks.slice(0);
+			var clone:Vector.<ISink> = this._sinks.slice();
+			this._sinks.splice(0, this._sinks.length);
 			this.reset();
+			return fromVector(clone, this._current, stack);
+		}
+		
+		public function restore(stack:SinksStack):SinksStack
+		{
+			this.clear();
+			return fromVector(stack._sinks, stack._current, this);
 		}
 		
 		public function add(sink:ISink):SinksStack
@@ -47,6 +55,16 @@ package org.wvxvws.parsers.as3
 				if (index < this._current) this._current--;
 			}
 			return this;
+		}
+		
+		protected static function fromVector(
+			sinks:Vector.<ISink>, position:int, stack:SinksStack):SinksStack
+		{
+			var result:SinksStack = stack || new SinksStack();
+			for each (var sink:ISink in sinks)
+				result._sinks.push(sink);
+			result._current = position;
+			return result;
 		}
 	}
 }

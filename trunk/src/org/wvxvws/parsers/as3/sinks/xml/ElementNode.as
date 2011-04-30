@@ -1,5 +1,6 @@
 package org.wvxvws.parsers.as3.sinks.xml
 {
+	import org.wvxvws.parsers.as3.AS3Sinks;
 	import org.wvxvws.parsers.as3.ISink;
 	import org.wvxvws.parsers.as3.ISinks;
 	import org.wvxvws.parsers.as3.SinksStack;
@@ -22,19 +23,100 @@ package org.wvxvws.parsers.as3.sinks.xml
 		
 		private var _readingTail:Boolean;
 		
-		private var _finished:Boolean;
+		private var _finished:Boolean = true;
 		
 		public function ElementNode() { super(); }
 		
 		public override function read(from:ISinks):Boolean
 		{
+			var reader:XMLReader = from as XMLReader;
+			
 			if (this._readingTail) this._openCount--;
 			else this._openCount++;
+			
+			if (this._openCount < 0)
+			{
+				// this is a syntax error
+				// once I have a mechanism for reporting errors, will have to 
+				// handle it here
+			}
+			else
+			{
+				reader.lastNodeIn(this);
+				// TODO: all calls to appendCollected text should go through 
+				// the same place where they ask to format input
+				super.appendParsedText("<", from);
+				if (this.readName(reader) && this._finished)
+				{
+//					from.appendCollectedText(this._name);
+					trace("--- was here");
+					if (this.loop(from) && this._finished)
+					{
+						trace("--- but was not here");
+						this.readNodeEnd(from)
+//						if (this.readNodeEnd(from) && this._openCount > 0)
+//						{
+//							
+//						}
+					}
+//					else reader.exitOnCurly(this);
+				}
+				else reader.exitOnCurly(this);
+			}
 			
 			return from.source.length > from.column;
 		}
 		
-		private function loop(from:ISinks):void
+		private function readNodeEnd(from:ISinks):Boolean
+		{
+			var subseq:String = from.source.substr(from.column);
+			var match:String;
+			
+			this._finished = true;
+			switch (subseq.charAt())
+			{
+				case "/":
+					match = subseq.substr(0, 2);
+					this._openCount--;
+					break;
+				case ">":
+					match = subseq.charAt();
+					break;
+				default:
+					this._finished = false;
+					trace("this is a syntax error");
+			}
+			if (match)
+				super.appendParsedText(super.report(match, from), from);
+			return from.source.length < from.column;
+		}
+		
+		private function readName(from:XMLReader):Boolean
+		{
+			var match:String = from.source.substr(from.column);
+			
+			this._finished = false;
+			if (this._readingTail)
+			{
+				super.report(match.substr(0, 2), from);
+			}
+			else super.report(match.charAt(), from);
+			match = from.source.substr(from.column);
+			if (match.charAt() != "{")
+			{
+				this._name = 
+					super.appendParsedText(
+						super.report(
+							match.match(
+								from.as3Sinks.settings.xmlRegExp.name)[0], 
+							from), from);
+				this._finished = true;
+			}
+			
+			return from.source.length > from.column;
+		}
+		
+		private function loop(from:ISinks):Boolean
 		{
 			var reader:XMLReader = from as XMLReader;
 			var nextSink:ISink;
@@ -47,9 +129,24 @@ package org.wvxvws.parsers.as3.sinks.xml
 			while (nextSink = this._attributesStack.next())
 			{
 				if (nextSink.isSinkStart(from) && 
-					nextSink.read(from))
+					nextSink.read(from) && 
+					(!(nextSink is AttributeNode) || 
+						(nextSink as AttributeNode).finished))
 					this._attributesStack.reset();
 			}
+			this._finished = this._attributeSink.finished;
+			
+			return from.source.length > from.column;
+		}
+		
+		public override function isSinkStart(from:ISinks):Boolean
+		{
+			var result:Boolean = super.isSinkStart(from);
+			
+			if (result) // NOTE: once I add "return after {}", this will need to change 
+				this._readingTail = from.source.charAt(from.column + 1) == "/";
+			else trace("did not match:", "|" + from.source.substr(from.column, 20));
+			return result;
 		}
 		
 		public function appendName(source:String):void

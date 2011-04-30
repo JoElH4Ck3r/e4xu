@@ -142,9 +142,13 @@
 		English - add the character you need.
 		NOTE: {,256} quantifier is used instead of * because of a bug:
 		http://bugs.adobe.com/jira/browse/ASC-4235
+		Also note that this will match: x <{ y:100 }.y , while it's not an XML.
+		Maybe I'll add a verification for the curlies and their first "word",
+		but I don't know what is allowd there. Some function calls are, for eg:
+		{ x.valueOf() : y } is a valid object literal...
 	 -->
-	<xmlStartRegExp options="gi">&lt;(\{|([A-Z_]([\w\.\-\$:]*[\w\$])?(([\s\r\n][A-Z_])|(\/?&gt;))))</xmlStartRegExp>
-	<xmlAttributeStartRegExp options="gi">[A-Z][\w\.:\-\$]*[\s\r\n]*=[\s\r\n]*["'{]</xmlAttributeStartRegExp>
+	<xmlStartRegExp options="gi">^&lt;(\{|([A-Z_]([\w\.\-\$:]*[\w\$])?(([\s\r\n]+[A-Z_])|([\s\r\n]*\/?&gt;)|[\s\r\n]+\{)))</xmlStartRegExp>
+	<xmlAttributeStartRegExp options="gi">^[A-Z][\w\.:\-\$]*[\s\r\n]*=[\s\r\n]*["'{]</xmlAttributeStartRegExp>
 	<xml>
 		<!-- 
 			Note, this may be another bug, [.\r\n] does not match the same as (.|\r|\n) 
