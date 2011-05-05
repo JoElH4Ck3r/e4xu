@@ -31,9 +31,6 @@ package org.wvxvws.automation.language
 				case int:
 				case uint:
 				case Boolean:
-				case XML:
-				case XMLList:
-				case Date:
 				case null:
 				case undefined:
 					result = this._value;
@@ -56,9 +53,6 @@ package org.wvxvws.automation.language
 				case int:
 				case uint:
 				case Boolean:
-				case XML:
-				case XMLList:
-				case Date:
 				case null:
 				case undefined:
 					result = String(this._value);
