@@ -1,10 +1,14 @@
 package org.wvxvws.automation.language
 {
+	import org.wvxvws.automation.errors.Restart;
 	import org.wvxvws.automation.nodes.EvalNode;
 	import org.wvxvws.automation.nodes.Node;
 
 	public class Callable
 	{
+		public function get error():Restart { return null; }
+		public function get length():int { return 0; }
+		
 		private var _body:Vector.<Node>;
 		private var _parameters:ArgumentsList;
 		private var _context:LanguageFunctions;
@@ -17,6 +21,8 @@ package org.wvxvws.automation.language
 			this._parameters = parameters;
 			this._context = context;
 		}
+		
+		public function nextOp():Boolean { return false; }
 		
 		public function call(...nodes):*
 		{

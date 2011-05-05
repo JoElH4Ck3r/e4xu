@@ -16,9 +16,30 @@ package org.wvxvws.automation.nodes
 		
 		public function Lexer() { super(); }
 		
+		/**
+		 * These are the variables that may affect the reader:
+		 * 
+		 * *package*
+		 * *read-default-float-format*
+		 * *readtable*
+		 * *read-base*
+		 * *read-suppress*   
+		 * 
+		 * @param character
+		 * 
+		 */
 		public function process(character:String):void
 		{
 			var hasQuote:Boolean;
+//			In Common Lisp symbols with a leading colon in their printed representations are keyword symbols. These are interned in the keyword package.
+//			:keyword-symbol
+//			A printed representation of a symbol may include a package name. Two colons are written between the name of the package and the name of the symbol.
+//			package-name::symbol-name
+//			Packages can export symbols. Then only one colon is written between the name of the package and the name of the symbol.
+//			package:exported-symbol
+							
+			// TODO: symbols may have whitespace, but must be delimited by pipes:
+			// |This is a symbol with whitespace|
 			// TODO: need to be able to escape quotes
 			if ((character == "\r" || character == "\n") && this._wasComment)
 			{

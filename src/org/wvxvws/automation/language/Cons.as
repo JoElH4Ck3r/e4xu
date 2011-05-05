@@ -12,7 +12,7 @@ package org.wvxvws.automation.language
 		{
 			var result:*;
 			
-			result = this._car.eval(inContext);
+			if (this._car) result = this._car.eval(inContext);
 			if (this._cdr) result = this._cdr.eval(inContext);
 			return result;
 		}
