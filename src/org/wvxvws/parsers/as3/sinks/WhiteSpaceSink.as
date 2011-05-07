@@ -1,7 +1,5 @@
 package org.wvxvws.parsers.as3.sinks 
 {
-	import org.wvxvws.parsers.as3.ISink;
-	
 	/**
 	 * ...
 	 * @author wvxvw

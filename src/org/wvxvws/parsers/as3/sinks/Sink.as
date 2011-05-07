@@ -61,7 +61,7 @@ package org.wvxvws.parsers.as3.sinks
 					this.pushAndReturn(
 						from.source.substr(from.column)
 							.match(from.sinkStartRegExp(this))[0]), from), from);
-			return from.column < from.source.length;
+			return from.hasMoreText();
 		}
 		
 		public function isSinkStart(from:ISinks):Boolean

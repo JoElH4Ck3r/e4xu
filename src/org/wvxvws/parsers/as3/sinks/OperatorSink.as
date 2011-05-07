@@ -22,7 +22,7 @@ package org.wvxvws.parsers.as3.sinks
 			}
 			
 			super.appendParsedText(match, from);
-			return from.column < from.source.length;
+			return from.hasMoreText();
 		}
 	}
 }

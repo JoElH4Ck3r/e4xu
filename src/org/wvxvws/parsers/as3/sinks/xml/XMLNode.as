@@ -47,7 +47,7 @@ package org.wvxvws.parsers.as3.sinks.xml
 					from.source.substr(from.column)
 						.match(from.sinkStartRegExp(this))[0], from));
 			trace("reading node:", this);
-			return from.source.length > from.column;
+			return from.hasMoreText();
 		}
 		
 		public function isSinkStart(from:ISinks):Boolean

@@ -52,7 +52,7 @@ package org.wvxvws.parsers.as3.sinks.xml
 				trace("--- second chance?");
 				(from as XMLReader).loop();
 			}
-			return from.source.length > from.column;
+			return from.hasMoreText();
 		}
 		
 		public override function read(from:ISinks):Boolean
@@ -96,7 +96,7 @@ package org.wvxvws.parsers.as3.sinks.xml
 				}
 			}
 			
-			return from.source.length > from.column;
+			return from.hasMoreText();
 		}
 		
 		private function readNodeEnd(from:ISinks):Boolean
@@ -120,7 +120,7 @@ package org.wvxvws.parsers.as3.sinks.xml
 			}
 			if (match)
 				super.appendParsedText(super.report(match, from), from);
-			return from.source.length < from.column;
+			return from.hasMoreText();
 		}
 		
 		private function readName(from:XMLReader):Boolean
@@ -146,7 +146,7 @@ package org.wvxvws.parsers.as3.sinks.xml
 			}
 			// Maybe I need to set state here 
 			// (need to see what happens if we try to reuse the reader).
-			return from.source.length > from.column;
+			return from.hasMoreText();
 		}
 		
 		private function loop(from:ISinks):Boolean
@@ -169,7 +169,7 @@ package org.wvxvws.parsers.as3.sinks.xml
 			}
 			this._finished = this._attributeSink.finished;
 			
-			return from.source.length > from.column;
+			return from.hasMoreText();
 		}
 		
 		public override function isSinkStart(from:ISinks):Boolean

@@ -28,7 +28,7 @@ package org.wvxvws.parsers.as3.sinks
 				super.report(
 					super.pushAndReturn(subseq.substr(0, i)), from), from);
 			
-			return from.column < from.source.length;
+			return from.hasMoreText();
 		}
 	}
 }

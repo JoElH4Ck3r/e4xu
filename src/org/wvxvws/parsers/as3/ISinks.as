@@ -9,5 +9,6 @@ package org.wvxvws.parsers.as3
 		function appendCollectedText(text:String):void;
 		function sinkStartRegExp(forSink:ISink):RegExp;
 		function sinkEndRegExp(forSink:ISink):RegExp;
+		function hasMoreText():Boolean;
 	}
 }

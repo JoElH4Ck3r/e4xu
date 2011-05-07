@@ -54,7 +54,7 @@ package org.wvxvws.parsers.as3.sinks
 			}
 			while (matchIndex > 0 && position < totalLenght);
 			super.appendParsedText(super._collected.join(""), from);
-			return position < totalLenght;
+			return from.hasMoreText();
 		}
 		
 		public override function isSinkStart(from:ISinks):Boolean

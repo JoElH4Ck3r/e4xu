@@ -101,6 +101,8 @@ package org.wvxvws.parsers.as3
 			super.readInternal();
 		}
 		
+		public function hasMoreText():Boolean { return this._source.length > this._column; }
+		
 		public function advanceColumn(character:String):String
 		{
 			if (!this._hasError)

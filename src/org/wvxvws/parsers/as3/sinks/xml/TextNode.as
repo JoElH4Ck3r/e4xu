@@ -20,8 +20,7 @@ package org.wvxvws.parsers.as3.sinks.xml
 		
 		public function continueReading(from:ISinks):Boolean
 		{
-			// TODO:
-			return from.source.length > from.column;
+			return this.read(from);
 		}
 		
 		public override function read(from:ISinks):Boolean
@@ -45,7 +44,7 @@ package org.wvxvws.parsers.as3.sinks.xml
 				super.report(subseq.substr(0, index), from));
 			if (hasBracket) (from as XMLReader).exitOnCurly(this);
 			else this._finished = true;
-			return from.source.length > from.column;
+			return from.hasMoreText();
 		}
 	}
 }
