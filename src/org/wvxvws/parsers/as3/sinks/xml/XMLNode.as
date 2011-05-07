@@ -44,7 +44,7 @@ package org.wvxvws.parsers.as3.sinks.xml
 			(from as XMLReader).lastNodeIn(this);
 			from.appendCollectedText(
 				this.report(
-					from.source.substr(from.column)
+					from.remainingText()
 						.match(from.sinkStartRegExp(this))[0], from));
 			trace("reading node:", this);
 			return from.hasMoreText();
@@ -55,9 +55,9 @@ package org.wvxvws.parsers.as3.sinks.xml
 			if (from.sinkStartRegExp(this).test(
 				from.source.substr(from.column)))
 				trace("is sink start?", getQualifiedClassName(this), 
-					from.source.substr(from.column));
+					from.remainingText());
 			return from.sinkStartRegExp(this).test(
-				from.source.substr(from.column));
+				from.remainingText());
 		}
 		
 		public function toString():String { return this._value; }

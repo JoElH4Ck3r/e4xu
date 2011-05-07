@@ -26,7 +26,7 @@ package org.wvxvws.parsers.as3.sinks.xml
 		public override function read(from:ISinks):Boolean
 		{
 			var subseq:String = 
-				from.source.substr(from.column)
+				from.remainingText()
 					.match(from.sinkStartRegExp(this))[0];
 			var index:int = subseq.indexOf("<");
 			var hasBracket:Boolean;

@@ -1,6 +1,5 @@
 package org.wvxvws.parsers.as3.sinks 
 {
-	import org.wvxvws.parsers.as3.AS3Sinks;
 	import org.wvxvws.parsers.as3.ISink;
 	import org.wvxvws.parsers.as3.ISinks;
 	
@@ -59,7 +58,7 @@ package org.wvxvws.parsers.as3.sinks
 			this.appendParsedText(
 				this.report(
 					this.pushAndReturn(
-						from.source.substr(from.column)
+						from.remainingText()
 							.match(from.sinkStartRegExp(this))[0]), from), from);
 			return from.hasMoreText();
 		}
@@ -68,7 +67,7 @@ package org.wvxvws.parsers.as3.sinks
 		{
 			var subseq:String;
 			var match:String = this.checkAndReset(
-				(subseq = from.source.substring(from.column)),
+				(subseq = from.remainingText()),
 					from.sinkStartRegExp(this));
 			return match && subseq.indexOf(match) == 0;
 		}

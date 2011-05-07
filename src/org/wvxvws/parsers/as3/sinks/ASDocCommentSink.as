@@ -22,7 +22,7 @@ package org.wvxvws.parsers.as3.sinks
 		// TODO: looks like it may be possible to make it shorter.
 		public override function read(from:ISinks):Boolean
 		{
-			var subseq:String = from.source.substr(from.column);
+			var subseq:String = from.remainingText();
 			var commentStart:RegExp = (from as AS3Sinks).settings.asdocCommentStartRegExp;
 			var commentEnd:RegExp = from.sinkEndRegExp(this);
 			var asdocKeyword:RegExp = from.sinkStartRegExp(this._keywordSink);
@@ -41,7 +41,7 @@ package org.wvxvws.parsers.as3.sinks
 			for (var i:int; i < match.length; i++)
 			{
 				current = match.charAt(i);
-				if (asdocKeyword.test(from.source.substr(from.column)))
+				if (asdocKeyword.test(from.remainingText()))
 				{
 					this.collectAndClear(from);
 					

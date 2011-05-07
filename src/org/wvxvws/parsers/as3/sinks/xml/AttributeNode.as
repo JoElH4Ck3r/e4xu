@@ -1,7 +1,6 @@
 package org.wvxvws.parsers.as3.sinks.xml
 {
 	import org.wvxvws.parsers.as3.AS3Sinks;
-	import org.wvxvws.parsers.as3.ISink;
 	import org.wvxvws.parsers.as3.ISinks;
 	import org.wvxvws.parsers.as3.resources.XMLRegExp;
 
@@ -33,15 +32,27 @@ package org.wvxvws.parsers.as3.sinks.xml
 		
 		public function continueReading(from:ISinks):Boolean
 		{
-			// TODO:
+			var reader:XMLReader = from as XMLReader;
+			var expressions:XMLRegExp = 
+				reader.as3Sinks.settings.xmlRegExp;
+			
+			this._stack.splice(0, this._stack.length);
+			
+			if (this._exitState == ReadExitState.NODE_NAME &&
+				reader.readWhite() &&
+				from.source.charAt(from.column) == "=" &&
+				this.readEQ(from, expressions))
+			{
+				this.readValue(from, expressions);
+			}
 			return from.hasMoreText();
 		}
 		
 		public override function read(from:ISinks):Boolean
 		{
-			var expressions:XMLRegExp = 
-				(from as XMLReader).as3Sinks.settings.xmlRegExp;
 			var reader:XMLReader = from as XMLReader;
+			var expressions:XMLRegExp = 
+				reader.as3Sinks.settings.xmlRegExp;
 			
 			this._stack.splice(0, this._stack.length);
 			this._stack.push(
@@ -77,14 +88,14 @@ package org.wvxvws.parsers.as3.sinks.xml
 			super.appendParsedText(
 				super.report(
 					this.resetAndMatch(
-						from.source.substr(from.column), 
+						from.remainingText(), 
 						expressions.attributeEQ), from), from);
 			return from.hasMoreText();
 		}
 		
 		private function readName(from:ISinks, expressions:XMLRegExp):Boolean
 		{
-			var subseq:String = from.source.substr(from.column);
+			var subseq:String = from.remainingText();
 			var result:Boolean;
 			
 			if (subseq.charAt() != "{")
@@ -95,16 +106,13 @@ package org.wvxvws.parsers.as3.sinks.xml
 							subseq, expressions.name)), from), from);
 				result = true;
 			}
-			else
-			{
-				this.exit(ReadExitState.NODE_NAME, from);
-			}
+			else this.exit(ReadExitState.NODE_NAME, from);
 			return result && from.hasMoreText();
 		}
 		
 		private function readValue(from:ISinks, expressions:XMLRegExp):Boolean
 		{
-			var subseq:String = from.source.substr(from.column);
+			var subseq:String = from.remainingText();
 			
 			if (subseq.charAt() != "{")
 			{

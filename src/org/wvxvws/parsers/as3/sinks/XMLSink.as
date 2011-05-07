@@ -1,7 +1,6 @@
 package org.wvxvws.parsers.as3.sinks
 {
 	import org.wvxvws.parsers.as3.AS3Sinks;
-	import org.wvxvws.parsers.as3.ISink;
 	import org.wvxvws.parsers.as3.ISinks;
 	import org.wvxvws.parsers.as3.resources.XMLRegExp;
 	import org.wvxvws.parsers.as3.sinks.xml.XMLReader;
@@ -33,7 +32,7 @@ package org.wvxvws.parsers.as3.sinks
 		public override function isSinkStart(from:ISinks):Boolean
 		{
 			var sinks:AS3Sinks = from as AS3Sinks;
-			var subseq:String = from.source.substr(from.column);
+			var subseq:String = from.remainingText();
 			var lookBehind:String = from.source.substr(0, from.column);
 			var lastIndex:int = lookBehind.length;
 			var white:RegExp = sinks.settings.whiteSpaceRegExp;

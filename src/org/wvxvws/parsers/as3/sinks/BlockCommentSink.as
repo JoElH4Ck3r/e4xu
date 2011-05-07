@@ -1,7 +1,6 @@
 package org.wvxvws.parsers.as3.sinks 
 {
 	import org.wvxvws.parsers.as3.AS3Sinks;
-	import org.wvxvws.parsers.as3.ISink;
 	import org.wvxvws.parsers.as3.ISinks;
 	
 	/**
@@ -31,7 +30,7 @@ package org.wvxvws.parsers.as3.sinks
 			
 			super.clearCollected();
 			
-			subseq = source.substring(position);
+			subseq = from.remainingText();
 			
 			beginning = subseq.match(commentStart)[0];
 			super._collected.push(beginning);
