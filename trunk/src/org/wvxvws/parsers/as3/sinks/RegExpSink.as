@@ -1,8 +1,5 @@
 package org.wvxvws.parsers.as3.sinks 
 {
-	import org.wvxvws.parsers.as3.AS3ReaderError;
-	import org.wvxvws.parsers.as3.AS3Sinks;
-	import org.wvxvws.parsers.as3.ISink;
 	import org.wvxvws.parsers.as3.ISinks;
 	
 	/**
@@ -17,7 +14,7 @@ package org.wvxvws.parsers.as3.sinks
 		
 		public override function read(from:ISinks):Boolean
 		{
-			var subseq:String = from.source.substr(from.column);
+			var subseq:String = from.remainingText();
 			var match:String;
 			var endIndex:int;
 			

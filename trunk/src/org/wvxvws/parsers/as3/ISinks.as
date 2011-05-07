@@ -10,5 +10,6 @@ package org.wvxvws.parsers.as3
 		function sinkStartRegExp(forSink:ISink):RegExp;
 		function sinkEndRegExp(forSink:ISink):RegExp;
 		function hasMoreText():Boolean;
+		function remainingText():String;
 	}
 }

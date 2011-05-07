@@ -1,7 +1,5 @@
 package org.wvxvws.parsers.as3.sinks
 {
-	import org.wvxvws.parsers.as3.AS3Sinks;
-	import org.wvxvws.parsers.as3.ISink;
 	import org.wvxvws.parsers.as3.ISinks;
 	
 	public class NumberSink extends Sink
@@ -12,7 +10,7 @@ package org.wvxvws.parsers.as3.sinks
 		{
 			super.appendParsedText(
 				super.report(
-					super.pushAndReturn(from.source.substr(from.column)
+					super.pushAndReturn(from.remainingText()
 						.match(from.sinkEndRegExp(this))[0]), from), from);
 			return from.hasMoreText();
 		}

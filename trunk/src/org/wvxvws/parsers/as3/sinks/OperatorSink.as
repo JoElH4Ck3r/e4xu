@@ -1,16 +1,15 @@
 package org.wvxvws.parsers.as3.sinks
 {
 	import org.wvxvws.parsers.as3.AS3Sinks;
-	import org.wvxvws.parsers.as3.ISink;
 	import org.wvxvws.parsers.as3.ISinks;
 	
-	public class OperatorSink extends Sink implements ISink
+	public class OperatorSink extends Sink
 	{
 		public function OperatorSink() { super(); }
 		
 		public override function read(from:ISinks):Boolean
 		{
-			var subseq:String = from.source.substr(from.column);
+			var subseq:String = from.remainingText();
 			var match:String = subseq.match(from.sinkStartRegExp(this))[0];
 			var as3Sinks:AS3Sinks = from as AS3Sinks;
 			

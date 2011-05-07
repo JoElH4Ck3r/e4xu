@@ -101,7 +101,7 @@ package org.wvxvws.parsers.as3.sinks.xml
 		
 		private function readNodeEnd(from:ISinks):Boolean
 		{
-			var subseq:String = from.source.substr(from.column);
+			var subseq:String = from.remainingText();
 			var match:String;
 			
 			this._finished = true;
@@ -125,7 +125,7 @@ package org.wvxvws.parsers.as3.sinks.xml
 		
 		private function readName(from:XMLReader):Boolean
 		{
-			var match:String = from.source.substr(from.column);
+			var match:String = from.remainingText();
 			
 			this._finished = false;
 			if (this._readingTail)
@@ -133,7 +133,7 @@ package org.wvxvws.parsers.as3.sinks.xml
 				super.report(match.substr(0, 2), from);
 			}
 			else super.report(match.charAt(), from);
-			match = from.source.substr(from.column);
+			match = from.remainingText();
 			if (match.charAt() != "{")
 			{
 				this._name = 
@@ -175,7 +175,7 @@ package org.wvxvws.parsers.as3.sinks.xml
 		public override function isSinkStart(from:ISinks):Boolean
 		{
 			var result:Boolean = super.isSinkStart(from);
-			var subseq:String = from.source.substr(from.column);
+			var subseq:String = from.remainingText();
 			
 			if (result) // NOTE: once I add "return after {}", this will need to change 
 				this._readingTail = subseq.charAt(1) == "/";

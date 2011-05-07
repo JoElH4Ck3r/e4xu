@@ -157,6 +157,8 @@ package org.wvxvws.parsers.as3.sinks.xml
 		
 		public function hasMoreText():Boolean { return this._as3Sinks.hasMoreText(); }
 		
+		public function remainingText():String { return this._as3Sinks.remainingText(); }
+		
 		protected override function buildDictionary(stack:SinksStack = null):SinksStack
 		{
 			// TODO: Once we finish reading on a "{" we should save the stack

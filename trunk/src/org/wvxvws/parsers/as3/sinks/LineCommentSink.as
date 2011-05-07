@@ -15,7 +15,7 @@ package org.wvxvws.parsers.as3.sinks
 		public override function read(from:ISinks):Boolean
 		{
 			var match:String;
-			var subseq:String = from.source.substr(from.column);
+			var subseq:String = from.remainingText();
 			var i:int = -1;
 			
 			super.clearCollected();
