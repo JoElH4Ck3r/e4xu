@@ -27,7 +27,7 @@ package org.wvxvws.parsers.as3.sinks
 				this._curlyBalance = (from as AS3Sinks).bracketCount("{");
 				this._waitForCurly = true;
 			}
-			return from.source.length > from.column;
+			return from.hasMoreText();
 		}
 		
 		public override function isSinkStart(from:ISinks):Boolean

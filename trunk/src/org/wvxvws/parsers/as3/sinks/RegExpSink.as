@@ -38,7 +38,7 @@ package org.wvxvws.parsers.as3.sinks
 //			else from.reportError(from.settings.errors[1]);
 			
 			super.appendParsedText(super._collected.join(""), from);
-			return from.column > from.source.length;
+			return from.hasMoreText();
 		}
 	}
 }

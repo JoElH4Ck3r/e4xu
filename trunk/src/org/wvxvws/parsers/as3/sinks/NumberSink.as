@@ -14,7 +14,7 @@ package org.wvxvws.parsers.as3.sinks
 				super.report(
 					super.pushAndReturn(from.source.substr(from.column)
 						.match(from.sinkEndRegExp(this))[0]), from), from);
-			return from.column < from.source.length;
+			return from.hasMoreText();
 		}
 	}
 }

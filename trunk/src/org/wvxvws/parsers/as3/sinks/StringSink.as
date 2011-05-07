@@ -42,7 +42,7 @@ package org.wvxvws.parsers.as3.sinks
 			}
 			super.appendParsedText(super._collected.join(""), from);
 //			trace("parsed sting");
-			return from.column < from.source.length;
+			return from.hasMoreText();
 		}
 	}
 }

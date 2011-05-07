@@ -4,6 +4,8 @@ package org.wvxvws.parsers.as3.sinks.xml
 	{
 		public static const NODE_NAME:ReadExitState = new ReadExitState();
 		
+		public static const NODE_VALUE:ReadExitState = new ReadExitState();
+		
 		public static const ATTRIBUTES:ReadExitState = new ReadExitState();
 		
 		private static var _initialized:Boolean;

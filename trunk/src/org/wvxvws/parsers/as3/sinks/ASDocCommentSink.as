@@ -80,7 +80,7 @@ package org.wvxvws.parsers.as3.sinks
 			}
 			
 			this.collectAndClear(from);
-			return from.column < from.source.length;
+			return from.hasMoreText();
 		}
 		
 		private function collectAndClear(from:ISinks):void
