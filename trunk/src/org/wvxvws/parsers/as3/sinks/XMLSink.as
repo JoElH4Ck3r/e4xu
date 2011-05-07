@@ -10,12 +10,23 @@ package org.wvxvws.parsers.as3.sinks
 	{
 		private const _reader:XMLReader = new XMLReader();
 		
+		private var _waitForCurly:Boolean;
+		private var _curlyBalance:int;
+		private var _shouldContinue:Boolean;
+		
 		public function XMLSink() { super(); }
 		
 		public override function read(from:ISinks):Boolean
 		{
 			trace("is XML");
-			this._reader.read(from as AS3Sinks);
+			if (this._shouldContinue)
+				this._reader.continueReading(from as AS3Sinks);
+			else this._reader.read(from as AS3Sinks);
+			if (!this._reader.finished || this._reader.waitingToFinish) // we must wait for the matching curly
+			{
+				this._curlyBalance = (from as AS3Sinks).bracketCount("{");
+				this._waitForCurly = true;
+			}
 			return from.source.length > from.column;
 		}
 		
@@ -37,6 +48,7 @@ package org.wvxvws.parsers.as3.sinks
 					xmlRE.cdata, 
 					xmlRE.comment, 
 					xmlRE.pi];
+			
 			if (subseq.charAt() == "<")
 			{
 				// Need this to check if we aren't dealing with Vector.
@@ -68,6 +80,13 @@ package org.wvxvws.parsers.as3.sinks
 					}
 					while (keepChecking && regexps.length > lastIndex);
 				}
+				if (result) this._shouldContinue = false;
+			}
+			else if (this._waitForCurly && subseq.charAt() == "}" && 
+				(from as AS3Sinks).bracketCount("}") + 1 == this._curlyBalance)
+			{
+				this._shouldContinue = result = true;
+				trace("count:", (from as AS3Sinks).bracketCount("}"), "remembered:", this._curlyBalance);
 			}
 			else result = false;
 			return result;

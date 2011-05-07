@@ -4,7 +4,7 @@ package org.wvxvws.parsers.as3.sinks.xml
 	import org.wvxvws.parsers.as3.ISinks;
 	import org.wvxvws.parsers.as3.resources.XMLRegExp;
 
-	public class AttributeNode extends XMLNode
+	public class AttributeNode extends XMLNode implements ICurlyNode
 	{
 		public function get finished():Boolean { return this._finished; }
 		
@@ -24,6 +24,12 @@ package org.wvxvws.parsers.as3.sinks.xml
 		{
 			super._value = source;
 			return this;
+		}
+		
+		public function continueReading(from:ISinks):Boolean
+		{
+			// TODO:
+			return from.source.length > from.column;
 		}
 		
 		// TODO: Needs cleanup

@@ -5,17 +5,13 @@ package org.wvxvws.parsers.as3.sinks.xml
 	import org.wvxvws.parsers.as3.ISinks;
 	import org.wvxvws.parsers.as3.SinksStack;
 
-	public class ElementNode extends XMLNode
+	public class ElementNode extends XMLNode implements ICurlyNode
 	{
 		public function get finished():Boolean { return this._finished; }
-		
-		protected var _name:String;
 		
 		protected const _attirubutes:Vector.<AttributeNode> = new <AttributeNode>[];
 		
 		protected const _children:Vector.<XMLNode> = new <XMLNode>[];
-		
-		private var _openCount:int;
 		
 		private const _attributesStack:SinksStack = new SinksStack();
 		
@@ -25,7 +21,39 @@ package org.wvxvws.parsers.as3.sinks.xml
 		
 		private var _finished:Boolean = true;
 		
+		private var _openCount:int;
+		
+		private var _exitState:ReadExitState;
+		
+		protected var _name:String;
+		
 		public function ElementNode() { super(); }
+		
+		public function continueReading(from:ISinks):Boolean
+		{
+			this._finished = true;
+			(from as XMLReader).lastNodeIn(this);
+			if (this._exitState == ReadExitState.ATTRIBUTES)
+			{
+				// NOTE: repeating code
+				if (this.loop(from) && this._finished)
+				{
+					trace("--- but was not here");
+					this.readNodeEnd(from);
+				}
+				else this._exitState = ReadExitState.ATTRIBUTES;
+			}
+			else
+			{
+				this.readNodeEnd(from);
+			}
+			if (this._finished && this._openCount > 0)
+			{
+				trace("--- second chance?");
+				(from as XMLReader).loop();
+			}
+			return from.source.length > from.column;
+		}
 		
 		public override function read(from:ISinks):Boolean
 		{
@@ -53,15 +81,19 @@ package org.wvxvws.parsers.as3.sinks.xml
 					if (this.loop(from) && this._finished)
 					{
 						trace("--- but was not here");
-						this.readNodeEnd(from)
+						this.readNodeEnd(from);
 //						if (this.readNodeEnd(from) && this._openCount > 0)
 //						{
 //							
 //						}
 					}
-//					else reader.exitOnCurly(this);
+					else this._exitState = ReadExitState.ATTRIBUTES;
 				}
-				else reader.exitOnCurly(this);
+				else
+				{
+					this._exitState = ReadExitState.NODE_NAME;
+					reader.exitOnCurly(this);
+				}
 			}
 			
 			return from.source.length > from.column;
@@ -112,7 +144,8 @@ package org.wvxvws.parsers.as3.sinks.xml
 							from), from);
 				this._finished = true;
 			}
-			
+			// Maybe I need to set state here 
+			// (need to see what happens if we try to reuse the reader).
 			return from.source.length > from.column;
 		}
 		
@@ -142,10 +175,18 @@ package org.wvxvws.parsers.as3.sinks.xml
 		public override function isSinkStart(from:ISinks):Boolean
 		{
 			var result:Boolean = super.isSinkStart(from);
+			var subseq:String = from.source.substr(from.column);
 			
 			if (result) // NOTE: once I add "return after {}", this will need to change 
-				this._readingTail = from.source.charAt(from.column + 1) == "/";
-			else trace("did not match:", "|" + from.source.substr(from.column, 20));
+				this._readingTail = subseq.charAt(1) == "/";
+			else trace("did not match:", "|" + subseq.substr(0, 20));
+			if (!result && subseq.charAt() == "<")
+			{
+				result = from.sinkEndRegExp(this).test(subseq);
+				if (result) this._readingTail = true;
+				trace("--- did you even try?", result, from.sinkEndRegExp(this));
+			}
+			trace("--- tried to match element:", result, this._readingTail, from.source.substr(from.column, 20));
 			return result;
 		}
 		

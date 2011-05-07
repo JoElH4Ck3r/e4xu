@@ -148,6 +148,7 @@
 		{ x.valueOf() : y } is a valid object literal...
 	 -->
 	<xmlStartRegExp options="gi">^&lt;(\{|([A-Z_]([\w\.\-\$:]*[\w\$])?(([\s\r\n]+[A-Z_])|([\s\r\n]*\/?&gt;)|[\s\r\n]+\{)))</xmlStartRegExp>
+	<xmlEndRegExp options="gi">^&lt;\/(\{|([A-Z_]([\w\.\-\$:]*[\w\$])?[\s\r\n]*))&gt;</xmlEndRegExp>
 	<xmlAttributeStartRegExp options="gi">^[A-Z][\w\.:\-\$]*[\s\r\n]*=[\s\r\n]*["'{]</xmlAttributeStartRegExp>
 	<xml>
 		<!-- 
