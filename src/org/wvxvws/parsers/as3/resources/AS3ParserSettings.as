@@ -125,6 +125,12 @@ package org.wvxvws.parsers.as3.resources
 			return this._bracketRegExp;
 		}
 		
+		public function get xmlEndRegExp():RegExp
+		{
+			this._xmlEndRegExp.lastIndex = 0;
+			return this._xmlEndRegExp;
+		}
+		
 		public function get xmlRegExp():XMLRegExp
 		{
 			return this._xmlRegExp;
@@ -154,6 +160,7 @@ package org.wvxvws.parsers.as3.resources
 		private var _operatorRegExp:RegExp;
 		private var _xmlStartRegExp:RegExp;
 		private var _bracketRegExp:RegExp;
+		private var _xmlEndRegExp:RegExp;
 		
 		private var _xmlRegExp:XMLRegExp;
 		private var _brakcetsInfo:BracketsInfo;
@@ -190,6 +197,7 @@ package org.wvxvws.parsers.as3.resources
 			this._operatorRegExp = this.regexFromXML(this._xml.operatorRegExp[0]);
 			this._xmlStartRegExp = this.regexFromXML(this._xml.xmlStartRegExp[0]);
 			this._bracketRegExp = this.regexFromXML(this._xml.bracketRegExp[0]);
+			this._xmlEndRegExp = this.regexFromXML(this._xml.xmlEndRegExp[0]);
 		}
 		
 		public function generateHTML(insertText:String):String

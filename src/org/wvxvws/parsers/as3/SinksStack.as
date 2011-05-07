@@ -6,7 +6,12 @@ package org.wvxvws.parsers.as3
 	 */
 	public class SinksStack
 	{
+		public function get length():int { return this._sinks.length; }
+		
+		public function get position():int { return this._current; }
+		
 		protected const _sinks:Vector.<ISink> = new <ISink>[];
+		
 		protected var _current:int;
 		
 		public function SinksStack() { super(); }
@@ -21,6 +26,12 @@ package org.wvxvws.parsers.as3
 				this._current++;
 			}
 			return sink;
+		}
+		
+		public function back():SinksStack
+		{
+			if (this._current > 0) this._current--;
+			return this;
 		}
 		
 		public function reset():void { this._current = 0; }

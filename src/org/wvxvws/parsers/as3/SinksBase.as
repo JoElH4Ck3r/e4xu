@@ -1,5 +1,7 @@
 package org.wvxvws.parsers.as3
 {
+	import flash.utils.getQualifiedClassName;
+
 	public class SinksBase
 	{
 		protected const _stack:SinksStack = new SinksStack();
@@ -17,14 +19,16 @@ package org.wvxvws.parsers.as3
 			return this._stack.clear(stack);
 		}
 		
-		private function loopSinks():void
+		protected function loopSinks():void
 		{
+			trace("--- entering loopSinks:", this._stack.length, this._stack.position);
 			var nextSink:ISink;
 			while (nextSink = this._stack.next())
 			{
 				if (nextSink.isSinkStart(this as ISinks) && 
 					nextSink.read(this as ISinks))
 					this._stack.reset();
+				trace("--- --- sink tried:", getQualifiedClassName(nextSink));
 			}
 		}
 	}

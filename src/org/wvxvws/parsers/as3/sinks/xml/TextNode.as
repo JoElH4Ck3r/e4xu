@@ -2,7 +2,7 @@ package org.wvxvws.parsers.as3.sinks.xml
 {
 	import org.wvxvws.parsers.as3.ISinks;
 
-	public class TextNode extends XMLNode
+	public class TextNode extends XMLNode implements ICurlyNode
 	{
 		public function get finished():Boolean { return this._finished; }
 		
@@ -16,6 +16,12 @@ package org.wvxvws.parsers.as3.sinks.xml
 			// super._value += source;
 			// http://bugs.adobe.com/jira/browse/ASC-4238
 			super._value = super._value + source;
+		}
+		
+		public function continueReading(from:ISinks):Boolean
+		{
+			// TODO:
+			return from.source.length > from.column;
 		}
 		
 		public override function read(from:ISinks):Boolean

@@ -20,6 +20,8 @@ package org.wvxvws.parsers.as3.sinks.xml
 		
 		public function get finished():Boolean { return this._finished; }
 		
+		public function get waitingToFinish():int { return this._unfinishedStacks.length; }
+		
 		protected const _whiteStack:SinksStack = new SinksStack();
 		
 		private var _currentNode:XMLNode;
@@ -44,6 +46,24 @@ package org.wvxvws.parsers.as3.sinks.xml
 			super.readInternal();
 		}
 		
+		public function continueReading(sinks:AS3Sinks):void
+		{
+			this._as3Sinks = sinks.readClosingCurly();
+			
+			(this._stack.restore(this._unfinishedStacks.pop())
+				.back().next() as ICurlyNode).continueReading(this);
+			super.loopSinks();
+			trace("--- continued");
+		}
+		
+		public function loop():void
+		{
+			this._stack.reset();
+			trace("--- reset stack");
+			super.loopSinks();
+		}
+		
+		// TODO: Why do I need this?
 		public function lastNodeIn(node:XMLNode):void
 		{
 			this._currentNode = node;
@@ -107,8 +127,16 @@ package org.wvxvws.parsers.as3.sinks.xml
 		
 		public function sinkEndRegExp(forSink:ISink):RegExp
 		{
-			throw "unimplemented";
-//			return null;
+			var result:RegExp;
+			
+			switch ((forSink as Object).constructor)
+			{
+				case ElementNode:
+					result = this._as3Sinks.settings.xmlEndRegExp;
+					break;
+				// there will be more...
+			}
+			return result;
 		}
 		
 		public function readWhite():Boolean

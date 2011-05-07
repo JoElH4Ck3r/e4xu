@@ -81,6 +81,7 @@ package org.wvxvws.parsers.as3
 		private var _collectedText:String = "";
 		private var _whiteSink:WhiteSpaceSink;
 		private var _lineEndSink:LineEndSink;
+		private var _operatorSink:OperatorSink;
 		
 		private var _openCurly:int;
 		private var _openSquare:int;
@@ -113,6 +114,19 @@ package org.wvxvws.parsers.as3
 		public function appendCollectedText(text:String):void
 		{
 			this._collectedText += text;
+		}
+		
+		// TODO: there should be a better way...
+		public function readClosingCurly():AS3Sinks
+		{
+			var formerSource:String = this._source;
+			var formerCoulumn:int = this._column;
+			this._column = 0;
+			this._source = "}";
+			this._operatorSink.read(this);
+			this._source = formerSource;
+			this._column = formerCoulumn + 1;
+			return this;
 		}
 		
 		public function readHandler(forSink:ISink, forWord:String = null):Function
@@ -312,6 +326,7 @@ package org.wvxvws.parsers.as3
 			var result:SinksStack = super.buildDictionary();
 			this._lineEndSink = new LineEndSink();
 			this._whiteSink = new WhiteSpaceSink();
+			this._operatorSink = new OperatorSink();
 			this._stack.add(new StringSink())
 				.add(new RegExpSink())
 				.add(this._whiteSink)
@@ -321,7 +336,7 @@ package org.wvxvws.parsers.as3
 				.add(this._lineEndSink)
 				.add(new NumberSink())
 				.add(new XMLSink())
-				.add(new OperatorSink())
+				.add(this._operatorSink)
 				.add(new DefaultSink());
 			return result;
 		}
