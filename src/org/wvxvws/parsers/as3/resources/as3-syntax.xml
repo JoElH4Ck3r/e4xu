@@ -150,6 +150,8 @@
 	<xmlStartRegExp options="gi">^&lt;(\{|([A-Z_]([\w\.\-\$:]*[\w\$])?(([\s\r\n]+[A-Z_])|([\s\r\n]*\/?&gt;)|[\s\r\n]+\{)))</xmlStartRegExp>
 	<xmlEndRegExp options="gi">^&lt;\/(\{|([A-Z_]([\w\.\-\$:]*[\w\$])?[\s\r\n]*))&gt;</xmlEndRegExp>
 	<xmlAttributeStartRegExp options="gi">^[A-Z][\w\.:\-\$]*[\s\r\n]*=[\s\r\n]*["'{]</xmlAttributeStartRegExp>
+	<xmlListStartRegExp options="g">^&lt;&gt;</xmlListStartRegExp>
+	<xmlListEndRegExp options="g">^&lt;\/&gt;</xmlListEndRegExp>
 	<xml>
 		<!-- 
 			Note, this may be another bug, [.\r\n] does not match the same as (.|\r|\n) 

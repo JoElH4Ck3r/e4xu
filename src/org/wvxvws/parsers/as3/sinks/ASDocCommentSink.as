@@ -23,8 +23,6 @@ package org.wvxvws.parsers.as3.sinks
 		public override function read(from:ISinks):Boolean
 		{
 			var subseq:String = from.remainingText();
-			var commentStart:RegExp = (from as AS3Sinks).settings.asdocCommentStartRegExp;
-			var commentEnd:RegExp = from.sinkEndRegExp(this);
 			var asdocKeyword:RegExp = from.sinkStartRegExp(this._keywordSink);
 			var match:String;
 			var difference:int;
@@ -34,7 +32,8 @@ package org.wvxvws.parsers.as3.sinks
 			var whiteAfterLine:Boolean;
 			
 			match = subseq.substr(0, 
-				subseq.indexOf(subseq.match(commentEnd)[0]) + 2);
+				subseq.indexOf(subseq.match(
+					from.sinkEndRegExp(this))[0]) + 2);
 			
 			super.clearCollected();
 			
