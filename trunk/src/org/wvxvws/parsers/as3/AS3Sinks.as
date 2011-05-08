@@ -15,6 +15,7 @@ package org.wvxvws.parsers.as3
 	import org.wvxvws.parsers.as3.sinks.RegExpSink;
 	import org.wvxvws.parsers.as3.sinks.StringSink;
 	import org.wvxvws.parsers.as3.sinks.WhiteSpaceSink;
+	import org.wvxvws.parsers.as3.sinks.XMLListSink;
 	import org.wvxvws.parsers.as3.sinks.XMLSink;
 	
 	/**
@@ -69,6 +70,8 @@ package org.wvxvws.parsers.as3
 		
 		public function get lineEndSink():LineEndSink { return this._lineEndSink; }
 		
+		public function get xmlSink():XMLSink { return this._xmlSink; }
+		
 		// TODO: some of these will habe to go into base class.
 		private var _line:int;
 		private var _column:int;
@@ -82,10 +85,13 @@ package org.wvxvws.parsers.as3
 		private var _whiteSink:WhiteSpaceSink;
 		private var _lineEndSink:LineEndSink;
 		private var _operatorSink:OperatorSink;
+		private var _xmlSink:XMLSink;
+		private var _xmlListSink:XMLListSink;
 		
 		private var _openCurly:int;
 		private var _openSquare:int;
 		private var _openParens:int;
+		private var _readingXMLList:Boolean;
 		
 		public function AS3Sinks() { super(); }
 		
@@ -113,6 +119,11 @@ package org.wvxvws.parsers.as3
 				if (this.onCharacter) this.onCharacter(character);
 			}
 			return character;
+		}
+		
+		public function readXMLList(state:Boolean):Boolean
+		{
+			return this._readingXMLList = state;
 		}
 		
 		public function appendCollectedText(text:String):void
@@ -173,6 +184,7 @@ package org.wvxvws.parsers.as3
 					result = this.onWhiteSpace;
 					break;
 				case XMLSink:
+				case XMLListSink:
 					result = this.onXML;
 					break;
 			}
@@ -194,6 +206,9 @@ package org.wvxvws.parsers.as3
 					break;
 				case RegExpSink:
 					result = this._settings.regexEndRegExp;
+					break;
+				case XMLListSink:
+					result = this._settings.xmlListEndRegExp;
 					break;
 			}
 			return result;
@@ -255,6 +270,9 @@ package org.wvxvws.parsers.as3
 					break;
 				case XMLSink:
 					result = this._settings.xmlStartRegExp;
+					break;
+				case XMLListSink:
+					result = this._settings.xmlListStartRegExp;
 					break;
 			}
 			return result;
@@ -328,19 +346,17 @@ package org.wvxvws.parsers.as3
 		protected override function buildDictionary(stack:SinksStack = null):SinksStack
 		{
 			var result:SinksStack = super.buildDictionary();
-			this._lineEndSink = new LineEndSink();
-			this._whiteSink = new WhiteSpaceSink();
-			this._operatorSink = new OperatorSink();
 			this._stack.add(new StringSink())
 				.add(new RegExpSink())
-				.add(this._whiteSink)
+				.add(this._whiteSink = new WhiteSpaceSink())
 				.add(new LineCommentSink())
 				.add(new BlockCommentSink())
 				.add(new ASDocCommentSink())
-				.add(this._lineEndSink)
+				.add(this._lineEndSink = new LineEndSink())
 				.add(new NumberSink())
-				.add(new XMLSink())
-				.add(this._operatorSink)
+				.add(this._xmlListSink = new XMLListSink())
+				.add(this._xmlSink = new XMLSink())
+				.add(this._operatorSink = new OperatorSink())
 				.add(new DefaultSink());
 			return result;
 		}
