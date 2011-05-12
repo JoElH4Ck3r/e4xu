@@ -8,6 +8,13 @@ package org.wvxvws.automation.syntax
 		
 		public var value:Atom;
 		
+		public var current:String;
+		
+		// This will change later
+		public var error:String;
+		
+		public var cons:Class = Atom;
+		
 		public function Token() { super(); }
 	}
 }

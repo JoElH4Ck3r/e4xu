@@ -3,12 +3,18 @@ package org.wvxvws.automation.syntax
 	import flash.utils.ByteArray;
 	
 	import org.wvxvws.automation.language.Atom;
+	import org.wvxvws.automation.language.Cons;
 
 	public class Reader
 	{
 		private static const _values:Values = new Values();
 		
-		public static var table:DispatchTable = new DispatchTable();
+		private static const _steps:Vector.<Function> =
+			new <Function>[step2, step3, step4, step5, step6, step7];
+		
+		private static const _atoms:Vector.<Atom> = new <Atom>[];
+		
+		public static var table:DispatchTable = new CommonTable();
 		
 		/**
 		 * character  syntax type                 character  syntax type             
@@ -147,73 +153,266 @@ package org.wvxvws.automation.syntax
 		 * the token is returned as the result of the read operation, or an error 
 		 * of type reader-error is signaled if the token is not of valid syntax. 
 		 * 
-		 * 
-		 * We cannot have this written according to the standard. We can't have
-		 * stdout and I don't really want to implement recursive reading. Let's just
-		 * for this case assume it's not recursive. Maybe I'll add this later.
-		 * 
-		 * The receiving function should not rely on content in the Values object. 
-		 * When this function is called second time it's content is repopulated. 
-		 * We only need this object to be able to return multiple values, 
-		 * and this is an optimization we'd need to do in such case.
-		 * 
 		 * @param from
 		 * @return 
 		 * 
 		 */
 		public static function read(from:ByteArray):Atom
 		{
-			var current:String;
-			var next:String;
-			var position:int = from.position;
-			var inputLength:int;
-			var token:Token;
-			var tableHandler:Function;
-			var isMacro:Boolean;
+			var token:Token = new Token();
+			
+			step1(from, token);
+			if (token.error) throw token.error;
+			return token.value;
+		}
+		
+		public static function readCons(from:ByteArray):Atom
+		{
+			var token:Token = new Token();
+			
+			token.cons = Cons;
+			step1(from, token);
+			if (token.error) throw token.error;
+			return token.value;
+		}
+		
+		public static function push(token:Atom):Atom
+		{
+			_atoms.push(token);
+			return token;
+		}
+		
+		public static function pop():Atom { return _atoms.pop(); }
+		
+		public static function last():Atom
+		{
 			var result:Atom;
-			
-			while (position < inputLength)
-			{
-				current = String.fromCharCode(from[position]);
-				if (position - 1 < inputLength)
-				{
-					next = from.charAt(position + 1);
-					tableHandler = table.getMacroHandler(current, next);
-					isMacro = Boolean(tableHandler);
-				}
-				else next = null;
-				if (!tableHandler) tableHandler = table.nextReader(current);
-				if (!tableHandler) throw "invalid-character";
-				if (isMacro) tableHandler(current, next);
-				else tableHandler(current);
-				position++;
-			}
-			
+			if (_atoms.length) _atoms[_atoms.length];
 			return result;
 		}
 		
-		private static function step1(current:String, from:ByteArray, token:Token):void
+		private static function getType(token:Token):Class
 		{
+			var value:Number;
+			var result:Class;
 			
+			if (/[\d-]/.test(token.token.charAt()))
+			{
+				value = int(token.token);
+				if (value.toString() == token.token) result = int;
+				else
+				{
+					value = uint(token.token);
+					if (value.toString() == token.token) result = uint;
+					else
+					{
+						value = Number(token.token);
+						// scientific notation.
+						if (value.toString() == token.token) result = Number;
+					}
+				}
+			}
+			return result;
 		}
 		
-		private static function step2(current:String, from:ByteArray, token:Token):void
+		private static function eofHandle(token:Token):String
 		{
-			var tableHandler:Function = table.getMacroHandler(current, next);
+			return token.error = "end-of-file";
 		}
 		
-		private static function step4(current:String, from:ByteArray, token:Token):void
+		private static function readerErrorHandle(token:Token):String
 		{
+			trace("readerErrorHandle", token.current);
+			return token.error = "reader-error";
+		}
+		
+		private static function dispatch(from:ByteArray, token:Token):void
+		{
+			/* don't know yet */
+//			if (token.token)
+//			{
+//				if (token.cons is Cons)
+//				{
+//					
+//				}
+//			}
+		}
+		
+		private static function readCharacter(from:ByteArray):String
+		{
+			return String.fromCharCode(from.readUnsignedByte());
+		}
+		//--------------------------------- steps ----------------------------------
+		private static function step1(from:ByteArray, token:Token):Boolean
+		{
+			var result:Boolean;
+			if (from.bytesAvailable)
+			{
+				token.current = readCharacter(from);
+				result = true;
+				var i:int;
+				while ((i < 7) && _steps[i](from, token)) i++;
+				trace("reading character:", token.current);
+			}
+			else eofHandle(token);
+			trace("step 1", token.token, token.current);
+			return result;
+		}
+		
+		private static function step2(from:ByteArray, token:Token):Boolean
+		{
+			var result:Boolean;
+			if (!table.isValid(token.current)) readerErrorHandle(token);
+			else result = true;
+			trace("step 2", token.token, token.current);
+			return result;
+		}
+		
+		private static function step3(from:ByteArray, token:Token):Boolean
+		{
+			var result:Boolean;
+			if (table.isWhite(token.current))
+			{
+				dispatch(from, token);
+				step1(from, token);
+			}
+			else result = true;
+			trace("step 3", token.token, token.current);
+			return result;
+		}
+		
+		private static function step4(from:ByteArray, token:Token):Boolean
+		{
+			var result:Boolean;
 			var tableHandler:Function;
 			
-			if (table.isMacroCharacter(current))
+			if (table.isMacroCharacter(token.current))
 			{
 				tableHandler = 
-					table.getMacroHandler(current, 
-						String.fromCharCode(from.readUnsignedByte()));
-				from.position--;
-				token.value = tableHandler(current, from);
+					table.nextReader(token.current);
+//				from.position--;
+				token.value = tableHandler(token.current, from);
+				if (!token.value) step1(from, token);
 			}
+			else result = true;
+			trace("step 4", token.token, token.current);
+			return result;
+		}
+		
+		private static function step5(from:ByteArray, token:Token):Boolean
+		{
+			var result:Boolean;
+			if (table.isSingleEscape(token.current))
+			{
+				if (from.bytesAvailable)
+				{
+					token.current = readCharacter(from);
+					step8(from, token);
+				}
+				else eofHandle(token);
+			}
+			else result = true;
+			return result;
+		}
+		
+		private static function step6(from:ByteArray, token:Token):Boolean
+		{
+			var result:Boolean;
+			if (table.isMultiEscape(token.current))
+			{
+				if (from.bytesAvailable)
+				{
+					token.current = "";
+					step9(from, token);
+				}
+				else eofHandle(token);
+			}
+			else result = true;
+			return result;
+		}
+		
+		private static function step7(from:ByteArray, token:Token):Boolean
+		{
+			token.token = table.toTableCase(token.current);
+			step8(from, token);
+			return false;
+		}
+		
+		private static function step8(from:ByteArray, token:Token):Boolean
+		{
+			var next:String = table.toTableCase(readCharacter(from));
+			
+			if (table.isConstitutent(next) || !table.isTerminating(next))
+				token.token += next;
+			else if (table.isSingleEscape(next))
+			{
+				if (from.bytesAvailable)
+				{
+					token.token += table.toTableCase(readCharacter(from));
+				}
+				else eofHandle(token);
+			}
+			else if (table.isMultiEscape(next)) step9(from, token);
+			else if (!table.isValid(next)) readerErrorHandle(token);
+			else if (table.isTerminating(next))
+			{
+				from.position--;
+				step10(from, token);
+			}
+			else if (table.isWhite(next))
+			{
+				// TODO: there should be a switch regarding whitespace handling.
+				from.position--;
+				step10(from, token);
+			}
+			return false;
+		}
+		
+		private static function step9(from:ByteArray, token:Token):Boolean
+		{
+			var next:String = table.toTableCase(readCharacter(from));
+			
+			if (table.isSingleEscape(next))
+			{
+				if (from.bytesAvailable)
+				{
+					token.token += table.toTableCase(readCharacter(from));
+				}
+				else eofHandle(token);
+			}
+			else if (table.isMultiEscape(next)) step8(from, token);
+			else if (!table.isValid(next)) readerErrorHandle(token);
+			else step9(from, token);
+			return false;
+		}
+		
+		private static function step10(from:ByteArray, token:Token):Boolean
+		{
+			var type:Class = getType(token);
+			var value:*;
+			
+			switch (type)
+			{
+				case int:
+					value = int(token.token);
+					break;
+				case uint:
+					value = uint(token.token);
+					break;
+				case Number:
+					value = Number(token.token);
+					break;
+			}
+			if (token.cons is Cons)
+			{
+				token.value = Cons.cons(
+					new Atom(token.token, type, value), token.value);
+			}
+			else
+			{
+				token.value = new Atom(token.token, type, value);
+			}
+			return false;
 		}
 	}
 }
