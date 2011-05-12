@@ -850,6 +850,47 @@ package org.wvxvws.automation.syntax
 			 "#" : true
 		};
 		
+		protected const _whiteCharacters:Object = 
+		{
+			"\x09" : true,
+			"\x0A" : true,
+			"\x0C" : true,
+			"\x0D" : true,
+			"\x20" : true
+		};
+		
+		protected const _constitutentCharacters:Object =
+		{
+			"\x08": true, "\x21": true, "\x24": true, "\x25": true,
+			"\x26": true, "\x2A": true, "\x2B": true, "\x2D": true,
+			"\x2E": true, "\x2F": true, "\x30": true, "\x31": true,
+			"\x32": true, "\x33": true, "\x34": true, "\x35": true,
+			"\x36": true, "\x37": true, "\x38": true, "\x39": true,
+			"\x3A": true, "\x3C": true, "\x3D": true, "\x3E": true,
+			"\x3F": true, "\x40": true, "\x41": true, "\x42": true,
+			"\x43": true, "\x44": true, "\x45": true, "\x46": true,
+			"\x47": true, "\x48": true, "\x49": true, "\x4A": true,
+			"\x4B": true, "\x4C": true, "\x4D": true, "\x4E": true,
+			"\x4F": true, "\x50": true, "\x51": true, "\x52": true,
+			"\x53": true, "\x54": true, "\x55": true, "\x56": true,
+			"\x57": true, "\x58": true, "\x59": true, "\x5A": true,
+			"\x5B": true, "\x5D": true, "\x5E": true, "\x5F": true,
+			"\x61": true, "\x62": true, "\x63": true, "\x64": true,
+			"\x65": true, "\x66": true, "\x67": true, "\x68": true,
+			"\x69": true, "\x6A": true, "\x6B": true, "\x6C": true,
+			"\x6D": true, "\x6E": true, "\x6F": true, "\x70": true,
+			"\x71": true, "\x72": true, "\x73": true, "\x74": true,
+			"\x75": true, "\x76": true, "\x77": true, "\x78": true,
+			"\x79": true, "\x7A": true, "\x7B": true, "\x7D": true,
+			"\x7E": true, "\x7F": true
+		};
+		
+		protected const _singleEscapeCharacters:Object = { "\\": true };
+		
+		protected const _multiEscapeCharacters:Object = { "|": true };
+		
+		protected const _notTerminatingCharacters:Object = { "#": true };
+		
 		/**
 		 * Exponent markers
 		 * Marker  Meaning                                  
@@ -909,12 +950,49 @@ package org.wvxvws.automation.syntax
 			return character in this._macroCharacters;
 		}
 		
+		public function isWhite(character:String):Boolean
+		{
+			return character in this._whiteCharacters;
+		}
+		
+		public function isSingleEscape(character:String):Boolean
+		{
+			return character in this._singleEscapeCharacters;
+		}
+		
+		public function isMultiEscape(character:String):Boolean
+		{
+			return character in this._multiEscapeCharacters;
+		}
+		
+		public function isConstitutent(character:String):Boolean
+		{
+			return character in this._constitutentCharacters;
+		}
+		
+		public function isTerminating(character:String):Boolean
+		{
+			return this.isMacroCharacter(character) && 
+				!(character in this._notTerminatingCharacters);
+		}
+		
+		public function isValid(character:String):Boolean
+		{
+			return this.hasOwnProperty("x" + 
+				character.charCodeAt().toString(16).toUpperCase());
+		}
+		
+		public function toTableCase(character:String):String
+		{
+			return character.toUpperCase();
+		}
+		
 		public function nextReader(character:String):Function
 		{
 			return this._table[character.charCodeAt()];
 		}
 		
-		public function getMacroHandler(frist:String, second:String):Function
+		public function getMacroHandler(first:String, second:String):Function
 		{
 			return this._doubleDispatch[first.charAt() + second.charAt()];
 		}
