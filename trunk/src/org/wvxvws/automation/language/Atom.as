@@ -1,5 +1,7 @@
 package org.wvxvws.automation.language
 {
+	import org.wvxvws.automation.types.Char;
+
 	public class Atom
 	{
 		public function get type():Object{ return this._type; }
@@ -15,6 +17,7 @@ package org.wvxvws.automation.language
 		public function Atom(name:String, type:Object, value:* = undefined)
 		{
 			super();
+			trace("--- creating atom:", name);
 			this._name = name;
 			this._type = type;
 			this._value = value;
@@ -35,6 +38,9 @@ package org.wvxvws.automation.language
 				case undefined:
 					result = this._value;
 					break;
+				case Char:
+					result = (this._value as Char).valueOf();
+					break;
 				default:
 					result = inContext.resolve(this._name);
 			}
@@ -45,20 +51,37 @@ package org.wvxvws.automation.language
 		public function toString():String
 		{
 			var result:String;
-			
+			// TODO: we probably should ask the readtable about the case...
 			switch (this._type)
 			{
-				case String:
 				case Number:
+					result = Number(this._value).toString();
+					break;
 				case int:
+					result = int(this._value).toString();
+					break;
 				case uint:
+					result = uint(this._value).toString();
+					break;
 				case Boolean:
+					if (this._value)
+					{
+						result = "T";
+						break;
+					}
 				case null:
 				case undefined:
-					result = String(this._value);
+					if (this._name) result = this._name;
+					else result = "NIL";
+					break;
+				case Char:
+					result = "#" + (this._value as Char).toString();
+					break;
+				case String:
+					result = "\"" + this._value + "\"";
 					break;
 				default:
-					result = "#<" + this._name + ">";
+					result = "#" + this._name + "";
 			}
 			return result;
 		}

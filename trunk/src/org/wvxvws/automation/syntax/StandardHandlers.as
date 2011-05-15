@@ -3,6 +3,7 @@ package org.wvxvws.automation.syntax
 	import flash.utils.ByteArray;
 	
 	import org.wvxvws.automation.language.Atom;
+	import org.wvxvws.automation.language.Cons;
 
 	public class StandardHandlers
 	{
@@ -11,8 +12,32 @@ package org.wvxvws.automation.syntax
 		public static function openParenHandler(
 			character:String, bytes:ByteArray):Atom
 		{
+			var car:Atom;
+			var cdr:Atom;
+			var result:Cons;
+			var next:String;
+			
 			bytes.position++;
-			return Reader.push(Reader.readCons(bytes));
+			trace("reading open paren");
+			while (bytes.bytesAvailable)
+			{
+				next = Reader.readCharacter(bytes);
+				if (!Reader.table.isWhite(next))
+				{
+					if (next != ")")
+					{
+						bytes.position--;
+						if (!car) car = Reader.read(bytes);
+						else
+						{
+							bytes.position--;
+							result = Cons.cons(car, openParenHandler("(", bytes));
+						}
+					}
+					else if (car) result = Cons.cons(car, null);
+				}
+			}
+			return result;
 		}
 		
 		public static function closingParenHandler(
@@ -23,8 +48,9 @@ package org.wvxvws.automation.syntax
 		
 		public static function sharpHandler(character:String, bytes:ByteArray):Atom
 		{
-			var result:Atom;
-			return result;
+			var next:String = Reader.readCharacter(bytes);
+			next = Reader.readCharacter(bytes);
+			return Reader.table.getMacroHandler("#", next)("#", next, bytes);
 		}
 		
 		public static function quoteHandler(character:String, bytes:ByteArray):Atom
