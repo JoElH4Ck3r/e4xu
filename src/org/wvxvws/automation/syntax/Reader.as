@@ -160,17 +160,26 @@ package org.wvxvws.automation.syntax
 		public static function read(from:ByteArray):Atom
 		{
 			var token:Token = new Token();
+			var keepGoing:Boolean = true;
+			var reenter:Boolean;
 			
-			step1(from, token);
-			if (token.error) throw token.error;
-			return token.value;
-		}
-		
-		public static function readCons(from:ByteArray):Atom
-		{
-			var token:Token = new Token();
-			
-			token.cons = Cons;
+//			while (keepGoing)
+//			{
+//				switch (true)
+//				{
+//					case step1(from, token):
+//						
+//						break;
+//					case step2(from, token):
+//					case step3(from, token):
+//					case step4(from, token):
+//					case step5(from, token):
+//					case step6(from, token):
+//					case step7(from, token):
+//						reenter = true;
+//						break;
+//				}
+//			}
 			step1(from, token);
 			if (token.error) throw token.error;
 			return token.value;
@@ -207,8 +216,7 @@ package org.wvxvws.automation.syntax
 					else
 					{
 						value = Number(token.token);
-						// scientific notation.
-						if (value.toString() == token.token) result = Number;
+						if (!isNaN(value)) result = Number;
 					}
 				}
 			}
@@ -222,7 +230,6 @@ package org.wvxvws.automation.syntax
 		
 		private static function readerErrorHandle(token:Token):String
 		{
-			trace("readerErrorHandle", token.current);
 			return token.error = "reader-error";
 		}
 		
@@ -238,7 +245,7 @@ package org.wvxvws.automation.syntax
 //			}
 		}
 		
-		private static function readCharacter(from:ByteArray):String
+		public static function readCharacter(from:ByteArray):String
 		{
 			return String.fromCharCode(from.readUnsignedByte());
 		}
@@ -249,10 +256,10 @@ package org.wvxvws.automation.syntax
 			if (from.bytesAvailable)
 			{
 				token.current = readCharacter(from);
+				trace("reading character:", token.current);
 				result = true;
 				var i:int;
-				while ((i < 7) && _steps[i](from, token)) i++;
-				trace("reading character:", token.current);
+				while ((i < 7) && _steps[i](from, token) && !token.error) i++;
 			}
 			else eofHandle(token);
 			trace("step 1", token.token, token.current);
@@ -290,7 +297,7 @@ package org.wvxvws.automation.syntax
 			{
 				tableHandler = 
 					table.nextReader(token.current);
-//				from.position--;
+				from.position--;
 				token.value = tableHandler(token.current, from);
 				if (!token.value) step1(from, token);
 			}
@@ -312,6 +319,7 @@ package org.wvxvws.automation.syntax
 				else eofHandle(token);
 			}
 			else result = true;
+			trace("step 5", token.token, token.current);
 			return result;
 		}
 		
@@ -328,6 +336,7 @@ package org.wvxvws.automation.syntax
 				else eofHandle(token);
 			}
 			else result = true;
+			trace("step 6", token.token, token.current);
 			return result;
 		}
 		
@@ -335,6 +344,7 @@ package org.wvxvws.automation.syntax
 		{
 			token.token = table.toTableCase(token.current);
 			step8(from, token);
+			trace("step 7", token.token, token.current);
 			return false;
 		}
 		
@@ -342,8 +352,12 @@ package org.wvxvws.automation.syntax
 		{
 			var next:String = table.toTableCase(readCharacter(from));
 			
-			if (table.isConstitutent(next) || !table.isTerminating(next))
+			if (table.isConstitutent(next) || 
+				(table.isMacroCharacter(next) && !table.isTerminating(next)))
+			{
 				token.token += next;
+				step8(from, token);
+			}
 			else if (table.isSingleEscape(next))
 			{
 				if (from.bytesAvailable)
@@ -365,6 +379,7 @@ package org.wvxvws.automation.syntax
 				from.position--;
 				step10(from, token);
 			}
+			trace("step 8", token.token, token.current);
 			return false;
 		}
 		
@@ -382,7 +397,12 @@ package org.wvxvws.automation.syntax
 			}
 			else if (table.isMultiEscape(next)) step8(from, token);
 			else if (!table.isValid(next)) readerErrorHandle(token);
-			else step9(from, token);
+			else 
+			{
+				token.token += next;
+				step9(from, token);
+			}
+			trace("step 9", token.token, token.current);
 			return false;
 		}
 		
@@ -403,15 +423,8 @@ package org.wvxvws.automation.syntax
 					value = Number(token.token);
 					break;
 			}
-			if (token.cons is Cons)
-			{
-				token.value = Cons.cons(
-					new Atom(token.token, type, value), token.value);
-			}
-			else
-			{
-				token.value = new Atom(token.token, type, value);
-			}
+			token.value = new Atom(token.token, type, value);
+			trace("step 10", token.token, token.current);
 			return false;
 		}
 	}

@@ -972,8 +972,7 @@ package org.wvxvws.automation.syntax
 		
 		public function isTerminating(character:String):Boolean
 		{
-			return this.isMacroCharacter(character) && 
-				!(character in this._notTerminatingCharacters);
+			return !(character in this._notTerminatingCharacters);
 		}
 		
 		public function isValid(character:String):Boolean
@@ -994,6 +993,7 @@ package org.wvxvws.automation.syntax
 		
 		public function getMacroHandler(first:String, second:String):Function
 		{
+			trace("get-macro-handler", first, second);
 			return this._doubleDispatch[first.charAt() + second.charAt()];
 		}
 		
