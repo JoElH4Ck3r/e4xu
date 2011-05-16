@@ -3,7 +3,8 @@ package org.wvxvws.automation.syntax
 	import flash.utils.ByteArray;
 	
 	import org.wvxvws.automation.language.Atom;
-	import org.wvxvws.automation.types.Char;
+	import org.wvxvws.automation.types.$BitVector;
+	import org.wvxvws.automation.types.$Char;
 
 	public class CommonHandlers
 	{
@@ -23,22 +24,12 @@ package org.wvxvws.automation.syntax
 			var next:String = Reader.readCharacter(bytes);
 			var afterNext:String;
 			var token:String = next;
-			var char:Char;
 			
 			while (Reader.table.isConstitutent(
 				afterNext = Reader.readCharacter(bytes)))
-			{
 				token += afterNext;
-			}
 			bytes.position--;
-			if (token.length > 1)
-			{
-				token = Reader.table.toTableCase(token);
-				char = Char[token];
-				if (!char) throw "unrecognized-character-name";
-			}
-			else char = Char.makeChar(next);
-			return new Atom(token, Char, char);
+			return $Char.makeChar(token);
 		}
 		
 		/**
@@ -49,7 +40,7 @@ package org.wvxvws.automation.syntax
 		 * @return 
 		 * 
 		 */
-		public static function multyEscapeHandler(first:String, 
+		public static function multiEscapeHandler(first:String, 
 			second:String, bytes:ByteArray):Atom
 		{
 			var result:Atom;
@@ -75,11 +66,34 @@ package org.wvxvws.automation.syntax
 			return new Atom(value.toString(), uint, value);
 		}
 		
+		/**
+		 * Creates vectors
+		 * @param first
+		 * @param second
+		 * @param bytes
+		 * @return 
+		 * 
+		 */
 		public static function parenHandler(first:String, 
 			second:String, bytes:ByteArray):Atom
 		{
 			var result:Atom;
 			return result;
+		}
+		
+		public static function asteriskHandler(first:String,
+			second:String, bytes:ByteArray):Atom
+		{
+			var accumulator:String = "";
+			var next:String;
+			
+			while (next = Reader.readCharacter(bytes))
+			{
+				if ("01".indexOf(next) < 0) break;
+				else accumulator += next;
+			}
+			bytes.position--;
+			return new $BitVector(accumulator);
 		}
 	}
 }

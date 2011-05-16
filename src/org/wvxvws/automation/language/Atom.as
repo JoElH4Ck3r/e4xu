@@ -1,6 +1,6 @@
 package org.wvxvws.automation.language
 {
-	import org.wvxvws.automation.types.Char;
+	import org.wvxvws.automation.types.$Char;
 
 	public class Atom
 	{
@@ -17,7 +17,7 @@ package org.wvxvws.automation.language
 		public function Atom(name:String, type:Object, value:* = undefined)
 		{
 			super();
-			trace("--- creating atom:", name);
+			trace("--- creating atom:", name, type);
 			this._name = name;
 			this._type = type;
 			this._value = value;
@@ -38,8 +38,8 @@ package org.wvxvws.automation.language
 				case undefined:
 					result = this._value;
 					break;
-				case Char:
-					result = (this._value as Char).valueOf();
+				case $Char:
+					result = (this._value as $Char).valueOf();
 					break;
 				default:
 					result = inContext.resolve(this._name);
@@ -74,8 +74,8 @@ package org.wvxvws.automation.language
 					if (this._name) result = this._name;
 					else result = "NIL";
 					break;
-				case Char:
-					result = "#" + (this._value as Char).toString();
+				case $Char:
+					result = "#" + (this._value as $Char).toString();
 					break;
 				case String:
 					result = "\"" + this._value + "\"";
