@@ -10,6 +10,8 @@ package org.wvxvws.automation.syntax
 		
 		public var current:String;
 		
+		public var canBeNumber:Boolean = true;
+		
 		// This will change later
 		public var error:String;
 		

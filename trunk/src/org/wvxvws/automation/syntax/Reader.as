@@ -16,27 +16,29 @@ package org.wvxvws.automation.syntax
 		
 		public static var table:DispatchTable = new CommonTable();
 		
+		public static var currentInputRadix:int = 10;
+		
 		/**
 		 * character  syntax type                 character  syntax type             
 		 * Backspace  constituent                 0--9       constituent             
 		 * Tab        whitespace[2]               :          constituent             
 		 * Newline    whitespace[2]               ;          terminating macro char  
-		 * Linefeed   whitespace[2]               <          constituent             
+		 * Linefeed   whitespace[2]               &lt;          constituent             
 		 * Page       whitespace[2]               =          constituent             
-		 * Return     whitespace[2]               >          constituent             
-		 * Space      whitespace[2]               ?          constituent*            
-		 * !          constituent*                @          constituent             
+		 * Return     whitespace[2]               &gt;          constituent             
+		 * Space      whitespace[2]               ?          constituent&#42;            
+		 * !          constituent*                &#64;          constituent             
 		 * "          terminating macro char      A--Z       constituent             
-		 * #          non-terminating macro char  [          constituent*            
+		 * #          non-terminating macro char  [          constituent&#42;            
 		 * $          constituent                 \          single escape           
-		 * %          constituent                 ]          constituent*            
-		 * &          constituent                 ^          constituent             
+		 * %          constituent                 ]          constituent&#42;            
+		 * &amp;          constituent                 ^          constituent             
 		 * '          terminating macro char      _          constituent             
 		 * (          terminating macro char      `          terminating macro char  
 		 * )          terminating macro char      a--z       constituent             
-		 * *          constituent                 {          constituent*            
+		 * &#42;          constituent                 {          constituent&#42;            
 		 * +          constituent                 |          multiple escape         
-		 * ,          terminating macro char      }          constituent*            
+		 * ,          terminating macro char      }          constituent&#42;            
 		 * -          constituent                 ~          constituent             
 		 * .          constituent                 Rubout     constituent             
 		 * /          constituent                 
@@ -100,7 +102,7 @@ package org.wvxvws.automation.syntax
 		 * step 10 is entered. Otherwise, a character, y, is read, and one of the 
 		 * following actions is performed according to its syntax type:
 		 * 
-		 *     * If y is a constituent or non-terminating macro character:
+		 *     &#42; If y is a constituent or non-terminating macro character:
 		 * 
 		 *         -- If y is a character with case, it might be replaced with the 
 		 * corresponding character of the opposite case, depending on the readtable 
@@ -109,22 +111,22 @@ package org.wvxvws.automation.syntax
 		 *         -- Y is appended to the token being built.
 		 *         -- Step 8 is repeated.
 		 * 
-		 *     * If y is a single escape character, then the next character, z, is 
+		 *     &#42; If y is a single escape character, then the next character, z, is 
 		 * read, or an error of type end-of-file is signaled if at end of file. 
 		 * Z is treated as if it is a constituent whose only constituent trait is 
 		 * alphabetic[2]. Z is appended to the token being built, and step 8 is 
 		 * repeated.
 		 * 
-		 *     * If y is a multiple escape character, then step 9 is entered.
+		 *     &#42; If y is a multiple escape character, then step 9 is entered.
 		 * 
-		 *     * If y is an invalid character, an error of type reader-error is 
+		 *     &#42; If y is an invalid character, an error of type reader-error is 
 		 * signaled.
 		 * 
-		 *     * If y is a terminating macro character, then it terminates the token. 
+		 *     &#42; If y is a terminating macro character, then it terminates the token. 
 		 * First the character y is unread (see unread-char), and then step 10 is 
 		 * entered.
 		 * 
-		 *     * If y is a whitespace[2] character, then it terminates the token. 
+		 *     &#42; If y is a whitespace[2] character, then it terminates the token. 
 		 * First the character y is unread if appropriate (see 
 		 * read-preserving-whitespace), and then step 10 is entered.
 		 * 
@@ -134,19 +136,19 @@ package org.wvxvws.automation.syntax
 		 * is read, and one of the following actions is performed according to its 
 		 * syntax type:
 		 * 
-		 *     * If y is a constituent, macro, or whitespace[2] character, y is 
+		 *     &#42; If y is a constituent, macro, or whitespace[2] character, y is 
 		 * treated as a constituent whose only constituent trait is alphabetic[2]. 
 		 * Y is appended to the token being built, and step 9 is repeated.
 		 * 
-		 *     * If y is a single escape character, then the next character, z, is 
+		 *     &#42; If y is a single escape character, then the next character, z, is 
 		 * read, or an error of type end-of-file is signaled if at end of file. 
 		 * Z is treated as a constituent whose only constituent trait is 
 		 * alphabetic[2]. Z is appended to the token being built, and step 9 is 
 		 * repeated.
 		 * 
-		 *     * If y is a multiple escape character, then step 8 is entered.
+		 *     &#42; If y is a multiple escape character, then step 8 is entered.
 		 * 
-		 *     * If y is an invalid character, an error of type reader-error is 
+		 *     &#42; If y is an invalid character, an error of type reader-error is 
 		 * signaled.
 		 * 
 		 * 10. An entire token has been accumulated. The object represented by 
@@ -256,7 +258,6 @@ package org.wvxvws.automation.syntax
 			if (from.bytesAvailable)
 			{
 				token.current = readCharacter(from);
-				trace("reading character:", token.current);
 				result = true;
 				var i:int;
 				while ((i < 7) && _steps[i](from, token) && !token.error) i++;
@@ -311,6 +312,7 @@ package org.wvxvws.automation.syntax
 			var result:Boolean;
 			if (table.isSingleEscape(token.current))
 			{
+				token.canBeNumber = false;
 				if (from.bytesAvailable)
 				{
 					token.current = readCharacter(from);
@@ -328,6 +330,7 @@ package org.wvxvws.automation.syntax
 			var result:Boolean;
 			if (table.isMultiEscape(token.current))
 			{
+				token.canBeNumber = false;
 				if (from.bytesAvailable)
 				{
 					token.current = "";
@@ -360,13 +363,18 @@ package org.wvxvws.automation.syntax
 			}
 			else if (table.isSingleEscape(next))
 			{
+				token.canBeNumber = false;
 				if (from.bytesAvailable)
 				{
 					token.token += table.toTableCase(readCharacter(from));
 				}
 				else eofHandle(token);
 			}
-			else if (table.isMultiEscape(next)) step9(from, token);
+			else if (table.isMultiEscape(next))
+			{
+				token.canBeNumber = false;
+				step9(from, token);
+			}
 			else if (!table.isValid(next)) readerErrorHandle(token);
 			else if (table.isTerminating(next))
 			{

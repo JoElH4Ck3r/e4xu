@@ -895,7 +895,7 @@ package org.wvxvws.automation.syntax
 		 * Exponent markers
 		 * Marker  Meaning                                  
 		 * D or d  double-float                             
-		 * E or e  float (see *read-default-float-format*)  
+		 * E or e  float (see &#42;read-default-float-format&#42;)  
 		 * F or f  single-float                             
 		 * L or l  long-float                               
 		 * S or s  short-float  
@@ -906,7 +906,7 @@ package org.wvxvws.automation.syntax
 		 * 
 		 * NOTE: this is something I probably won't implement in a long time...
 		 * current input base n. (in a dynamic environment) the radix that is the 
-		 * value of *read-base* in that environment, and that is the default radix 
+		 * value of &#42;read-base&#42; in that environment, and that is the default radix 
 		 * employed by the Lisp reader and its related functions. 
 		 * 
 		 * May need to throw on :1, :1/2, and :2^3
@@ -916,32 +916,6 @@ package org.wvxvws.automation.syntax
 		 * These are not numbers: 
 		 * \256   25\64   1.0\E6   |100|   3\.14159   |3/4|   3\/4   5||
 		 * More examples: http://www.lispworks.com/documentation/HyperSpec/Body/02_caab.htm
-		 * 
-		 * character  syntax type                 character  syntax type             
-		 * Backspace  constituent                 0--9       constituent             
-		 * Tab        whitespace[2]               :          constituent             
-		 * Newline    whitespace[2]               ;          terminating macro char  
-		 * Linefeed   whitespace[2]               <          constituent             
-		 * Page       whitespace[2]               =          constituent             
-		 * Return     whitespace[2]               >          constituent             
-		 * Space      whitespace[2]               ?          constituent*            
-		 * !          constituent*                @          constituent             
-		 * "          terminating macro char      A--Z       constituent             
-		 * #          non-terminating macro char  [          constituent*            
-		 * $          constituent                 \          single escape           
-		 * %          constituent                 ]          constituent*            
-		 * &          constituent                 ^          constituent             
-		 * '          terminating macro char      _          constituent             
-		 * (          terminating macro char      `          terminating macro char  
-		 * )          terminating macro char      a--z       constituent             
-		 * *          constituent                 {          constituent*            
-		 * +          constituent                 |          multiple escape         
-		 * ,          terminating macro char      }          constituent*            
-		 * -          constituent                 ~          constituent             
-		 * .          constituent                 Rubout     constituent             
-		 * /          constituent                 
-		 * 
-		 * 
 		 */
 		public function DispatchTable() { super(); }
 		
