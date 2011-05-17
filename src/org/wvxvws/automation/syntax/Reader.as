@@ -4,6 +4,9 @@ package org.wvxvws.automation.syntax
 	
 	import org.wvxvws.automation.language.Atom;
 	import org.wvxvws.automation.language.Cons;
+	import org.wvxvws.automation.types.numeric.$Fixnum;
+	import org.wvxvws.automation.types.numeric.$Float;
+	import org.wvxvws.automation.types.numeric.$Ratio;
 
 	public class Reader
 	{
@@ -202,29 +205,6 @@ package org.wvxvws.automation.syntax
 			return result;
 		}
 		
-		private static function getType(token:Token):Class
-		{
-			var value:Number;
-			var result:Class;
-			
-			if (/[\d-]/.test(token.token.charAt()))
-			{
-				value = int(token.token);
-				if (value.toString() == token.token) result = int;
-				else
-				{
-					value = uint(token.token);
-					if (value.toString() == token.token) result = uint;
-					else
-					{
-						value = Number(token.token);
-						if (!isNaN(value)) result = Number;
-					}
-				}
-			}
-			return result;
-		}
-		
 		private static function eofHandle(token:Token):String
 		{
 			return token.error = "end-of-file";
@@ -416,22 +396,23 @@ package org.wvxvws.automation.syntax
 		
 		private static function step10(from:ByteArray, token:Token):Boolean
 		{
-			var type:Class = getType(token);
-			var value:*;
-			
-			switch (type)
+			switch (true)
 			{
-				case int:
-					value = int(token.token);
+				case NumberReader.isInteger(token.token):
+					// NOTE: fixnum is a particular case. will need something like
+					// $Integer.makeInteger() to return different kinds of integers.
+					token.value = new $Fixnum(token.token);
 					break;
-				case uint:
-					value = uint(token.token);
+				case NumberReader.isRatio(token.token):
+					token.value = new $Ratio(token.token);
 					break;
-				case Number:
-					value = Number(token.token);
+				case NumberReader.isFloat(token.token):
+					// NOTE: there should be 3 kinds of floats, float is too generic.
+					token.value = new $Float(token.token);
 					break;
+				default:
+					token.value = new Atom(token.token, null);
 			}
-			token.value = new Atom(token.token, type, value);
 			trace("step 10", token.token, token.current);
 			return false;
 		}

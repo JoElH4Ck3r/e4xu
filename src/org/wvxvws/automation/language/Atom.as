@@ -48,6 +48,8 @@ package org.wvxvws.automation.language
 			return result;
 		}
 		
+		// TODO: all our classes will override toString(), so this will become 
+		// redundant once they do.
 		public function toString():String
 		{
 			var result:String;
@@ -81,7 +83,7 @@ package org.wvxvws.automation.language
 					result = "\"" + this._value + "\"";
 					break;
 				default:
-					result = "#" + this._name + "";
+					result = "#" + this._name;
 			}
 			return result;
 		}

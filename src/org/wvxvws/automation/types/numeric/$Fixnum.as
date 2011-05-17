@@ -5,6 +5,7 @@ package org.wvxvws.automation.types.numeric
 		public function $Fixnum(parseFrom:String)
 		{
 			super(parseFrom);
+			super._type = $Fixnum;
 		}
 	}
 }

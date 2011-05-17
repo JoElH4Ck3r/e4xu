@@ -24,12 +24,14 @@ package org.wvxvws.automation.types
 		{
 			if (value.length > 1)
 			{
+				trace("--- long char name:", "|" + value + "|");
 				value = Reader.table.toTableCase(value);
 				if (!(value in $Char)) throw "unrecognized-character-name";
 				if (!(value in _chars)) _chars[value] = $Char[value];
 			}
 			else
 			{
+				trace("--- short char name:", "|" + value + "|");
 				if (!(value in _chars)) _chars[value] = new $Char(value);
 			}
 			return _chars[value];
