@@ -25,9 +25,16 @@ package org.wvxvws.automation.syntax
 			var afterNext:String;
 			var token:String = next;
 			
-			while (Reader.table.isConstitutent(
+			while (Reader.table.isValid(
 				afterNext = Reader.readCharacter(bytes)))
+			{
+				if (token.length && 
+					((Reader.table.isMacroCharacter(afterNext) && 
+					Reader.table.isTerminating(afterNext)) ||
+					Reader.table.isWhite(afterNext)))
+					break;
 				token += afterNext;
+			}
 			bytes.position--;
 			return $Char.makeChar(token);
 		}

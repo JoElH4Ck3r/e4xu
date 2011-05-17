@@ -5,6 +5,7 @@ package org.wvxvws.automation.types.numeric
 		public function $Integer(parseFrom:String)
 		{
 			super(parseFrom);
+			super._value = parseInt(parseFrom, 10);
 		}
 	}
 }

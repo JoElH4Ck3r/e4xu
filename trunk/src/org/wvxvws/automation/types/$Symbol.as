@@ -2,16 +2,16 @@ package org.wvxvws.automation.types
 {
 	import org.wvxvws.automation.language.Atom;
 	
-	public class $Number extends Atom
+	public class $Symbol extends Atom
 	{
-		public function $Number(parseFrom:String)
+		public function $Symbol(name:String, type:Object)
 		{
-			super(name, $Number, NaN);
+			super(name, type, name);
 		}
 		
 		public override function toString():String
 		{
-			return String(this._value);
+			return this._name;
 		}
 	}
 }
