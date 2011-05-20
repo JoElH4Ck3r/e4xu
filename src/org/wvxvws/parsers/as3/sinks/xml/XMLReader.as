@@ -24,9 +24,9 @@ package org.wvxvws.parsers.as3.sinks.xml
 		
 		protected const _whiteStack:SinksStack = new SinksStack();
 		
-		private var _currentNode:XMLNode;
+		protected var _as3Sinks:AS3Sinks;
 		
-		private var _as3Sinks:AS3Sinks;
+		private var _currentNode:XMLNode;
 		
 		private var _lineEndSink:LineEndSink;
 		
