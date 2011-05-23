@@ -1,31 +1,31 @@
 (in-package :cl-amf)
 
 (defclass amf-reader ()
-	((encoding-version 
-		:initform "3.0")
-	(source
-		:accessor :source
-		:initarg :source))
-	(:documentation "This class reads AMF 3.0 encoding"))
+  ((encoding-version 
+    :initform "3.0")
+   (source
+    :accessor :source
+    :initarg :source))
+  (:documentation "This class reads AMF 3.0 encoding"))
 
 (defgeneric read-undefined (source)
-	(:documentation "Reads 'undefined' record"))
+  (:documentation "Reads 'undefined' record"))
 (defgeneric read-null (source)
-	(:documentation "Reads 'null' record"))
+  (:documentation "Reads 'null' record"))
 (defgeneric read-ui29 (source)
-	(:documentation "Reads 'UI29' - a variable length unsigned integer record"))
+  (:documentation "Reads 'UI29' - a variable length unsigned integer record"))
 (defgeneric read-utf-8 (source)
-	(:documentation "Reads UTF-8 encoded string"))
+  (:documentation "Reads UTF-8 encoded string"))
 (defgeneric read-false (source)
-	(:documentation "Reads 'false' record"))
+  (:documentation "Reads 'false' record"))
 (defgeneric read-true (source)
-	(:documentation "Reads 'true' record"))
+  (:documentation "Reads 'true' record"))
 (defgeneric read-double (source)
-	(:documentation "Reads 'IEEE-754' double precision floating point record"))
+  (:documentation "Reads 'IEEE-754' double precision floating point record"))
 (defgeneric read-array (source)
-	(:documentation "Reads 'ECMAScript Array' record"))
+  (:documentation "Reads 'ECMAScript Array' record"))
 (defgeneric read-object (source)
-	(:documentation "Reads 'Object' record"))
+  (:documentation "Reads 'Object' record"))
 
 (defparameter *half-byte* #x3F)
 
@@ -36,46 +36,58 @@
 (defun read-next-byte ()
 	
 )
+(defun read-utf8-char (stream)
+  (loop for i from 7 downto 0
+     with first-byte = (read-byte stream nil 0)
+     do (when (= first-byte 0) (return +null+))
+     do (when (or (not (logbitp i first-byte)) (= i 0))
+	  (setf first-byte (logand first-byte (- (ash 1 i) 1)))
+	  (return
+	    (code-char 
+	     (dotimes (a (- 6 i) first-byte)
+	       (setf first-byte
+		     (+ (ash first-byte 6)
+			(logand (read-byte stream) #x3F)))))))))
 
-(defun decode-utf-8 (bytes)
-	(let (	(first-byte (first bytes))
-		(result))
-		(if (logbitp 7 first-byte)
-			(if (not (logbitp 5 first-byte))
-				(setf result (+ (ash (logand first-byte #x1F) 6) 
-					(logand (second bytes) #x3F)))
-				(if (not (logbitp 4 first-byte))
-					(setf result (+ (ash (logand first-byte #xF) 12) 
-							(ash (logand (second bytes) #x3F) 6) 
-							(logand (third bytes) #x3F)))
-					(when (not (logbitp 3 first-byte)) 
-						(setf result (+ (ash (logand first-byte #x7) 18) 
-							(ash (logand (second bytes) #x3F) 12) 
-							(ash (logand (third bytes) #x3F) 6) 
-							(logand (fourth bytes) #x3F))))))
-			(setf result first-byte))
-		(code-char result)))
+;; (defun decode-utf-8 (bytes)
+;;   (let ((first-byte (first bytes))
+;; 	(result))
+;;     (if (logbitp 7 first-byte)
+;; 	(if (not (logbitp 5 first-byte))
+;; 	    (setf result (+ (ash (logand first-byte #x1F) 6) 
+;; 			    (logand (second bytes) #x3F)))
+;; 	    (if (not (logbitp 4 first-byte))
+;; 		(setf result (+ (ash (logand first-byte #xF) 12) 
+;; 				(ash (logand (second bytes) #x3F) 6) 
+;; 				(logand (third bytes) #x3F)))
+;; 		(when (not (logbitp 3 first-byte)) 
+;; 		  (setf result (+ (ash (logand first-byte #x7) 18) 
+;; 				  (ash (logand (second bytes) #x3F) 12) 
+;; 				  (ash (logand (third bytes) #x3F) 6) 
+;; 				  (logand (fourth bytes) #x3F))))))
+;; 	(setf result first-byte))
+;;     (code-char result)))
 
 (defun decode-ieee-754 (bytes)
-	(let (	(sign (if (logbitp 0 (first bytes)) 1 -1))
-		(exponent (- (logior (ash (logand (first bytes) #x7F) 4) 
-			(ash (second bytes) -4)) #x3FF))
-		(significand (+ #x10000000000000 
+  (let ((sign (if (logbitp 0 (first bytes)) 1 -1))
+	(exponent (- (logior (ash (logand (first bytes) #x7F) 4) 
+			     (ash (second bytes) -4)) #x3FF))
+	(significand (+ #x10000000000000 
 			(ash (logand (second bytes) #xF) 48)
 			(reduce #'(lambda (x y)	(+ (ash x 8) y)) 
 				(subseq bytes 2)))))
-	(* sign (/ significand (ash 1 (- 52 exponent))))))
+    (* sign (/ significand (ash 1 (- 52 exponent))))))
 
 (defun decode-ui29 (bytes)
-	(loop	for byte in bytes
-		with total = 0
-		for is-last-byte = (> total #x3FFF)
-		for shift = (if is-last-byte 8 7)
-		do (setf total 
-			(+ (ash total shift) 
-				(logand byte (if is-last-byte #xFF #x7F))))
-		when (or is-last-byte (= (ash byte 7) 0))
-			return total))
+  (loop	for byte in bytes
+     with total = 0
+     for is-last-byte = (> total #x3FFF)
+     for shift = (if is-last-byte 8 7)
+     do (setf total 
+	      (+ (ash total shift) 
+		 (logand byte (if is-last-byte #xFF #x7F))))
+     when (or is-last-byte (= (ash byte 7) 0))
+     return total))
 
 (defmethod read-undefined (source)
 		
