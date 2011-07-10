@@ -29,7 +29,7 @@
     :type hash-table)))
 
 (defgeneric get-property (container name)
-  (:documentation "Generic method for reading from `amf-object' and it's children properties"))
+  (:documentation "Generic method for reading from `amf-object' properties"))
 
 (defmethod get-property ((container amf-object) (name string))
   (gethash name (slot-value container 'properties)))
@@ -61,3 +61,29 @@ this operation is O(n) complex, try not to abuse it"))
     (if (= (length name) stopped-at)
 	(item container possible-int)
 	(gethash name (slot-value container 'properties)))))
+
+(defclass amf-date ()
+  ((value 
+    :initarg :value
+    ;; AS dates are in milliseconds
+    :initform (* (get-universal-time) 1000)
+    :type integer)))
+
+(defmethod print-object ((obj amf-date) stream)
+  (multiple-value-bind
+	(second minute hour date month year)
+      (decode-universal-time (/ (slot-value obj 'value) 1000))
+    (format stream "~2,'0d:~2,'0d:~2,'0d ~d/~2,'0d/~d"
+	    hour minute second month date year)))
+
+(defun amf-value-p (x)
+  (or (typep x 'amf-object)
+      (typep x 'amf-date)
+      (null x)
+      (eq x t)
+      (typep x 'string)
+      (when (typep x 'integer) (mod #xFFFFFFFF))
+      (typep x 'float)))
+
+(deftype amf-value ()
+  '(satisfies amf-value-p))
