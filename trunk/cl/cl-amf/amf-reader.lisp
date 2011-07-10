@@ -1,41 +1,41 @@
 (in-package :cl-amf)
 
-(defclass amf-reader ()
-  ((encoding-version 
-    :initform "3.0")
-   (source
-    :accessor :source
-    :initarg :source))
-  (:documentation "This class reads AMF 3.0 encoding"))
-
-(defgeneric read-undefined (source)
-  (:documentation "Reads 'undefined' record"))
-(defgeneric read-null (source)
-  (:documentation "Reads 'null' record"))
-(defgeneric read-ui29 (source)
-  (:documentation "Reads 'UI29' - a variable length unsigned integer record"))
-(defgeneric read-utf-8 (source)
-  (:documentation "Reads UTF-8 encoded string"))
-(defgeneric read-false (source)
-  (:documentation "Reads 'false' record"))
-(defgeneric read-true (source)
-  (:documentation "Reads 'true' record"))
-(defgeneric read-double (source)
-  (:documentation "Reads 'IEEE-754' double precision floating point record"))
-(defgeneric read-array (source)
-  (:documentation "Reads 'ECMAScript Array' record"))
-(defgeneric read-object (source)
-  (:documentation "Reads 'Object' record"))
-
 (defparameter *half-byte* #x3F)
 
-(defun move-on (source)
-	
-)
+;; undefined-marker = 0x00
+;; null-marker = 0x01
+;; false-marker = 0x02
+;; true-marker = 0x03
+;; integer-marker = 0x04
+;; double-marker = 0x05
+;; string-marker = 0x06
+;; xml-doc-marker = 0x07
+;; date-marker = 0x08
+;; array-marker = 0x09
+;; object-marker = 0x0A
+;; xml-marker = 0x0B
+;; byte-array-marker = 0x0C
+;; NOTE: #13 is Vector.<T>, but it's not in the spec
 
-(defun read-next-byte ()
-	
-)
+;; The remaining 1 to 26 significant bits are not significant
+
+
+(defun read-amf-format (stream property ref-table)
+  (let ((marker (read-char stream :eof-error-p nil)))
+    (when marker
+      (setf property
+      (case (char-code marker)
+	((0 1 2) nil)
+	(3 t)
+	(4 (read-integer stream))
+	(5 (read-double stream))
+	(6 (read-string stream))
+	((7 11) (read-xml-doc stream))
+	(8 (read-date stream ref-table))
+	(9 (read-array stream))
+	(10 (read-object stream))
+	(12 (read-bytearray stream))))))
+
 (defun read-utf8-char (stream)
   (loop for i from 7 downto 0
      with first-byte = (read-byte stream nil 0)
@@ -78,8 +78,8 @@
 				(subseq bytes 2)))))
     (* sign (/ significand (ash 1 (- 52 exponent))))))
 
-(defun decode-ui29 (bytes)
-  (loop	for byte in bytes
+(defun decode-ui29 (stream)
+  (loop	for byte = (char-code (read-char stream))
      with total = 0
      for is-last-byte = (> total #x3FFF)
      for shift = (if is-last-byte 8 7)
@@ -89,41 +89,36 @@
      when (or is-last-byte (= (ash byte 7) 0))
      return total))
 
-(defmethod read-undefined (source)
-		
-)
+(defun read-integer (stream) (decode-ui29 stream))
 
-(defmethod read-null (source)
-		
-)
+(defun read-string (stream))
 
-(defmethod read-ui29 (source)
-		
-)
+(defun read-double (stream))
 
-(defmethod read-utf-8 (source)
-		
-)
+;; U29A-value = U29
+;; The first (low) bit is a flag with
+;; value 1. The remaining 1 to 28
+;; significant bits are used to encode the
+;; count of the dense portion of the
+;; Array.
+;; assoc-value = UTF-8-vr value-type
+;; array-type = array-marker (U29O-ref | (U29A-value
+;;             (UTF-8-empty | *(assoc-value) UTF-8-empty)
+;;            *(value-type)))
+;; If this isn't a reference, then in plain language it is:
+;; #x09, length of the dense part (ui29), 
+;; (basically the object record)* #x01 (type-marker value)*
+(defun read-array (stream))
 
-(defmethod read-false (source)
-		
-)
+(defun read-object (stream))
 
+(defun read-bytearray (stream))
 
-(defmethod read-true (source)
-		
-)
+(defun read-date (stream ref-table)
+  (let ((ref-or-val (char-code (read-char stream))))
+    (unread-char (code-char 8))
+    (if (boole boole-and ref-or-val #x80)
+	(gethash ref-table (decode-ui29 stream))
+	(decode-ieee-754 bytes))))
 
-(defmethod read-double (source)
-		
-)
-
-(defmethod read-array (source)
-		
-)
-
-
-(defmethod read-object (source)
-		
-)
-
+(defun read-xml (stream))
