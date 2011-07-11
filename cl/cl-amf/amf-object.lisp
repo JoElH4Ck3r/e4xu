@@ -19,6 +19,32 @@
 ;; 	     :type as3-fqname)
 ;;   (properties (make-hash-table :test 'equal)))
 
+;; This is said to be uselsess... well, I'll leave it here to remember to research the issue
+;; in depth
+(defun amf-value-p (x)
+  (or (typep x 'amf-object)
+      (typep x 'amf-date)
+      (null x)
+      (eq x t)
+      (typep x 'string)
+      (when (typep x 'integer) 
+	(and (>= x #x-7FFFFFFF) (<= x #xFFFFFFFF)))
+      (typep x 'float)))
+
+(deftype amf-value ()
+  '(satisfies amf-value-p))
+
+(defun print-amf-type (value)
+  (cond
+    ((typep value 'string) (concatenate 'string "\"" value "\""))
+    ((null value) "null")
+    ((typep value 'boolean) "true")
+    (t (write-to-string value))))
+
+;;-----------------------------------------------------------
+;; Object class
+;;-----------------------------------------------------------
+
 (defclass amf-object ()
   ((constructor 
     :initarg :constructor
@@ -33,6 +59,26 @@
 
 (defmethod get-property ((container amf-object) (name string))
   (gethash name (slot-value container 'properties)))
+
+(defmethod (setf property) (value (container amf-object) (name string))
+  (check-type value amf-value "A value that is possible to serialize using AMF protocol")
+  (setf (gethash name (slot-value container 'properties)) value))
+
+(defmethod print-object ((obj amf-object) stream)
+  (print-unreadable-object (obj stream :type t)
+    (princ "{ " stream)
+    (loop with hash = (slot-value obj 'properties)
+       with first = t
+       for p being the hash-keys in hash
+       for value = (print-amf-type (gethash p hash))
+       do (if first
+	      (setf first (format stream "~a : ~a" p value))
+	      (format stream ", ~a : ~a" p value)))
+    (princ " }" stream)))
+
+;;-----------------------------------------------------------
+;; Array class
+;;-----------------------------------------------------------
 
 (defclass amf-array (amf-object)
   ((constructor 
@@ -62,6 +108,21 @@ this operation is O(n) complex, try not to abuse it"))
 	(item container possible-int)
 	(gethash name (slot-value container 'properties)))))
 
+(defmethod print-object ((obj amf-array) stream)
+  (print-unreadable-object (obj stream :type t)
+    (princ "[" stream)
+    (loop for i from 0 upto (amf-length obj)
+       with first = t
+       for value = (print-amf-type (car (item obj i)))
+       do (if first
+	      (setf first (format stream "~a" value))
+	      (format stream ",~a" value)))
+    (princ "]" stream)))
+
+;;-----------------------------------------------------------
+;; Date class
+;;-----------------------------------------------------------
+
 (defclass amf-date ()
   ((value 
     :initarg :value
@@ -73,17 +134,7 @@ this operation is O(n) complex, try not to abuse it"))
   (multiple-value-bind
 	(second minute hour date month year)
       (decode-universal-time (/ (slot-value obj 'value) 1000))
-    (format stream "~2,'0d:~2,'0d:~2,'0d ~d/~2,'0d/~d"
-	    hour minute second month date year)))
+    (print-unreadable-object (obj stream :type t)
+      (format stream "~2,'0d:~2,'0d:~2,'0d ~d/~2,'0d/~d"
+	      hour minute second month date year))))
 
-(defun amf-value-p (x)
-  (or (typep x 'amf-object)
-      (typep x 'amf-date)
-      (null x)
-      (eq x t)
-      (typep x 'string)
-      (when (typep x 'integer) (mod #xFFFFFFFF))
-      (typep x 'float)))
-
-(deftype amf-value ()
-  '(satisfies amf-value-p))
