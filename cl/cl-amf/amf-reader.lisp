@@ -20,10 +20,9 @@
 ;; The remaining 1 to 26 significant bits are not significant
 
 
-(defun read-amf-format (stream property ref-table)
+(defun read-amf-format (stream ref-table)
   (let ((marker (read-char stream :eof-error-p nil)))
     (when marker
-      (setf property
       (case (char-code marker)
 	((0 1 2) nil)
 	(3 t)
@@ -89,6 +88,21 @@
      when (or is-last-byte (= (ash byte 7) 0))
      return total))
 
+(defun decode-ui29-but-first (stream)
+  (loop	with if-first = t
+     for byte = (if if-first
+		    (progn (setf if-first nil)
+			   (logand #x80 (char-code (read-char stream))))
+		    (char-code (read-char stream)))
+     with total = 0
+     for is-last-byte = (> total #x3FFF)
+     for shift = (if is-last-byte 8 7)
+     do (setf total 
+	      (+ (ash total shift) 
+		 (logand byte (if is-last-byte #xFF #x7F))))
+     when (or is-last-byte (= (ash byte 7) 0))
+     return total))
+
 (defun read-integer (stream) (decode-ui29 stream))
 
 (defun read-string (stream))
@@ -99,8 +113,8 @@
 ;; The first (low) bit is a flag with
 ;; value 1. The remaining 1 to 28
 ;; significant bits are used to encode the
-;; count of the dense portion of the
-;; Array.
+;; count of the dense portion of the Array.
+;;
 ;; assoc-value = UTF-8-vr value-type
 ;; array-type = array-marker (U29O-ref | (U29A-value
 ;;             (UTF-8-empty | *(assoc-value) UTF-8-empty)
@@ -108,7 +122,25 @@
 ;; If this isn't a reference, then in plain language it is:
 ;; #x09, length of the dense part (ui29), 
 ;; (basically the object record)* #x01 (type-marker value)*
-(defun read-array (stream))
+(defun read-array (stream ref-table)
+  (let ((ref-or-val (read-char stream))
+	(dense-length)
+	(array (make-instance 'amf-array)))
+    (unread-char (code-char 9))
+    (if (logand ref-or-val #x80)
+	(gethash ref-table (decode-ui29 stream))
+	(progn
+	  (setf dense-length (decode-ui29-but-first stream))
+	  (do ((prop-name (read-string stream)
+			  (read-string stream))
+	       (value (read-amf-format stream ref-table) 
+		      (read-amf-format stream ref-table)))
+	      ((string= prop-name ""))
+	    ((setf (property array prop-name) value)))
+	  (loop for i from 0 upto dense-length
+	     do (setf (property array i) 
+		      (read-amf-format stream ref-table)))
+	  ))))
 
 (defun read-object (stream))
 
@@ -119,6 +151,6 @@
     (unread-char (code-char 8))
     (if (boole boole-and ref-or-val #x80)
 	(gethash ref-table (decode-ui29 stream))
-	(decode-ieee-754 bytes))))
+	(decode-ieee-754 stream))))
 
 (defun read-xml (stream))
