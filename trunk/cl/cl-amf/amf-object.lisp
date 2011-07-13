@@ -1,3 +1,5 @@
+;(in-package :cl-amf)
+
 (defstruct
     (as3-fqname 
       (:print-function
@@ -19,17 +21,6 @@
 ;; 	     :type as3-fqname)
 ;;   (properties (make-hash-table :test 'equal)))
 
-;; This is said to be uselsess... well, I'll leave it here to remember to research the issue
-;; in depth
-(defun amf-value-p (x)
-  (or (typep x 'amf-object)
-      (typep x 'amf-date)
-      (null x)
-      (eq x t)
-      (typep x 'string)
-      (when (typep x 'integer) 
-	(and (>= x #x-7FFFFFFF) (<= x #xFFFFFFFF)))
-      (typep x 'float)))
 
 (deftype amf-value ()
   '(satisfies amf-value-p))
@@ -66,15 +57,16 @@
 
 (defmethod print-object ((obj amf-object) stream)
   (print-unreadable-object (obj stream :type t)
-    (princ "{ " stream)
-    (loop with hash = (slot-value obj 'properties)
-       with first = t
-       for p being the hash-keys in hash
-       for value = (print-amf-type (gethash p hash))
-       do (if first
-	      (setf first (format stream "~a : ~a" p value))
-	      (format stream ", ~a : ~a" p value)))
-    (princ " }" stream)))
+    (let ((*print-circle* t))
+      (princ "{ " stream)
+      (loop with hash = (slot-value obj 'properties)
+	 with first = t
+	 for p being the hash-keys in hash
+	 for value = (print-amf-type (gethash p hash))
+	 do (if first
+		(setf first (format stream "\"~a\" : ~a" p value))
+		(format stream ", \"~a\" : ~a" p value)))
+      (princ " }" stream))))
 
 ;;-----------------------------------------------------------
 ;; Array class
@@ -93,12 +85,18 @@
 this operation is O(n) complex, try not to abuse it"))
 
 (defmethod amf-length ((container amf-array))
-  (car (first (last (slot-value container 'members)))))
+  (let ((array (slot-value container 'members)))
+    (if array
+	(let ((last-pair (first (last array))))
+	  (1+
+	   (if (typep last-pair 'integer) 
+	       last-pair (first last-pair)))) 0)))
 
 (defgeneric item (container index)
   (:documentation "Fetches an item at specified `index'."))
 
 (defmethod item ((container amf-array) (index integer))
+	  index (assoc index (slot-value container 'members)))
   (assoc index (slot-value container 'members)))
 
 (defmethod get-property ((container amf-array) (name string))
@@ -108,16 +106,51 @@ this operation is O(n) complex, try not to abuse it"))
 	(item container possible-int)
 	(gethash name (slot-value container 'properties)))))
 
+(defmethod (setf property) (value (container amf-array) (name string))
+  (check-type value amf-value "A value that is possible to serialize using AMF protocol")
+  (multiple-value-bind (possible-int stopped-at)
+      (parse-integer name :junk-allowed t)
+    (if (= (length name) stopped-at)
+	(setf (property container possible-int) value)
+	(setf (gethash name (slot-value container 'properties)) value))))
+
+(defmethod (setf property) (value (container amf-array) (name integer))
+  (check-type value amf-value "A value that is possible to serialize using AMF protocol")
+  (if (slot-value container 'members)
+      (loop with members = (slot-value container 'members)
+	 with len = (length members)
+	 for i in members
+	 for inc from 0
+	 do (format t "len: ~a, inc: ~a~&" len inc)
+	 do (cond
+	      ((= (car i) name)
+	       (setf (cdr i) value)
+	       (return))
+	      ((and (> (car i) name) (zerop inc))
+	       (format t "setting lesser / first? ~a~&" value)
+	       (setf (slot-value container 'members) 
+		     (cons (cons 0 value) members))
+	       (return))
+	      ((> (car i) name)
+	       (push (cons name value) (cdr (nthcdr (1- inc) members)))
+	       (return))
+	      ((= len (1+ inc))
+	       (setf (cdr (last members)) (cons (cons name value) nil)))
+	      (t nil)))
+      (setf (slot-value container 'members) 
+	    (cons (cons name value) nil))) value)
+
 (defmethod print-object ((obj amf-array) stream)
   (print-unreadable-object (obj stream :type t)
-    (princ "[" stream)
-    (loop for i from 0 upto (amf-length obj)
-       with first = t
-       for value = (print-amf-type (car (item obj i)))
-       do (if first
-	      (setf first (format stream "~a" value))
-	      (format stream ",~a" value)))
-    (princ "]" stream)))
+    (let ((*print-circle* t))
+      (princ "[" stream)
+      (loop for i from 0 upto (1- (amf-length obj))
+	 with first = t
+	 for value = (print-amf-type (cdr (item obj i)))
+	 do (if first
+		(setf first (format stream "~a" value))
+		(format stream ",~a" value)))
+      (princ "]" stream))))
 
 ;;-----------------------------------------------------------
 ;; Date class
@@ -138,3 +171,26 @@ this operation is O(n) complex, try not to abuse it"))
       (format stream "~2,'0d:~2,'0d:~2,'0d ~d/~2,'0d/~d"
 	      hour minute second month date year))))
 
+;;-----------------------------------------------------------
+;; Utility functions
+;;-----------------------------------------------------------
+
+;; This is said to be uselsess... well, I'll leave it here to remember to research the issue
+;; in depth
+(defun amf-value-p (x)
+  (or (typep x 'amf-object)
+      (typep x 'amf-date)
+      (null x)
+      (eq x t)
+      (typep x 'string)
+      (when (typep x 'integer) 
+	(and (>= x #x-7FFFFFFF) (<= x #xFFFFFFFF)))
+      (typep x 'float)))
+
+
+(defvar *amf-array* (make-instance 'amf-array))
+(setf (property *amf-array* 1) 33)
+(setf (property *amf-array* 0) 42)
+(setf (property *amf-array* 3) 66)
+(setf (slot-value *amf-array* 'members) nil)
+(slot-value *amf-array* 'members)
