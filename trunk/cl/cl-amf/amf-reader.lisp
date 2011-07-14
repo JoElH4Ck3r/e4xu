@@ -1,6 +1,7 @@
-(in-package :cl-amf)
+;(in-package :cl-amf)
 
 (defparameter *half-byte* #x3F)
+(defconstant +null+ (code-char 0)) 
 
 ;; undefined-marker = 0x00
 ;; null-marker = 0x01
@@ -20,20 +21,34 @@
 ;; The remaining 1 to 26 significant bits are not significant
 
 
-(defun read-amf-format (stream ref-table)
-  (let ((marker (read-char stream :eof-error-p nil)))
+(defun read-amf-format (stream &rest ref-table)
+  (let ((marker (read-byte stream :eof-error-p nil)))
+    (format t "marker: ~a~&" marker)
     (when marker
-      (case (char-code marker)
+      ;; Note: there must be 3 of them, one for strings, another
+      ;; for object properties and yet another one for the rest...
+      ;; well, that's what I could understand so far...
+      (when (null ref-table) 
+	(setf ref-table (make-hash-table :test 'equal)))
+      (case marker
 	((0 1 2) nil)
 	(3 t)
 	(4 (read-integer stream))
-	(5 (read-double stream))
-	(6 (read-string stream))
-	((7 11) (read-xml-doc stream))
+	(5 (read-double stream ref-table))
+	(6 (read-string stream ref-table))
+	((7 11) (read-xml stream ref-table))
 	(8 (read-date stream ref-table))
-	(9 (read-array stream))
-	(10 (read-object stream))
-	(12 (read-bytearray stream))))))
+	(9 (read-array stream ref-table))
+	(10 (read-object stream ref-table))
+	(12 (read-bytearray stream ref-table))
+	(otherwise (format t "Type marker not recognized: ~a~&" marker))))))
+
+(defun unset-leftmost-significant (of-byte)
+  (loop for i from 8 downto 0
+       for b = (ash 1 i)
+       do (when (>= of-byte b)
+	    (return (logand (1- b) of-byte)))
+       finally (return 0)))
 
 (defun read-utf8-char (stream)
   (loop for i from 7 downto 0
@@ -48,25 +63,6 @@
 		     (+ (ash first-byte 6)
 			(logand (read-byte stream) #x3F)))))))))
 
-;; (defun decode-utf-8 (bytes)
-;;   (let ((first-byte (first bytes))
-;; 	(result))
-;;     (if (logbitp 7 first-byte)
-;; 	(if (not (logbitp 5 first-byte))
-;; 	    (setf result (+ (ash (logand first-byte #x1F) 6) 
-;; 			    (logand (second bytes) #x3F)))
-;; 	    (if (not (logbitp 4 first-byte))
-;; 		(setf result (+ (ash (logand first-byte #xF) 12) 
-;; 				(ash (logand (second bytes) #x3F) 6) 
-;; 				(logand (third bytes) #x3F)))
-;; 		(when (not (logbitp 3 first-byte)) 
-;; 		  (setf result (+ (ash (logand first-byte #x7) 18) 
-;; 				  (ash (logand (second bytes) #x3F) 12) 
-;; 				  (ash (logand (third bytes) #x3F) 6) 
-;; 				  (logand (fourth bytes) #x3F))))))
-;; 	(setf result first-byte))
-;;     (code-char result)))
-
 (defun decode-ieee-754 (bytes)
   (let ((sign (if (logbitp 0 (first bytes)) 1 -1))
 	(exponent (- (logior (ash (logand (first bytes) #x7F) 4) 
@@ -78,36 +74,53 @@
     (* sign (/ significand (ash 1 (- 52 exponent))))))
 
 (defun decode-ui29 (stream)
-  (loop	for byte = (char-code (read-char stream))
+  (loop	for byte = (read-byte stream)
      with total = 0
      for is-last-byte = (> total #x3FFF)
      for shift = (if is-last-byte 8 7)
      do (setf total 
 	      (+ (ash total shift) 
 		 (logand byte (if is-last-byte #xFF #x7F))))
-     when (or is-last-byte (= (ash byte 7) 0))
+     when (or is-last-byte (zerop (ash byte -7)))
      return total))
 
-(defun decode-ui29-but-first (stream)
+(defun decode-ui29-but-first (stream first-byte)
   (loop	with if-first = t
      for byte = (if if-first
 		    (progn (setf if-first nil)
-			   (logand #x80 (char-code (read-char stream))))
-		    (char-code (read-char stream)))
+			   (logand #x7F first-byte))
+		    (read-byte stream))
      with total = 0
      for is-last-byte = (> total #x3FFF)
      for shift = (if is-last-byte 8 7)
+     do (format t "byte: ~a, ~a~&" byte (ash byte -7))
      do (setf total 
 	      (+ (ash total shift) 
 		 (logand byte (if is-last-byte #xFF #x7F))))
-     when (or is-last-byte (= (ash byte 7) 0))
+     when (or is-last-byte (zerop (ash byte -7)))
      return total))
 
 (defun read-integer (stream) (decode-ui29 stream))
 
-(defun read-string (stream))
+(defun read-string (stream ref-table)
+  (let ((ref-or-val (read-byte stream))
+	(result 
+	 (make-array '(0) 
+		     :element-type 'base-char
+		     :fill-pointer 0
+		     :adjustable t)))
+    (if (zerop (logand ref-or-val #x80))
+	(if (= ref-or-val 1)
+	    result
+	    (with-output-to-string (is result)
+	      (loop for i from 0 upto 
+		   (1- (decode-ui29-but-first stream (ash ref-or-val -1)))
+		 do (format t "collected string: ~a~&" result)
+		 do (write-char (read-utf8-char stream) is))
+	      result))
+	(gethash (decode-ui29-but-first stream ref-or-val) ref-table))))
 
-(defun read-double (stream))
+(defun read-double (stream ref-table))
 
 ;; U29A-value = U29
 ;; The first (low) bit is a flag with
@@ -123,34 +136,49 @@
 ;; #x09, length of the dense part (ui29), 
 ;; (basically the object record)* #x01 (type-marker value)*
 (defun read-array (stream ref-table)
-  (let ((ref-or-val (read-char stream))
+  (format t "read-array entered~&")
+  (let ((ref-or-val (read-byte stream))
 	(dense-length)
-	(array (make-instance 'amf-array)))
-    (unread-char (code-char 9))
-    (if (logand ref-or-val #x80)
-	(gethash ref-table (decode-ui29 stream))
+	(array))
+    (format t "vars declared: ~a~&" (logand ref-or-val #x80))
+    (if (not (zerop (logand ref-or-val #x80)))
+	(gethash (decode-ui29 stream) ref-table)
 	(progn
-	  (setf dense-length (decode-ui29-but-first stream))
-	  (do ((prop-name (read-string stream)
-			  (read-string stream))
-	       (value (read-amf-format stream ref-table) 
-		      (read-amf-format stream ref-table)))
+	  (setf array (make-instance 'amf-array))
+	  (setf dense-length 
+		 (decode-ui29-but-first 
+		  stream (ash ref-or-val -1)))
+	  (format t "dense-length: ~a~&" dense-length)
+	  (do ((prop-name (read-string stream ref-table)
+			  (read-string stream ref-table))
+	       (value))
 	      ((string= prop-name ""))
-	    ((setf (property array prop-name) value)))
-	  (loop for i from 0 upto dense-length
+	    (format t "read property name: ~a~&" prop-name)
+	    (setf value (read-amf-format stream ref-table))
+	    (setf (property array prop-name) value))
+	  (loop for i from 0 upto (1- dense-length)
+	     do (format t "setting dense part: ~a~&" i)
 	     do (setf (property array i) 
 		      (read-amf-format stream ref-table)))
-	  ))))
+	  array))))
 
-(defun read-object (stream))
+(defun read-object (stream ref-table))
 
-(defun read-bytearray (stream))
+(defun read-bytearray (stream ref-table))
 
 (defun read-date (stream ref-table)
-  (let ((ref-or-val (char-code (read-char stream))))
-    (unread-char (code-char 8))
-    (if (boole boole-and ref-or-val #x80)
+  (let ((ref-or-val (read-byte stream))
+    (if (logand ref-or-val #x80)
 	(gethash ref-table (decode-ui29 stream))
 	(decode-ieee-754 stream))))
 
-(defun read-xml (stream))
+(defun read-xml (stream ref-table))
+
+(defun parse-amf (amf-file)
+  (with-open-file 
+      (stream amf-file
+	      :direction :input 
+	      :element-type '(unsigned-byte 8))
+    (read-amf-format stream)))
+
+(parse-amf "./data.amf")

@@ -51,6 +51,9 @@
 (defmethod get-property ((container amf-object) (name string))
   (gethash name (slot-value container 'properties)))
 
+(defgeneric (setf property) (value container name)
+  (:documentation "Generic method for writing the properties of `amf-object'"))
+
 (defmethod (setf property) (value (container amf-object) (name string))
   (check-type value amf-value "A value that is possible to serialize using AMF protocol")
   (setf (gethash name (slot-value container 'properties)) value))
@@ -121,13 +124,11 @@ this operation is O(n) complex, try not to abuse it"))
 	 with len = (length members)
 	 for i in members
 	 for inc from 0
-	 do (format t "len: ~a, inc: ~a~&" len inc)
 	 do (cond
 	      ((= (car i) name)
 	       (setf (cdr i) value)
 	       (return))
 	      ((and (> (car i) name) (zerop inc))
-	       (format t "setting lesser / first? ~a~&" value)
 	       (setf (slot-value container 'members) 
 		     (cons (cons 0 value) members))
 	       (return))
