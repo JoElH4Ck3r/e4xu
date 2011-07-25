@@ -162,7 +162,108 @@
 		      (read-amf-format stream ref-table)))
 	  array))))
 
-(defun read-object (stream ref-table))
+;; U29O-ref = U29 ; The first (low) bit is a flag
+;;                ; (representing whether an instance
+;;                ; follows) with value 0 to imply that
+;;                ; this is not an instance but a
+;;                ; reference. The remaining 1 to 28
+;;                ; significant bits are used to encode an
+;;                ; object reference index (an integer).
+;; U29O-traits-ref = U29 ; The first (low) bit is a flag with
+;;                       ; value 1. The second bit is a flag
+;;                       ; (representing whether a trait
+;;                       ; reference follows) with value 0 to
+;;                       ; imply that this objects traits are
+;;                       ; being sent by reference. The remaining
+;;                       ; 1 to 27 significant bits are used to
+;;                       ; encode a trait reference index (an
+;;                       ; integer).
+;; U29O-traits-ext = U29 ; The first (low) bit is a flag with
+;;                       ; value 1. The second bit is a flag with
+;;                       ; value 1. The third bit is a flag with
+;;                       ; value 1. The remaining 1 to 26
+;;                       ; significant bits are not significant
+;;                       ; (the traits member count would always
+;;                       ; be 0).
+;; U29O-traits = U29 ; The first (low) bit is a flag with
+;;                   ; value 1. The second bit is a flag with
+;;                   ; value 1. The third bit is a flag with
+;;                   ; value 0. The fourth bit is a flag
+;;                   ; specifying whether the type is
+;;                   ; dynamic. A value of 0 implies not
+;;                   ; dynamic, a value of 1 implies dynamic.
+;;                   ; Dynamic types may have a set of name
+;;                   ; value pairs for dynamic members after
+;;                   ; the sealed member
+;;                   ; section. The
+;;                   ; remaining 1 to 25 significant bits are
+;;                   ; used to encode the number of sealed
+;;                   ; traits member names that follow after
+;;                    the class name (an integer).
+;; class-name = UTF-8-vr
+;; ; Note: use the empty string for
+;; ; anonymous classes.
+;; dynamic-member = UTF-8-vr
+;;                 value-type
+;; ; Another dynamic member follows
+;; ; until the string-type is the
+;; ; empty string.
+;; object-type = object-marker (U29O-ref | (U29O-traits-ext
+;;              class-name *(U8)) | U29O-traits-ref | (U29O-
+;;             traits class-name *(UTF-8-vr))) *(value-type)
+;;            *(dynamic-member)))
+(defun read-object (stream ref-table)
+  (let ((ref-or-val (read-byte stream))
+	(class-name)
+	(traits-count)
+	(traits)
+	(result)
+	(result-class))
+    (if (not (zerop (logand ref-or-val #x80)))
+	(cond
+	  ((= (logand #b11100000 ref-or-val) #b11100000)
+	   (let ((*amf-tables* ref-table)
+		 (*amf-stream*)
+		 (*amf-class-name* (read-string stream)))
+	     ;; TODO: need a separate table for callbacks and such, 
+	     ;; will need to set couple of globals, as maybe for 
+	     ;; other tables.
+	     (funcall (gethash *amf-class-name* ref-table))))
+	  ((= (loagand #b11000000 ref-or-val) #b11000000)
+	   ;; Dynamic
+	   (setf traits-count 
+		 (decode-ui29-but-first 
+		  stream
+		  (loagand #b11000000 ref-or-val)))
+	   (setf class-name (read-string stream))
+	   (setf result-class (gethash class-name ref-table) 
+	   (setf result
+		 (make-instance 
+		  (if result-class result-class 'amf-object)))
+	   (setf traits
+		 (loop for i from 0 upto traits-count
+		    collect (read-string stream)))
+	   (loop for i from 0 upto traits-count
+		with trait-name = traits
+		do (setf 
+		    (property result (car trait-name)) 
+		    (read-amf-format stream ref-table))
+		do (setf trait-name (cdr trait-name))) 
+	   (unless (zerop (loagand #b10000 ref-or-val))
+	       (read-dynamic-object result stream ref-table))
+	   result
+	  ((t) (setf traits-count
+		     (decode-ui29-but-first
+		      stream (ash ref-or-val -1)))
+	   (loop for i in (gethash traits-count ref-table)
+	      do (setf (property result i) (read-amf-format)))
+	   ;; weirdly the spec doesn't say how would I know if the object is
+	   ;; dynamic here, I'll just write this together with the traits reference
+	   ;; since it looks like the most probable way to deal with it.
+	   (when (gethash traits-count ref-table)
+	     ;; NOTE: all references need to be redone.
+	       (read-dynamic-object result stream ref-table))
+	   result))))))
 
 (defun read-bytearray (stream ref-table))
 

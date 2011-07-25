@@ -85,7 +85,8 @@
 
 (defgeneric amf-length (container)
   (:documentation "Calculates the length of the `container', note, 
-this operation is O(n) complex, try not to abuse it"))
+this operation is O(n) complex, where n is the number of all numerical offsets 
+in the underlying pairlist, try not to abuse it."))
 
 (defmethod amf-length ((container amf-array))
   (let ((array (slot-value container 'members)))
