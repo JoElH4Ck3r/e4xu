@@ -1,7 +1,7 @@
 ;(in-package :cl-amf)
 
 (defparameter *half-byte* #x3F)
-(defconstant +null+ (code-char 0)) 
+(defconstant +null+ (code-char 0))
 
 ;; undefined-marker = 0x00
 ;; null-marker = 0x01
@@ -33,7 +33,7 @@
       (case marker
 	((0 1 2) nil)
 	(3 t)
-	(4 (read-integer stream))
+	(4 (read-int32 stream))
 	(5 (read-double stream ref-table))
 	(6 (read-string stream ref-table))
 	((7 11) (read-xml stream ref-table))
@@ -100,7 +100,7 @@
      when (or is-last-byte (zerop (ash byte -7)))
      return total))
 
-(defun read-integer (stream) (decode-ui29 stream))
+(defun read-int32 (stream) (decode-ui29 stream))
 
 (defun read-string (stream ref-table)
   (let ((ref-or-val (read-byte stream))
@@ -263,7 +263,7 @@
 	   (when (gethash traits-count ref-table)
 	     ;; NOTE: all references need to be redone.
 	       (read-dynamic-object result stream ref-table))
-	   result))))))
+	   result)))))))
 
 (defun read-bytearray (stream ref-table))
 
@@ -271,7 +271,7 @@
   (let ((ref-or-val (read-byte stream))
     (if (logand ref-or-val #x80)
 	(gethash ref-table (decode-ui29 stream))
-	(decode-ieee-754 stream))))
+	(decode-ieee-754 stream)))))
 
 (defun read-xml (stream ref-table))
 

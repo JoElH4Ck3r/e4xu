@@ -52,6 +52,7 @@
     <element path="lib\styles.swc" />
     <element path="lib\scroller-skin\scroller_skin.swc" />
     <element path="lib\button-skin\button_skin.swc" />
+    <element path="lib\blooddy_crypto.swc" />
   </libraryPaths>
   <!-- External Libraries -->
   <externalLibraryPaths>
@@ -71,7 +72,7 @@
   </library>
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>
-    <compile path="src\tests\ProbablityTester.as" />
+    <compile path="src\tests\BenchmarkCompress.as" />
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>
