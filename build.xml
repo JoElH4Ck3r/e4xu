@@ -1,116 +1,115 @@
 ﻿<project name="E4XU build and test" default="e4xuSWC">
-	<!--!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!-->
-	<!-- Increase Java heap memory to avoid getting out-of memory error (example) -->
-	<!-- ANT_OPTS=-Xmx5120M -->
-	<!-- Set the Javac location if it differs from the one where flexTask.jar
-		 believs it to be (example):
-		 JAVA_HOME="/cygdrive/c/Program Files/Java/jdk1.6.0_16" -->
-	<!--!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!-->
-	
-	<!-- load properties file -->
-	<property file="${basedir}/build.properties" />
-	
-	<!-- points to our flexTasks.jar we copied to the libs folder to distribute with the project -->
-	<taskdef resource="flexTasks.tasks" classpath="${basedir}/tasks/flexTasks.jar"/> 
-	
-	<!-- Get our revision counter -->
-	<!-- This uses some very old API. Will need to update this to use svn info. -->
-	<!--target name="rev">
-	  <exec executable="${SVN_EXE}">
-		<arg value="${basedir}"/>
-		<arg value="${basedir}/revision.build"/>
-		<arg value="${basedir}/revision.properties"/>
-	  </exec>
-	  <property file="${basedir}/revision.properties" />
-	</target-->
-	
-	<!-- delete and recreate the DEPLOY dir -->
-	<target name="init">
-		<delete dir="${DEPLOY_DIR}" />
-		<delete>
-			<fileset dir="${LIBS_DIR}" includes="**/*.swc"/>
-		</delete>
-		<mkdir dir="${DEPLOY_DIR}" />
-		<mkdir dir="${DEPLOY_DIR}/js" />
-		<mkdir dir="${LIBS_DIR}/skins" />
-		<copy file="${RSX_DIR}/index.html" todir="${DEPLOY_DIR}"/>
-		<copy file="${RSX_DIR}/swfobject.js" todir="${DEPLOY_DIR}/js"/>
-		<copy file="${RSX_DIR}/expressInstall.swf" todir="${DEPLOY_DIR}"/>
-		<tstamp>
-			<format property="TODAY" pattern="d-MM-yy"/>
-		</tstamp>
-		<replace file="${DEPLOY_DIR}/index.html">
-			<replacefilter token="@swf@" value="index${TODAY}"/>
-		</replace>
-		<condition property="EXAMPLES">
-			<matches string="${COMPILE_EXAMPLES}" pattern="0"/>
-		</condition>
-	</target>
-	
-	<!-- Build framework.swc -->
-	<target name="frameworkSWC" depends="init">
-		<compc output="${LIBS_DIR}/framework.swc" 
-			defaults-css-url="${FLEX_FRAMEWORK_DIR}/default.css"
-			debug="${DEBUGGING}">
-			<load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
-	        <load-config filename="${CONFIG_DIR}/build-framework.xml"/>
-	        <source-path path-element="${FLEX_FRAMEWORK_DIR}"/>
-		</compc>
-	</target>
-	
-	<!-- Build e4xu.swc -->
-	<target name="e4xuSWC" depends="frameworkSWC">
-		<compc output="${LIBS_DIR}/e4xu${TODAY}.swc" 
-			keep-generated-actionscript="true"
-			debug="${DEBUGGING}">
-	        <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
-	        <load-config filename="${CONFIG_DIR}/build-e4xu.xml"/>
-	        <source-path path-element="${SRC_DIR}"/>
-			<external-library-path dir="${LIBS_DIR}">
-				<include name="framework.swc"/>
-			</external-library-path>
-			<external-library-path dir="${FLEX_HOME}/frameworks/libs/player/10.0">
-				<include name="playerglobal.swc"/>
-			</external-library-path>
-			<keep-as3-metadata name="Skin"/>
-		</compc>
-	</target>
-	
-	<!-- Build skins.swc -->
-	<target name="skinsSWC" depends="e4xuSWC">
-		<compc output="${LIBS_DIR}/skins/skins${TODAY}.swc" 
-			debug="${DEBUGGING}">
-	        <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
-	        <load-config filename="${CONFIG_DIR}/build-skins.xml"/>
-	        <source-path path-element="${FLEX_HOME}/frameworks"/>
-	        <source-path path-element="${SRC_DIR}"/>
-	        <external-library-path dir="${LIBS_DIR}">
-			<include name="e4xu${TODAY}.swc"/>
-	        </external-library-path>
-		<external-library-path dir="${FLEX_HOME}/frameworks/libs/player/10.0">
-			<include name="playerglobal.swc"/>
-	        </external-library-path>
-		</compc>
-	</target>
-	
-	<!-- Build test (index.swf) -->
-	<!-- Not building it atm. Need to build libraries against standard MXMLC w/o our test -->
-	<target name="index" depends="skinsSWC">
-		<mxmlc file="${SRC_DIR}/view/SecondFrame.mxml" 
-				output="${DEPLOY_DIR}/index${TODAY}.swf"
-				static-link-runtime-shared-libraries="true"
-				debug="${DEBUGGING}"
-				keep-generated-actionscript="true"
-				use-network="true">
-	        <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
-	        <load-config filename="${CONFIG_DIR}/build-index.xml"/>
-			<!--arg value="+=load-config=${CONFIG_DIR}/build-index.xml"/-->
-		</mxmlc>
-		<antcall target="buildExamples"/>
-	</target>
-	
-	<target name="buildExamples" if="EXAMPLES">
-		<ant antfile="${basedir}/examples/build.xml"/>
-	</target>
-	
+  <!--!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!-->
+  <!-- Increase Java heap memory to avoid getting out-of memory error (example) -->
+  <!-- ANT_OPTS=-Xmx5120M -->
+  <!-- Set the Javac location if it differs from the one where flexTask.jar
+       believs it to be (example):
+       JAVA_HOME="/cygdrive/c/Program Files/Java/jdk1.6.0_16" -->
+  <!--!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!-->
+  <!-- load properties file -->
+  <property file="${basedir}/build.properties" />
+  
+  <!-- points to our flexTasks.jar we copied to the libs folder to distribute with the project -->
+  <taskdef resource="flexTasks.tasks" classpath="${basedir}/tasks/flexTasks.jar"/> 
+  
+  <!-- Get our revision counter -->
+  <!-- This uses some very old API. Will need to update this to use svn info. -->
+  <!--target name="rev">
+  <exec executable="${SVN_EXE}">
+    <arg value="${basedir}"/>
+    <arg value="${basedir}/revision.build"/>
+    <arg value="${basedir}/revision.properties"/>
+  </exec>
+  <property file="${basedir}/revision.properties" />
+  </target-->
+  
+  <!-- delete and recreate the DEPLOY dir -->
+  <target name="init">
+    <delete dir="${DEPLOY_DIR}" />
+    <delete>
+      <fileset dir="${LIBS_DIR}" includes="**/*.swc"/>
+    </delete>
+    <mkdir dir="${DEPLOY_DIR}" />
+    <mkdir dir="${DEPLOY_DIR}/js" />
+    <mkdir dir="${LIBS_DIR}/skins" />
+    <copy file="${RSX_DIR}/index.html" todir="${DEPLOY_DIR}"/>
+    <copy file="${RSX_DIR}/swfobject.js" todir="${DEPLOY_DIR}/js"/>
+    <copy file="${RSX_DIR}/expressInstall.swf" todir="${DEPLOY_DIR}"/>
+    <tstamp>
+      <format property="TODAY" pattern="d-MM-yy"/>
+    </tstamp>
+    <replace file="${DEPLOY_DIR}/index.html">
+      <replacefilter token="@swf@" value="index${TODAY}"/>
+    </replace>
+    <condition property="EXAMPLES">
+      <matches string="${COMPILE_EXAMPLES}" pattern="0"/>
+    </condition>
+  </target>
+
+  <!-- Build framework.swc -->
+  <target name="frameworkSWC" depends="init">
+    <compc output="${LIBS_DIR}/framework.swc" 
+	   defaults-css-url="${FLEX_FRAMEWORK_DIR}/default.css"
+	   debug="${DEBUGGING}">
+      <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
+      <load-config filename="${CONFIG_DIR}/build-framework.xml"/>
+      <source-path path-element="${FLEX_FRAMEWORK_DIR}"/>
+    </compc>
+  </target>
+  
+  <!-- Build e4xu.swc -->
+  <target name="e4xuSWC" depends="frameworkSWC">
+    <compc output="${LIBS_DIR}/e4xu${TODAY}.swc" 
+	   keep-generated-actionscript="true"
+	   debug="${DEBUGGING}">
+      <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
+      <load-config filename="${CONFIG_DIR}/build-e4xu.xml"/>
+      <source-path path-element="${SRC_DIR}"/>
+      <external-library-path dir="${LIBS_DIR}">
+	<include name="framework.swc"/>
+      </external-library-path>
+      <external-library-path dir="${FLEX_HOME}/frameworks/libs/player/10.0">
+	<include name="playerglobal.swc"/>
+      </external-library-path>
+      <keep-as3-metadata name="Skin"/>
+    </compc>
+  </target>
+  
+  <!-- Build skins.swc -->
+  <target name="skinsSWC" depends="e4xuSWC">
+    <compc output="${LIBS_DIR}/skins/skins${TODAY}.swc" 
+	   debug="${DEBUGGING}">
+      <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
+      <load-config filename="${CONFIG_DIR}/build-skins.xml"/>
+      <source-path path-element="${FLEX_HOME}/frameworks"/>
+      <source-path path-element="${SRC_DIR}"/>
+      <external-library-path dir="${LIBS_DIR}">
+	<include name="e4xu${TODAY}.swc"/>
+      </external-library-path>
+      <external-library-path dir="${FLEX_HOME}/frameworks/libs/player/10.0">
+	<include name="playerglobal.swc"/>
+      </external-library-path>
+    </compc>
+  </target>
+  
+  <!-- Build test (index.swf) -->
+  <!-- Not building it atm. Need to build libraries against standard MXMLC w/o our test -->
+  <target name="index" depends="skinsSWC">
+    <mxmlc file="${SRC_DIR}/view/SecondFrame.mxml" 
+	   output="${DEPLOY_DIR}/index${TODAY}.swf"
+	   static-link-runtime-shared-libraries="true"
+	   debug="${DEBUGGING}"
+	   keep-generated-actionscript="true"
+	   use-network="true">
+      <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
+      <load-config filename="${CONFIG_DIR}/build-index.xml"/>
+      <!--arg value="+=load-config=${CONFIG_DIR}/build-index.xml"/-->
+    </mxmlc>
+    <antcall target="buildExamples"/>
+  </target>
+  
+  <target name="buildExamples" if="EXAMPLES">
+    <ant antfile="${basedir}/examples/build.xml"/>
+  </target>
+  
 </project>

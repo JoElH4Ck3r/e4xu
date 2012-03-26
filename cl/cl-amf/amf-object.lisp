@@ -1,5 +1,8 @@
 ;(in-package :cl-amf)
 
+;; Remember Dictionary and Vector.<T>
+;; undocs
+
 (defstruct
     (as3-fqname 
       (:print-function
