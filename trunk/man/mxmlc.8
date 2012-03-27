@@ -1,13 +1,75 @@
 .\" Manpage for mxmlc.
-.\" License text should go here.
+.\" Licensed to the Apache Software Foundation (ASF) under one or more
+.\" contributor license agreements.  See the NOTICE file distributed with
+.\" this work for additional information regarding copyright ownership.
+.\" The ASF licenses this file to You under the Apache License, Version 2.0
+.\" (the "License"); you may not use this file except in compliance with
+.\" the License.  You may obtain a copy of the License at
+.\"
+.\"     http://www.apache.org/licenses/LICENSE-2.0
+.\"
+.\" Unless required by applicable law or agreed to in writing, software
+.\" distributed under the License is distributed on an "AS IS" BASIS,
+.\" WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+.\" See the License for the specific language governing permissions and
+.\" limitations under the License.
+.\"
 .\" Contact flex\-dev@incubator.apache.org in to correct errors or typos.
-.TH man 8 "26 March 2012" "1.0" "Apache Flex Compiler (mxmlc)"
+.TH mxmlc 8 "26 March 2012" "1.0" "Apache Flex Compiler (mxmlc)"
 .SH NAME
 mxmlc \- Apache Flex Compiler (mxmlc)
 .SH SYNOPSIS
-mxlmc [configuration options] [default arguments]
+.B mxlmc
+.RB [ configuration
+.BR options ]
+.RB [ default
+.BR arguments ]
+
 .SH DESCRIPTION
-mxmlc compiles ActionScript 3 code, MXML templates, and a subset of CSS targeting Flex framework into SWF formats version 9 and above.
+.B mxmlc
+compiles ActionScript 3 code, MXML templates, and a subset of CSS targeting Flex framework into SWF formats version 9 and above.
+
+Configuration options may be set on the command line as
+.B '\-variable=value,value,value'
+\. (The number of values required depends on the
+particular variable.) Boolean options may be enabled with
+.B '\-variable=true'
+and disabled with
+.B '\-variable=false'
+, with
+.B '\-variable'
+being shorthand for
+.B '\-variable=true'
+\. Variables may be cleared by setting
+.B '\-variable='
+with no
+value following the equals sign.
+
+The default argument list is equivalent to setting the 'file-specs' variable.
+The special string 
+.B '\-\-'
+may be used to terminate processing of named
+configuration options and to force any remaining values on the command line
+to be interpreted as default arguments.
+
+In general, a given variable may only be set once, but a few variables may be
+set multiple times if noted as 'repeatable' in their description; i.e.
+.B '-a=x,y,z'
+may also be set as
+.B '-a=x -a=y -a=z'
+if 'a' is repeatable. A more
+useful trait of repeatable variables is that by using the special syntax
+.B '-variable+=value,value'
+, the new values set will be appended to the current
+value, rather than replacing the current value list.
+
+Configuration variables sometimes have shortened aliases that make them
+easier to type. Hierarchical dotted variable names will automatically have an
+alias generated for their 'leaf' name, if it is unique.
+
+Filenames specified on the command line must either be an absolute path or
+relative to the current directory.
+
 .SH OPTIONS
 .B \-benchmark
     output performance benchmark
